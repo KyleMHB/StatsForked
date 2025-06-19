@@ -1,51 +1,72 @@
 ﻿using System.Linq;
+using RimWorld;
+using Verse;
 
 namespace Stats.Compat.CE;
 
-public sealed class Thing_BinaryStatColumnWorker_Left : Thing_StatColumnWorker
+public abstract class Thing_BinaryStatColumnWorker : Thing_StatColumnWorker
 {
-    private readonly char Separator;
-    public Thing_BinaryStatColumnWorker_Left(BinaryStatColumnDef columnDef) : base(columnDef)
+    protected readonly char Separator;
+    protected Thing_BinaryStatColumnWorker(BinaryStatColumnDef columnDef) : base(columnDef)
     {
         Separator = columnDef.statValueSeparator[0];
     }
     protected override string GetStatDrawEntryLabel(ThingAlike thing)
     {
-        var label = base.GetStatDrawEntryLabel(thing);
+        var worker = Stat.Worker;
+        var statRequest = StatRequest.For(thing.Def, thing.StuffDef);
 
-        if (label.Length > 0)
+        if (worker.ShouldShowFor(statRequest))
         {
-            label = label.Split(Separator).First();
+            var statValue = worker.GetValue(statRequest);
+            var label = worker.GetStatDrawEntryLabel(Stat, statValue, ToStringNumberSense.Absolute, statRequest);
 
-            if (Utils.NonZeroNumberRegex.IsMatch(label))
+            // We do not check whether statValue is 0 here,
+            // because since this type of stat is often times used
+            // only for display purposes it can have a value of 0,
+            // but display non-zero value.
+
+            if (label?.Length > 0)
             {
-                return label.TrimEnd();
+                return ParsePartFromLabel(label);
             }
+        }
+
+        return "";
+    }
+    protected abstract string ParsePartFromLabel(string label);
+}
+
+public sealed class Thing_BinaryStatColumnWorker_Left : Thing_BinaryStatColumnWorker
+{
+    public Thing_BinaryStatColumnWorker_Left(BinaryStatColumnDef columnDef) : base(columnDef)
+    {
+    }
+    protected override string ParsePartFromLabel(string label)
+    {
+        label = label.Split(Separator).First();
+
+        if (Utils.NonZeroNumberRegex.IsMatch(label))
+        {
+            return label.TrimEnd();
         }
 
         return "";
     }
 }
 
-public sealed class Thing_BinaryStatColumnWorker_Right : Thing_StatColumnWorker
+public sealed class Thing_BinaryStatColumnWorker_Right : Thing_BinaryStatColumnWorker
 {
-    private readonly char Separator;
     public Thing_BinaryStatColumnWorker_Right(BinaryStatColumnDef columnDef) : base(columnDef)
     {
-        Separator = columnDef.statValueSeparator[0];
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override string ParsePartFromLabel(string label)
     {
-        var label = base.GetStatDrawEntryLabel(thing);
+        label = label.Split(Separator).Last();
 
-        if (label.Length > 0)
+        if (Utils.NonZeroNumberRegex.IsMatch(label))
         {
-            label = label.Split(Separator).Last();
-
-            if (Utils.NonZeroNumberRegex.IsMatch(label))
-            {
-                return label.TrimStart();
-            }
+            return label.TrimStart();
         }
 
         return "";
