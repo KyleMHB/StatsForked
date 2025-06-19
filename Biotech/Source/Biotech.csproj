@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>Stats.Compat.Biotech</RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\Core\Source\Core.csproj">
+            <CopyLocalSatelliteAssemblies>False</CopyLocalSatelliteAssemblies>
+            <Private>False</Private>
+        </ProjectReference>
+    </ItemGroup>
+</Project>

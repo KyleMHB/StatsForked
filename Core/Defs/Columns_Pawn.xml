@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Pawn_MeatAmount</defName>
+        <stat>MeatAmount</stat>
+        <iconPath>Things/Item/Resource/MeatFoodRaw/Meat_Big/Meat_Big_c</iconPath>
+        <labelShort>Amount</labelShort>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Pawn_MeatType</defName>
+        <label>meat type</label>
+        <iconPath>Things/Item/Resource/MeatFoodRaw/Meat_Big/Meat_Big_c</iconPath>
+        <labelShort>Amount</labelShort>
+        <workerClass>Stats.Pawn_MeatTypeColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Pawn_LeatherAmount</defName>
+        <stat>LeatherAmount</stat>
+        <iconPath>Things/Item/Resource/Leather/Leather_b</iconPath>
+        <iconColor>(162,106,57)</iconColor>
+        <labelShort>Amount</labelShort>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Pawn_LeatherType</defName>
+        <label>Leather type</label>
+        <iconPath>Things/Item/Resource/Leather/Leather_b</iconPath>
+        <iconColor>(162,106,57)</iconColor>
+        <labelShort>Type</labelShort>
+        <workerClass>Stats.Pawn_LeatherTypeColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Pawn_ToxicResistance</defName>
+        <stat>ToxicResistance</stat>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Pawn_ToxicEnvironmentResistance</defName>
+        <stat>ToxicEnvironmentResistance</stat>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Pawn_MaxNutrition</defName>
+        <stat>MaxNutrition</stat>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Pawn_MoveSpeed</defName>
+        <stat>MoveSpeed</stat>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+    
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Pawn_ComfyTemperatureMin</defName>
+        <stat>ComfyTemperatureMin</stat>
+        <iconPath>UI/Buttons/ToggleHeatOverlay</iconPath>
+        <iconColor>(0.04,0.66,1)</iconColor>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Pawn_ComfyTemperatureMax</defName>
+        <stat>ComfyTemperatureMax</stat>
+        <iconPath>UI/Buttons/ToggleHeatOverlay</iconPath>
+        <iconColor>(1,0.25,0.04)</iconColor>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Pawn_LifeExpectancy</defName>
+        <labelKey>StatsReport_LifeExpectancy</labelKey>
+        <descriptionKey>Stat_Race_LifeExpectancy_Desc</descriptionKey>
+        <workerClass>Stats.Pawn_LifeExpectancyColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Pawn_ShootingAccuracy</defName>
+        <stat>ShootingAccuracyPawn</stat>
+        <iconPath>Things/Mote/FeedbackShoot</iconPath>
+        <labelShort>%</labelShort>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Pawn_AimingTime</defName>
+        <stat>AimingDelayFactor</stat>
+        <labelShort>Aim t.</labelShort>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+    
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Pawn_MeleeDodgeChance</defName>
+        <stat>MeleeDodgeChance</stat>
+        <labelShort>Dodge %</labelShort>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Pawn_PsychicSensitivity</defName>
+        <stat>PsychicSensitivity</stat>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Pawn_CaravanCarryingCapacity</defName>
+        <label>caravan carrying capacity</label>
+        <iconPath>UI/Commands/FormCaravan</iconPath>
+        <labelShort>kg</labelShort>
+        <workerClass>Stats.Pawn_CaravanCarryingCapacityColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+</Defs>

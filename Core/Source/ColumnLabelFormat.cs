@@ -1,0 +1,73 @@
+﻿using Stats.Widgets;
+using UnityEngine;
+using Verse;
+
+namespace Stats;
+
+[StaticConstructorOnStartup]
+public static class ColumnLabelFormat
+{
+    private static readonly Texture2D ArmorIcon;
+    private static readonly Texture2D DamageToIcon;
+    static ColumnLabelFormat()
+    {
+        ArmorIcon = ContentFinder<Texture2D>.Get("Things/Pawn/Humanlike/Apparel/FlakVest/FlakVest");
+        DamageToIcon = ContentFinder<Texture2D>.Get("UI/Commands/FireAtWill");
+    }
+    public static Widget LabelOnly(ColumnDef columnDef, ColumnCellStyle cellStyle)
+    {
+        return new Label(columnDef.LabelShort);
+    }
+    public static Widget IconOnly(ColumnDef columnDef, ColumnCellStyle cellStyle)
+    {
+        var icon = new InlineTexture(columnDef.Icon!, columnDef.IconScale).Color(columnDef.IconColor);
+
+        return cellStyle switch
+        {
+            ColumnCellStyle.Number => new SingleElementContainer(icon.PaddingRel(1f, 0f, 0f, 0f)),
+            ColumnCellStyle.Boolean => new SingleElementContainer(icon.PaddingRel(0.5f, 0f)),
+            _ => icon
+        };
+    }
+    public static Widget LabelWithIcon(ColumnDef columnDef, ColumnCellStyle cellStyle)
+    {
+        var label = new Label(columnDef.LabelShort);
+        var icon = new InlineTexture(columnDef.Icon!, columnDef.IconScale).Color(columnDef.IconColor);
+
+        return cellStyle switch
+        {
+            ColumnCellStyle.Number => new HorizontalContainer(
+                [icon.PaddingRel(1f, 0f, 0f, 0f), label],
+                Globals.GUI.PadXs,
+                true
+            ),
+            ColumnCellStyle.Boolean => new SingleElementContainer(
+                new HorizontalContainer([icon, label], Globals.GUI.PadXs).PaddingRel(0.5f, 0f)
+            ),
+            _ => new HorizontalContainer([icon, label], Globals.GUI.PadXs),
+        };
+    }
+    public static Widget ArmorRating(ColumnDef columnDef, ColumnCellStyle _)
+    {
+        return new HorizontalContainer(
+            [
+                new InlineTexture(ArmorIcon).Color(new(0.4f,0.4f,0.4f)).PaddingRel(1f, 0f, 0f, 0f),
+                new InlineTexture(columnDef.Icon!, columnDef.IconScale).Color(columnDef.IconColor)
+            ],
+            Globals.GUI.PadXs,
+            true
+        );
+    }
+    public static Widget DamageFactorTo(ColumnDef columnDef, ColumnCellStyle _)
+    {
+        return new HorizontalContainer(
+            [
+                new InlineTexture(DamageToIcon, 1.2f).PaddingRel(1f, 0f, 0f, 0f),
+                new Label("%"),
+                new InlineTexture(columnDef.Icon!, columnDef.IconScale).Color(columnDef.IconColor)
+            ],
+            Globals.GUI.PadXs,
+            true
+        );
+    }
+}

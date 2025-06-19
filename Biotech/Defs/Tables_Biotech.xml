@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.TableDef>
+        <defName>Genes</defName>
+        <label>genes</label>
+        <iconPath>UI/Gizmos/ViewGenes</iconPath>
+        <workerClass>Stats.Compat.Biotech.GeneTableWorker</workerClass>
+        <columns>
+            <li>Gene_Label</li>
+            <li>Gene_Complexity</li>
+            <li>Gene_MetabolicEfficiency</li>
+            <li>Gene_RequiredArchiteCapsulesAmount</li>
+            <li>Gene_ContentSource</li>
+        </columns>
+    </Stats.TableDef>
+
+</Defs>

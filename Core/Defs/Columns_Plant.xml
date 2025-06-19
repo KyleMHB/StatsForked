@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef>
+        <defName>Plant_MinGrowingSkillToSow</defName>
+        <labelKey>MinGrowingSkillToSow</labelKey>
+        <descriptionKey>Stat_Thing_Plant_MinGrowingSkillToSow_Desc</descriptionKey>
+        <labelShort>Skill</labelShort>
+        <iconPath>UI/Icons/CanGraze</iconPath>
+        <workerClass>Stats.Plant_MinGrowingSkillToSowColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_GrowingTime</defName>
+        <labelKey>GrowingTime</labelKey>
+        <descriptionKey>GrowingTimeDesc</descriptionKey>
+        <labelShort>Time</labelShort>
+        <iconPath>UI/Icons/CanGraze</iconPath>
+        <workerClass>Stats.Plant_GrowingTimeColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_FertilityRequirement</defName>
+        <labelKey>FertilityRequirement</labelKey>
+        <descriptionKey>Stat_Thing_Plant_FertilityRequirement_Desc</descriptionKey>
+        <labelShort>Fert. req.</labelShort>
+        <workerClass>Stats.Plant_FertilityRequirementColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_FertilitySensitivity</defName>
+        <labelKey>FertilitySensitivity</labelKey>
+        <descriptionKey>Stat_Thing_Plant_FertilitySensitivity_Desc</descriptionKey>
+        <labelShort>Fert. sens.</labelShort>
+        <workerClass>Stats.Plant_FertilitySensitivityColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_LightRequirement</defName>
+        <labelKey>LightRequirement</labelKey>
+        <descriptionKey>Stat_Thing_Plant_LightRequirement_Desc</descriptionKey>
+        <labelShort>Req.</labelShort>
+        <iconPath>UI/Icons/ColonistBar/Inspired</iconPath>
+        <workerClass>Stats.Plant_LightRequirementColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_LifeSpan</defName>
+        <labelKey>LifeSpan</labelKey>
+        <descriptionKey>Stat_Thing_Plant_LifeSpan_Desc</descriptionKey>
+        <workerClass>Stats.Plant_LifeSpanColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_HarvestYield</defName>
+        <labelKey>HarvestYield</labelKey>
+        <descriptionKey>Stat_Thing_Plant_HarvestYield_Desc</descriptionKey>
+        <labelShort>Yield</labelShort>
+        <iconPath>UI/Designators/Harvest</iconPath>
+        <workerClass>Stats.Plant_HarvestYieldColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_ProductType</defName>
+        <label>product type</label>
+        <labelShort>Type</labelShort>
+        <iconPath>UI/Commands/SetPlantToGrow</iconPath>
+        <workerClass>Stats.Plant_ProductTypeColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_IsSowable</defName>
+        <label>Can be cultivated</label>
+        <iconPath>UI/Designators/ZoneCreate_Growing</iconPath>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <workerClass>Stats.Plant_IsSowableColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_CanBeGrownInHydroponics</defName>
+        <label>Can be grown in hydroponics</label>
+        <iconPath>StatsMod/UI/Icons/HydroponicsBasinSmall</iconPath>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <workerClass>Stats.Plant_CanBeGrownInHydroponicsColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_IsBlightable</defName>
+        <label>Can be infected with blight</label>
+        <iconPath>Things/Plant/Blight</iconPath>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <workerClass>Stats.Plant_IsBlightableColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_IsTree</defName>
+        <label>Is considered a tree</label>
+        <iconPath>Things/Plant/TreeOak/TreeOakA</iconPath>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <workerClass>Stats.Plant_IsTreeColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_CanBePlantedUnderRoof</defName>
+        <label>Can be planted under roof</label>
+        <iconPath>UI/Designators/BuildRoofArea</iconPath>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <workerClass>Stats.Plant_CanBePlantedUnderRoofColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_IsDestroyedOnHarvest</defName>
+        <label>Is plant destroyed on harvest</label>
+        <iconPath>UI/Designators/HarvestWood</iconPath>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <workerClass>Stats.Plant_IsDestroyedOnHarvestColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_NutritionPerHarvest</defName>
+        <label>Nutrition per harvest</label>
+        <iconPath>UI/Designators/Harvest</iconPath>
+        <labelShort>Nutrition</labelShort>
+        <workerClass>Stats.Plant_NutritionPerHarvestColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_NutritionPerHarvestPerDay</defName>
+        <label>Nutrition per harvest per day</label>
+        <iconPath>UI/Designators/Harvest</iconPath>
+        <labelShort>Nutrition/d</labelShort>
+        <workerClass>Stats.Plant_NutritionPerHarvestPerDayColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Plant_RawNutrition</defName>
+        <stat>Nutrition</stat>
+        <description>Raw nutrition value of a plant itself, not its product.</description>
+        <iconPath>Things/Mote/Sow</iconPath>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Plant_RawNutritionPerDay</defName>
+        <label>Nutrition/d</label>
+        <description>Raw nutrition per day.</description>
+        <iconPath>Things/Mote/Sow</iconPath>
+        <workerClass>Stats.Plant_RawNutritionPerDayColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+</Defs>

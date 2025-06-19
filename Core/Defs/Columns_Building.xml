@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef>
+        <defName>Building_ConstructionSkillPrerequisite</defName>
+        <label>construction skill required</label>
+        <labelShort>Skill</labelShort>
+        <iconPath>StatsMod/UI/Icons/Construction</iconPath>
+        <workerClass>Stats.Building_ConstructionSkillPrerequisiteColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_ResourcesRequiredForConstruction</defName>
+        <labelKey>Stat_Building_ResourcesToMake</labelKey>
+        <labelShort>Resources</labelShort>
+        <descriptionKey>Stat_Building_ResourcesToMakeDesc</descriptionKey>
+        <workerClass>Stats.Building_ResourcesRequiredForConstructionColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Building_WorkToBuild</defName>
+        <labelShort>Work</labelShort>
+        <stat>WorkToBuild</stat>
+        <statValueExplanationType>Full</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_Size</defName>
+        <label>size</label>
+        <workerClass>Stats.Building_SizeColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Building_JoyGainFactor</defName>
+        <stat>JoyGainFactor</stat>
+        <statValueExplanationType>Full</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_RecreationType</defName>
+        <labelKey>StatsReport_JoyKind</labelKey>
+        <descriptionKey>Stat_RecreationType_Desc</descriptionKey>
+        <workerClass>Stats.Building_RecreationTypeColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Building_Comfort</defName>
+        <stat>Comfort</stat>
+        <statValueExplanationType>Full</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Building_ImmunityGainSpeedFactor</defName>
+        <labelShort>Immunity *%</labelShort>
+        <stat>ImmunityGainSpeedFactor</stat>
+        <statValueExplanationType>Full</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Building_MedicalTendQualityOffset</defName>
+        <labelShort>Tend +%</labelShort>
+        <stat>MedicalTendQualityOffset</stat>
+        <statValueExplanationType>Full</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Building_SurgerySuccessChanceFactor</defName>
+        <labelShort>Surgery *%</labelShort>
+        <stat>SurgerySuccessChanceFactor</stat>
+        <statValueExplanationType>Full</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_PowerOutput</defName>
+        <label>power output</label>
+        <labelShort>Output</labelShort>
+        <iconPath>StatsMod/UI/Icons/Electricity</iconPath>
+        <workerClass>Stats.Building_PowerOutputColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_PowerOutputPerCell</defName>
+        <label>power/cell</label>
+        <labelShort>/cell</labelShort>
+        <iconPath>StatsMod/UI/Icons/Electricity</iconPath>
+        <workerClass>Stats.Building_PowerOutputPerCellColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_PowerOutputPerFuel</defName>
+        <label>power/fuel</label>
+        <labelShort>/fuel</labelShort>
+        <description>Measured in watts/unit.</description>
+        <iconPath>StatsMod/UI/Icons/Electricity</iconPath>
+        <workerClass>Stats.Building_PowerOutputPerFuelColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_PowerConsumption</defName>
+        <label>power consumption</label>
+        <labelShort>Consumption</labelShort>
+        <iconPath>StatsMod/UI/Icons/Electricity</iconPath>
+        <workerClass>Stats.Building_PowerConsumptionColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_FuelType</defName>
+        <label>fuel type</label>
+        <labelShort>Type</labelShort>
+        <iconPath>Things/Item/Resource/Chemfuel</iconPath>
+        <workerClass>Stats.Building_FuelTypeColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_FuelCapacity</defName>
+        <label>fuel capacity</label>
+        <labelShort>Cap.</labelShort>
+        <iconPath>Things/Item/Resource/Chemfuel</iconPath>
+        <workerClass>Stats.Building_FuelCapacityColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_FuelConsumptionRate</defName>
+        <label>fuel consumption rate</label>
+        <description>Measured in amount/day.</description>
+        <labelShort>/d</labelShort>
+        <iconPath>Things/Item/Resource/Chemfuel</iconPath>
+        <workerClass>Stats.Building_FuelConsumptionRateColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_DaysOnFullTank</defName>
+        <label>days on full tank</label>
+        <workerClass>Stats.Building_DaysOnFullTankColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+</Defs>

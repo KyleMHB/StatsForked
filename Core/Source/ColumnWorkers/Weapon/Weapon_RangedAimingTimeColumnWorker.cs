@@ -1,0 +1,21 @@
+﻿using Verse;
+
+namespace Stats;
+
+public sealed class Weapon_RangedAimingTimeColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+{
+    public Weapon_RangedAimingTimeColumnWorker(ColumnDef columndef) : base(columndef)
+    {
+    }
+    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    {
+        var verb = thing.Def.Verbs.Primary();
+
+        if (verb?.warmupTime > 0f)
+        {
+            return $"{verb.warmupTime:0.##} {"LetterSecond".Translate()}";
+        }
+
+        return "";
+    }
+}

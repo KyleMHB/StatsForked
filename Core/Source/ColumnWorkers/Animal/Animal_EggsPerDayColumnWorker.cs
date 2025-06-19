@@ -1,0 +1,21 @@
+﻿using RimWorld;
+
+namespace Stats;
+
+public sealed class Animal_EggsPerDayColumnWorker : NumberColumnWorker<ThingAlike>
+{
+    public Animal_EggsPerDayColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0/d")
+    {
+    }
+    protected override decimal GetValue(ThingAlike thing)
+    {
+        var eggLayerCompProps = thing.Def.GetCompProperties<CompProperties_EggLayer>();
+
+        if (eggLayerCompProps != null)
+        {
+            return (eggLayerCompProps.eggCountRange.Average / eggLayerCompProps.eggLayIntervalDays).ToDecimal(1);
+        }
+
+        return 0m;
+    }
+}

@@ -5,18 +5,19 @@
     <exclude>.git</exclude>
     <exclude>.gitignore</exclude>
     <exclude>.vs</exclude>
-    <exclude>About\PublishedFileId.txt</exclude>
-    <exclude>Directory.Build.props</exclude>
-    <exclude>Source</exclude>
-    <exclude>Assemblies\Stats.pdb</exclude>
-    <exclude>Compat\Directory.Build.props</exclude>
-    <exclude>Compat\Biotech\Source</exclude>
-    <exclude>Compat\Biotech\Assemblies\BiotechCompat.pdb</exclude>
-    <exclude>Compat\CE\Source</exclude>
-    <exclude>Compat\CE\Assemblies\CECompat.pdb</exclude>
-    <exclude>Compat\CE\CombatExtended.dll</exclude>
     <exclude>LICENSE</exclude>
     <exclude>README.md</exclude>
     <exclude>Stats.sln</exclude>
+    <exclude>Directory.Build.props</exclude>
+    <exclude>About\PublishedFileId.txt</exclude>
+    <exclude>Core\Source</exclude>
+    <exclude>Core\Assemblies\Core.pdb</exclude>
+    <exclude>Biotech\Source</exclude>
+    <exclude>Biotech\Assemblies\Biotech.pdb</exclude>
+    <exclude>Anomaly\Source</exclude>
+    <exclude>Anomaly\Assemblies\Anomaly.pdb</exclude>
+    <exclude>CE\Source</exclude>
+    <exclude>CE\Assemblies\CE.pdb</exclude>
+    <exclude>CE\CombatExtendedRef.dll</exclude>
   </Excluded>
 </Configuration>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef>
+        <defName>Thing_Label</defName>
+        <label>label</label>
+        <workerClass>Stats.Thing_LabelColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_MarketValue</defName>
+        <labelShort>$$$</labelShort>
+        <stat>MarketValue</stat>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_MaxHitPoints</defName>
+        <labelShort>Max HP</labelShort>
+        <stat>MaxHitPoints</stat>
+        <statValueExplanationType>Unfinalized</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_Flammability</defName>
+        <labelShort>%</labelShort>
+        <iconPath>UI/Icons/ColonistBar/Burning</iconPath>
+        <stat>Flammability</stat>
+        <statValueExplanationType>Unfinalized</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_Mass</defName>
+        <stat>Mass</stat>
+        <statValueExplanationType>Unfinalized</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Thing_CreatedAt</defName>
+        <labelKey>CreatedAt</labelKey>
+        <descriptionKey>Stat_Thing_CreatedAt_Desc</descriptionKey>
+        <workerClass>Stats.Thing_CreatedAtColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_WorkToMake</defName>
+        <labelShort>Work</labelShort>
+        <stat>WorkToMake</stat>
+        <statValueExplanationType>Unfinalized</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Thing_ContentSource</defName>
+        <labelKey>Stat_Source_Label</labelKey>
+        <workerClass>Stats.Thing_ContentSourceColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Thing_TechLevel</defName>
+        <label>tech level</label>
+        <workerClass>Stats.Thing_TechLevelColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Thing_EquippedStatOffsets</defName>
+        <label>Offsets when equipped</label>
+        <labelShort>Offsets</labelShort>
+        <workerClass>Stats.Thing_EquippedStatOffsetsColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_Nutrition</defName>
+        <stat>Nutrition</stat>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_Beauty</defName>
+        <stat>Beauty</stat>
+        <statValueExplanationType>Full</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_ArmorRatingSharp</defName>
+        <iconPath>Things/Item/Equipment/WeaponMelee/Longsword</iconPath>
+        <iconColor>(160,178,181)</iconColor>
+        <iconScale>1.4</iconScale>
+        <labelFormat>Stats.ColumnLabelFormat.ArmorRating</labelFormat>
+        <stat>ArmorRating_Sharp</stat>
+        <statValueExplanationType>FinalizePart</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_ArmorRatingBlunt</defName>
+        <iconPath>Things/Item/Equipment/WeaponMelee/Club</iconPath>
+        <iconColor>(160,178,181)</iconColor>
+        <iconScale>1.2</iconScale>
+        <labelFormat>Stats.ColumnLabelFormat.ArmorRating</labelFormat>
+        <stat>ArmorRating_Blunt</stat>
+        <statValueExplanationType>FinalizePart</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_ArmorRatingHeat</defName>
+        <iconPath>UI/Icons/ColonistBar/Burning</iconPath>
+        <labelFormat>Stats.ColumnLabelFormat.ArmorRating</labelFormat>
+        <stat>ArmorRating_Heat</stat>
+        <statValueExplanationType>FinalizePart</statValueExplanationType>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_EnergyShieldCapacity</defName>
+        <labelShort>Shiled %</labelShort>
+        <stat>EnergyShieldEnergyMax</stat>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_EnergyShieldRechargeRate</defName>
+        <labelShort>Shiled %/s</labelShort>
+        <stat>EnergyShieldRechargeRate</stat>
+        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+</Defs>
