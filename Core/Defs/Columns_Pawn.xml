@@ -14,7 +14,7 @@
         <defName>Pawn_MeatType</defName>
         <label>meat type</label>
         <iconPath>Things/Item/Resource/MeatFoodRaw/Meat_Big/Meat_Big_c</iconPath>
-        <labelShort>Amount</labelShort>
+        <labelShort>Type</labelShort>
         <workerClass>Stats.Pawn_MeatTypeColumnWorker</workerClass>
     </Stats.ColumnDef>
 

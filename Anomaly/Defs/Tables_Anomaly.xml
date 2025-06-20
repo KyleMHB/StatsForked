@@ -10,7 +10,6 @@
         <columns>
             <li>Thing_Label</li>
             <!-- Combat: Offense -->
-            <li MayRequire="CETeam.CombatExtended">Pawn_NightVisionEfficiency</li>
             <li MayRequire="CETeam.CombatExtended">Pawn_MeleeArmorPenetrationSharp</li>
             <li MayRequire="CETeam.CombatExtended">Pawn_MeleeArmorPenetrationBlunt</li>
             <li MayRequire="CETeam.CombatExtended">Pawn_MeleeCritChance</li>
@@ -27,6 +26,7 @@
             <li>Pawn_ComfyTemperatureMax</li>
             <li>Pawn_ToxicResistance</li>
             <li>Pawn_ToxicEnvironmentResistance</li>
+            <li MayRequire="CETeam.CombatExtended">Pawn_NightVisionEfficiency</li>
             <li>Pawn_PsychicSensitivity</li>
             <li>Pawn_MoveSpeed</li>
             <!-- Productivity: Meat -->

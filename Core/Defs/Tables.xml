@@ -315,7 +315,6 @@
             <li>Animal_GrowthTime</li>
             <li>Pawn_LifeExpectancy</li>
             <!-- Combat: Offense -->
-            <li MayRequire="CETeam.CombatExtended">Pawn_NightVisionEfficiency</li>
             <li MayRequire="CETeam.CombatExtended">Pawn_MeleeArmorPenetrationSharp</li>
             <li MayRequire="CETeam.CombatExtended">Pawn_MeleeArmorPenetrationBlunt</li>
             <li MayRequire="CETeam.CombatExtended">Pawn_MeleeCritChance</li>
@@ -331,6 +330,7 @@
             <li>Pawn_ComfyTemperatureMax</li>
             <li>Pawn_ToxicResistance</li>
             <li>Pawn_ToxicEnvironmentResistance</li>
+            <li MayRequire="CETeam.CombatExtended">Pawn_NightVisionEfficiency</li>
             <li>Pawn_PsychicSensitivity</li>
             <li>Pawn_MoveSpeed</li>
             <!-- Misc -->
@@ -359,8 +359,8 @@
             <li MayRequire="Ludeon.RimWorld.Biotech">Mech_WorkActivities</li>
             <li MayRequire="Ludeon.RimWorld.Biotech">Mech_WorkSkill</li>
             <!-- Combat: Offense -->
+            <li MayRequire="CETeam.CombatExtended">Pawn_WeaponHandling</li>
             <li>Pawn_ShootingAccuracy</li>
-            <li MayRequire="CETeam.CombatExtended">Pawn_AimingAccuracy</li>
             <li>Pawn_AimingTime</li>
             <li MayRequire="CETeam.CombatExtended">Pawn_NightVisionEfficiency</li>
             <li MayRequire="CETeam.CombatExtended">Pawn_MeleeArmorPenetrationSharp</li>

@@ -22,4 +22,11 @@
         </value>
     </Operation>
 
+    <Operation Class="PatchOperationReplace">
+        <xpath>Defs/Stats.ColumnDef[defName="Pawn_ShootingAccuracy"]/stat</xpath>
+        <value>
+            <stat>AimingAccuracy</stat>
+        </value>
+    </Operation>
+
 </Patch>

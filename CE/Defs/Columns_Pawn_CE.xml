@@ -3,10 +3,8 @@
 <Defs>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
-        <defName>Pawn_AimingAccuracy</defName>
-        <stat>AimingAccuracy</stat>
-        <iconPath>Things/Mote/FeedbackShoot</iconPath>
-        <labelShort>%</labelShort>
+        <defName>Pawn_WeaponHandling</defName>
+        <stat>ShootingAccuracyPawn</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
