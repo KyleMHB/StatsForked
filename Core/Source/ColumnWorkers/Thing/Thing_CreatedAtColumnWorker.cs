@@ -22,19 +22,14 @@ public sealed class Thing_CreatedAtColumnWorker : ThingDefSetColumnWorker<ThingA
     private static readonly Dictionary<ThingDef, HashSet<ThingDef>> ThingCraftingBenches = [];
     static Thing_CreatedAtColumnWorker()
     {
-        foreach (var recipeDef in DefDatabase<RecipeDef>.AllDefs)
+        foreach (var recipeDef in DefDatabase<RecipeDef>.AllDefsListForReading)
         {
             // See Verse.ThingDef.SpecialDisplayStats()
             if (recipeDef is { products.Count: 1, IsSurgery: false })
             {
                 var producedThingDef = recipeDef.products[0]?.thingDef;
 
-                if (producedThingDef == null)
-                {
-                    continue;
-                }
-
-                if (recipeDef.recipeUsers?.Count > 0)
+                if (producedThingDef != null && recipeDef.recipeUsers?.Count > 0)
                 {
                     var craftingBenchesEntryExists = ThingCraftingBenches.TryGetValue(producedThingDef, out var craftingBenches);
 
@@ -45,6 +40,34 @@ public sealed class Thing_CreatedAtColumnWorker : ThingDefSetColumnWorker<ThingA
                     else
                     {
                         ThingCraftingBenches[producedThingDef] = [.. recipeDef.recipeUsers];
+                    }
+                }
+            }
+        }
+
+        foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
+        {
+            if (thingDef.recipes?.Count > 0)
+            {
+                foreach (var recipeDef in thingDef.recipes)
+                {
+                    if (recipeDef is { products.Count: 1, IsSurgery: false })
+                    {
+                        var producedThingDef = recipeDef.products[0]?.thingDef;
+
+                        if (producedThingDef != null)
+                        {
+                            var craftingBenchesEntryExists = ThingCraftingBenches.TryGetValue(producedThingDef, out var craftingBenches);
+
+                            if (craftingBenchesEntryExists)
+                            {
+                                craftingBenches.Add(thingDef);
+                            }
+                            else
+                            {
+                                ThingCraftingBenches[producedThingDef] = [thingDef];
+                            }
+                        }
                     }
                 }
             }
