@@ -2,20 +2,20 @@
 
 namespace Stats;
 
-public sealed class Animal_MilkAmountColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Animal_MilkAmountColumnWorker : ThingDefCountColumnWorker<ThingAlike>
 {
     public Animal_MilkAmountColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override ThingDefCount? GetValue(ThingAlike thing)
     {
         var milkableCompProps = thing.Def.GetCompProperties<CompProperties_Milkable>();
 
         if (milkableCompProps != null)
         {
-            return milkableCompProps.milkAmount;
+            return new(milkableCompProps.milkDef, milkableCompProps.milkAmount);
         }
 
-        return 0m;
+        return null;
     }
 }

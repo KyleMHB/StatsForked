@@ -119,9 +119,9 @@ public static class Make
     }
     #endregion
     #region Misc filters
-    public static FilterWidget<TObject> CompositeFilter<TObject>(List<Widget> filters)
+    public static FilterWidget<TObject> CompositeFilter<TObject>(List<Widget> filters, bool stretchItems = false)
     {
-        return new CompositeFilter<TObject>(filters);
+        return new CompositeFilter<TObject>(filters, stretchItems);
     }
     #endregion
 }

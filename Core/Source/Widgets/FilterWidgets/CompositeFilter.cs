@@ -11,7 +11,7 @@ internal sealed class CompositeFilter<TObject> : FilterWidget<TObject>
     public override event Action<FilterWidget<TObject>>? OnChange;
     private readonly List<FilterWidget<TObject>> Filters;
     private readonly Widget Container;
-    public CompositeFilter(List<Widget> filters)
+    public CompositeFilter(List<Widget> filters, bool stretchItems = false)
     {
         Filters = filters.Select(widget => widget.Get<FilterWidget<TObject>>()).ToList();
 
@@ -20,7 +20,7 @@ internal sealed class CompositeFilter<TObject> : FilterWidget<TObject>
             filter.OnChange += filter => OnChange?.Invoke(this);
         }
 
-        Container = new HorizontalContainer(filters, shareFreeSpace: true);
+        Container = new HorizontalContainer(filters, shareFreeSpace: true, stretchItems: stretchItems);
         Container.Parent = this;
     }
     protected override Vector2 CalcSize(Vector2 containerSize)

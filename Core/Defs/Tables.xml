@@ -269,36 +269,16 @@
     <Stats.TableDef>
         <defName>Animals</defName>
         <label>Creatures / Animals</label>
-        <iconPath>Things/Pawn/Animal/Cow/Bull_east</iconPath>
-        <iconColor>(170,170,170)</iconColor>
+        <iconPath>Things/Pawn/Animal/Thrumbo/Thrumbo_east</iconPath>
         <workerClass>Stats.AnimalsTableWorker</workerClass>
         <columns>
             <li>Thing_Label</li>
             <!-- Productivity: Meat -->
             <li>Pawn_MeatAmount</li>
-            <li>Pawn_MeatType</li>
             <li>Animal_MeatNutritionPerDay</li>
             <!-- Productivity: Leather -->
             <li>Pawn_LeatherAmount</li>
-            <li>Pawn_LeatherType</li>
             <li>Animal_LeatherPerDay</li>
-            <!-- Productivity: Wool -->
-            <li>Animal_WoolAmount</li>
-            <li>Animal_WoolType</li>
-            <li>Animal_WoolShearingInterval</li>
-            <li>Animal_WoolPerDay</li>
-            <!-- Productivity: Milk -->
-            <li>Animal_MilkAmount</li>
-            <li>Animal_MilkType</li>
-            <li>Animal_MilkingInterval</li>
-            <li>Animal_MilkPerDay</li>
-            <li>Animal_MilkNutritionPerDay</li>
-            <!-- Productivity: Eggs -->
-            <li>Animal_EggsAmount</li>
-            <li>Animal_EggType</li>
-            <li>Animal_EggLayingInterval</li>
-            <li>Animal_EggsPerDay</li>
-            <li>Animal_EggsNutritionPerDay</li>
             <!-- Handling -->
             <li>Animal_MinimumHandlingSkill</li>
             <li>Animal_Trainability</li>
@@ -306,10 +286,6 @@
             <li>Animal_IsBlockedByFences</li>
             <!-- TODO: Diet column -->
             <li>Pawn_MaxNutrition</li>
-            <!-- Caravan -->
-            <li>Animal_IsPackAnimal</li>
-            <li>Animal_CaravanRidingSpeedFactor</li>
-            <li>Pawn_CaravanCarryingCapacity</li>
             <!-- Reproduction -->
             <li>Animal_GestationTime</li>
             <li>Animal_GrowthTime</li>
@@ -330,11 +306,94 @@
             <li>Pawn_ComfyTemperatureMax</li>
             <li>Pawn_ToxicResistance</li>
             <li>Pawn_ToxicEnvironmentResistance</li>
-            <li MayRequire="CETeam.CombatExtended">Pawn_NightVisionEfficiency</li>
-            <li>Pawn_PsychicSensitivity</li>
             <li>Pawn_MoveSpeed</li>
             <!-- Misc -->
             <li>Animal_NuzzleInterval</li>
+            <li>Thing_MarketValue</li>
+            <li>Thing_ContentSource</li>
+        </columns>
+    </Stats.TableDef>
+
+    <Stats.TableDef>
+        <defName>FarmAnimals</defName>
+        <label>Creatures / Animals / Farm</label>
+        <iconPath>Things/Pawn/Animal/Cow/Cow_east</iconPath>
+        <iconColor>(170,170,170)</iconColor>
+        <workerClass>Stats.FarmAnimalsTableWorker</workerClass>
+        <columns>
+            <li>Thing_Label</li>
+            <!-- Productivity: Meat -->
+            <li>Pawn_MeatAmount</li>
+            <li>Animal_MeatNutritionPerDay</li>
+            <!-- Productivity: Leather -->
+            <li>Pawn_LeatherAmount</li>
+            <li>Animal_LeatherPerDay</li>
+            <!-- Productivity: General -->
+            <li>Animal_Products</li>
+            <!-- Productivity: Wool -->
+            <li>Animal_WoolAmount</li>
+            <li>Animal_WoolShearingInterval</li>
+            <li>Animal_WoolPerDay</li>
+            <!-- Productivity: Milk -->
+            <li>Animal_MilkAmount</li>
+            <li>Animal_MilkingInterval</li>
+            <li>Animal_MilkPerDay</li>
+            <li>Animal_MilkNutritionPerDay</li>
+            <!-- Productivity: Eggs -->
+            <li>Animal_EggsAmount</li>
+            <li>Animal_EggLayingInterval</li>
+            <li>Animal_EggsPerDay</li>
+            <li>Animal_EggsNutritionPerDay</li>
+            <!-- Handling -->
+            <li>Animal_MinimumHandlingSkill</li>
+            <li>Animal_Trainability</li>
+            <li>Animal_Wildness</li>
+            <li>Animal_IsBlockedByFences</li>
+            <!-- TODO: Diet column -->
+            <li>Pawn_MaxNutrition</li>
+            <!-- Reproduction -->
+            <li>Animal_GestationTime</li>
+            <li>Animal_GrowthTime</li>
+            <li>Pawn_LifeExpectancy</li>
+            <!-- Physique -->
+            <li>Pawn_ComfyTemperatureMin</li>
+            <li>Pawn_ComfyTemperatureMax</li>
+            <li>Pawn_ToxicResistance</li>
+            <li>Pawn_ToxicEnvironmentResistance</li>
+            <!-- Misc -->
+            <li>Thing_MarketValue</li>
+            <li>Thing_ContentSource</li>
+        </columns>
+    </Stats.TableDef>
+
+    <Stats.TableDef>
+        <defName>PackAnimals</defName>
+        <label>Creatures / Animals / Pack</label>
+        <iconPath>Things/Pawn/Animal/Donkey/Donkey_east</iconPath>
+        <workerClass>Stats.PackAnimalsTableWorker</workerClass>
+        <columns>
+            <li>Thing_Label</li>
+            <!-- Caravan -->
+            <li>Animal_CaravanRidingSpeedFactor</li>
+            <li>Pawn_CaravanCarryingCapacity</li>
+            <!-- Handling -->
+            <li>Animal_MinimumHandlingSkill</li>
+            <li>Animal_Trainability</li>
+            <li>Animal_Wildness</li>
+            <li>Animal_IsBlockedByFences</li>
+            <!-- TODO: Diet column -->
+            <li>Pawn_MaxNutrition</li>
+            <!-- Reproduction -->
+            <li>Animal_GestationTime</li>
+            <li>Animal_GrowthTime</li>
+            <li>Pawn_LifeExpectancy</li>
+            <!-- Physique -->
+            <li>Pawn_ComfyTemperatureMin</li>
+            <li>Pawn_ComfyTemperatureMax</li>
+            <li>Pawn_ToxicResistance</li>
+            <li>Pawn_ToxicEnvironmentResistance</li>
+            <li>Pawn_MoveSpeed</li>
+            <!-- Misc -->
             <li>Thing_MarketValue</li>
             <li>Thing_ContentSource</li>
         </columns>
@@ -355,9 +414,6 @@
             <li MayRequire="Ludeon.RimWorld.Biotech">Mech_WastepacksPerRecharge</li>
             <li MayRequire="Ludeon.RimWorld.Biotech">Mech_RechargerNeeded</li>
             <li>Thing_CreatedAt</li>
-            <!-- Labor -->
-            <li MayRequire="Ludeon.RimWorld.Biotech">Mech_WorkActivities</li>
-            <li MayRequire="Ludeon.RimWorld.Biotech">Mech_WorkSkill</li>
             <!-- Combat: Offense -->
             <li MayRequire="CETeam.CombatExtended">Pawn_WeaponHandling</li>
             <li>Pawn_ShootingAccuracy</li>

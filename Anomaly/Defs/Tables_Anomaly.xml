@@ -29,12 +29,9 @@
             <li MayRequire="CETeam.CombatExtended">Pawn_NightVisionEfficiency</li>
             <li>Pawn_PsychicSensitivity</li>
             <li>Pawn_MoveSpeed</li>
-            <!-- Productivity: Meat -->
+            <!-- Productivity -->
             <li>Pawn_MeatAmount</li>
-            <li>Pawn_MeatType</li>
-            <!-- Productivity: Leather -->
             <li>Pawn_LeatherAmount</li>
-            <li>Pawn_LeatherType</li>
             <!-- Misc -->
             <li>Thing_ContentSource</li>
         </columns>

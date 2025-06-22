@@ -2,20 +2,23 @@
 
 namespace Stats;
 
-public sealed class Animal_EggsAmountColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Animal_EggsAmountColumnWorker : ThingDefCountColumnWorker<ThingAlike>
 {
     public Animal_EggsAmountColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override ThingDefCount? GetValue(ThingAlike thing)
     {
         var eggLayerCompProps = thing.Def.GetCompProperties<CompProperties_EggLayer>();
 
         if (eggLayerCompProps != null)
         {
-            return eggLayerCompProps.eggCountRange.Average.ToDecimal(0);
+            var eggDef = eggLayerCompProps.eggUnfertilizedDef ?? eggLayerCompProps.eggFertilizedDef;
+            var count = eggLayerCompProps.eggCountRange.Average.ToDecimal(0);
+
+            return new(eggDef, count);
         }
 
-        return 0m;
+        return null;
     }
 }

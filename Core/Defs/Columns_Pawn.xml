@@ -6,16 +6,8 @@
         <defName>Pawn_MeatAmount</defName>
         <stat>MeatAmount</stat>
         <iconPath>Things/Item/Resource/MeatFoodRaw/Meat_Big/Meat_Big_c</iconPath>
-        <labelShort>Amount</labelShort>
-        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
-    </Stats.ColumnDef>
-
-    <Stats.ColumnDef>
-        <defName>Pawn_MeatType</defName>
-        <label>meat type</label>
-        <iconPath>Things/Item/Resource/MeatFoodRaw/Meat_Big/Meat_Big_c</iconPath>
-        <labelShort>Type</labelShort>
-        <workerClass>Stats.Pawn_MeatTypeColumnWorker</workerClass>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <workerClass>Stats.Pawn_MeatAmountColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -23,28 +15,23 @@
         <stat>LeatherAmount</stat>
         <iconPath>Things/Item/Resource/Leather/Leather_b</iconPath>
         <iconColor>(162,106,57)</iconColor>
-        <labelShort>Amount</labelShort>
-        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
-    </Stats.ColumnDef>
-
-    <Stats.ColumnDef>
-        <defName>Pawn_LeatherType</defName>
-        <label>Leather type</label>
-        <iconPath>Things/Item/Resource/Leather/Leather_b</iconPath>
-        <iconColor>(162,106,57)</iconColor>
-        <labelShort>Type</labelShort>
-        <workerClass>Stats.Pawn_LeatherTypeColumnWorker</workerClass>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <workerClass>Stats.Pawn_LeatherAmountColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_ToxicResistance</defName>
         <stat>ToxicResistance</stat>
+        <iconPath>StatsMod/UI/Icons/Toxic</iconPath>
+        <labelFormat>Stats.ColumnLabelFormat.Resistance</labelFormat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_ToxicEnvironmentResistance</defName>
         <stat>ToxicEnvironmentResistance</stat>
+        <iconPath>UI/Buttons/ShowPollutionOverlay</iconPath>
+        <labelFormat>Stats.ColumnLabelFormat.Resistance</labelFormat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 

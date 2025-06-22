@@ -6,7 +6,7 @@
         <defName>Animal_MeatNutritionPerDay</defName>
         <label>Meat nutrition per day during growth</label>
         <iconPath>Things/Item/Resource/MeatFoodRaw/Meat_Big/Meat_Big_c</iconPath>
-        <labelShort>Nutrition/d</labelShort>
+        <labelFormat>Stats.ColumnLabelFormat.NutritionAmountPerDay</labelFormat>
         <workerClass>Stats.Animal_MeatNutritionPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -24,17 +24,8 @@
         <labelKey>Stat_Animal_MilkAmount</labelKey>
         <descriptionKey>Stat_Animal_MilkAmountDesc</descriptionKey>
         <iconPath>Things/Item/Resource/Milk</iconPath>
-        <labelShort>Amount</labelShort>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
         <workerClass>Stats.Animal_MilkAmountColumnWorker</workerClass>
-    </Stats.ColumnDef>
-
-    <Stats.ColumnDef>
-        <defName>Animal_MilkType</defName>
-        <labelKey>Stat_Animal_MilkType</labelKey>
-        <descriptionKey>Stat_Animal_MilkTypeDesc</descriptionKey>
-        <iconPath>Things/Item/Resource/Milk</iconPath>
-        <labelShort>Type</labelShort>
-        <workerClass>Stats.Animal_MilkTypeColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -42,7 +33,7 @@
         <labelKey>Stat_Animal_MilkGrowthTime</labelKey>
         <descriptionKey>Stat_Animal_MilkGrowthTimeDesc</descriptionKey>
         <iconPath>Things/Item/Resource/Milk</iconPath>
-        <labelShort>Interval</labelShort>
+        <labelFormat>Stats.ColumnLabelFormat.Interval</labelFormat>
         <workerClass>Stats.Animal_MilkingIntervalColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -58,7 +49,7 @@
         <defName>Animal_MilkNutritionPerDay</defName>
         <label>Milk nutrition per day</label>
         <iconPath>Things/Item/Resource/Milk</iconPath>
-        <labelShort>Nutrition/d</labelShort>
+        <labelFormat>Stats.ColumnLabelFormat.NutritionAmountPerDay</labelFormat>
         <workerClass>Stats.Animal_MilkNutritionPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -66,24 +57,15 @@
         <defName>Animal_EggsAmount</defName>
         <label>Average eggs amount</label>
         <iconPath>Things/Item/Resource/AnimalProductRaw/EggBirdSmall/EggSmall_b</iconPath>
-        <labelShort>Amount</labelShort>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
         <workerClass>Stats.Animal_EggsAmountColumnWorker</workerClass>
-    </Stats.ColumnDef>
-
-    <Stats.ColumnDef>
-        <defName>Animal_EggType</defName>
-        <labelKey>Stat_Animal_EggType</labelKey>
-        <descriptionKey>Stat_Animal_EggTypeDesc</descriptionKey>
-        <iconPath>Things/Item/Resource/AnimalProductRaw/EggBirdSmall/EggSmall_b</iconPath>
-        <labelShort>Type</labelShort>
-        <workerClass>Stats.Animal_EggTypeColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Animal_EggLayingInterval</defName>
         <label>Egg laying interval</label>
         <iconPath>Things/Item/Resource/AnimalProductRaw/EggBirdSmall/EggSmall_b</iconPath>
-        <labelShort>Interval</labelShort>
+        <labelFormat>Stats.ColumnLabelFormat.Interval</labelFormat>
         <workerClass>Stats.Animal_EggLayingIntervalColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -99,7 +81,7 @@
         <defName>Animal_EggsNutritionPerDay</defName>
         <label>Eggs nutrition per day</label>
         <iconPath>Things/Item/Resource/AnimalProductRaw/EggBirdSmall/EggSmall_b</iconPath>
-        <labelShort>Nutrition/d</labelShort>
+        <labelFormat>Stats.ColumnLabelFormat.NutritionAmountPerDay</labelFormat>
         <workerClass>Stats.Animal_EggsNutritionPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -109,18 +91,8 @@
         <descriptionKey>Stat_Animal_WoolAmountDesc</descriptionKey>
         <iconPath>Things/Item/Resource/Wool</iconPath>
         <iconColor>(189,161,116)</iconColor>
-        <labelShort>Amount</labelShort>
+        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
         <workerClass>Stats.Animal_WoolAmountColumnWorker</workerClass>
-    </Stats.ColumnDef>
-
-    <Stats.ColumnDef>
-        <defName>Animal_WoolType</defName>
-        <labelKey>Stat_Animal_WoolType</labelKey>
-        <descriptionKey>Stat_Animal_WoolTypeDesc</descriptionKey>
-        <iconPath>Things/Item/Resource/Wool</iconPath>
-        <iconColor>(189,161,116)</iconColor>
-        <labelShort>Type</labelShort>
-        <workerClass>Stats.Animal_WoolTypeColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -129,7 +101,7 @@
         <descriptionKey>Stat_Animal_WoolGrowthTimeDesc</descriptionKey>
         <iconPath>Things/Item/Resource/Wool</iconPath>
         <iconColor>(189,161,116)</iconColor>
-        <labelShort>Shear interval</labelShort>
+        <labelFormat>Stats.ColumnLabelFormat.Interval</labelFormat>
         <workerClass>Stats.Animal_WoolShearingIntervalColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -162,6 +134,8 @@
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Animal_MinimumHandlingSkill</defName>
         <stat>MinimumHandlingSkill</stat>
+        <iconPath>Things/Mote/SpeechSymbols/TrainAttempt</iconPath>
+        <labelShort>Skill</labelShort>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -200,6 +174,8 @@
         <defName>Animal_GestationTime</defName>
         <labelKey>Stat_Animal_GestationTime</labelKey>
         <descriptionKey>Stat_Animal_GestationTimeDesc</descriptionKey>
+        <labelShort>Gestation</labelShort>
+        <labelFormat>Stats.ColumnLabelFormat.Time</labelFormat>
         <workerClass>Stats.Animal_GestationTimeColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -207,7 +183,15 @@
         <defName>Animal_GrowthTime</defName>
         <labelKey>Stat_Animal_GrowthTime</labelKey>
         <descriptionKey>Stat_Animal_GrowthTimeDesc</descriptionKey>
+        <labelShort>Growth</labelShort>
+        <labelFormat>Stats.ColumnLabelFormat.Time</labelFormat>
         <workerClass>Stats.Animal_GrowthTimeColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Animal_Products</defName>
+        <label>products</label>
+        <workerClass>Stats.Animal_ProductsColumnWorker</workerClass>
     </Stats.ColumnDef>
 
 </Defs>

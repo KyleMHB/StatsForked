@@ -66,7 +66,7 @@ public class ColumnDef : Def
                 labelFormat = ColumnLabelFormat.LabelWithIcon;
             }
         }
-        else
+        else if (labelFormat == null)
         {
             labelFormat = ColumnLabelFormat.LabelOnly;
         }
