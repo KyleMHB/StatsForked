@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
 using RimWorld;
 using Stats.Widgets;
-using UnityEngine;
 using Verse;
 
 namespace Stats;
@@ -9,23 +11,10 @@ namespace Stats;
 public class ColumnDef : Def
 {
     public string? labelKey;
-    public string labelShort = "";
-    public string LabelShort => labelShort;
     public string? descriptionKey;
     public string Description => description;
-    public string? iconPath;
-    public Texture2D? Icon { get; private set; }
-    public Color iconColor = Color.white;
-    public Color IconColor => iconColor;
-    public float iconScale = 1f;
-    public float IconScale => iconScale;
-    public LabelFormatter? labelFormat;
-    public LabelFormatter LabelFormat => labelFormat!;
-    // Why not to make it a method of ColumnWorker?
-    //
-    // It doesn't fit there semantically.
-    // ColumnWorker is about data, ColumnDef is about column in general.
-    public delegate Widget LabelFormatter(ColumnDef columnDef, ColumnCellStyle columnStyle);
+    public ColumnTitleXmlNode? title;
+    public Widget Title => title?.ToWidget() ?? new Label(LabelCap);
 #pragma warning disable CS8618
     public Type workerClass;
     public ColumnWorker Worker { get; private set; }
@@ -44,31 +33,84 @@ public class ColumnDef : Def
             description = descriptionKey.Translate();
         }
 
-        if (string.IsNullOrEmpty(labelShort))
-        {
-            labelShort = LabelCap;
-        }
-
         LongEventHandler.ExecuteWhenFinished(() =>
         {
-            ResolveIcon();
             Worker = (ColumnWorker)Activator.CreateInstance(workerClass, this);
         });
     }
-    private void ResolveIcon()
-    {
-        if (iconPath?.Length > 0)
-        {
-            Icon = ContentFinder<Texture2D>.Get(iconPath);
+}
 
-            if (labelFormat == null)
+public sealed class ColumnTitleXmlNode
+{
+    private readonly List<Element> elements = [];
+    public void LoadDataFromXmlCustom(XmlNode xmlRoot)
+    {
+        foreach (var node in xmlRoot.ChildNodes)
+        {
+            if (node is XmlText textNode)
             {
-                labelFormat = ColumnLabelFormat.LabelWithIcon;
+                var text = textNode.InnerText.Trim();
+
+                if (text.Length > 0)
+                {
+                    var element = new TextElement(text);
+
+                    elements.Add(element);
+                }
+            }
+            else if (node is XmlElement elementNode)
+            {
+                var element = new IconElement(elementNode);
+
+                elements.Add(element);
             }
         }
-        else if (labelFormat == null)
+    }
+    public Widget ToWidget()
+    {
+        if (elements.Count == 1)
         {
-            labelFormat = ColumnLabelFormat.LabelOnly;
+            return elements[0].ToWidget();
+        }
+
+        return new HorizontalContainer(elements.Select(elem => elem.ToWidget()).ToList());
+    }
+
+    private abstract class Element
+    {
+        public abstract Widget ToWidget();
+    }
+
+    private sealed class TextElement : Element
+    {
+        private readonly string Text;
+        public TextElement(string text)
+        {
+            Text = text;
+        }
+        public override Widget ToWidget()
+        {
+            return new Label(Text);
+        }
+    }
+
+    private sealed class IconElement : Element
+    {
+        public IconDef Def;
+        public IconElement(XmlNode xmlRoot)
+        {
+            DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, nameof(Def), xmlRoot.Name);
+        }
+        public override Widget ToWidget()
+        {
+            Widget widget = new InlineTexture(Def.Texture, Def.scale);
+
+            if (Def.color != null)
+            {
+                widget = widget.Color(Def.color.Value);
+            }
+
+            return widget;
         }
     }
 }

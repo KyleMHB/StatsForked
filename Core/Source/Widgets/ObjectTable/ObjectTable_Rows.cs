@@ -194,9 +194,9 @@ internal sealed partial class ObjectTable<TObject>
         }
     }
 
-    private sealed class ColumnLabelsRow : Row
+    private sealed class ColumnTitlesRow : Row
     {
-        public ColumnLabelsRow(Column[] columns) : base(columns)
+        public ColumnTitlesRow(Column[] columns) : base(columns)
         {
         }
         public override bool Draw(

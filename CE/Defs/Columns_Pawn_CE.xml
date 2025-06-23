@@ -10,10 +10,7 @@
 
     <Stats.ColumnDef Class="Stats.Compat.CE.BinaryStatColumnDef">
         <defName>Pawn_MeleeArmorPenetrationSharp</defName>
-        <labelShort>AP</labelShort>
-        <iconPath>Things/Item/Equipment/WeaponMelee/Longsword</iconPath>
-        <iconColor>(160,178,181)</iconColor>
-        <iconScale>1.4</iconScale>
+        <title>AP<Damage_Sharp/></title>
         <stat>MeleeArmorPenetration</stat>
         <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>,</statValueSeparator>
@@ -22,10 +19,7 @@
 
     <Stats.ColumnDef Class="Stats.Compat.CE.BinaryStatColumnDef">
         <defName>Pawn_MeleeArmorPenetrationBlunt</defName>
-        <labelShort>AP</labelShort>
-        <iconPath>Things/Item/Equipment/WeaponMelee/Club</iconPath>
-        <iconColor>(160,178,181)</iconColor>
-        <iconScale>1.2</iconScale>
+        <title>AP<Damage_Blunt/></title>
         <stat>MeleeArmorPenetration</stat>
         <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>,</statValueSeparator>
@@ -34,22 +28,22 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_MeleeCritChance</defName>
-        <labelShort>Crit %</labelShort>
+        <title>Crit %</title>
         <stat>MeleeCritChance</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_MeleeParryChance</defName>
-        <labelShort>Parry %</labelShort>
+        <title>Parry %</title>
         <stat>MeleeParryChance</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_NightVisionEfficiency</defName>
+        <title>NV %</title>
         <stat>NightVisionEfficiency</stat>
-        <labelShort>NV %</labelShort>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 

@@ -10,8 +10,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Thing_ArmorRatingElectric</defName>
-        <iconPath>StatsMod/UI/Icons/Electricity</iconPath>
-        <labelFormat>Stats.ColumnLabelFormat.ArmorRating</labelFormat>
+        <title><Armor/><Electricity/></title>
         <stat>ArmorRating_Electric</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>

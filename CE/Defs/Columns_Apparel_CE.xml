@@ -4,7 +4,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Apparel_WornBulk</defName>
-        <labelShort>Bulk (W)</labelShort>
+        <title>Bulk (W)</title>
         <stat>WornBulk</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>

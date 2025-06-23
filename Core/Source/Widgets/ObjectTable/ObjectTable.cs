@@ -45,7 +45,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
         // Headers
         var headerRows = new RowCollection<Row>(2);
-        var columnLabelsRow = new ColumnLabelsRow(columns);
+        var columnTitlesRow = new ColumnTitlesRow(columns);
         var filtersRow = new Row(columns);
 
         for (int i = 0; i < columnsCount; i++)
@@ -82,10 +82,19 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
             }
 
             var columnDef = column.Worker.ColumnDef;
+            var columnTitleWidget = columnDef.Title;
 
-            // Label
-            columnLabelsRow[i] = columnDef
-                .LabelFormat(columnDef, column.Worker.CellStyle)
+            if (column.Worker.CellStyle == ColumnCellStyle.Number)
+            {
+                columnTitleWidget = new SingleElementContainer(columnTitleWidget.PaddingRel(1f, 0f, 0f, 0f));
+            }
+            else if (column.Worker.CellStyle == ColumnCellStyle.Boolean)
+            {
+                columnTitleWidget = new SingleElementContainer(columnTitleWidget.PaddingRel(0.5f, 0f));
+            }
+
+            // Title
+            columnTitlesRow[i] = columnTitleWidget
                 .PaddingAbs(CellPadHor, CellPadVer)
                 .Background(drawSortIndicator)
                 .ToButtonGhostly(
@@ -99,7 +108,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
             filtersRow[i] = filterWidget;
         }
 
-        headerRows.Add(columnLabelsRow);
+        headerRows.Add(columnTitlesRow);
         headerRows.Add(filtersRow);
 
         // Body rows

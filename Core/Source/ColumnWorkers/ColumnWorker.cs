@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Stats.Widgets;
+using UnityEngine;
 
 namespace Stats;
 
@@ -37,4 +38,11 @@ public abstract class ColumnWorker<TObject> : ColumnWorker
     // options for it.
     public abstract FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords);
     public abstract int Compare(TObject object1, TObject object2);
+}
+
+public enum ColumnCellStyle
+{
+    Number = TextAnchor.LowerRight,
+    String = TextAnchor.LowerLeft,
+    Boolean = TextAnchor.LowerCenter,
 }

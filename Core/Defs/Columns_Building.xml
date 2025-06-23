@@ -5,22 +5,21 @@
     <Stats.ColumnDef>
         <defName>Building_ConstructionSkillPrerequisite</defName>
         <label>construction skill required</label>
-        <labelShort>Skill</labelShort>
-        <iconPath>StatsMod/UI/Icons/Construction</iconPath>
+        <title>LVL<Construction/></title>
         <workerClass>Stats.Building_ConstructionSkillPrerequisiteColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Building_ResourcesRequiredForConstruction</defName>
         <labelKey>Stat_Building_ResourcesToMake</labelKey>
-        <labelShort>Resources</labelShort>
+        <title>Resources</title>
         <descriptionKey>Stat_Building_ResourcesToMakeDesc</descriptionKey>
         <workerClass>Stats.Building_ResourcesRequiredForConstructionColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Building_WorkToBuild</defName>
-        <labelShort>Work</labelShort>
+        <title>Work</title>
         <stat>WorkToBuild</stat>
         <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
@@ -55,7 +54,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Building_ImmunityGainSpeedFactor</defName>
-        <labelShort>Immunity *%</labelShort>
+        <title>Immunity *%</title>
         <stat>ImmunityGainSpeedFactor</stat>
         <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
@@ -63,7 +62,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Building_MedicalTendQualityOffset</defName>
-        <labelShort>Tend +%</labelShort>
+        <title>Tend +%</title>
         <stat>MedicalTendQualityOffset</stat>
         <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
@@ -71,7 +70,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Building_SurgerySuccessChanceFactor</defName>
-        <labelShort>Surgery *%</labelShort>
+        <title>Surgery *%</title>
         <stat>SurgerySuccessChanceFactor</stat>
         <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
@@ -80,49 +79,43 @@
     <Stats.ColumnDef>
         <defName>Building_PowerOutput</defName>
         <label>power output</label>
-        <labelShort>Output</labelShort>
-        <iconPath>StatsMod/UI/Icons/Electricity</iconPath>
+        <title><Electricity/>Output</title>
         <workerClass>Stats.Building_PowerOutputColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Building_PowerOutputPerCell</defName>
         <label>power/cell</label>
-        <labelShort>/cell</labelShort>
-        <iconPath>StatsMod/UI/Icons/Electricity</iconPath>
+        <title><Electricity/>/cell</title>
         <workerClass>Stats.Building_PowerOutputPerCellColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Building_PowerOutputPerFuel</defName>
         <label>power/fuel</label>
-        <labelShort>/fuel</labelShort>
         <description>Measured in watts/unit.</description>
-        <iconPath>StatsMod/UI/Icons/Electricity</iconPath>
+        <title><Electricity/>/fuel</title>
         <workerClass>Stats.Building_PowerOutputPerFuelColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Building_PowerConsumption</defName>
         <label>power consumption</label>
-        <labelShort>Consumption</labelShort>
-        <iconPath>StatsMod/UI/Icons/Electricity</iconPath>
+        <title><Electricity/>Consumption</title>
         <workerClass>Stats.Building_PowerConsumptionColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Building_FuelType</defName>
         <label>fuel type</label>
-        <labelShort>Type</labelShort>
-        <iconPath>Things/Item/Resource/Chemfuel</iconPath>
+        <title><Fuel/>Type</title>
         <workerClass>Stats.Building_FuelTypeColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Building_FuelCapacity</defName>
         <label>fuel capacity</label>
-        <labelShort>Cap.</labelShort>
-        <iconPath>Things/Item/Resource/Chemfuel</iconPath>
+        <title><Fuel/>Cap.</title>
         <workerClass>Stats.Building_FuelCapacityColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -130,8 +123,7 @@
         <defName>Building_FuelConsumptionRate</defName>
         <label>fuel consumption rate</label>
         <description>Measured in amount/day.</description>
-        <labelShort>/d</labelShort>
-        <iconPath>Things/Item/Resource/Chemfuel</iconPath>
+        <title><Fuel/>/d</title>
         <workerClass>Stats.Building_FuelConsumptionRateColumnWorker</workerClass>
     </Stats.ColumnDef>
 

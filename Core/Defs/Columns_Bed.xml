@@ -4,7 +4,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Bed_RestEffectiveness</defName>
-        <labelShort>Rest *%</labelShort>
+        <title>Rest *%</title>
         <stat>BedRestEffectiveness</stat>
         <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
@@ -13,18 +13,14 @@
     <Stats.ColumnDef>
         <defName>Bed_FitsSmallAnimals</defName>
         <label>for small animals</label>
-        <iconPath>Things/Pawn/Animal/Chicken/Chicken_east</iconPath>
-        <iconColor>(200,150,85)</iconColor>
-        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <title><Animal_Small/></title>
         <workerClass>Stats.Bed_FitsSmallAnimalsColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Bed_FitsLargeAnimals</defName>
         <label>for large animals</label>
-        <iconPath>Things/Pawn/Animal/Cow/Bull_east</iconPath>
-        <iconColor>(170,170,170)</iconColor>
-        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <title><Animal_Large/></title>
         <workerClass>Stats.Bed_FitsLargeAnimalsColumnWorker</workerClass>
     </Stats.ColumnDef>
 

@@ -4,18 +4,14 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_IsOneHanded</defName>
-        <iconPath>Things/Apparel/BallisticShield/CE_BallisticShield</iconPath>
-        <labelFormat>Stats.ColumnLabelFormat.IconOnly</labelFormat>
+        <title><Shield/></title>
         <stat>OneHandedness</stat>
         <workerClass>Stats.Compat.CE.Weapon_IsOneHandedColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.Compat.CE.BinaryStatColumnDef">
         <defName>Weapon_MeleeArmorPenetrationSharp</defName>
-        <labelShort>AP</labelShort>
-        <iconPath>Things/Item/Equipment/WeaponMelee/Longsword</iconPath>
-        <iconColor>(160,178,181)</iconColor>
-        <iconScale>1.4</iconScale>
+        <title>AP<Damage_Sharp/></title>
         <stat>MeleeWeapon_AverageArmorPenetration</stat>
         <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>,</statValueSeparator>
@@ -24,10 +20,7 @@
 
     <Stats.ColumnDef Class="Stats.Compat.CE.BinaryStatColumnDef">
         <defName>Weapon_MeleeArmorPenetrationBlunt</defName>
-        <labelShort>AP</labelShort>
-        <iconPath>Things/Item/Equipment/WeaponMelee/Club</iconPath>
-        <iconColor>(160,178,181)</iconColor>
-        <iconScale>1.2</iconScale>
+        <title>AP<Damage_Blunt/></title>
         <stat>MeleeWeapon_AverageArmorPenetration</stat>
         <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>,</statValueSeparator>
@@ -36,7 +29,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_MeleeArmorPenetrationFactor</defName>
-        <labelShort>AP %</labelShort>
+        <title>AP %</title>
         <stat>MeleePenetrationFactor</stat>
         <statValueExplanationType>FinalizePart</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
@@ -44,15 +37,14 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_MeleeCounterParryBonus</defName>
-        <labelShort>Parry X</labelShort>
+        <title>Parry X</title>
         <stat>MeleeCounterParryBonus</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.Compat.CE.BinaryStatColumnDef">
         <defName>Weapon_MeleeDamageMin</defName>
-        <labelShort>Min.</labelShort>
-        <iconPath>UI/Commands/AttackMelee</iconPath>
+        <title><MeleeWeaponDamage/>Min.</title>
         <stat>MeleeDamage</stat>
         <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>-</statValueSeparator>
@@ -61,8 +53,7 @@
 
     <Stats.ColumnDef Class="Stats.Compat.CE.BinaryStatColumnDef">
         <defName>Weapon_MeleeDamageMax</defName>
-        <labelShort>Max.</labelShort>
-        <iconPath>UI/Commands/AttackMelee</iconPath>
+        <title><MeleeWeaponDamage/>Max.</title>
         <stat>MeleeDamage</stat>
         <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>-</statValueSeparator>
@@ -83,28 +74,28 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_SwayFactor</defName>
-        <labelShort>Sway</labelShort>
+        <title>Sway</title>
         <stat>SwayFactor</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_Recoil</defName>
-        <labelShort>Recoil</labelShort>
+        <title>Recoil</title>
         <stat>Recoil</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_SightsEfficiency</defName>
-        <labelShort>Sights</labelShort>
+        <title>Sights</title>
         <stat>SightsEfficiency</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.Compat.CE.BinaryStatColumnDef">
         <defName>Weapon_MagazineCapacity</defName>
-        <labelShort>Mag. cap</labelShort>
+        <title>Mag. cap</title>
         <stat>MagazineCapacity</stat>
         <statValueSeparator>/</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Left</workerClass>
@@ -113,8 +104,8 @@
     <Stats.ColumnDef Class="Stats.Compat.CE.BinaryStatColumnDef">
         <defName>Weapon_ReloadTime</defName>
         <label>reload time</label>
-        <labelShort>Reload t.</labelShort>
 		<description>How long should this weapon take to reload.</description>
+        <title>Reload<Time/></title>
         <stat>MagazineCapacity</stat>
         <statValueSeparator>/</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Right</workerClass>

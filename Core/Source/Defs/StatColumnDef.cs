@@ -23,3 +23,11 @@ public class StatColumnDef : ColumnDef
         base.ResolveReferences();
     }
 }
+
+public enum StatValueExplanationType
+{
+    None,
+    Full,
+    Unfinalized,
+    FinalizePart,
+}
