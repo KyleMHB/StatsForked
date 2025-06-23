@@ -48,11 +48,10 @@ internal sealed partial class ObjectTable<TObject>
             HeaderRows.TotalHeight + PinnedRows.TotalHeight + FilteredBodyRows.TotalHeight
         );
         var contentSizeVisible = new Vector2(
+            // Since we always can scroll vertically,
+            // vertical scrollbar is always displayed
+            rect.width - GenUI.ScrollBarWidth,
             // Will scroll horizontally
-            contentSizeMax.y > rect.height
-                ? rect.width - GenUI.ScrollBarWidth
-                : rect.width,
-            // Will scroll vertically
             contentSizeMax.x > rect.width
                 ? rect.height - GenUI.ScrollBarWidth
                 : rect.height
