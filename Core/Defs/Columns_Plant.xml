@@ -58,10 +58,10 @@
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
-        <defName>Plant_ProductType</defName>
-        <label>product type</label>
-        <title><PlantHarvestProduct/>Type</title>
-        <workerClass>Stats.Plant_ProductTypeColumnWorker</workerClass>
+        <defName>Plant_ProductPerDay</defName>
+        <label>product per day</label>
+        <title><PlantHarvestProduct/>/d</title>
+        <workerClass>Stats.Plant_ProductPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>

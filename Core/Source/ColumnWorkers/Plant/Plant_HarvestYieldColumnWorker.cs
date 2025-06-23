@@ -2,20 +2,22 @@
 
 namespace Stats;
 
-public sealed class Plant_HarvestYieldColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Plant_HarvestYieldColumnWorker : ThingDefCountColumnWorker<ThingAlike>
 {
     public Plant_HarvestYieldColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override ThingDefCount? GetValue(ThingAlike thing)
     {
         var plantProps = thing.Def.plant;
 
-        if (plantProps == null)
+        if (plantProps is { harvestYield: > 0f, harvestedThingDef: not null })
         {
-            return 0m;
+            var yield = Mathf.CeilToInt(plantProps.harvestYield);
+
+            return new(plantProps.harvestedThingDef, yield);
         }
 
-        return Mathf.CeilToInt(plantProps.harvestYield);
+        return null;
     }
 }
