@@ -73,7 +73,7 @@ public sealed class ColumnTitleXmlNode
             return elements[0].ToWidget();
         }
 
-        return new HorizontalContainer(elements.Select(elem => elem.ToWidget()).ToList());
+        return new HorizontalContainer(elements.Select(elem => elem.ToWidget()).ToList(), 2f);
     }
 
     private abstract class Element
