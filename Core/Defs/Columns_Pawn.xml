@@ -39,6 +39,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_MoveSpeed</defName>
+        <title><MoveSpeed/></title>
         <stat>MoveSpeed</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>

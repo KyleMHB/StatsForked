@@ -107,7 +107,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Animal_CaravanRidingSpeedFactor</defName>
-        <title><Caravan/>Speed *%</title>
+        <title><Caravan/><MoveSpeed/></title>
         <stat>CaravanRidingSpeedFactor</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
