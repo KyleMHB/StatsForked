@@ -105,7 +105,7 @@
         <defName>Weapon_ReloadTime</defName>
         <label>reload time</label>
 		<description>How long should this weapon take to reload.</description>
-        <title>Reload<Time/></title>
+        <title><Time/>Reload</title>
         <stat>MagazineCapacity</stat>
         <statValueSeparator>/</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Right</workerClass>

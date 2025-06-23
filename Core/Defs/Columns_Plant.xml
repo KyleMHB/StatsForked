@@ -53,7 +53,7 @@
         <defName>Plant_HarvestYield</defName>
         <labelKey>HarvestYield</labelKey>
         <descriptionKey>Stat_Thing_Plant_HarvestYield_Desc</descriptionKey>
-        <title><PlantHarvest/>Yield</title>
+        <title><PlantHarvest/></title>
         <workerClass>Stats.Plant_HarvestYieldColumnWorker</workerClass>
     </Stats.ColumnDef>
 

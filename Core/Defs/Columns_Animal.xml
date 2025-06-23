@@ -5,7 +5,7 @@
     <Stats.ColumnDef>
         <defName>Animal_MeatNutritionPerDay</defName>
         <label>Meat nutrition per day during growth</label>
-        <title><Meat/><Nutrition/>/d</title>
+        <title><Nutrition/><Meat/>/d</title>
         <workerClass>Stats.Animal_MeatNutritionPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -20,7 +20,7 @@
         <defName>Animal_MilkAmount</defName>
         <labelKey>Stat_Animal_MilkAmount</labelKey>
         <descriptionKey>Stat_Animal_MilkAmountDesc</descriptionKey>
-        <title><Milk/>Yield</title>
+        <title><Milk/></title>
         <workerClass>Stats.Animal_MilkAmountColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -28,7 +28,7 @@
         <defName>Animal_MilkingInterval</defName>
         <labelKey>Stat_Animal_MilkGrowthTime</labelKey>
         <descriptionKey>Stat_Animal_MilkGrowthTimeDesc</descriptionKey>
-        <title><Milk/><TimeInterval/></title>
+        <title><TimeInterval/><Milk/></title>
         <workerClass>Stats.Animal_MilkingIntervalColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -42,21 +42,21 @@
     <Stats.ColumnDef>
         <defName>Animal_MilkNutritionPerDay</defName>
         <label>Milk nutrition per day</label>
-        <title><Milk/><Nutrition/>/d</title>
+        <title><Nutrition/><Milk/>/d</title>
         <workerClass>Stats.Animal_MilkNutritionPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Animal_EggsAmount</defName>
         <label>Average eggs amount</label>
-        <title><Egg/>Yield</title>
+        <title><Egg/></title>
         <workerClass>Stats.Animal_EggsAmountColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Animal_EggLayingInterval</defName>
         <label>Egg laying interval</label>
-        <title><Egg/><TimeInterval/></title>
+        <title><TimeInterval/><Egg/></title>
         <workerClass>Stats.Animal_EggLayingIntervalColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -70,7 +70,7 @@
     <Stats.ColumnDef>
         <defName>Animal_EggsNutritionPerDay</defName>
         <label>Eggs nutrition per day</label>
-        <title><Egg/><Nutrition/>/d</title>
+        <title><Nutrition/><Egg/>/d</title>
         <workerClass>Stats.Animal_EggsNutritionPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -78,7 +78,7 @@
         <defName>Animal_WoolAmount</defName>
         <labelKey>Stat_Animal_WoolAmount</labelKey>
         <descriptionKey>Stat_Animal_WoolAmountDesc</descriptionKey>
-        <title><Wool/>Yield</title>
+        <title><Wool/></title>
         <workerClass>Stats.Animal_WoolAmountColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -86,7 +86,7 @@
         <defName>Animal_WoolShearingInterval</defName>
         <labelKey>Stat_Animal_WoolGrowthTime</labelKey>
         <descriptionKey>Stat_Animal_WoolGrowthTimeDesc</descriptionKey>
-        <title><Wool/><TimeInterval/></title>
+        <title><TimeInterval/><Wool/></title>
         <workerClass>Stats.Animal_WoolShearingIntervalColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -138,7 +138,7 @@
         <defName>Animal_NuzzleInterval</defName>
         <labelKey>NuzzleInterval</labelKey>
         <descriptionKey>NuzzleIntervalExplanation</descriptionKey>
-        <title>Nuzzle<TimeInterval/></title>
+        <title><TimeInterval/>Nuzzle</title>
         <workerClass>Stats.Animal_NuzzleIntervalColumnWorker</workerClass>
     </Stats.ColumnDef>
 

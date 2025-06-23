@@ -79,7 +79,7 @@
     <Stats.ColumnDef>
         <defName>Building_PowerOutput</defName>
         <label>power output</label>
-        <title><Electricity/>Output</title>
+        <title><Electricity/></title>
         <workerClass>Stats.Building_PowerOutputColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -101,7 +101,7 @@
     <Stats.ColumnDef>
         <defName>Building_PowerConsumption</defName>
         <label>power consumption</label>
-        <title><Electricity/>Consumption</title>
+        <title><Electricity/><Decrease/></title>
         <workerClass>Stats.Building_PowerConsumptionColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -123,7 +123,7 @@
         <defName>Building_FuelConsumptionRate</defName>
         <label>fuel consumption rate</label>
         <description>Measured in amount/day.</description>
-        <title><Fuel/>/d</title>
+        <title><Fuel/><Decrease/>/d</title>
         <workerClass>Stats.Building_FuelConsumptionRateColumnWorker</workerClass>
     </Stats.ColumnDef>
 

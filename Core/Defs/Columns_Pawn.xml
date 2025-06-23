@@ -4,14 +4,14 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_MeatAmount</defName>
-        <title><Meat/>Yield</title>
+        <title><Meat/></title>
         <stat>MeatAmount</stat>
         <workerClass>Stats.Pawn_MeatAmountColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_LeatherAmount</defName>
-        <title><Leather/>Yield</title>
+        <title><Leather/></title>
         <stat>LeatherAmount</stat>
         <workerClass>Stats.Pawn_LeatherAmountColumnWorker</workerClass>
     </Stats.ColumnDef>
@@ -32,6 +32,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_MaxNutrition</defName>
+        <title><Nutrition/><Decrease/></title>
         <stat>MaxNutrition</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>

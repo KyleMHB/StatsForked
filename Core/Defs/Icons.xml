@@ -237,4 +237,14 @@
         <path>UI/Commands/AttackMelee</path>
     </Stats.IconDef>
 
+    <Stats.IconDef>
+        <defName>Increase</defName>
+        <path>StatsMod/UI/Icons/Increase</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef>
+        <defName>Decrease</defName>
+        <path>StatsMod/UI/Icons/Decrease</path>
+    </Stats.IconDef>
+
 </Defs>

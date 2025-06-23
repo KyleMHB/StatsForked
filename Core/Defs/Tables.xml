@@ -247,11 +247,11 @@
             <li>Plant_ProductType</li>
             <li>Plant_NutritionPerHarvest</li>
             <li>Plant_NutritionPerHarvestPerDay</li>
+            <li>Plant_RawNutrition</li>
+            <li>Plant_RawNutritionPerDay</li>
             <li>Plant_FertilityRequirement</li>
             <li>Plant_FertilitySensitivity</li>
             <li>Plant_LightRequirement</li>
-            <li>Plant_RawNutrition</li>
-            <li>Plant_RawNutritionPerDay</li>
             <li>Plant_IsSowable</li>
             <li>Plant_CanBeGrownInHydroponics</li>
             <li>Plant_IsBlightable</li>
@@ -273,19 +273,20 @@
         <workerClass>Stats.AnimalsTableWorker</workerClass>
         <columns>
             <li>Thing_Label</li>
-            <!-- Productivity: Meat -->
+            <!-- Yield -->
             <li>Pawn_MeatAmount</li>
-            <li>Animal_MeatNutritionPerDay</li>
-            <!-- Productivity: Leather -->
             <li>Pawn_LeatherAmount</li>
+            <!-- Yield/d -->
+            <li>Animal_MeatNutritionPerDay</li>
             <li>Animal_LeatherPerDay</li>
+            <!-- Nutrition consumption -->
+            <li>Pawn_MaxNutrition</li>
+            <!-- TODO: Diet column -->
             <!-- Handling -->
             <li>Animal_MinimumHandlingSkill</li>
             <li>Animal_Trainability</li>
             <li>Animal_Wildness</li>
             <li>Animal_IsBlockedByFences</li>
-            <!-- TODO: Diet column -->
-            <li>Pawn_MaxNutrition</li>
             <!-- Reproduction -->
             <li>Animal_GestationTime</li>
             <li>Animal_GrowthTime</li>
@@ -322,35 +323,34 @@
         <workerClass>Stats.FarmAnimalsTableWorker</workerClass>
         <columns>
             <li>Thing_Label</li>
-            <!-- Productivity: Meat -->
-            <li>Pawn_MeatAmount</li>
-            <li>Animal_MeatNutritionPerDay</li>
-            <!-- Productivity: Leather -->
-            <li>Pawn_LeatherAmount</li>
-            <li>Animal_LeatherPerDay</li>
-            <!-- Productivity: General -->
+            <!-- Yield -->
             <li>Animal_Products</li>
-            <!-- Productivity: Wool -->
+            <li>Pawn_MeatAmount</li>
+            <li>Pawn_LeatherAmount</li>
             <li>Animal_WoolAmount</li>
-            <li>Animal_WoolShearingInterval</li>
-            <li>Animal_WoolPerDay</li>
-            <!-- Productivity: Milk -->
             <li>Animal_MilkAmount</li>
-            <li>Animal_MilkingInterval</li>
-            <li>Animal_MilkPerDay</li>
-            <li>Animal_MilkNutritionPerDay</li>
-            <!-- Productivity: Eggs -->
             <li>Animal_EggsAmount</li>
-            <li>Animal_EggLayingInterval</li>
+            <!-- Yield/d -->
+            <li>Animal_LeatherPerDay</li>
+            <li>Animal_WoolPerDay</li>
+            <li>Animal_MilkPerDay</li>
             <li>Animal_EggsPerDay</li>
+            <!-- Yield nutrition/d -->
+            <li>Animal_MeatNutritionPerDay</li>
+            <li>Animal_MilkNutritionPerDay</li>
             <li>Animal_EggsNutritionPerDay</li>
+            <!-- Nutrition consumption -->
+            <li>Pawn_MaxNutrition</li>
+            <!-- TODO: Diet column -->
+            <!-- Yield interval -->
+            <li>Animal_WoolShearingInterval</li>
+            <li>Animal_MilkingInterval</li>
+            <li>Animal_EggLayingInterval</li>
             <!-- Handling -->
             <li>Animal_MinimumHandlingSkill</li>
             <li>Animal_Trainability</li>
             <li>Animal_Wildness</li>
             <li>Animal_IsBlockedByFences</li>
-            <!-- TODO: Diet column -->
-            <li>Pawn_MaxNutrition</li>
             <!-- Reproduction -->
             <li>Animal_GestationTime</li>
             <li>Animal_GrowthTime</li>
@@ -376,13 +376,14 @@
             <!-- Caravan -->
             <li>Animal_CaravanRidingSpeedFactor</li>
             <li>Pawn_CaravanCarryingCapacity</li>
+            <!-- Nutrition consumption -->
+            <li>Pawn_MaxNutrition</li>
+            <!-- TODO: Diet column -->
             <!-- Handling -->
             <li>Animal_MinimumHandlingSkill</li>
             <li>Animal_Trainability</li>
             <li>Animal_Wildness</li>
             <li>Animal_IsBlockedByFences</li>
-            <!-- TODO: Diet column -->
-            <li>Pawn_MaxNutrition</li>
             <!-- Reproduction -->
             <li>Animal_GestationTime</li>
             <li>Animal_GrowthTime</li>
