@@ -18,13 +18,13 @@ public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject>
     {
         var thingDefCount = GetCachedValue(@object);
 
-        if (thingDefCount == null)
+        if (thingDefCount == null || thingDefCount.Value.Count == 0)
         {
             return null;
         }
 
-        var thingDef = thingDefCount.Value.Def;
         var count = thingDefCount.Value.Count;
+        var thingDef = thingDefCount.Value.Def;
 
         return new HorizontalContainer(
             [
