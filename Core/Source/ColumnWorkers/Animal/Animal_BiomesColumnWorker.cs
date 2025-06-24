@@ -11,7 +11,7 @@ namespace Stats;
 
 public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
 {
-    private static readonly Color CommonalityColor = Color.yellow.SaturationChanged(0.5f);
+    private static readonly Color CommonalityColor = Color.yellow.SaturationChanged(0.4f);
     public Animal_BiomesColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
@@ -78,7 +78,7 @@ public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
 
             if (biomeRecords.Count > 1)
             {
-                text += $" +{biomeRecords.Count - 1}".Colorize(Color.grey);
+                text += $" ({biomeRecords.Count})".Colorize(Color.grey);
 
                 var stringBuilder = new StringBuilder();
 
@@ -115,7 +115,7 @@ public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
     {
         public override string ToString()
         {
-            return $"{BiomeDef.LabelCap} ({Commonality.ToString("0.###").Colorize(CommonalityColor)})";
+            return $"{BiomeDef.LabelCap}: {Commonality.ToString("0.###").Colorize(CommonalityColor)}";
         }
     }
 }
