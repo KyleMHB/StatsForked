@@ -9,7 +9,17 @@ public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject>
 {
     protected ThingDefCountColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.Number)
     {
-        GetCachedValue = GetValue;
+        GetCachedValue = (TObject @object) =>
+        {
+            var value = GetValue(@object);
+
+            if (value?.Count == 0m)
+            {
+                return null;
+            }
+
+            return value;
+        };
         GetCachedValue = GetCachedValue.Memoized();
     }
     protected readonly Func<TObject, ThingDefCount?> GetCachedValue;
@@ -18,7 +28,7 @@ public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject>
     {
         var thingDefCount = GetCachedValue(@object);
 
-        if (thingDefCount == null || thingDefCount.Value.Count == 0)
+        if (thingDefCount == null)
         {
             return null;
         }
