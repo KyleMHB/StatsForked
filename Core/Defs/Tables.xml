@@ -138,14 +138,13 @@
         <workerClass>Stats.PowerGeneratorsTableWorker</workerClass>
         <columns>
             <li>Thing_Label</li>
-            <li>Building_PowerOutput</li>
             <li>Building_Size</li>
+            <li>Building_PowerOutput</li>
             <li>Building_PowerOutputPerCell</li>
+            <li>Building_PowerOutputPerFuel</li>
             <li>Building_FuelCapacity</li>
-            <li>Building_FuelType</li>
             <li>Building_FuelConsumptionRate</li>
             <li>Building_DaysOnFullTank</li>
-            <li>Building_PowerOutputPerFuel</li>
             <li>Building_ConstructionSkillPrerequisite</li>
             <li>Building_ResourcesRequiredForConstruction</li>
             <li>Building_WorkToBuild</li>

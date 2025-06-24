@@ -94,7 +94,7 @@
         <defName>Building_PowerOutputPerFuel</defName>
         <label>power/fuel</label>
         <description>Measured in watts/unit.</description>
-        <title><Electricity/>/fuel</title>
+        <title><Electricity/>/<Fuel/></title>
         <workerClass>Stats.Building_PowerOutputPerFuelColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -106,16 +106,9 @@
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
-        <defName>Building_FuelType</defName>
-        <label>fuel type</label>
-        <title><Fuel/>Type</title>
-        <workerClass>Stats.Building_FuelTypeColumnWorker</workerClass>
-    </Stats.ColumnDef>
-
-    <Stats.ColumnDef>
         <defName>Building_FuelCapacity</defName>
         <label>fuel capacity</label>
-        <title><Fuel/>Cap.</title>
+        <title><Fuel/></title>
         <workerClass>Stats.Building_FuelCapacityColumnWorker</workerClass>
     </Stats.ColumnDef>
 
