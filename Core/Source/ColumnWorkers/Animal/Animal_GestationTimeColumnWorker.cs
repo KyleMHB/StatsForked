@@ -4,7 +4,7 @@ namespace Stats;
 
 public sealed class Animal_GestationTimeColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Animal_GestationTimeColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.00 d")
+    public Animal_GestationTimeColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0 d")
     {
     }
     protected override decimal GetValue(ThingAlike thing)
@@ -17,7 +17,7 @@ public sealed class Animal_GestationTimeColumnWorker : NumberColumnWorker<ThingA
 
             if (gestationTime > 0f)
             {
-                return gestationTime.ToDecimal(2);
+                return gestationTime.ToDecimal(1);
             }
         }
 
