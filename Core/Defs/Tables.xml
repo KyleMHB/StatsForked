@@ -273,6 +273,7 @@
         <workerClass>Stats.AnimalsTableWorker</workerClass>
         <columns>
             <li>Thing_Label</li>
+            <li>Animal_Biomes</li>
             <!-- Yield -->
             <li>Pawn_MeatAmount</li>
             <li>Pawn_LeatherAmount</li>
@@ -288,6 +289,7 @@
             <li>Animal_Wildness</li>
             <li>Animal_IsBlockedByFences</li>
             <!-- Reproduction -->
+            <li>Animal_AverageLitterSize</li>
             <li>Animal_GestationTime</li>
             <li>Animal_GrowthTime</li>
             <li>Pawn_LifeExpectancy</li>
@@ -323,6 +325,7 @@
         <workerClass>Stats.FarmAnimalsTableWorker</workerClass>
         <columns>
             <li>Thing_Label</li>
+            <li>Animal_Biomes</li>
             <!-- Yield -->
             <li>Animal_Products</li>
             <li>Pawn_MeatAmount</li>
@@ -339,6 +342,7 @@
             <li>Animal_MeatNutritionPerDay</li>
             <li>Animal_MilkNutritionPerDay</li>
             <li>Animal_EggsNutritionPerDay</li>
+            <li>Animal_ProductsNutritionPerDay</li>
             <!-- Nutrition consumption -->
             <li>Pawn_MaxNutrition</li>
             <!-- TODO: Diet column -->
@@ -352,6 +356,7 @@
             <li>Animal_Wildness</li>
             <li>Animal_IsBlockedByFences</li>
             <!-- Reproduction -->
+            <li>Animal_AverageLitterSize</li>
             <li>Animal_GestationTime</li>
             <li>Animal_GrowthTime</li>
             <li>Pawn_LifeExpectancy</li>
@@ -373,6 +378,7 @@
         <workerClass>Stats.PackAnimalsTableWorker</workerClass>
         <columns>
             <li>Thing_Label</li>
+            <li>Animal_Biomes</li>
             <!-- Caravan -->
             <li>Animal_CaravanRidingSpeedFactor</li>
             <li>Pawn_CaravanCarryingCapacity</li>
@@ -385,6 +391,7 @@
             <li>Animal_Wildness</li>
             <li>Animal_IsBlockedByFences</li>
             <!-- Reproduction -->
+            <li>Animal_AverageLitterSize</li>
             <li>Animal_GestationTime</li>
             <li>Animal_GrowthTime</li>
             <li>Pawn_LifeExpectancy</li>
