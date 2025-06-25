@@ -129,4 +129,8 @@ public static class VerseThingDefExtensions
     {
         return GetRefuelableCompPropertiesCached(thingDef);
     }
+    public static bool IsBuildingObtainableByPlayer(this ThingDef thingDef)
+    {
+        return thingDef.BuildableByPlayer || thingDef.Minifiable;
+    }
 }

@@ -9,6 +9,6 @@ public sealed class ChairsTableWorker : ThingTableWorker
     }
     protected override bool IsValidThingDef(ThingDef thingDef)
     {
-        return thingDef.building?.isSittable == true;
+        return thingDef.building?.isSittable == true && thingDef.IsBuildingObtainableByPlayer();
     }
 }

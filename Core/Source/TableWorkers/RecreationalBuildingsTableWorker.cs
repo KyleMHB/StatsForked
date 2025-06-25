@@ -10,6 +10,8 @@ public sealed class RecreationalBuildingsTableWorker : ThingTableWorker
     }
     protected override bool IsValidThingDef(ThingDef thingDef)
     {
-        return thingDef.building != null && thingDef.statBases?.GetStatValueFromList(StatDefOf.JoyGainFactor, 0f) > 0f;
+        return thingDef.building != null
+            && thingDef.IsBuildingObtainableByPlayer()
+            && thingDef.statBases?.GetStatValueFromList(StatDefOf.JoyGainFactor, 0f) > 0f;
     }
 }

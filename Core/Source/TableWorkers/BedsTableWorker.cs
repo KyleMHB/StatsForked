@@ -9,6 +9,8 @@ public sealed class BedsTableWorker : ThingTableWorker
     }
     protected override bool IsValidThingDef(ThingDef thingDef)
     {
-        return thingDef.building != null && thingDef.IsBed;
+        return thingDef.building != null
+            && thingDef.IsBuildingObtainableByPlayer()
+            && thingDef.IsBed;
     }
 }
