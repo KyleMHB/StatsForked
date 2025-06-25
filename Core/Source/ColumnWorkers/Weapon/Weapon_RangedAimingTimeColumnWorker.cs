@@ -9,7 +9,8 @@ public sealed class Weapon_RangedAimingTimeColumnWorker : StatDrawEntryColumnWor
     }
     protected override string GetStatDrawEntryLabel(ThingAlike thing)
     {
-        var verb = thing.Def.Verbs.Primary();
+        var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
+        var verb = thingDef.Verbs.Primary();
 
         if (verb?.warmupTime > 0f)
         {

@@ -449,4 +449,48 @@
         </columns>
     </Stats.TableDef>
 
+    <Stats.TableDef>
+        <defName>Turrets</defName>
+        <label>Buildings / Turrets</label>
+        <iconPath>Things/Building/Security/TurretMini_MenuIcon</iconPath>
+        <workerClass>Stats.TurretsTableWorker</workerClass>
+        <columns>
+            <li>Thing_Label</li>
+            <li MayRequire="CETeam.CombatExtended">Weapon_Caliber</li>
+            <li MayRequire="CETeam.CombatExtended">Weapon_MagazineCapacity</li>
+            <li MayRequire="CETeam.CombatExtended">Weapon_ReloadTime</li>
+            <li>Weapon_ProjectileDamage</li>
+            <li>Weapon_ProjectileStoppingPower</li>
+            <li>Weapon_ProjectileArmorPenetration</li>
+            <li>Weapon_RPM</li>
+            <li>Weapon_BurstShotCount</li>
+            <li>Weapon_RangedCooldown</li>
+            <li>Weapon_RangedAimingTime</li>
+            <li>Weapon_Range</li>
+            <li MayRequire="CETeam.CombatExtended">Weapon_ShotSpread</li>
+            <li MayRequire="CETeam.CombatExtended">Weapon_SwayFactor</li>
+            <li MayRequire="CETeam.CombatExtended">Weapon_Recoil</li>
+            <li MayRequire="CETeam.CombatExtended">Weapon_SightsEfficiency</li>
+            <li>Turret_ShootingAccuracy</li>
+            <li>Weapon_RangedAccuracyTouch</li>
+            <li>Weapon_RangedAccuracyShort</li>
+            <li>Weapon_RangedAccuracyMedium</li>
+            <li>Weapon_RangedAccuracyLong</li>
+            <li>Weapon_RangedDirectHitChance</li>
+            <li>Weapon_RangedMissRadius</li>
+            <li>Weapon_ProjectileBuildingDamageFactorPassable</li>
+            <li>Weapon_ProjectileBuildingDamageFactorImpassable</li>
+            <li>Thing_MaxHitPoints</li>
+            <li>Turret_IsManned</li>
+            <li>Building_IsReinstallable</li>
+            <li>Building_Size</li>
+            <li>Building_PowerConsumption</li>
+            <li>Building_ConstructionSkillPrerequisite</li>
+            <li>Building_ResourcesRequiredForConstruction</li>
+            <li>Building_WorkToBuild</li>
+            <li>Thing_MarketValue</li>
+            <li>Thing_ContentSource</li>
+        </columns>
+    </Stats.TableDef>
+
 </Defs>

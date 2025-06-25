@@ -7,7 +7,8 @@ public sealed class Weapon_BurstShotCountColumnWorker : NumberColumnWorker<Thing
     }
     protected override decimal GetValue(ThingAlike thing)
     {
-        var verb = thing.Def.Verbs.Primary();
+        var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
+        var verb = thingDef.Verbs.Primary();
 
         if (verb is { Ranged: true, showBurstShotStats: true, burstShotCount: > 1 })
         {

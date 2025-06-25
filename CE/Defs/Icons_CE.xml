@@ -7,4 +7,9 @@
         <path>Things/Apparel/BallisticShield/CE_BallisticShield</path>
     </Stats.IconDef>
 
+    <Stats.IconDef>
+        <defName>Reload</defName>
+        <path>UI/Buttons/Reload</path>
+    </Stats.IconDef>
+
 </Defs>

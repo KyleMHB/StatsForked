@@ -126,4 +126,11 @@
         <workerClass>Stats.Building_DaysOnFullTankColumnWorker</workerClass>
     </Stats.ColumnDef>
 
+    <Stats.ColumnDef>
+        <defName>Building_IsReinstallable</defName>
+        <label>is reinstallable</label>
+        <title><IsBuildingReinstallable/></title>
+        <workerClass>Stats.Building_IsReinstallableColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
 </Defs>

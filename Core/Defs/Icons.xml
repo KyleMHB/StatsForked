@@ -41,7 +41,7 @@
 
     <Stats.IconDef>
         <defName>NudistPawn</defName>
-        <path>StatsMod/UI/Icons/NudistPawn</path>
+        <path>StatsMod/UI/Icons/PawnHumanlike</path>
     </Stats.IconDef>
 
     <Stats.IconDef>
@@ -250,6 +250,16 @@
     <Stats.IconDef>
         <defName>MoveSpeed</defName>
         <path>StatsMod/UI/Icons/MoveSpeed</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef>
+        <defName>IsBuildingReinstallable</defName>
+        <path>UI/Designators/Uninstall</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef>
+        <defName>IsTurretManned</defName>
+        <path>StatsMod/UI/Icons/PawnHumanlike</path>
     </Stats.IconDef>
 
 </Defs>

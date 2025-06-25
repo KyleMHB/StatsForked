@@ -7,12 +7,13 @@ public sealed class Weapon_ProjectileDamageColumnWorker : NumberColumnWorker<Thi
     }
     protected override decimal GetValue(ThingAlike thing)
     {
-        var verb = thing.Def.Verbs.Primary();
+        var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
+        var verb = thingDef.Verbs.Primary();
         var defaultProj = verb?.defaultProjectile?.projectile;
 
         if (defaultProj?.damageDef?.harmsHealth == true)
         {
-            return defaultProj.GetDamageAmount(thing.Def, thing.StuffDef);
+            return defaultProj.GetDamageAmount(thingDef, null);
         }
 
         return 0m;

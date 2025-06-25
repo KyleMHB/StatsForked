@@ -14,7 +14,8 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike>
     private static readonly Func<ThingAlike, string?> GetCaliberName =
     FunctionExtensions.Memoized((ThingAlike thing) =>
     {
-        var statRequest = StatRequest.For(thing.Def, thing.StuffDef);
+        var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
+        var statRequest = StatRequest.For(thingDef, null);
 
         if (StatDefOf.Caliber.Worker.ShouldShowFor(statRequest) == false)
         {
@@ -37,7 +38,8 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike>
             return null;
         }
 
-        var statRequest = StatRequest.For(thing.Def, thing.StuffDef);
+        var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
+        var statRequest = StatRequest.For(thingDef, null);
         var tooltip = StatDefOf.Caliber.Worker.GetExplanationFull(
             statRequest,
             ToStringNumberSense.Absolute,

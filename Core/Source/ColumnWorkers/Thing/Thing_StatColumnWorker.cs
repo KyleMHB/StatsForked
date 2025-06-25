@@ -14,7 +14,7 @@ public class Thing_StatColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
         Stat = columnDef.stat;
         ExplanationType = columnDef.statValueExplanationType;
     }
-    private string? GetStatValueExplanation(ThingAlike thing)
+    protected virtual string? GetStatValueExplanation(ThingAlike thing)
     {
         var worker = Stat.Worker;
         var statRequest = StatRequest.For(thing.Def, thing.StuffDef);

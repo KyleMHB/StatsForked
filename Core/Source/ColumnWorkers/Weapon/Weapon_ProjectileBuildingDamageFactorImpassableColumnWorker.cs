@@ -9,7 +9,8 @@ public sealed class Weapon_ProjectileBuildingDamageFactorImpassableColumnWorker 
     }
     protected override string GetStatDrawEntryLabel(ThingAlike thing)
     {
-        var verb = thing.Def.Verbs.Primary();
+        var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
+        var verb = thingDef.Verbs.Primary();
         var damageDef = verb?.defaultProjectile?.projectile?.damageDef;
 
         if (damageDef != null && damageDef.buildingDamageFactorImpassable != 1f)

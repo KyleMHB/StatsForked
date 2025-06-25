@@ -7,6 +7,8 @@ public sealed class Weapon_RangeColumnWorker : StatDrawEntryColumnWorker<ThingAl
     }
     protected override string GetStatDrawEntryLabel(ThingAlike thing)
     {
-        return thing.Def.Verbs.Primary()?.range.ToString("F0") ?? "";
+        var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
+
+        return thingDef.Verbs.Primary()?.range.ToString("F0") ?? "";
     }
 }
