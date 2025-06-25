@@ -138,7 +138,6 @@
         <workerClass>Stats.PowerGeneratorsTableWorker</workerClass>
         <columns>
             <li>Thing_Label</li>
-            <li>Building_Size</li>
             <li>Building_PowerOutput</li>
             <li>Building_PowerOutputPerCell</li>
             <li>Building_PowerOutputPerFuel</li>
@@ -148,6 +147,8 @@
             <li>Building_ConstructionSkillPrerequisite</li>
             <li>Building_ResourcesRequiredForConstruction</li>
             <li>Building_WorkToBuild</li>
+            <li>Building_Size</li>
+            <li>Building_IsReinstallable</li>
             <li>Thing_MarketValue</li>
             <li>Thing_ContentSource</li>
         </columns>
@@ -164,11 +165,12 @@
             <li>Building_JoyGainFactor</li>
             <li>Building_RecreationType</li>
             <li>Thing_Beauty</li>
-            <li>Building_Size</li>
-            <li>Building_PowerConsumption</li>
             <li>Building_ConstructionSkillPrerequisite</li>
             <li>Building_ResourcesRequiredForConstruction</li>
             <li>Building_WorkToBuild</li>
+            <li>Building_PowerConsumption</li>
+            <li>Building_Size</li>
+            <li>Building_IsReinstallable</li>
             <li>Thing_MarketValue</li>
             <li>Thing_ContentSource</li>
         </columns>
@@ -194,6 +196,8 @@
             <li>Building_ResourcesRequiredForConstruction</li>
             <li>Building_WorkToBuild</li>
             <li>Building_PowerConsumption</li>
+            <li>Building_Size</li>
+            <li>Building_IsReinstallable</li>
             <li>Thing_MarketValue</li>
             <li>Thing_ContentSource</li>
         </columns>
@@ -212,6 +216,8 @@
             <li>Building_ConstructionSkillPrerequisite</li>
             <li>Building_ResourcesRequiredForConstruction</li>
             <li>Building_WorkToBuild</li>
+            <li>Building_Size</li>
+            <li>Building_IsReinstallable</li>
             <li>Thing_MarketValue</li>
             <li>Thing_ContentSource</li>
         </columns>
@@ -226,8 +232,9 @@
         <columns>
             <li>Thing_Label</li>
             <li>Thing_Beauty</li>
-            <li>Building_Size</li>
             <li>Thing_CreatedAt</li>
+            <li>Building_Size</li>
+            <li>Building_IsReinstallable</li>
             <li>Thing_MarketValue</li>
             <li>Thing_ContentSource</li>
         </columns>
@@ -482,12 +489,12 @@
             <li>Weapon_ProjectileBuildingDamageFactorImpassable</li>
             <li>Thing_MaxHitPoints</li>
             <li>Turret_IsManned</li>
-            <li>Building_IsReinstallable</li>
-            <li>Building_Size</li>
-            <li>Building_PowerConsumption</li>
             <li>Building_ConstructionSkillPrerequisite</li>
             <li>Building_ResourcesRequiredForConstruction</li>
             <li>Building_WorkToBuild</li>
+            <li>Building_PowerConsumption</li>
+            <li>Building_Size</li>
+            <li>Building_IsReinstallable</li>
             <li>Thing_MarketValue</li>
             <li>Thing_ContentSource</li>
         </columns>
