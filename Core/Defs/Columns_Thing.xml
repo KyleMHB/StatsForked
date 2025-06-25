@@ -17,7 +17,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Thing_MaxHitPoints</defName>
-        <title>Max HP</title>
+        <title>HP</title>
         <stat>MaxHitPoints</stat>
         <statValueExplanationType>Unfinalized</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
