@@ -9,6 +9,6 @@ public sealed class RangedWeaponsTableWorker : ThingTableWorker
     }
     protected override bool IsValidThingDef(ThingDef thingDef)
     {
-        return thingDef.IsRangedWeapon;
+        return thingDef is { IsRangedWeapon: true, destroyOnDrop: false };
     }
 }

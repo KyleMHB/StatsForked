@@ -9,6 +9,6 @@ public sealed class MeleeWeaponsTableWorker : ThingTableWorker
     }
     protected override bool IsValidThingDef(ThingDef thingDef)
     {
-        return thingDef.IsMeleeWeapon;
+        return thingDef is { IsMeleeWeapon: true, destroyOnDrop: false };
     }
 }

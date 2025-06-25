@@ -10,6 +10,8 @@ public sealed class ApparelTableWorker : ThingTableWorker
     }
     protected override bool IsValidThingDef(ThingDef thingDef)
     {
+        // We do not check for "destroyOnDrop" for better compatibility with mods like
+        // VFE - Pirates.
         return thingDef.IsApparel && thingDef.IsWithinCategory(UtilityCatDef) == false;
     }
 }
