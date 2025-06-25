@@ -9,6 +9,6 @@ public sealed class ArtBuildingsTableWorker : ThingTableWorker
     }
     protected override bool IsValidThingDef(ThingDef thingDef)
     {
-        return thingDef.IsArt;
+        return thingDef.building != null && thingDef.IsArt;
     }
 }

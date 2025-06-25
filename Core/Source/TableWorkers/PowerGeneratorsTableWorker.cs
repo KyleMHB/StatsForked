@@ -14,6 +14,6 @@ public sealed class PowerGeneratorsTableWorker : ThingTableWorker
         // For better compatibility.
         // For example, nuclear reactor in VFE-Power uses custom comp class,
         // that derives from CompPowerTrader and not from CompPowerPlant.
-        return thingDef.GetPowerCompProperties()?.PowerConsumption < 0f;
+        return thingDef.building != null && thingDef.GetPowerCompProperties()?.PowerConsumption < 0f;
     }
 }
