@@ -16,4 +16,17 @@
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
+    <Stats.ColumnDef>
+        <defName>Turret_RearmCost</defName>
+        <label>rearm cost</label>
+        <title>Rearm $</title>
+        <workerClass>Stats.Turret_RearmCostColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Turret_BurstsPerRearm</defName>
+        <label>bursts per rearm</label>
+        <workerClass>Stats.Turret_BurstsPerRearmColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
 </Defs>

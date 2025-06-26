@@ -10,7 +10,7 @@ public sealed class Weapon_BurstShotCountColumnWorker : NumberColumnWorker<Thing
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
         var verb = thingDef.Verbs.Primary();
 
-        if (verb is { Ranged: true, showBurstShotStats: true, burstShotCount: > 1 })
+        if (verb is { Ranged: true, showBurstShotStats: true })
         {
             return verb.burstShotCount;
         }

@@ -471,6 +471,8 @@
             <li>Weapon_ProjectileArmorPenetration</li>
             <li>Weapon_RPM</li>
             <li>Weapon_BurstShotCount</li>
+            <li>Turret_BurstsPerRearm</li>
+            <li>Turret_RearmCost</li>
             <li>Weapon_RangedCooldown</li>
             <li>Weapon_RangedAimingTime</li>
             <li>Weapon_Range</li>

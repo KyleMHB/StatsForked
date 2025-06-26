@@ -53,7 +53,7 @@
         <defName>Weapon_BurstShotCount</defName>
         <labelKey>BurstShotCount</labelKey>
         <descriptionKey>Stat_Thing_Weapon_BurstShotCount_Desc</descriptionKey>
-        <title>Shots</title>
+        <title>Shots/burst</title>
         <workerClass>Stats.Weapon_BurstShotCountColumnWorker</workerClass>
     </Stats.ColumnDef>
 
