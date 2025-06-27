@@ -207,7 +207,7 @@
 
     <Stats.IconDef>
         <defName>Shoot</defName>
-        <path>UI/Commands/FireAtWill</path>
+        <path>StatsMod/UI/Icons/Shoot</path>
     </Stats.IconDef>
 
     <Stats.IconDef>
@@ -260,6 +260,52 @@
     <Stats.IconDef>
         <defName>IsTurretManned</defName>
         <path>StatsMod/UI/Icons/PawnHumanlike</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef>
+        <defName>Reload</defName>
+        <path>UI/Widgets/RotRight</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef>
+        <defName>Projectile</defName>
+        <path>StatsMod/UI/Icons/Projectile</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef>
+        <defName>RangedWeaponDamage</defName>
+        <path>UI/Commands/Detonate</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef>
+        <defName>Per</defName>
+        <path>StatsMod/UI/Icons/Per</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef>
+        <defName>Resources</defName>
+        <path>Things/Item/Resource/Steel/Steel_c</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef>
+        <defName>Nuzzle</defName>
+        <path>Things/Mote/SpeechSymbols/Nuzzle</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef>
+        <defName>Recreation</defName>
+        <path>Things/Mote/Cards</path>
+        <scale>1.2</scale>
+    </Stats.IconDef>
+    
+    <Stats.IconDef>
+        <defName>Slaughter</defName>
+        <path>UI/Designators/Slaughter</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef>
+        <defName>CollectAnimalProducts</defName>
+        <path>UI/Designators/Tame</path>
     </Stats.IconDef>
 
 </Defs>

@@ -5,14 +5,14 @@
     <Stats.ColumnDef>
         <defName>Animal_MeatNutritionPerDay</defName>
         <label>Meat nutrition per day during growth</label>
-        <title><Nutrition/><Meat/>/d</title>
+        <title><Nutrition/><Meat/><Per/>D</title>
         <workerClass>Stats.Animal_MeatNutritionPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Animal_LeatherPerDay</defName>
         <label>Leather per day</label>
-        <title><Leather/>/d</title>
+        <title><Leather/><Per/>D</title>
         <workerClass>Stats.Animal_LeatherPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -20,7 +20,7 @@
         <defName>Animal_MilkAmount</defName>
         <labelKey>Stat_Animal_MilkAmount</labelKey>
         <descriptionKey>Stat_Animal_MilkAmountDesc</descriptionKey>
-        <title><Milk/></title>
+        <title><CollectAnimalProducts/><Milk/></title>
         <workerClass>Stats.Animal_MilkAmountColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -35,21 +35,21 @@
     <Stats.ColumnDef>
         <defName>Animal_MilkPerDay</defName>
         <label>Milk per day</label>
-        <title><Milk/>/d</title>
+        <title><Milk/><Per/>D</title>
         <workerClass>Stats.Animal_MilkPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Animal_MilkNutritionPerDay</defName>
         <label>Milk nutrition per day</label>
-        <title><Nutrition/><Milk/>/d</title>
+        <title><Nutrition/><Milk/><Per/>D</title>
         <workerClass>Stats.Animal_MilkNutritionPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Animal_EggsAmount</defName>
         <label>Average eggs amount</label>
-        <title><Egg/></title>
+        <title><CollectAnimalProducts/><Egg/></title>
         <workerClass>Stats.Animal_EggsAmountColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -63,14 +63,14 @@
     <Stats.ColumnDef>
         <defName>Animal_EggsPerDay</defName>
         <label>Eggs per day</label>
-        <title><Egg/>/d</title>
+        <title><Egg/><Per/>D</title>
         <workerClass>Stats.Animal_EggsPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Animal_EggsNutritionPerDay</defName>
         <label>Eggs nutrition per day</label>
-        <title><Nutrition/><Egg/>/d</title>
+        <title><Nutrition/><Egg/><Per/>D</title>
         <workerClass>Stats.Animal_EggsNutritionPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -78,7 +78,7 @@
         <defName>Animal_WoolAmount</defName>
         <labelKey>Stat_Animal_WoolAmount</labelKey>
         <descriptionKey>Stat_Animal_WoolAmountDesc</descriptionKey>
-        <title><Wool/></title>
+        <title><CollectAnimalProducts/><Wool/></title>
         <workerClass>Stats.Animal_WoolAmountColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -93,7 +93,7 @@
     <Stats.ColumnDef>
         <defName>Animal_WoolPerDay</defName>
         <label>Wool per day</label>
-        <title><Wool/>/d</title>
+        <title><Wool/><Per/>D</title>
         <workerClass>Stats.Animal_WoolPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -138,7 +138,7 @@
         <defName>Animal_NuzzleInterval</defName>
         <labelKey>NuzzleInterval</labelKey>
         <descriptionKey>NuzzleIntervalExplanation</descriptionKey>
-        <title><TimeInterval/>Nuzzle</title>
+        <title><TimeInterval/><Nuzzle/></title>
         <workerClass>Stats.Animal_NuzzleIntervalColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -174,7 +174,7 @@
     <Stats.ColumnDef>
         <defName>Animal_ProductsNutritionPerDay</defName>
         <label>products nutrition per day</label>
-        <title><Nutrition/>(<Milk/>+<Egg/>)/d</title>
+        <title><Nutrition/>(<Milk/>+<Egg/>)<Per/>D</title>
         <workerClass>Stats.Animal_ProductsNutritionPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 

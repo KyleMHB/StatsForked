@@ -13,6 +13,8 @@
             or text()="Weapon_RangedAccuracyLong"
             or text()="Weapon_RangedDirectHitChance"
             or text()="Weapon_RangedMissRadius"
+            or text()="Turret_BurstsPerRearm"
+            or text()="Turret_RearmCost"
         ]</xpath>
     </Operation>
 

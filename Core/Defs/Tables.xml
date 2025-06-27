@@ -143,7 +143,7 @@
             <li>Building_PowerOutputPerFuel</li>
             <li>Building_FuelCapacity</li>
             <li>Building_FuelConsumptionRate</li>
-            <li>Building_DaysOnFullTank</li>
+            <li>Building_DaysPerRefuel</li>
             <li>Building_ConstructionSkillPrerequisite</li>
             <li>Building_ResourcesRequiredForConstruction</li>
             <li>Building_WorkToBuild</li>
@@ -471,9 +471,9 @@
             <li>Weapon_ProjectileArmorPenetration</li>
             <li>Weapon_RPM</li>
             <li>Weapon_BurstShotCount</li>
+            <li>Weapon_RangedCooldown</li>
             <li>Turret_BurstsPerRearm</li>
             <li>Turret_RearmCost</li>
-            <li>Weapon_RangedCooldown</li>
             <li>Weapon_RangedAimingTime</li>
             <li>Weapon_Range</li>
             <li MayRequire="CETeam.CombatExtended">Weapon_ShotSpread</li>

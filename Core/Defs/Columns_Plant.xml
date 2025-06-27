@@ -46,6 +46,7 @@
         <defName>Plant_LifeSpan</defName>
         <labelKey>LifeSpan</labelKey>
         <descriptionKey>Stat_Thing_Plant_LifeSpan_Desc</descriptionKey>
+        <title><Time/>Life</title>
         <workerClass>Stats.Plant_LifeSpanColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -53,14 +54,14 @@
         <defName>Plant_HarvestYield</defName>
         <labelKey>HarvestYield</labelKey>
         <descriptionKey>Stat_Thing_Plant_HarvestYield_Desc</descriptionKey>
-        <title><PlantHarvest/></title>
+        <title><PlantHarvest/><PlantHarvestProduct/></title>
         <workerClass>Stats.Plant_HarvestYieldColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Plant_ProductPerDay</defName>
         <label>product per day</label>
-        <title><PlantHarvestProduct/>/d</title>
+        <title><PlantHarvest/><PlantHarvestProduct/><Per/>D</title>
         <workerClass>Stats.Plant_ProductPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -109,14 +110,14 @@
     <Stats.ColumnDef>
         <defName>Plant_NutritionPerHarvest</defName>
         <label>Nutrition per harvest</label>
-        <title><Nutrition/><PlantHarvest/></title>
+        <title><PlantHarvest/><Nutrition/></title>
         <workerClass>Stats.Plant_NutritionPerHarvestColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Plant_NutritionPerHarvestPerDay</defName>
         <label>Nutrition per harvest per day</label>
-        <title><Nutrition/><PlantHarvest/>/d</title>
+        <title><PlantHarvest/><Nutrition/><Per/>D</title>
         <workerClass>Stats.Plant_NutritionPerHarvestPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -130,9 +131,8 @@
 
     <Stats.ColumnDef>
         <defName>Plant_RawNutritionPerDay</defName>
-        <label>Nutrition/d</label>
-        <description>Raw nutrition per day.</description>
-        <title><Nutrition/><PlantRaw/>/d</title>
+        <label>Raw nutrition per day</label>
+        <title><Nutrition/><PlantRaw/><Per/>D</title>
         <workerClass>Stats.Plant_RawNutritionPerDayColumnWorker</workerClass>
     </Stats.ColumnDef>
 

@@ -21,7 +21,7 @@
         <defName>Weapon_ProjectileDamage</defName>
         <labelKey>Damage</labelKey>
         <descriptionKey>Stat_Thing_Damage_Desc</descriptionKey>
-        <title><Shoot/></title>
+        <title><Projectile/><RangedWeaponDamage/></title>
         <workerClass>Stats.Weapon_ProjectileDamageColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -29,14 +29,14 @@
         <defName>Weapon_ProjectileStoppingPower</defName>
         <labelKey>StoppingPower</labelKey>
         <descriptionKey>StoppingPowerExplanation</descriptionKey>
-        <title><StoppingPower/></title>
+        <title><Projectile/><StoppingPower/></title>
         <workerClass>Stats.Weapon_ProjectileStoppingPowerColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Weapon_ProjectileArmorPenetration</defName>
         <labelKey>ArmorPenetration</labelKey>
-        <title>AP</title>
+        <title><Projectile/>AP</title>
         <descriptionKey>ArmorPenetrationExplanation</descriptionKey>
         <workerClass>Stats.Weapon_ProjectileArmorPenetrationColumnWorker</workerClass>
     </Stats.ColumnDef>
@@ -53,7 +53,7 @@
         <defName>Weapon_BurstShotCount</defName>
         <labelKey>BurstShotCount</labelKey>
         <descriptionKey>Stat_Thing_Weapon_BurstShotCount_Desc</descriptionKey>
-        <title>Shots/burst</title>
+        <title><Shoot/><Projectile/></title>
         <workerClass>Stats.Weapon_BurstShotCountColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -94,7 +94,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_RangedCooldown</defName>
-        <title><TimeInterval/></title>
+        <title><Shoot/><TimeInterval/></title>
         <stat>RangedWeapon_Cooldown</stat>
         <workerClass>Stats.Thing_GunStatColumnWorker</workerClass>
     </Stats.ColumnDef>
@@ -111,7 +111,7 @@
         <defName>Weapon_ProjectileBuildingDamageFactorPassable</defName>
         <labelKey>BuildingDamageFactorPassable</labelKey>
         <descriptionKey>BuildingDamageFactorPassableExplanation</descriptionKey>
-        <title><Shoot/>%<BuildingPassable/></title>
+        <title><Projectile/><RangedWeaponDamage/><BuildingPassable/></title>
         <workerClass>Stats.Weapon_ProjectileBuildingDamageFactorPassableColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -119,7 +119,7 @@
         <defName>Weapon_ProjectileBuildingDamageFactorImpassable</defName>
         <labelKey>BuildingDamageFactorImpassable</labelKey>
         <descriptionKey>BuildingDamageFactorImpassableExplanation</descriptionKey>
-        <title><Shoot/>%<BuildingImpassable/></title>
+        <title><Projectile/><RangedWeaponDamage/><BuildingImpassable/></title>
         <workerClass>Stats.Weapon_ProjectileBuildingDamageFactorImpassableColumnWorker</workerClass>
     </Stats.ColumnDef>
 

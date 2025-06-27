@@ -33,6 +33,7 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Building_JoyGainFactor</defName>
+        <title><Recreation/>Power</title>
         <stat>JoyGainFactor</stat>
         <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
@@ -42,6 +43,7 @@
         <defName>Building_RecreationType</defName>
         <labelKey>StatsReport_JoyKind</labelKey>
         <descriptionKey>Stat_RecreationType_Desc</descriptionKey>
+        <title><Recreation/>Type</title>
         <workerClass>Stats.Building_RecreationTypeColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -85,16 +87,16 @@
 
     <Stats.ColumnDef>
         <defName>Building_PowerOutputPerCell</defName>
-        <label>power/cell</label>
-        <title><Electricity/>/cell</title>
+        <label>power per cell</label>
+        <title><Electricity/><Per/>Cell</title>
         <workerClass>Stats.Building_PowerOutputPerCellColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Building_PowerOutputPerFuel</defName>
-        <label>power/fuel</label>
+        <label>power per fuel</label>
         <description>Measured in watts/unit.</description>
-        <title><Electricity/>/<Fuel/></title>
+        <title><Electricity/><Per/><Fuel/></title>
         <workerClass>Stats.Building_PowerOutputPerFuelColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -116,14 +118,15 @@
         <defName>Building_FuelConsumptionRate</defName>
         <label>fuel consumption rate</label>
         <description>Measured in amount/day.</description>
-        <title><Fuel/><Decrease/>/d</title>
+        <title><Fuel/><Decrease/><Per/>D</title>
         <workerClass>Stats.Building_FuelConsumptionRateColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
-        <defName>Building_DaysOnFullTank</defName>
-        <label>days on full tank</label>
-        <workerClass>Stats.Building_DaysOnFullTankColumnWorker</workerClass>
+        <defName>Building_DaysPerRefuel</defName>
+        <label>days per refuel</label>
+        <title>Days<Per/><Reload/></title>
+        <workerClass>Stats.Building_DaysPerRefuelColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>

@@ -14,7 +14,7 @@ public sealed class Weapon_RPMColumnWorker : StatDrawEntryColumnWorker<ThingAlik
 
         if (verb is { Ranged: true, showBurstShotStats: true, burstShotCount: > 1 })
         {
-            return (60f / verb.ticksBetweenBurstShots.TicksToSeconds()).ToString("0.## rpm");
+            return (60f / verb.ticksBetweenBurstShots.TicksToSeconds()).ToString("0 rpm");
         }
 
         return "";

@@ -4,14 +4,14 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_MeatAmount</defName>
-        <title><Meat/></title>
+        <title><Slaughter/><Meat/></title>
         <stat>MeatAmount</stat>
         <workerClass>Stats.Pawn_MeatAmountColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_LeatherAmount</defName>
-        <title><Leather/></title>
+        <title><Slaughter/><Leather/></title>
         <stat>LeatherAmount</stat>
         <workerClass>Stats.Pawn_LeatherAmountColumnWorker</workerClass>
     </Stats.ColumnDef>

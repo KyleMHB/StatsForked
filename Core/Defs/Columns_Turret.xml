@@ -19,13 +19,14 @@
     <Stats.ColumnDef>
         <defName>Turret_RearmCost</defName>
         <label>rearm cost</label>
-        <title>Rearm $</title>
+        <title><Reload/><Resources/></title>
         <workerClass>Stats.Turret_RearmCostColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Turret_BurstsPerRearm</defName>
         <label>bursts per rearm</label>
+        <title><Reload/><Shoot/></title>
         <workerClass>Stats.Turret_BurstsPerRearmColumnWorker</workerClass>
     </Stats.ColumnDef>
 

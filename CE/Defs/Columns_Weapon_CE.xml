@@ -95,14 +95,14 @@
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_MagazineCapacity</defName>
-        <title>Mag. cap</title>
+        <title><Reload/><Projectile/></title>
         <stat>MagazineCapacity</stat>
         <workerClass>Stats.Compat.CE.Weapon_MagazineCapacityColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_ReloadTime</defName>
-        <title><Time/><Reload/></title>
+        <title><Reload/><Time/></title>
         <stat>ReloadTime</stat>
         <workerClass>Stats.Compat.CE.Weapon_ReloadTimeColumnWorker</workerClass>
     </Stats.ColumnDef>

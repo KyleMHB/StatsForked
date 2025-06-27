@@ -1,8 +1,8 @@
 ﻿namespace Stats;
 
-public sealed class Building_DaysOnFullTankColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Building_DaysPerRefuelColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Building_DaysOnFullTankColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0 d")
+    public Building_DaysPerRefuelColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0 d")
     {
     }
     protected override decimal GetValue(ThingAlike thing)
