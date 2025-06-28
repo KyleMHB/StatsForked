@@ -36,8 +36,7 @@
             <li>Thing_EquippedStatOffsets</li>
             <li>Thing_Mass</li>
             <li MayRequire="CETeam.CombatExtended">Thing_Bulk</li>
-            <li>Thing_CreatedAt</li>
-            <li>Thing_WorkToMake</li>
+            <li>Thing_Recipes</li>
             <li>Thing_MarketValue</li>
             <li>Thing_TechLevel</li>
             <li>Thing_ContentSource</li>
@@ -63,8 +62,7 @@
             <li>Thing_MaxHitPoints</li>
             <li>Thing_Mass</li>
             <li MayRequire="CETeam.CombatExtended">Thing_Bulk</li>
-            <li>Thing_CreatedAt</li>
-            <li>Thing_WorkToMake</li>
+            <li>Thing_Recipes</li>
             <li>Thing_MarketValue</li>
             <li>Thing_TechLevel</li>
             <li>Thing_ContentSource</li>
@@ -94,8 +92,7 @@
             <li>Thing_Flammability</li>
             <li>Thing_Mass</li>
             <li MayRequire="CETeam.CombatExtended">Apparel_WornBulk</li>
-            <li>Thing_CreatedAt</li>
-            <li>Thing_WorkToMake</li>
+            <li>Thing_Recipes</li>
             <li>Thing_MarketValue</li>
             <li>Apparel_CountsAsClothingForNudity</li>
             <li>Apparel_EquipDelay</li>
@@ -122,8 +119,7 @@
             <li>Thing_Flammability</li>
             <li>Thing_Mass</li>
             <li MayRequire="CETeam.CombatExtended">Apparel_WornBulk</li>
-            <li>Thing_CreatedAt</li>
-            <li>Thing_WorkToMake</li>
+            <li>Thing_Recipes</li>
             <li>Thing_MarketValue</li>
             <li>Apparel_EquipDelay</li>
             <li>Thing_TechLevel</li>
@@ -232,7 +228,7 @@
         <columns>
             <li>Thing_Label</li>
             <li>Thing_Beauty</li>
-            <li>Thing_CreatedAt</li>
+            <li>Thing_Recipes</li>
             <li>Building_Size</li>
             <li>Building_IsReinstallable</li>
             <li>Thing_MarketValue</li>
@@ -427,7 +423,7 @@
             <li MayRequire="Ludeon.RimWorld.Biotech">Mech_ControlTakingTime</li>
             <li MayRequire="Ludeon.RimWorld.Biotech">Mech_WastepacksPerRecharge</li>
             <li MayRequire="Ludeon.RimWorld.Biotech">Mech_RechargerNeeded</li>
-            <li>Thing_CreatedAt</li>
+            <li>Thing_Recipes</li>
             <!-- Combat: Offense -->
             <li MayRequire="CETeam.CombatExtended">Pawn_WeaponHandling</li>
             <li>Pawn_ShootingAccuracy</li>

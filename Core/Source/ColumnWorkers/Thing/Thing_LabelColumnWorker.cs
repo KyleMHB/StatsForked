@@ -87,7 +87,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
             if (_IsActive)
             {
                 buttonText = ButtonTextActive;
-                buttonTextColor = Globals.GUI.ActiveFilterOperatorColor;
+                buttonTextColor = Globals.GUI.TextHighlightColor;
             }
             else
             {

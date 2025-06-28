@@ -44,7 +44,7 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
 
                 Operator = @operator;
             }
-            var operatorString = @operator.Symbol.Colorize(Globals.GUI.ActiveFilterOperatorColor);
+            var operatorString = @operator.Symbol.Colorize(Globals.GUI.TextHighlightColor);
             var optionLabel = @operator.Description.Length > 0
                     ? $"{operatorString} - {@operator.Description}"
                     : operatorString;
@@ -146,7 +146,7 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
             TooltipHandler.TipRegion(rect, Operator.Description);
         }
 
-        var color = IsActive ? Globals.GUI.ActiveFilterOperatorColor : Color.white;
+        var color = IsActive ? Globals.GUI.TextHighlightColor : Color.white;
 
         return Widgets.Draw.ButtonTextSubtle(rect, Operator.Symbol, color, OperatorButtonPadding);
     }

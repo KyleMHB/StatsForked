@@ -33,7 +33,7 @@
             <li>Mech_ControlTakingTime</li>
             <li>Mech_WastepacksPerRecharge</li>
             <li>Mech_RechargerNeeded</li>
-            <li>Thing_CreatedAt</li>
+            <li>Thing_Recipes</li>
             <!-- Misc -->
             <li>Pawn_MoveSpeed</li>
             <li>Thing_ContentSource</li>

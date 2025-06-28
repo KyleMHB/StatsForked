@@ -39,21 +39,6 @@
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
-        <defName>Thing_CreatedAt</defName>
-        <labelKey>CreatedAt</labelKey>
-        <descriptionKey>Stat_Thing_CreatedAt_Desc</descriptionKey>
-        <workerClass>Stats.Thing_CreatedAtColumnWorker</workerClass>
-    </Stats.ColumnDef>
-
-    <Stats.ColumnDef Class="Stats.StatColumnDef">
-        <defName>Thing_WorkToMake</defName>
-        <title>Work</title>
-        <stat>WorkToMake</stat>
-        <statValueExplanationType>Unfinalized</statValueExplanationType>
-        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
-    </Stats.ColumnDef>
-
-    <Stats.ColumnDef>
         <defName>Thing_ContentSource</defName>
         <labelKey>Stat_Source_Label</labelKey>
         <workerClass>Stats.Thing_ContentSourceColumnWorker</workerClass>
@@ -121,6 +106,12 @@
         <title>Shield %/s</title>
         <stat>EnergyShieldRechargeRate</stat>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Thing_Recipes</defName>
+        <label>Recipes</label>
+        <workerClass>Stats.Thing_RecipesColumnWorker</workerClass>
     </Stats.ColumnDef>
 
 </Defs>

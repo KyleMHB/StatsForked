@@ -100,6 +100,28 @@ public static class SystemSingleExtensions
 
 public static class VerseThingDefExtensions
 {
+    private static readonly Dictionary<ThingDef, HashSet<RecipeDef>> ThingDefRecipes = [];
+    static VerseThingDefExtensions()
+    {
+        foreach (var recipeDef in DefDatabase<RecipeDef>.AllDefsListForReading)
+        {
+            var producedThingDef = recipeDef.ProducedThingDef;
+
+            if (producedThingDef != null)
+            {
+                var recipesEntryExists = ThingDefRecipes.TryGetValue(producedThingDef, out var recipeDefs);
+
+                if (recipesEntryExists)
+                {
+                    recipeDefs.Add(recipeDef);
+                }
+                else
+                {
+                    ThingDefRecipes[producedThingDef] = [recipeDef];
+                }
+            }
+        }
+    }
     // GenStuff.DefaultStuffFor() is a bit too heavy for some tasks.
     private static readonly Func<ThingDef, ThingDef?> GetDefaultStuffCached =
     FunctionExtensions.Memoized((ThingDef thingDef) =>
@@ -132,5 +154,61 @@ public static class VerseThingDefExtensions
     public static bool IsBuildingObtainableByPlayer(this ThingDef thingDef)
     {
         return thingDef.BuildableByPlayer || thingDef.Minifiable;
+    }
+    public static HashSet<RecipeDef>? GetRecipeDefs(this ThingDef thingDef)
+    {
+        ThingDefRecipes.TryGetValue(thingDef, out var recipeDefs);
+
+        return recipeDefs;
+    }
+}
+
+public static class VerseRecipeDefExtensions
+{
+    private static readonly Dictionary<RecipeDef, HashSet<ThingDef>> RecipeUsers = [];
+    static VerseRecipeDefExtensions()
+    {
+        foreach (var recipeDef in DefDatabase<RecipeDef>.AllDefsListForReading)
+        {
+            if (recipeDef.recipeUsers?.Count > 0)
+            {
+                var recipeUsersEntryExists = RecipeUsers.TryGetValue(recipeDef, out var recipeUsers);
+
+                if (recipeUsersEntryExists)
+                {
+                    recipeUsers.AddRange(recipeDef.recipeUsers);
+                }
+                else
+                {
+                    RecipeUsers[recipeDef] = [.. recipeDef.recipeUsers];
+                }
+            }
+        }
+
+        foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
+        {
+            if (thingDef.recipes?.Count > 0)
+            {
+                foreach (var recipeDef in thingDef.recipes)
+                {
+                    var recipeUsersEntryExists = RecipeUsers.TryGetValue(recipeDef, out var recipeUsers);
+
+                    if (recipeUsersEntryExists)
+                    {
+                        recipeUsers.Add(thingDef);
+                    }
+                    else
+                    {
+                        RecipeUsers[recipeDef] = [thingDef];
+                    }
+                }
+            }
+        }
+    }
+    public static HashSet<ThingDef>? GetAllRecipeUsers(this RecipeDef recipeDef)
+    {
+        RecipeUsers.TryGetValue(recipeDef, out var recipeUsers);
+
+        return recipeUsers;
     }
 }
