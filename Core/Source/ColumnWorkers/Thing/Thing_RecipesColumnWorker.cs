@@ -185,8 +185,6 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
             if (recipeDef.workSkill != null)
             {
                 var workSkillLevel = 0;
-                var highestRequiredSkill = recipeDef.workSkill;
-                var highestRequiredSkillLevel = 0;
                 var skillsCount = 1;
                 string? tooltip = null;
                 var stringBuilder = new StringBuilder();
@@ -195,12 +193,6 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
                 {
                     foreach (var skillReq in recipeDef.skillRequirements)
                     {
-                        if (skillReq.minLevel > highestRequiredSkillLevel)
-                        {
-                            highestRequiredSkill = skillReq.skill;
-                            highestRequiredSkillLevel = skillReq.minLevel;
-                        }
-
                         if (skillReq.skill != recipeDef.workSkill)
                         {
                             stringBuilder.AppendInNewLine(MakeSkillReqLine(skillReq.skill, skillReq.minLevel));
@@ -213,10 +205,10 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
                     }
                 }
 
-                var skillLevelString = highestRequiredSkillLevel > 0
-                    ? highestRequiredSkillLevel.ToString().Colorize(Globals.GUI.TextHighlightColor)
-                    : SkillLevelToString(highestRequiredSkillLevel);
-                var skillString = $" | {highestRequiredSkill.LabelCap}: {skillLevelString}";
+                var skillLevelString = workSkillLevel > 0
+                    ? workSkillLevel.ToString().Colorize(Globals.GUI.TextHighlightColor)
+                    : SkillLevelToString(workSkillLevel);
+                var skillString = $" | {recipeDef.workSkill.LabelCap}: {skillLevelString}";
 
                 if (skillsCount > 1)
                 {
@@ -279,10 +271,9 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
 
         return allRecipesUsers;
     });
-    private static readonly Func<ThingAlike, HashSet<SkillDef>> GetAllSkillDefs =
+    private static readonly Func<ThingAlike, decimal> GetWorkSkillLevel =
     FunctionExtensions.Memoized((ThingAlike thing) =>
     {
-        var allSkillDefs = new HashSet<SkillDef>();
         var recipeDefs = thing.Def.GetRecipeDefs();
 
         if (recipeDefs?.Count > 0)
@@ -291,12 +282,18 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
             {
                 if (recipeDef.skillRequirements?.Count > 0)
                 {
-                    allSkillDefs.AddRange(recipeDef.skillRequirements.Select(skillReq => skillReq.skill));
+                    foreach (var skillReq in recipeDef.skillRequirements)
+                    {
+                        if (skillReq.skill == recipeDef.workSkill)
+                        {
+                            return skillReq.minLevel;
+                        }
+                    }
                 }
             }
         }
 
-        return allSkillDefs;
+        return 0m;
     });
     private static readonly Func<ThingAlike, HashSet<ThingDef>> GetAllIngredients =
     FunctionExtensions.Memoized((ThingAlike thing) =>
@@ -320,15 +317,15 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
     {
         var recipeUsersFilter = Make.MTMThingDefFilter(GetAllRecipesUsers, tableRecords, "Bench")
             .Tooltip("Filter by crafting benches.");
-        var skillsFilter = Make.MTMDefFilter(GetAllSkillDefs, tableRecords, "Skill")
-            .Tooltip("Filter by skills.");
+        var skillFilter = Make.NumberFilter(GetWorkSkillLevel, "Skill")
+            .Tooltip("Filter by work skill level.");
         var ingredientsFilter = Make.MTMThingDefFilter(GetAllIngredients, tableRecords, "Res.")
             .Tooltip("Filter by ingredients.");
 
         return Make.CompositeFilter<ThingAlike>([
             ingredientsFilter,
             recipeUsersFilter,
-            skillsFilter,
+            skillFilter,
         ], true);
     }
     private static readonly Func<ThingAlike, float> GetMinWorkAmount =
