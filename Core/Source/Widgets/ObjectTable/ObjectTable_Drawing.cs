@@ -30,6 +30,11 @@ internal sealed partial class ObjectTable<TObject>
 
         foreach (var column in Columns)
         {
+            if (column.Width == 0f)
+            {
+                continue;
+            }
+
             if (column.IsPinned)
             {
                 leftColumnsMinWidth += column.Width;
@@ -196,7 +201,7 @@ internal sealed partial class ObjectTable<TObject>
 
         foreach (var column in columns)
         {
-            if (column.IsPinned != drawPinnedColumns)
+            if (column.IsPinned != drawPinnedColumns || column.Width == 0f)
             {
                 continue;
             }

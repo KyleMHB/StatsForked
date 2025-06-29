@@ -154,7 +154,7 @@ internal sealed partial class ObjectTable<TObject>
                 // It seems that this is faster than attaching column props object to a cell.
                 var column = Columns[i];
 
-                if (column.IsPinned != drawPinnedColumns)
+                if (column.IsPinned != drawPinnedColumns || column.Width == 0f)
                 {
                     continue;
                 }

@@ -43,6 +43,35 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         // This is a bit of a hack. We rely on default sort direction being just what we need.
         Array.Sort(objectArr, sortColumn.Worker.Compare);
 
+        // Body rows
+        var bodyRows = new RowCollection<ObjectRow>(objectArr.Length);
+
+        foreach (var @object in objectArr)
+        {
+            var row = new ObjectRow(columns, @object);
+
+            for (int i = 0; i < columnsCount; i++)
+            {
+                var column = columns[i];
+
+                try
+                {
+                    row[i] = column.Worker.GetTableCellWidget(@object)
+                        ?.PaddingAbs(CellPadHor, CellPadVer);
+                }
+                catch (Exception e)
+                {
+                    row[i] = new Label("!!!")
+                        .Color(Color.red.ToTransparent(0.5f))
+                        .TextAnchor(TextAnchor.LowerCenter)
+                        .PaddingAbs(CellPadHor, CellPadVer)
+                        .Tooltip(e.Message);
+                }
+            }
+
+            bodyRows.Add(row);
+        }
+
         // Headers
         var headerRows = new RowCollection<Row>(2);
         var columnTitlesRow = new ColumnTitlesRow(columns);
@@ -51,6 +80,15 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         for (int i = 0; i < columnsCount; i++)
         {
             var column = columns[i];
+
+            // TODO: This is a quick and dirty way of hiding empty columns.
+            // If there was no cells generated for a column, it will have width = 0. That's why, rows are initialized first.
+            // The columns are still there, they are just ignored. Shouldn't cause any issues, but this is obviously inefficient.
+            // Note to myself: When you'll get to refactoring this, don't forget to remove checks for width = 0.
+            if (column.InitialWidth == 0f)
+            {
+                continue;
+            }
 
             void drawSortIndicator(Rect rect)
             {
@@ -110,35 +148,6 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
         headerRows.Add(columnTitlesRow);
         headerRows.Add(filtersRow);
-
-        // Body rows
-        var bodyRows = new RowCollection<ObjectRow>(objectArr.Length);
-
-        foreach (var @object in objectArr)
-        {
-            var row = new ObjectRow(columns, @object);
-
-            for (int i = 0; i < columnsCount; i++)
-            {
-                var column = columns[i];
-
-                try
-                {
-                    row[i] = column.Worker.GetTableCellWidget(@object)
-                        ?.PaddingAbs(CellPadHor, CellPadVer);
-                }
-                catch (Exception e)
-                {
-                    row[i] = new Label("!!!")
-                        .Color(Color.red.ToTransparent(0.5f))
-                        .TextAnchor(TextAnchor.LowerCenter)
-                        .PaddingAbs(CellPadHor, CellPadVer)
-                        .Tooltip(e.Message);
-                }
-            }
-
-            bodyRows.Add(row);
-        }
 
         // Finalize
         Columns = columns;
