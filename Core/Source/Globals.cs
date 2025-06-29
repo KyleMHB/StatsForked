@@ -12,6 +12,7 @@ public static class Globals
         public const float EstimatedInputFieldInnerPadding = 7f;
         public const float ButtonSubtleContentHoverOffset = 2f;
         public static readonly Color TextHighlightColor = new(1f, 0.98f, 0.62f);
+        public static readonly Color SecondaryTextColor = Color.grey;
         public static float Opacity { get; set; } = 1f;
     }
 }

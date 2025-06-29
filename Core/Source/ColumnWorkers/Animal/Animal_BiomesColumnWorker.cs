@@ -77,7 +77,7 @@ public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
 
             if (biomeRecords.Count > 1)
             {
-                text += $" ({biomeRecords.Count})".Colorize(Color.grey);
+                text += $" ({biomeRecords.Count})".Colorize(Globals.GUI.SecondaryTextColor);
 
                 var stringBuilder = new StringBuilder();
 
