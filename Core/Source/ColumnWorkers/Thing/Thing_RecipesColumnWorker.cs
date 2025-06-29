@@ -121,7 +121,7 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
                 ingredientWidgets.Add(ingredientWidget);
             }
 
-            Widget row = new HorizontalContainer(ingredientWidgets, Globals.GUI.PadSm).PaddingAbs(0f, 0f, 0f, Globals.GUI.PadXs);
+            Widget row = new HorizontalContainer(ingredientWidgets, Globals.GUI.PadSm);
 
             // Product amount
             var productAmount = 0;
@@ -140,7 +140,7 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
                 row = new HorizontalContainer([new Label("("), row, new Label($") / {productAmount}")]);
             }
 
-            rows.Add(row);
+            rows.Add(row.PaddingAbs(0f, 0f, 0f, Globals.GUI.PadXs));
         }
 
         // Recipe user(s), work amount and primary skill(s)
