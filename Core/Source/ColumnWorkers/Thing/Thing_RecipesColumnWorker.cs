@@ -320,7 +320,7 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
         var skillFilter = Make.NumberFilter(GetWorkSkillLevel, "Skill")
             .Tooltip("Filter by work skill level.");
         var ingredientsFilter = Make.MTMThingDefFilter(GetAllIngredients, tableRecords, "Res.")
-            .Tooltip("Filter by ingredients.");
+            .Tooltip("Filter by resources.");
 
         return Make.CompositeFilter<ThingAlike>([
             ingredientsFilter,
