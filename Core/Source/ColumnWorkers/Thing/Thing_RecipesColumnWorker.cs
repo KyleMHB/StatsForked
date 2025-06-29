@@ -152,7 +152,7 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
             // TODO: Find where the 60 is defined.
             var workAmount = Mathf.CeilToInt(recipeDef.WorkAmountForStuff(thing.StuffDef) / 60f);
             var workAmountTooltip = $"<i>{StatDefOf.WorkToMake.LabelCap}</i>";
-            var workAmountWidget = new Label($"{workAmount} | ").Tooltip(workAmountTooltip);
+            var workAmountWidget = new Label($"<i>{workAmount}</i> | ").Tooltip(workAmountTooltip);
 
             if (recipeDef.workSpeedStat != null)
             {
