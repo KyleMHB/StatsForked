@@ -82,24 +82,6 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
     {
         var rows = new List<Widget>();
 
-        // Product amount
-        var productAmount = 0;
-
-        foreach (var product in recipeDef.products)
-        {
-            if (product.thingDef == thing.Def)
-            {
-                productAmount = product.count;
-            }
-        }
-
-        if (productAmount > 1)
-        {
-            var row = new Label("Products: ".Colorize(Globals.GUI.TextHighlightColor) + productAmount.ToString());
-
-            rows.Add(row);
-        }
-
         // Ingredients
         if (recipeDef.ingredients.Count > 0)
         {
@@ -134,70 +116,148 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
                     icon = new Icon(IngredientTexture).Tooltip(stringBuilder.ToString());
                 }
 
-                var ingredientWidget = new HorizontalContainer([new Label(count.ToString()), icon]);
+                var ingredientWidget = new HorizontalContainer([new Label(count.ToString()), icon], 2f);
 
                 ingredientWidgets.Add(ingredientWidget);
             }
 
-            var row = new HorizontalContainer(ingredientWidgets, Globals.GUI.PadSm);
+            Widget row = new HorizontalContainer(ingredientWidgets, Globals.GUI.PadSm).PaddingAbs(0f, 0f, 0f, Globals.GUI.PadXs);
 
-            rows.Add(row);
-        }
+            // Product amount
+            var productAmount = 0;
 
-        // Skills
-        var recipeSkillRequirements = recipeDef.skillRequirements;
-
-        if (recipeSkillRequirements?.Count > 0)
-        {
-            var stringBuilder = new StringBuilder();
-
-            foreach (var skillRequirement in recipeSkillRequirements)
+            foreach (var product in recipeDef.products)
             {
-                var skillLabel = skillRequirement.skill.LabelCap;
-                var skillMinLevel = skillRequirement.minLevel.ToString();
-
-                if (skillRequirement.skill == recipeDef.workSkill)
+                if (product.thingDef == thing.Def)
                 {
-                    skillMinLevel = skillMinLevel.Colorize(Globals.GUI.TextHighlightColor);
+                    productAmount = product.count;
+                    break;
                 }
-
-                stringBuilder.AppendInNewLine($"{skillLabel}: {skillMinLevel}");
             }
 
-            var row = new Label(stringBuilder.ToString());
+            if (productAmount > 1)
+            {
+                row = new HorizontalContainer([new Label("("), row, new Label($") / {productAmount}")]);
+            }
 
             rows.Add(row);
         }
 
-        // Work amount
-        // TODO: Find where the 60 is defined.
-        var workAmount = Mathf.CeilToInt(recipeDef.WorkAmountForStuff(thing.StuffDef) / 60f);
-
-        if (workAmount > 0)
-        {
-            Widget label = new Label($"Work: {workAmount}");
-
-            if (recipeDef.workSpeedStat != null)
-            {
-                // TODO: Add more factors. Importantly, stuff-related ones.
-                label = label.Tooltip($"Factors:\n- {recipeDef.workSpeedStat.LabelCap}");
-            }
-
-            rows.Add(label);
-        }
-
-        // Recipe users
+        // Recipe user(s), work amount and primary skill(s)
         var recipeUsers = recipeDef.GetAllRecipeUsers();
 
         if (recipeUsers?.Count > 0)
         {
-            var recipeUsersIcons = recipeUsers.Select(thingDef => new ThingIcon(thingDef).ToButtonGhostly(() => Draw.DefInfoDialog(thingDef), thingDef.LabelCap));
-            var row = new HorizontalContainer([.. recipeUsersIcons], Globals.GUI.PadSm);
+            // Work amount
+            // TODO: Find where the 60 is defined.
+            var workAmount = Mathf.CeilToInt(recipeDef.WorkAmountForStuff(thing.StuffDef) / 60f);
+            var workAmountTooltip = $"<i>{StatDefOf.WorkToMake.LabelCap}</i>";
+            var workAmountWidget = new Label($"{workAmount} | ").Tooltip(workAmountTooltip);
+
+            if (recipeDef.workSpeedStat != null)
+            {
+                // TODO: Add more factors. Importantly, stuff-related ones.
+                workAmountTooltip += $"\n\nFactors:\n- {recipeDef.workSpeedStat.LabelCap}";
+            }
+
+            // Recipe users
+            var cheapestRecipeUser = recipeUsers.OrderBy(thingDef => thingDef.GetStatValueAbstract(StatDefOf.MarketValue)).First();
+            var recipeUsersWidget = new ThingIcon(cheapestRecipeUser)
+                .ToButtonGhostly(() => Draw.DefInfoDialog(cheapestRecipeUser), cheapestRecipeUser.LabelCap);
+
+            if (recipeUsers.Count > 1)
+            {
+                var allRecipeUsers = recipeUsers
+                    .OrderBy(thingDef => thingDef.label)
+                    .Select(thingDef => $"- {thingDef.LabelCap}");
+                var recipeUsersTooltip = string.Join("\n", allRecipeUsers);
+                recipeUsersWidget = new HorizontalContainer([
+                    recipeUsersWidget,
+                    new Label($" ({recipeUsers.Count})".Colorize(Globals.GUI.SecondaryTextColor))
+                ]).Tooltip(recipeUsersTooltip);
+            }
+
+            // Skill(s)
+            Widget? skillsWidget = null;
+
+            if (recipeDef.workSkill != null)
+            {
+                var workSkillLevel = 0;
+                var highestRequiredSkill = recipeDef.workSkill;
+                var highestRequiredSkillLevel = 0;
+                var skillsCount = 1;
+                string? tooltip = null;
+                var stringBuilder = new StringBuilder();
+
+                if (recipeDef.skillRequirements?.Count > 0)
+                {
+                    foreach (var skillReq in recipeDef.skillRequirements)
+                    {
+                        if (skillReq.minLevel > highestRequiredSkillLevel)
+                        {
+                            highestRequiredSkill = skillReq.skill;
+                            highestRequiredSkillLevel = skillReq.minLevel;
+                        }
+
+                        if (skillReq.skill != recipeDef.workSkill)
+                        {
+                            stringBuilder.AppendInNewLine(MakeSkillReqLine(skillReq.skill, skillReq.minLevel));
+                            skillsCount++;
+                        }
+                        else
+                        {
+                            workSkillLevel = skillReq.minLevel;
+                        }
+                    }
+                }
+
+                var skillLevelString = highestRequiredSkillLevel > 0
+                    ? highestRequiredSkillLevel.ToString().Colorize(Globals.GUI.TextHighlightColor)
+                    : SkillLevelToString(highestRequiredSkillLevel);
+                var skillString = $" | {highestRequiredSkill.LabelCap}: {skillLevelString}";
+
+                if (skillsCount > 1)
+                {
+                    skillString += $" ({skillsCount})".Colorize(Globals.GUI.SecondaryTextColor);
+                    tooltip = MakeSkillReqLine(recipeDef.workSkill, workSkillLevel, true) + "\n" + stringBuilder.ToString();
+                }
+
+                skillsWidget = new Label(skillString);
+
+                if (tooltip?.Length > 0)
+                {
+                    skillsWidget = skillsWidget.Tooltip(tooltip);
+                }
+            }
+
+            var rowWidgets = new List<Widget>() { workAmountWidget, recipeUsersWidget };
+
+            if (skillsWidget != null)
+            {
+                rowWidgets.Add(skillsWidget);
+            }
+
+            var row = new HorizontalContainer(rowWidgets);
 
             rows.Add(row);
         }
 
         return new VerticalContainer(rows);
+    }
+    private static string MakeSkillReqLine(SkillDef skillDef, int level, bool isWorkSkill = false)
+    {
+        var skillLabel = skillDef.LabelCap;
+
+        if (isWorkSkill)
+        {
+            skillLabel = $"<i>{skillLabel}</i>";
+        }
+
+        return $"- {skillLabel}: {SkillLevelToString(level)}";
+    }
+    private static string SkillLevelToString(int level)
+    {
+        return level == 0 ? "any" : level.ToString();
     }
     private static readonly Func<ThingAlike, HashSet<ThingDef>> GetAllRecipesUsers =
     FunctionExtensions.Memoized((ThingAlike thing) =>
