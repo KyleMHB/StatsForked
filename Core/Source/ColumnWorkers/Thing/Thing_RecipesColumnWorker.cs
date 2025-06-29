@@ -85,9 +85,11 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
         // Ingredients
         if (recipeDef.ingredients.Count > 0)
         {
+            var ingredients = GetThingDefRecipeIngredients(recipeDef, thing.StuffDef)
+                .OrderBy(ingredient => ingredient.ThingDefs[0].GetStatValueOrDefault(StatDefOf.MarketValue));
             var ingredientWidgets = new List<Widget>(recipeDef.ingredients.Count);
 
-            foreach (var (thingDefs, count) in GetThingDefRecipeIngredients(recipeDef, thing.StuffDef))
+            foreach (var (thingDefs, count) in ingredients)
             {
                 Widget icon;
 

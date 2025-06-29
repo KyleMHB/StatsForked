@@ -161,6 +161,17 @@ public static class VerseThingDefExtensions
 
         return recipeDefs;
     }
+    public static float GetStatValueOrDefault(this ThingDef thingDef, StatDef statDef, ThingDef? stuffDef = null)
+    {
+        var statRequest = StatRequest.For(thingDef, stuffDef);
+
+        if (statDef.Worker.ShouldShowFor(statRequest))
+        {
+            return statDef.Worker.GetValue(statRequest);
+        }
+
+        return 0f;
+    }
 }
 
 public static class VerseRecipeDefExtensions
