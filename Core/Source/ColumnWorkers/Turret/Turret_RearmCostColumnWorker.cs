@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using UnityEngine;
 
 namespace Stats;
 
@@ -19,7 +20,7 @@ public sealed class Turret_RearmCostColumnWorker : ThingDefCountColumnWorker<Thi
             {
                 var rearmCost = refuelableCompProps.fuelCapacity / refuelableCompProps.FuelMultiplierCurrentDifficulty;
 
-                return new(fuelThingDef, rearmCost.ToDecimal(0));
+                return new(fuelThingDef, Mathf.CeilToInt(rearmCost));
             }
         }
 
