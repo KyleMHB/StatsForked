@@ -100,4 +100,12 @@
         <workerClass>Stats.Pawn_CaravanCarryingCapacityColumnWorker</workerClass>
     </Stats.ColumnDef>
 
+    <Stats.ColumnDef>
+        <defName>Pawn_Weapons</defName>
+        <label>Weapons</label>
+        <description>Possible weapons that this creature can spawn with.</description>
+        <title><RangedWeapon/></title>
+        <workerClass>Stats.Pawn_WeaponsColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
 </Defs>

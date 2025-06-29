@@ -101,6 +101,8 @@ public static class SystemSingleExtensions
 public static class VerseThingDefExtensions
 {
     private static readonly Dictionary<ThingDef, HashSet<RecipeDef>> ThingDefRecipes = [];
+    private static readonly Dictionary<ThingDef, HashSet<PawnKindDef>> PawnKinds = [];
+    private static readonly Dictionary<string, HashSet<ThingDef>> WeaponsByTag = [];
     static VerseThingDefExtensions()
     {
         foreach (var recipeDef in DefDatabase<RecipeDef>.AllDefsListForReading)
@@ -118,6 +120,45 @@ public static class VerseThingDefExtensions
                 else
                 {
                     ThingDefRecipes[producedThingDef] = [recipeDef];
+                }
+            }
+        }
+
+        foreach (var pawnKindDef in DefDatabase<PawnKindDef>.AllDefsListForReading)
+        {
+            if (pawnKindDef.race == null)
+            {
+                continue;
+            }
+
+            PawnKinds.TryGetValue(pawnKindDef.race, out var pawnKindDefs);
+
+            if (pawnKindDefs != null)
+            {
+                pawnKindDefs.Add(pawnKindDef);
+            }
+            else
+            {
+                PawnKinds[pawnKindDef.race] = [pawnKindDef];
+            }
+        }
+
+        foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
+        {
+            if (thingDef.IsWeapon && thingDef.weaponTags?.Count > 0)
+            {
+                foreach (var tag in thingDef.weaponTags)
+                {
+                    WeaponsByTag.TryGetValue(tag, out var weapons);
+
+                    if (weapons != null)
+                    {
+                        weapons.Add(thingDef);
+                    }
+                    else
+                    {
+                        WeaponsByTag[tag] = [thingDef];
+                    }
                 }
             }
         }
@@ -171,6 +212,42 @@ public static class VerseThingDefExtensions
         }
 
         return 0f;
+    }
+    public static HashSet<PawnKindDef>? GetPawnKindDefs(this ThingDef thingDef)
+    {
+        PawnKinds.TryGetValue(thingDef, out var pawnKindDefs);
+
+        return pawnKindDefs;
+    }
+    // TODO: Cache this too?
+    public static HashSet<ThingDef>? GetPossibleWeapons(this ThingDef thingDef)
+    {
+        var pawnKindDefs = thingDef.GetPawnKindDefs();
+
+        if (pawnKindDefs?.Count > 0)
+        {
+            var result = new HashSet<ThingDef>();
+
+            foreach (var pawnKindDef in pawnKindDefs)
+            {
+                if (pawnKindDef.weaponTags != null)
+                {
+                    foreach (var tag in pawnKindDef.weaponTags)
+                    {
+                        WeaponsByTag.TryGetValue(tag, out var weapons);
+
+                        if (weapons != null)
+                        {
+                            result.AddRange(weapons);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        return null;
     }
 }
 

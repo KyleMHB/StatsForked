@@ -417,6 +417,7 @@
             <li MayRequire="Ludeon.RimWorld.Biotech">Mech_RechargerNeeded</li>
             <li>Thing_Recipes</li>
             <!-- Combat: Offense -->
+            <li>Pawn_Weapons</li>
             <li MayRequire="CETeam.CombatExtended">Pawn_WeaponHandling</li>
             <li>Pawn_ShootingAccuracy</li>
             <li>Pawn_AimingTime</li>

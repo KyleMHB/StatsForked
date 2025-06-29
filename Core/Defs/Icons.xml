@@ -308,4 +308,10 @@
         <path>UI/Designators/Tame</path>
     </Stats.IconDef>
 
+    <Stats.IconDef>
+        <defName>RangedWeapon</defName>
+        <path>Things/Item/Equipment/WeaponRanged/Revolver</path>
+        <scale>1.5</scale>
+    </Stats.IconDef>
+
 </Defs>
