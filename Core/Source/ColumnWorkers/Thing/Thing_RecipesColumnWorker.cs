@@ -265,7 +265,10 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
             {
                 var recipeUsers = recipeDef.GetAllRecipeUsers();
 
-                allRecipesUsers.AddRange(recipeUsers);
+                if (recipeUsers != null)
+                {
+                    allRecipesUsers.AddRange(recipeUsers);
+                }
             }
         }
 
