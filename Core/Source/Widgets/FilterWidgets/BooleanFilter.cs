@@ -6,7 +6,7 @@ namespace Stats.Widgets;
 internal sealed class BooleanFilter<TObject> : FilterWidgetWithInputField<TObject, bool, bool>
 {
     private Action<Rect> DrawValue;
-    public BooleanFilter(Func<TObject, bool> lhs) : base(lhs, true, [Operators.IsEqualTo.Instance])
+    public BooleanFilter(Func<TObject, bool> lhs, string? label = null) : base(lhs, true, [Operators.IsEqualTo.Instance], label: label)
     {
         DrawValue = DrawTrue;
     }

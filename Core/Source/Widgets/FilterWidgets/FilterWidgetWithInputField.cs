@@ -19,16 +19,24 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
     private const float OperatorButtonPadding = Globals.GUI.Pad;
     private readonly IEnumerable<AbsOperator> Operators;
     private readonly AbsOperator? DefaultOperator = null;
+    private readonly string OperatorButtonTextWhenIncative = "...";
+    private string OperatorButtonText => IsActive ? Operator.Symbol : OperatorButtonTextWhenIncative;
     protected FilterWidgetWithInputField(
         Func<TObject, TExprLhs> lhs,
         TExprRhs rhs,
         IEnumerable<AbsOperator> operators,
-        AbsOperator? defaultOperator = null
+        AbsOperator? defaultOperator = null,
+        string? label = null
     ) : base(lhs, rhs)
     {
         Operators = operators;
         DefaultOperator = operators.Count() == 1 ? operators.First() : defaultOperator;
         ResetButtonSize = new Vector2(Text.LineHeight, Text.LineHeight);
+
+        if (label != null)
+        {
+            OperatorButtonTextWhenIncative = label;
+        }
 
         var operatorsMenuOptions = new List<FloatMenuOption>(operators.Count());
 
@@ -131,7 +139,7 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
     {
         if (IsActive == false || Operators.Count() > 1)
         {
-            var size = Text.CalcSize(Operator.Symbol);
+            var size = Text.CalcSize(OperatorButtonText);
             size.x += OperatorButtonPadding * 2f;
 
             return size;
@@ -148,7 +156,7 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
 
         var color = IsActive ? Globals.GUI.TextHighlightColor : Color.white;
 
-        return Widgets.Draw.ButtonTextSubtle(rect, Operator.Symbol, color, OperatorButtonPadding);
+        return Widgets.Draw.ButtonTextSubtle(rect, OperatorButtonText, color, OperatorButtonPadding);
     }
     protected abstract Vector2 CalcInputFieldContentSize();
     private Vector2 CalcInputFieldSize()

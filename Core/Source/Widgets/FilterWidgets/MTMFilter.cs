@@ -9,7 +9,8 @@ internal sealed class MTMFilter<TObject, TOption> : NTMFilter<TObject, HashSet<T
 {
     public MTMFilter(
         Func<TObject, HashSet<TOption>> lhs,
-        IEnumerable<NTMFilterOption<TOption>> options
+        IEnumerable<NTMFilterOption<TOption>> options,
+        string? label = null
     ) : base(
         lhs,
         options,
@@ -23,7 +24,8 @@ internal sealed class MTMFilter<TObject, TOption> : NTMFilter<TObject, HashSet<T
             Operators.IsEqualTo.Instance,
             Operators.IsNotEqualTo.Instance,
         ],
-        Operators.IntersectsWith.Instance
+        Operators.IntersectsWith.Instance,
+        label
     )
     {
     }

@@ -47,8 +47,10 @@ public sealed class Animal_ProductsColumnWorker : ThingDefSetColumnWorker<ThingA
     private readonly Func<ThingAlike, HashSet<ThingCategoryDef>> GetProductCategories;
     public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
     {
-        var typeFilter = base.GetFilterWidget(tableRecords).Tooltip("Filter by type");
-        var categoryFilter = Make.MTMDefFilter(GetProductCategories, tableRecords).Tooltip("Filter by category");
+        var typeFilter = Make.MTMThingDefFilter(GetCachedValue, tableRecords, "T")
+            .Tooltip("Filter by type");
+        var categoryFilter = Make.MTMDefFilter(GetProductCategories, tableRecords, "Cat.")
+            .Tooltip("Filter by category");
 
         // TODO: Implement proper category filter (like the one stockpile uses).
         return Make.CompositeFilter<ThingAlike>([typeFilter, categoryFilter], true);

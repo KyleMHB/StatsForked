@@ -46,8 +46,9 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidgetWith
         Func<TObject, TExprLhs> lhs,
         IEnumerable<NTMFilterOption<TOption>> options,
         IEnumerable<AbsOperator> operators,
-        AbsOperator? defaultOperator = null
-    ) : base(lhs, [], operators, defaultOperator)
+        AbsOperator? defaultOperator = null,
+        string? label = null
+    ) : base(lhs, [], operators, defaultOperator, label)
     {
         Options = options;
         SelectedOptionsCountString = "0";

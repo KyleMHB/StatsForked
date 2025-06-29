@@ -5,14 +5,15 @@ namespace Stats.Widgets;
 
 internal sealed class StringFilter<TObject> : FilterWidgetWithInputField<TObject, string, string>
 {
-    public StringFilter(Func<TObject, string> lhs) : base(
+    public StringFilter(Func<TObject, string> lhs, string? label = null) : base(
         lhs,
         "",
         [
             Operators.Contains.Instance,
             Operators.NotContains.Instance,
         ],
-        Operators.Contains.Instance
+        Operators.Contains.Instance,
+        label
     )
     {
     }

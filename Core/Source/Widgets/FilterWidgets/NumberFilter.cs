@@ -48,14 +48,14 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
         }
     }
     private static readonly Color ErrorColor = Color.red.ToTransparent(0.5f);
-    public NumberFilter(Func<TObject, decimal> lhs) : base(lhs, 0m, [
+    public NumberFilter(Func<TObject, decimal> lhs, string? label = null) : base(lhs, 0m, [
         Operators.IsEqualTo.Instance,
         Operators.IsNotEqualTo.Instance,
         Operators.IsGreaterThan.Instance,
         Operators.IsLesserThan.Instance,
         Operators.IsGreaterThanOrEqualTo.Instance,
         Operators.IsLesserThanOrEqualTo.Instance,
-    ])
+    ], label: label)
     {
     }
     protected override Vector2 CalcInputFieldContentSize()

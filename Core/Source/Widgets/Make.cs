@@ -8,30 +8,33 @@ namespace Stats.Widgets;
 public static class Make
 {
     #region Basic filters
-    public static FilterWidget<TObject> StringFilter<TObject>(Func<TObject, string> lhs)
+    public static FilterWidget<TObject> StringFilter<TObject>(Func<TObject, string> lhs, string? label = null)
     {
-        return new StringFilter<TObject>(lhs);
+        return new StringFilter<TObject>(lhs, label);
     }
-    public static FilterWidget<TObject> NumberFilter<TObject>(Func<TObject, decimal> lhs)
+    public static FilterWidget<TObject> NumberFilter<TObject>(Func<TObject, decimal> lhs, string? label = null)
     {
-        return new NumberFilter<TObject>(lhs);
+        return new NumberFilter<TObject>(lhs, label);
     }
-    public static FilterWidget<TObject> BooleanFilter<TObject>(Func<TObject, bool> lhs)
+    public static FilterWidget<TObject> BooleanFilter<TObject>(Func<TObject, bool> lhs, string? label = null)
     {
-        return new BooleanFilter<TObject>(lhs);
+        return new BooleanFilter<TObject>(lhs, label);
     }
     #endregion
+
     #region One-to-many filters
     public static FilterWidget<TObject> OTMFilter<TObject, TOption>(
         Func<TObject, TOption> lhs,
-        IEnumerable<NTMFilterOption<TOption>> options
+        IEnumerable<NTMFilterOption<TOption>> options,
+        string? label = null
     )
     {
-        return new OTMFilter<TObject, TOption>(lhs, options);
+        return new OTMFilter<TObject, TOption>(lhs, options, label);
     }
     public static FilterWidget<TObject> OTMFilter<TObject, TOption>(
         Func<TObject, TOption> lhs,
-        IEnumerable<TObject> objects
+        IEnumerable<TObject> objects,
+        string? label = null
     )
     {
         var options = objects
@@ -42,11 +45,12 @@ public static class Make
                 option => option == null ? new() : new(option, option.ToString())
             );
 
-        return OTMFilter(lhs, options);
+        return OTMFilter(lhs, options, label);
     }
     public static FilterWidget<TObject> OTMThingDefFilter<TObject, TOption>(
         Func<TObject, TOption> lhs,
-        IEnumerable<TObject> objects
+        IEnumerable<TObject> objects,
+        string? label = null
     ) where TOption : ThingDef?
     {
         var options = objects
@@ -59,11 +63,12 @@ public static class Make
                     : new(thingDef, thingDef.LabelCap, new ThingIcon(thingDef))
             );
 
-        return OTMFilter(lhs, options);
+        return OTMFilter(lhs, options, label);
     }
     public static FilterWidget<TObject> OTMDefFilter<TObject, TOption>(
         Func<TObject, TOption> lhs,
-        IEnumerable<TObject> objects
+        IEnumerable<TObject> objects,
+        string? label = null
     ) where TOption : Def?
     {
         var options = objects
@@ -74,20 +79,23 @@ public static class Make
                 def => def == null ? new() : new(def, def.LabelCap)
             );
 
-        return OTMFilter(lhs, options);
+        return OTMFilter(lhs, options, label);
     }
     #endregion
+
     #region Many-to-many filters
     public static FilterWidget<TObject> MTMFilter<TObject, TOption>(
         Func<TObject, HashSet<TOption>> lhs,
-        IEnumerable<NTMFilterOption<TOption>> options
+        IEnumerable<NTMFilterOption<TOption>> options,
+        string? label = null
     )
     {
-        return new MTMFilter<TObject, TOption>(lhs, options);
+        return new MTMFilter<TObject, TOption>(lhs, options, label);
     }
     public static FilterWidget<TObject> MTMThingDefFilter<TObject, TOption>(
         Func<TObject, HashSet<TOption>> lhs,
-        IEnumerable<TObject> objects
+        IEnumerable<TObject> objects,
+        string? label = null
     ) where TOption : ThingDef
     {
         var options = objects
@@ -100,11 +108,12 @@ public static class Make
                     : new(thingDef, thingDef.LabelCap, new ThingIcon(thingDef))
             );
 
-        return MTMFilter(lhs, options);
+        return MTMFilter(lhs, options, label);
     }
     public static FilterWidget<TObject> MTMDefFilter<TObject, TOption>(
         Func<TObject, HashSet<TOption>> lhs,
-        IEnumerable<TObject> objects
+        IEnumerable<TObject> objects,
+        string? label = null
     ) where TOption : Def
     {
         var options = objects
@@ -115,9 +124,10 @@ public static class Make
                 def => def == null ? new() : new(def, def.LabelCap)
             );
 
-        return MTMFilter(lhs, options);
+        return MTMFilter(lhs, options, label);
     }
     #endregion
+
     #region Misc filters
     public static FilterWidget<TObject> CompositeFilter<TObject>(List<Widget> filters, bool stretchItems = false)
     {
