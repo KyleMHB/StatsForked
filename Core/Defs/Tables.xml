@@ -140,9 +140,7 @@
             <li>Building_FuelCapacity</li>
             <li>Building_FuelConsumptionRate</li>
             <li>Building_DaysPerRefuel</li>
-            <li>Building_ConstructionSkillPrerequisite</li>
-            <li>Building_ResourcesRequiredForConstruction</li>
-            <li>Building_WorkToBuild</li>
+            <li>Building_Recipe</li>
             <li>Building_Size</li>
             <li>Building_IsReinstallable</li>
             <li>Thing_MarketValue</li>
@@ -161,9 +159,7 @@
             <li>Building_JoyGainFactor</li>
             <li>Building_RecreationType</li>
             <li>Thing_Beauty</li>
-            <li>Building_ConstructionSkillPrerequisite</li>
-            <li>Building_ResourcesRequiredForConstruction</li>
-            <li>Building_WorkToBuild</li>
+            <li>Building_Recipe</li>
             <li>Building_PowerConsumption</li>
             <li>Building_Size</li>
             <li>Building_IsReinstallable</li>
@@ -188,9 +184,7 @@
             <li>Thing_Beauty</li>
             <li>Bed_FitsSmallAnimals</li>
             <li>Bed_FitsLargeAnimals</li>
-            <li>Building_ConstructionSkillPrerequisite</li>
-            <li>Building_ResourcesRequiredForConstruction</li>
-            <li>Building_WorkToBuild</li>
+            <li>Building_Recipe</li>
             <li>Building_PowerConsumption</li>
             <li>Building_Size</li>
             <li>Building_IsReinstallable</li>
@@ -209,9 +203,7 @@
             <li>Thing_Label</li>
             <li>Building_Comfort</li>
             <li>Thing_Beauty</li>
-            <li>Building_ConstructionSkillPrerequisite</li>
-            <li>Building_ResourcesRequiredForConstruction</li>
-            <li>Building_WorkToBuild</li>
+            <li>Building_Recipe</li>
             <li>Building_Size</li>
             <li>Building_IsReinstallable</li>
             <li>Thing_MarketValue</li>
@@ -487,9 +479,7 @@
             <li>Weapon_ProjectileBuildingDamageFactorImpassable</li>
             <li>Thing_MaxHitPoints</li>
             <li>Turret_IsManned</li>
-            <li>Building_ConstructionSkillPrerequisite</li>
-            <li>Building_ResourcesRequiredForConstruction</li>
-            <li>Building_WorkToBuild</li>
+            <li>Building_Recipe</li>
             <li>Building_PowerConsumption</li>
             <li>Building_Size</li>
             <li>Building_IsReinstallable</li>

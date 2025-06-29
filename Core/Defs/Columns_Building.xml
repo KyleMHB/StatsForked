@@ -3,26 +3,9 @@
 <Defs>
 
     <Stats.ColumnDef>
-        <defName>Building_ConstructionSkillPrerequisite</defName>
-        <label>construction skill required</label>
-        <title>LVL<Construction/></title>
-        <workerClass>Stats.Building_ConstructionSkillPrerequisiteColumnWorker</workerClass>
-    </Stats.ColumnDef>
-
-    <Stats.ColumnDef>
-        <defName>Building_ResourcesRequiredForConstruction</defName>
-        <labelKey>Stat_Building_ResourcesToMake</labelKey>
-        <title>Resources</title>
-        <descriptionKey>Stat_Building_ResourcesToMakeDesc</descriptionKey>
-        <workerClass>Stats.Building_ResourcesRequiredForConstructionColumnWorker</workerClass>
-    </Stats.ColumnDef>
-
-    <Stats.ColumnDef Class="Stats.StatColumnDef">
-        <defName>Building_WorkToBuild</defName>
-        <title>Work</title>
-        <stat>WorkToBuild</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
-        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+        <defName>Building_Recipe</defName>
+        <label>recipe</label>
+        <workerClass>Stats.Building_RecipeColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
