@@ -17,7 +17,7 @@ public sealed class Plant_NutritionPerHarvestPerDayColumnWorker : NumberColumnWo
             var productNutrition = plantProps.harvestedThingDef.GetStatValuePerceived(StatDefOf.Nutrition);
             var nutritionPerHarvest = plantProps.harvestYield * productNutrition;
 
-            return (nutritionPerHarvest / plantProps.growDays).ToDecimal(3);
+            return (nutritionPerHarvest / plantProps.GetGrowDaysActual()).ToDecimal(3);
         }
 
         return 0m;

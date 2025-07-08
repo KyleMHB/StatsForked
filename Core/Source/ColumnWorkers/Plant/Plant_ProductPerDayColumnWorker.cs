@@ -11,7 +11,7 @@ public sealed class Plant_ProductPerDayColumnWorker : NumberColumnWorker<ThingAl
 
         if (plantProps is { growDays: > 0f })
         {
-            return (plantProps.harvestYield / plantProps.growDays).ToDecimal(2);
+            return (plantProps.harvestYield / plantProps.GetGrowDaysActual()).ToDecimal(2);
         }
 
         return 0m;

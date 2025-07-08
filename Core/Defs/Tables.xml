@@ -236,7 +236,7 @@
         <columns>
             <li>Thing_Label</li>
             <li>Plant_MinGrowingSkillToSow</li>
-            <li>Plant_GrowingTime</li>
+            <li>Plant_GrowingTimeActual</li>
             <li>Plant_HarvestYield</li>
             <li>Plant_ProductPerDay</li>
             <li>Plant_NutritionPerHarvest</li>

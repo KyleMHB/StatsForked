@@ -11,11 +11,11 @@
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
-        <defName>Plant_GrowingTime</defName>
-        <labelKey>GrowingTime</labelKey>
-        <descriptionKey>GrowingTimeDesc</descriptionKey>
+        <defName>Plant_GrowingTimeActual</defName>
+        <label>actual growing time</label>
+        <description>Estimated actual plant growing time.</description>
         <title><Time/><PlantGrow/></title>
-        <workerClass>Stats.Plant_GrowingTimeColumnWorker</workerClass>
+        <workerClass>Stats.Plant_GrowingTimeActualColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>

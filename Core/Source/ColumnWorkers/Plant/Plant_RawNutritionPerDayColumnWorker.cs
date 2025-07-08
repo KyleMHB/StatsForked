@@ -15,7 +15,7 @@ public sealed class Plant_RawNutritionPerDayColumnWorker : NumberColumnWorker<Th
         {
             var nutrition = thing.Def.GetStatValuePerceived(StatDefOf.Nutrition);
 
-            return (nutrition / plantProps.growDays).ToDecimal(3);
+            return (nutrition / plantProps.GetGrowDaysActual()).ToDecimal(3);
         }
 
         return 0m;

@@ -308,3 +308,12 @@ public static class RimWorldCompProperties_EggLayerExtensions
         return compProps.eggUnfertilizedDef ?? compProps.eggFertilizedDef;
     }
 }
+
+public static class RimWorldPlantPropertiesExtensions
+{
+    public static float GetGrowDaysActual(this PlantProperties plantProperties)
+    {
+        // Source: wiki
+        return plantProperties.growDays / 0.5417f;
+    }
+}
