@@ -9,20 +9,20 @@ namespace Stats;
 
 public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
 {
-    private static readonly Func<ThingAlike, string> GetThingLabel =
-        FunctionExtensions.Memoized((ThingAlike thing) =>
-        {
-            // Note to myself: Don't remove stuff label. It's important because
-            // modded stuffs may have the same color as vanilla ones or other modded stuffs.
-            // Replacing label with icon won't do, because ex. all of the leathers have the same
-            // icon but of different color.
-            return thing.StuffDef == null
-                ? thing.Def.LabelCap.RawText
-                : $"{thing.StuffDef.LabelAsStuff.CapitalizeFirst()} {thing.Def.label}";
-        });
     public Thing_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
+    private static readonly Func<ThingAlike, string> GetThingLabel =
+    FunctionExtensions.Memoized((ThingAlike thing) =>
+    {
+        // Note to myself: Don't remove stuff label. It's important because
+        // modded stuffs may have the same color as vanilla ones or other modded stuffs.
+        // Replacing label with icon won't do, because ex. all of the leathers have the same
+        // icon but of different color.
+        return thing.StuffDef == null
+            ? thing.Def.LabelCap.RawText
+            : $"{thing.StuffDef.LabelAsStuff.CapitalizeFirst()} {thing.Def.label}";
+    });
     public override Widget? GetTableCellWidget(ThingAlike thing)
     {
         void openDefInfoDialog()
@@ -46,11 +46,13 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
 
         if (anyThingIsMadeFromStuff)
         {
-            var stuffFilter = Make.OTMThingDefFilter(thing => thing.StuffDef, tableRecords, "Mat.");
+            var stuffFilter = Make.OTMThingDefFilter(thing => thing.StuffDef, tableRecords, "M");
+            var baseTypeFilter = Make.OTMThingDefFilter(thing => thing.Def, tableRecords, "T");
 
             return Make.CompositeFilter<ThingAlike>([
                 new StuffedVariantsDisplayModeToggleButton(),
                 stuffFilter.Tooltip("Filter by material."),
+                baseTypeFilter.Tooltip("Filter by base type."),
                 labelFilter.WidthRel(1f).Tooltip("Filter by label.")
             ]);
         }
@@ -69,34 +71,26 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
         public override event Action<FilterWidget<ThingAlike>>? OnChange;
         private const string ButtonTextActive = "D";
         private const string ButtonTextDisabled = "A";
+        private string ButtonText => _IsActive ? ButtonTextActive : ButtonTextDisabled;
+        private Color ButtonTextColor => _IsActive ? Globals.GUI.TextHighlightColor : Color.white;
+        private const float ButtonPaddingHor = Globals.GUI.Pad;
         private static readonly TipSignal Manual =
             "Click to switch material variants display mode:\n" +
             "A - \"All\"'. Show every variant.\n" +
             "D - \"Distinct\". Show only distinct variants. Material for each distinct variant is chosen based on item's type definition.";
         protected override Vector2 CalcSize()
         {
-            return new Vector2(Text.LineHeight, Text.LineHeight);
+            var size = Text.CalcSize(ButtonText);
+            size.x += ButtonPaddingHor * 2f;
+
+            return size;
         }
         public override void Draw(Rect rect, Vector2 _)
         {
             var origTextAnchor = Text.Anchor;
             Text.Anchor = TextAnchor.LowerCenter;
 
-            string buttonText;
-            Color buttonTextColor;
-
-            if (_IsActive)
-            {
-                buttonText = ButtonTextActive;
-                buttonTextColor = Globals.GUI.TextHighlightColor;
-            }
-            else
-            {
-                buttonText = ButtonTextDisabled;
-                buttonTextColor = Color.white;
-            }
-
-            if (Widgets.Draw.ButtonTextSubtle(rect, buttonText, buttonTextColor))
+            if (Widgets.Draw.ButtonTextSubtle(rect, ButtonText, ButtonTextColor, ButtonPaddingHor))
             {
                 _IsActive = !_IsActive;
 
