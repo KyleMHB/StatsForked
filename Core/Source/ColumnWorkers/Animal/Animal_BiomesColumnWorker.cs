@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using RimWorld;
 using Stats.Widgets;
-using UnityEngine;
 using Verse;
 
 namespace Stats;

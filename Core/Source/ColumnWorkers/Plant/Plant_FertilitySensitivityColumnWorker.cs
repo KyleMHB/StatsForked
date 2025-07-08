@@ -1,21 +1,19 @@
-﻿using Verse;
+﻿namespace Stats;
 
-namespace Stats;
-
-public sealed class Plant_FertilitySensitivityColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+public sealed class Plant_FertilitySensitivityColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Plant_FertilitySensitivityColumnWorker(ColumnDef columndef) : base(columndef)
+    public Plant_FertilitySensitivityColumnWorker(ColumnDef columnDef) : base(columnDef, formatString: "0\\%")
     {
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override decimal GetValue(ThingAlike thing)
     {
         var plantProps = thing.Def.plant;
 
-        if (plantProps == null || plantProps.fertilitySensitivity == 0f)
+        if (plantProps?.fertilitySensitivity > 0f)
         {
-            return "";
+            return (100f * plantProps.fertilitySensitivity).ToDecimal(0);
         }
 
-        return plantProps.fertilitySensitivity.ToStringPercent();
+        return 0m;
     }
 }

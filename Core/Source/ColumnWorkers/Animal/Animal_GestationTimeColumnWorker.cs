@@ -13,12 +13,7 @@ public sealed class Animal_GestationTimeColumnWorker : NumberColumnWorker<ThingA
 
         if (raceProps != null)
         {
-            var gestationTime = AnimalProductionUtility.GestationDaysLitter(thing.Def);
-
-            if (gestationTime > 0f)
-            {
-                return gestationTime.ToDecimal(1);
-            }
+            return AnimalProductionUtility.GestationDaysLitter(thing.Def).ToDecimal(1);
         }
 
         return 0m;

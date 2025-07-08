@@ -1,19 +1,19 @@
 ﻿namespace Stats;
 
-public sealed class Plant_LifeSpanColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+public sealed class Plant_LifeSpanColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Plant_LifeSpanColumnWorker(ColumnDef columndef) : base(columndef)
+    public Plant_LifeSpanColumnWorker(ColumnDef columnDef) : base(columnDef, formatString: "0.0 d")
     {
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override decimal GetValue(ThingAlike thing)
     {
         var plantProps = thing.Def.plant;
 
-        if (plantProps == null)
+        if (plantProps?.LifespanDays > 0f)
         {
-            return "";
+            return plantProps.LifespanDays.ToDecimal(1);
         }
 
-        return $"{plantProps.LifespanDays:0.##} d";
+        return 0m;
     }
 }

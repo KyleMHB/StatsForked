@@ -2,21 +2,22 @@
 
 namespace Stats;
 
-public sealed class Weapon_RPMColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+public sealed class Weapon_RPMColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Weapon_RPMColumnWorker(ColumnDef columndef) : base(columndef)
+    public Weapon_RPMColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0 rpm")
     {
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override decimal GetValue(ThingAlike thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
         var verb = thingDef.Verbs.Primary();
 
+        // Reminder: This is not IRL RPM.
         if (verb is { Ranged: true, showBurstShotStats: true, burstShotCount: > 1 })
         {
-            return (60f / verb.ticksBetweenBurstShots.TicksToSeconds()).ToString("0 rpm");
+            return (60f / verb.ticksBetweenBurstShots.TicksToSeconds()).ToDecimal(0);
         }
 
-        return "";
+        return 0m;
     }
 }

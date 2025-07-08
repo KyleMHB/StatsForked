@@ -12,18 +12,12 @@ public sealed class Animal_ProductsNutritionPerDayColumnWorker : NumberColumnWor
         var milkNutritionPerDay = 0f;
         var milkableCompProps = thing.Def.GetCompProperties<CompProperties_Milkable>();
 
-        if (milkableCompProps is { milkDef: not null, milkAmount: > 0, milkIntervalDays: > 0 })
+        if (milkableCompProps is { milkDef: not null, milkIntervalDays: > 0 })
         {
-            var statRequest = StatRequest.For(milkableCompProps.milkDef, null);
-            var nutritionStatWorker = StatDefOf.Nutrition.Worker;
+            var milkNutrition = milkableCompProps.milkDef.GetStatValuePerceived(StatDefOf.Nutrition);
+            var milkPerDay = (float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays;
 
-            if (nutritionStatWorker.ShouldShowFor(statRequest))
-            {
-                var milkNutrition = nutritionStatWorker.GetValue(statRequest);
-                var milkPerDay = (float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays;
-
-                milkNutritionPerDay = milkPerDay * milkNutrition;
-            }
+            milkNutritionPerDay = milkPerDay * milkNutrition;
         }
 
         var eggsNutritionPerDay = 0f;
@@ -31,17 +25,11 @@ public sealed class Animal_ProductsNutritionPerDayColumnWorker : NumberColumnWor
 
         if (eggLayerCompProps is { eggLayIntervalDays: > 0 })
         {
-            var eggType = eggLayerCompProps.eggUnfertilizedDef ?? eggLayerCompProps.eggFertilizedDef;
-            var statRequest = StatRequest.For(eggType, null);
-            var nutritionStatWorker = StatDefOf.Nutrition.Worker;
+            var eggDef = eggLayerCompProps.GetAnyEggDef();
+            var eggNutrition = eggDef.GetStatValuePerceived(StatDefOf.Nutrition);
+            var eggsPerDay = eggLayerCompProps.eggCountRange.Average / eggLayerCompProps.eggLayIntervalDays;
 
-            if (nutritionStatWorker.ShouldShowFor(statRequest))
-            {
-                var eggNutrition = nutritionStatWorker.GetValue(statRequest);
-                var eggsPerDay = eggLayerCompProps.eggCountRange.Average / eggLayerCompProps.eggLayIntervalDays;
-
-                eggsNutritionPerDay = eggsPerDay * eggNutrition;
-            }
+            eggsNutritionPerDay = eggsPerDay * eggNutrition;
         }
 
         return (milkNutritionPerDay + eggsNutritionPerDay).ToDecimal(2);

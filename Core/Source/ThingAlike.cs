@@ -8,6 +8,10 @@ Notes:
 
 ---
 
+Basically a lighter version of RimWorld.StatRequest.
+
+---
+
 Using structs results in less (long-lived) objects allocated on heap. Which means less work for GC.
 
 ---
@@ -21,8 +25,6 @@ var thing1 = new ThingAlike(thingDef, stuffDef);
 var thing2 = new ThingAlike(thingDef, stuffDef);
 
 thing1 == thing2;// true
-  
-We don't have to necessarily use a struct for this, but given how and what ThingAlike is used for, it makes sense for it to be a struct. Basically it is a lighter version of RimWorld.StatRequest.
 
 */
 

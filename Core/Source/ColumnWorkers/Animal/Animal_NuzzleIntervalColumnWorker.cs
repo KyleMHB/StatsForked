@@ -11,13 +11,7 @@ public sealed class Animal_NuzzleIntervalColumnWorker : NumberColumnWorker<Thing
 
         if (raceProps != null)
         {
-            var interval = raceProps.nuzzleMtbHours;
-
-            if (interval > 0f)
-            {
-                return interval.ToDecimal(1);
-
-            }
+            return raceProps.nuzzleMtbHours.ToDecimal(1);
         }
 
         return 0m;

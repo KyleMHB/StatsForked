@@ -11,7 +11,7 @@ public sealed class Animal_MilkPerDayColumnWorker : NumberColumnWorker<ThingAlik
     {
         var milkableCompProps = thing.Def.GetCompProperties<CompProperties_Milkable>();
 
-        if (milkableCompProps != null)
+        if (milkableCompProps is { milkIntervalDays: > 0 })
         {
             return ((float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays).ToDecimal(1);
         }

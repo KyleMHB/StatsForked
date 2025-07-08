@@ -1,26 +1,19 @@
-﻿using Verse;
+﻿namespace Stats;
 
-namespace Stats;
-
-public sealed class Animal_WildnessColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+public sealed class Animal_WildnessColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Animal_WildnessColumnWorker(ColumnDef columndef) : base(columndef)
+    public Animal_WildnessColumnWorker(ColumnDef columnDef) : base(columnDef, formatString: "0\\%")
     {
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override decimal GetValue(ThingAlike thing)
     {
         var raceProps = thing.Def.race;
 
-        if (raceProps != null)
+        if (raceProps?.wildness > 0f)
         {
-            var wildness = raceProps.wildness;
-
-            if (wildness > 0f)
-            {
-                return wildness.ToStringPercent();
-            }
+            return (100f * raceProps.wildness).ToDecimal(0);
         }
 
-        return "";
+        return 0m;
     }
 }

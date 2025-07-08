@@ -64,7 +64,7 @@ public sealed class Building_RecipeColumnWorker : ColumnWorker<ThingAlike>
         // Ingredients
         var ingredientWidgets = new List<Widget>(costList.Keys.Count);
 
-        foreach (var (thingDef, cost) in costList.OrderBy(entry => entry.Key.GetStatValueOrDefault(StatDefOf.MarketValue)))
+        foreach (var (thingDef, cost) in costList.OrderBy(entry => entry.Key.GetStatValueAbstract(StatDefOf.MarketValue)))
         {
             var ingredientWidget = new HorizontalContainer([
                 new Label(costList[thingDef].ToString()),
@@ -76,7 +76,7 @@ public sealed class Building_RecipeColumnWorker : ColumnWorker<ThingAlike>
         }
 
         // Work amount
-        var workAmount = thing.Def.GetStatValueAbstract(StatDefOf.WorkToBuild, thing.StuffDef);
+        var workAmount = thing.Def.GetStatValuePerceived(StatDefOf.WorkToBuild, thing.StuffDef);
 
         // Skill(s)
         // TODO: Handle artistic skill prerequisite (if we even need to).
@@ -111,7 +111,7 @@ public sealed class Building_RecipeColumnWorker : ColumnWorker<ThingAlike>
     private static readonly Func<ThingAlike, float> GetWorkAmount =
     FunctionExtensions.Memoized((ThingAlike thing) =>
     {
-        return thing.Def.GetStatValueOrDefault(StatDefOf.WorkToBuild, thing.StuffDef);
+        return thing.Def.GetStatValuePerceived(StatDefOf.WorkToBuild, thing.StuffDef);
     });
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {

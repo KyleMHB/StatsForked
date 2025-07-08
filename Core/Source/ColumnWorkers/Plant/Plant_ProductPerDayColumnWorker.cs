@@ -9,7 +9,7 @@ public sealed class Plant_ProductPerDayColumnWorker : NumberColumnWorker<ThingAl
     {
         var plantProps = thing.Def.plant;
 
-        if (plantProps is { harvestYield: > 0f, growDays: > 0f })
+        if (plantProps is { growDays: > 0f })
         {
             return (plantProps.harvestYield / plantProps.growDays).ToDecimal(2);
         }

@@ -13,7 +13,7 @@ public sealed class Animal_EggsAmountColumnWorker : ThingDefCountColumnWorker<Th
 
         if (eggLayerCompProps != null)
         {
-            var eggDef = eggLayerCompProps.eggUnfertilizedDef ?? eggLayerCompProps.eggFertilizedDef;
+            var eggDef = eggLayerCompProps.GetAnyEggDef();
             var count = eggLayerCompProps.eggCountRange.Average.ToDecimal(0);
 
             return new(eggDef, count);

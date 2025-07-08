@@ -1,21 +1,19 @@
-﻿using Verse;
+﻿namespace Stats;
 
-namespace Stats;
-
-public sealed class Plant_LightRequirementColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+public sealed class Plant_LightRequirementColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Plant_LightRequirementColumnWorker(ColumnDef columndef) : base(columndef)
+    public Plant_LightRequirementColumnWorker(ColumnDef columDef) : base(columDef, formatString: "0\\%")
     {
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override decimal GetValue(ThingAlike thing)
     {
         var plantProps = thing.Def.plant;
 
-        if (plantProps == null || plantProps.growMinGlow == 0f)
+        if (plantProps?.growMinGlow > 0f)
         {
-            return "";
+            return (100f * plantProps.growMinGlow).ToDecimal(0);
         }
 
-        return plantProps.growMinGlow.ToStringPercent();
+        return 0m;
     }
 }

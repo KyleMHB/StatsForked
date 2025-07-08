@@ -13,21 +13,15 @@ public sealed class Animal_MeatNutritionPerDayColumnWorker : NumberColumnWorker<
 
         if (raceProps is { meatDef: not null })
         {
-            var statRequest = StatRequest.For(thing.Def.race.meatDef, null);
-            var nutritionStatWorker = StatDefOf.Nutrition.Worker;
+            var growthTime = AnimalProductionUtility.DaysToAdulthood(thing.Def);
 
-            if (nutritionStatWorker.ShouldShowFor(statRequest))
+            if (growthTime > 0f)
             {
-                var growthTime = AnimalProductionUtility.DaysToAdulthood(thing.Def);
+                var meatNutrition = thing.Def.race.meatDef.GetStatValuePerceived(StatDefOf.Nutrition);
+                var meatAmount = AnimalProductionUtility.AdultMeatAmount(thing.Def);
+                var meatPerDay = meatAmount / growthTime;
 
-                if (growthTime > 0f)
-                {
-                    var meatNutrition = nutritionStatWorker.GetValue(statRequest);
-                    var meatAmount = AnimalProductionUtility.AdultMeatAmount(thing.Def);
-                    var meatPerDay = meatAmount / growthTime;
-
-                    return (meatPerDay * meatNutrition).ToDecimal(2);
-                }
+                return (meatPerDay * meatNutrition).ToDecimal(2);
             }
         }
 

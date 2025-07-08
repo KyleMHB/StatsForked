@@ -9,19 +9,15 @@ public sealed class Plant_NutritionPerHarvestPerDayColumnWorker : NumberColumnWo
     }
     protected override decimal GetValue(ThingAlike thing)
     {
-        // TODO: This is mostly copy paste from PlantNutritionPerHarvestColumnWorker.
+        // TODO: This is mostly copy paste from Plant_NutritionPerHarvestColumnWorker.
         var plantProps = thing.Def.plant;
 
-        if (plantProps?.harvestedThingDef != null)
+        if (plantProps is { harvestedThingDef: not null, growDays: > 0f })
         {
-            var statRequest = StatRequest.For(plantProps.harvestedThingDef, null);
+            var productNutrition = plantProps.harvestedThingDef.GetStatValuePerceived(StatDefOf.Nutrition);
+            var nutritionPerHarvest = plantProps.harvestYield * productNutrition;
 
-            if (StatDefOf.Nutrition.Worker.ShouldShowFor(statRequest))
-            {
-                var result = plantProps.harvestYield * StatDefOf.Nutrition.Worker.GetValue(statRequest);
-
-                return (result / plantProps.growDays).ToDecimal(3);
-            }
+            return (nutritionPerHarvest / plantProps.growDays).ToDecimal(3);
         }
 
         return 0m;

@@ -11,7 +11,7 @@ public sealed class Animal_WoolPerDayColumnWorker : NumberColumnWorker<ThingAlik
     {
         var shearableCompProps = thing.Def.GetCompProperties<CompProperties_Shearable>();
 
-        if (shearableCompProps != null)
+        if (shearableCompProps is { shearIntervalDays: > 0 })
         {
             return ((float)shearableCompProps.woolAmount / shearableCompProps.shearIntervalDays).ToDecimal(1);
         }

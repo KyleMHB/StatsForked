@@ -13,12 +13,7 @@ public sealed class Animal_GrowthTimeColumnWorker : NumberColumnWorker<ThingAlik
 
         if (raceProps != null)
         {
-            var growthTime = AnimalProductionUtility.DaysToAdulthood(thing.Def);
-
-            if (growthTime > 0f)
-            {
-                return growthTime.ToDecimal(0);
-            }
+            return AnimalProductionUtility.DaysToAdulthood(thing.Def).ToDecimal(0);
         }
 
         return 0m;

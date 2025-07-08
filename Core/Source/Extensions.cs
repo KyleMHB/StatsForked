@@ -202,7 +202,7 @@ public static class VerseThingDefExtensions
 
         return recipeDefs;
     }
-    public static float GetStatValueOrDefault(this ThingDef thingDef, StatDef statDef, ThingDef? stuffDef = null)
+    public static float GetStatValuePerceived(this ThingDef thingDef, StatDef statDef, ThingDef? stuffDef = null)
     {
         var statRequest = StatRequest.For(thingDef, stuffDef);
 
@@ -298,5 +298,13 @@ public static class VerseRecipeDefExtensions
         RecipeUsers.TryGetValue(recipeDef, out var recipeUsers);
 
         return recipeUsers;
+    }
+}
+
+public static class RimWorldCompProperties_EggLayerExtensions
+{
+    public static ThingDef GetAnyEggDef(this CompProperties_EggLayer compProps)
+    {
+        return compProps.eggUnfertilizedDef ?? compProps.eggFertilizedDef;
     }
 }

@@ -1,20 +1,20 @@
 ﻿namespace Stats;
 
-public sealed class Weapon_RangedMissRadiusColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+public sealed class Weapon_RangedMissRadiusColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Weapon_RangedMissRadiusColumnWorker(ColumnDef columndef) : base(columndef)
+    public Weapon_RangedMissRadiusColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0")
     {
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override decimal GetValue(ThingAlike thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
         var verb = thingDef.Verbs.Primary();
 
-        if (verb?.ForcedMissRadius > 0f)
+        if (verb != null)
         {
-            return verb.ForcedMissRadius.ToString("0.#");
+            return verb.ForcedMissRadius.ToDecimal(1);
         }
 
-        return "";
+        return 0m;
     }
 }

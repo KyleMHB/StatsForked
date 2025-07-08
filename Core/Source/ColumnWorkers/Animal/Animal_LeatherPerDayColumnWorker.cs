@@ -13,19 +13,13 @@ public sealed class Animal_LeatherPerDayColumnWorker : NumberColumnWorker<ThingA
 
         if (raceProps != null)
         {
-            var statRequest = StatRequest.For(thing.Def, null);
-            var leatherAmountStatWorker = StatDefOf.LeatherAmount.Worker;
+            var growthTime = AnimalProductionUtility.DaysToAdulthood(thing.Def);
 
-            if (leatherAmountStatWorker.ShouldShowFor(statRequest))
+            if (growthTime > 0f)
             {
-                var growthTime = AnimalProductionUtility.DaysToAdulthood(thing.Def);
+                var leatherAmount = thing.Def.GetStatValuePerceived(StatDefOf.LeatherAmount);
 
-                if (growthTime > 0f)
-                {
-                    var leatherAmount = leatherAmountStatWorker.GetValue(statRequest);
-
-                    return (leatherAmount / growthTime).ToDecimal(1);
-                }
+                return (leatherAmount / growthTime).ToDecimal(1);
             }
         }
 

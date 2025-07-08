@@ -4,26 +4,20 @@ namespace Stats;
 
 public sealed class Animal_EggsNutritionPerDayColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Animal_EggsNutritionPerDayColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.00/d")
+    public Animal_EggsNutritionPerDayColumnWorker(ColumnDef columnDef) : base(columnDef, formatString: "0.00/d")
     {
     }
     protected override decimal GetValue(ThingAlike thing)
     {
         var eggLayerCompProps = thing.Def.GetCompProperties<CompProperties_EggLayer>();
 
-        if (eggLayerCompProps is { eggLayIntervalDays: > 0 })
+        if (eggLayerCompProps is { eggLayIntervalDays: > 0f })
         {
-            var eggType = eggLayerCompProps.eggUnfertilizedDef ?? eggLayerCompProps.eggFertilizedDef;
-            var statRequest = StatRequest.For(eggType, null);
-            var nutritionStatWorker = StatDefOf.Nutrition.Worker;
+            var eggDef = eggLayerCompProps.GetAnyEggDef();
+            var eggNutrition = eggDef.GetStatValuePerceived(StatDefOf.Nutrition);
+            var eggsPerDay = eggLayerCompProps.eggCountRange.Average / eggLayerCompProps.eggLayIntervalDays;
 
-            if (nutritionStatWorker.ShouldShowFor(statRequest))
-            {
-                var eggNutrition = nutritionStatWorker.GetValue(statRequest);
-                var eggsPerDay = eggLayerCompProps.eggCountRange.Average / eggLayerCompProps.eggLayIntervalDays;
-
-                return (eggsPerDay * eggNutrition).ToDecimal(2);
-            }
+            return (eggsPerDay * eggNutrition).ToDecimal(2);
         }
 
         return 0m;

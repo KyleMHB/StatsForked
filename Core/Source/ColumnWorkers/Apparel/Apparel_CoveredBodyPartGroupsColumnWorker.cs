@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Verse;
 
@@ -18,6 +19,11 @@ public sealed class Apparel_CoveredBodyPartGroupsColumnWorker : DefSetColumnWork
     }
     protected override HashSet<BodyPartGroupDef> GetValue(ThingAlike thing)
     {
-        return thing.Def.apparel?.bodyPartGroups.ToHashSet() ?? [];
+        return GetBodyPartGroupDefSet(thing.Def);
     }
+    private static readonly Func<ThingDef, HashSet<BodyPartGroupDef>> GetBodyPartGroupDefSet =
+    FunctionExtensions.Memoized((ThingDef thingDef) =>
+    {
+        return thingDef.apparel?.bodyPartGroups.ToHashSet() ?? [];
+    });
 }

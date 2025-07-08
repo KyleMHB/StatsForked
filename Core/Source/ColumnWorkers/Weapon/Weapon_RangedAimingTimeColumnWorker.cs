@@ -2,21 +2,21 @@
 
 namespace Stats;
 
-public sealed class Weapon_RangedAimingTimeColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+public sealed class Weapon_RangedAimingTimeColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Weapon_RangedAimingTimeColumnWorker(ColumnDef columndef) : base(columndef)
+    public Weapon_RangedAimingTimeColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.00 " + "LetterSecond".Translate())
     {
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override decimal GetValue(ThingAlike thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
         var verb = thingDef.Verbs.Primary();
 
         if (verb?.warmupTime > 0f)
         {
-            return $"{verb.warmupTime:0.##} {"LetterSecond".Translate()}";
+            return verb.warmupTime.ToDecimal(2);
         }
 
-        return "";
+        return 0m;
     }
 }

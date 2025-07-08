@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Verse;
 
@@ -11,6 +12,11 @@ public sealed class Apparel_OccupiedLayersColumnWorker : DefSetColumnWorker<Thin
     }
     protected override HashSet<ApparelLayerDef> GetValue(ThingAlike thing)
     {
-        return thing.Def.apparel?.layers.ToHashSet() ?? [];
+        return GetApparelLayerDefSet(thing.Def);
     }
+    private static readonly Func<ThingDef, HashSet<ApparelLayerDef>> GetApparelLayerDefSet =
+    FunctionExtensions.Memoized((ThingDef thingDef) =>
+    {
+        return thingDef.apparel?.layers.ToHashSet() ?? [];
+    });
 }

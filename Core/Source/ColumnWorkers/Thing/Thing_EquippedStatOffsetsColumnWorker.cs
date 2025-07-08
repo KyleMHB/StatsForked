@@ -14,17 +14,17 @@ public sealed class Thing_EquippedStatOffsetsColumnWorker : ColumnWorker<ThingAl
     public Thing_EquippedStatOffsetsColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
-    private static readonly Func<ThingAlike, string> GetOffsetsString =
-    FunctionExtensions.Memoized((ThingAlike thing) =>
+    private static readonly Func<ThingDef, string> GetOffsetsString =
+    FunctionExtensions.Memoized((ThingDef thingDef) =>
     {
-        if (GetOffsetsCount(thing) == 0)
+        if (GetOffsetsCount(thingDef) == 0)
         {
             return "";
         }
 
         var result = new StringBuilder();
 
-        foreach (var offset in thing.Def.equippedStatOffsets)
+        foreach (var offset in thingDef.equippedStatOffsets)
         {
             result.Append(offset.stat.LabelCap);
             result.Append(GetOffsetValueString(offset));
@@ -32,9 +32,9 @@ public sealed class Thing_EquippedStatOffsetsColumnWorker : ColumnWorker<ThingAl
 
         return result.ToString();
     });
-    private static int GetOffsetsCount(ThingAlike thing)
+    private static int GetOffsetsCount(ThingDef thingDef)
     {
-        return thing.Def.equippedStatOffsets?.Count ?? 0;
+        return thingDef.equippedStatOffsets?.Count ?? 0;
     }
     private static string GetOffsetValueString(StatModifier offset)
     {
@@ -46,7 +46,7 @@ public sealed class Thing_EquippedStatOffsetsColumnWorker : ColumnWorker<ThingAl
     }
     public override Widget? GetTableCellWidget(ThingAlike thing)
     {
-        if (GetOffsetsCount(thing) == 0)
+        if (GetOffsetsCount(thing.Def) == 0)
         {
             return null;
         }
@@ -77,10 +77,10 @@ public sealed class Thing_EquippedStatOffsetsColumnWorker : ColumnWorker<ThingAl
     }
     public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> _)
     {
-        return Make.StringFilter(GetOffsetsString);
+        return Make.StringFilter<ThingAlike>(thing => GetOffsetsString(thing.Def));
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {
-        return GetOffsetsCount(thing1).CompareTo(GetOffsetsCount(thing2));
+        return GetOffsetsCount(thing1.Def).CompareTo(GetOffsetsCount(thing2.Def));
     }
 }

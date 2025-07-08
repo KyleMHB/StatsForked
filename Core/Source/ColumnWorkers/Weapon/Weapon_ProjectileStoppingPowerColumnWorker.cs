@@ -1,16 +1,16 @@
 ﻿namespace Stats;
 
-public sealed class Weapon_ProjectileStoppingPowerColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+public sealed class Weapon_ProjectileStoppingPowerColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Weapon_ProjectileStoppingPowerColumnWorker(ColumnDef columndef) : base(columndef)
+    public Weapon_ProjectileStoppingPowerColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0")
     {
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override decimal GetValue(ThingAlike thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
         var verb = thingDef.Verbs.Primary();
         var defaultProj = verb?.defaultProjectile?.projectile;
 
-        return defaultProj?.stoppingPower.ToString("F1") ?? "";
+        return defaultProj?.stoppingPower.ToDecimal(1) ?? 0m;
     }
 }

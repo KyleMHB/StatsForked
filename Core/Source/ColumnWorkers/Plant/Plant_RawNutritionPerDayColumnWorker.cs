@@ -11,20 +11,11 @@ public sealed class Plant_RawNutritionPerDayColumnWorker : NumberColumnWorker<Th
     {
         var plantProps = thing.Def.plant;
 
-        if (plantProps != null && plantProps.growDays > 0f)
+        if (plantProps is { growDays: > 0f })
         {
-            var stat = StatDefOf.Nutrition;
-            var statRequest = StatRequest.For(thing.Def, null);
+            var nutrition = thing.Def.GetStatValuePerceived(StatDefOf.Nutrition);
 
-            if (stat.Worker.ShouldShowFor(statRequest))
-            {
-                var nutrition = stat.Worker.GetValue(statRequest);
-
-                if (nutrition > 0f)
-                {
-                    return (nutrition / plantProps.growDays).ToDecimal(3);
-                }
-            }
+            return (nutrition / plantProps.growDays).ToDecimal(3);
         }
 
         return 0m;

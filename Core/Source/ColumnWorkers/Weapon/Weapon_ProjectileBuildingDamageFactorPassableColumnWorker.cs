@@ -1,23 +1,21 @@
-﻿using Verse;
+﻿namespace Stats;
 
-namespace Stats;
-
-public sealed class Weapon_ProjectileBuildingDamageFactorPassableColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+public sealed class Weapon_ProjectileBuildingDamageFactorPassableColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Weapon_ProjectileBuildingDamageFactorPassableColumnWorker(ColumnDef columndef) : base(columndef)
+    public Weapon_ProjectileBuildingDamageFactorPassableColumnWorker(ColumnDef columnDef) : base(columnDef, formatString: "0\\%")
     {
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override decimal GetValue(ThingAlike thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
         var verb = thingDef.Verbs.Primary();
         var damageDef = verb?.defaultProjectile?.projectile?.damageDef;
 
-        if (damageDef != null && damageDef.buildingDamageFactorPassable != 1f)
+        if (damageDef != null)
         {
-            return damageDef.buildingDamageFactorPassable.ToStringPercent();
+            return (100f * damageDef.buildingDamageFactorPassable).ToDecimal(0);
         }
 
-        return "";
+        return 0m;
     }
 }

@@ -11,18 +11,12 @@ public sealed class Animal_MilkNutritionPerDayColumnWorker : NumberColumnWorker<
     {
         var milkableCompProps = thing.Def.GetCompProperties<CompProperties_Milkable>();
 
-        if (milkableCompProps is { milkDef: not null, milkAmount: > 0, milkIntervalDays: > 0 })
+        if (milkableCompProps is { milkDef: not null, milkIntervalDays: > 0 })
         {
-            var statRequest = StatRequest.For(milkableCompProps.milkDef, null);
-            var nutritionStatWorker = StatDefOf.Nutrition.Worker;
+            var milkNutrition = milkableCompProps.milkDef.GetStatValuePerceived(StatDefOf.Nutrition);
+            var milkPerDay = (float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays;
 
-            if (nutritionStatWorker.ShouldShowFor(statRequest))
-            {
-                var milkNutrition = nutritionStatWorker.GetValue(statRequest);
-                var milkPerDay = (float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays;
-
-                return (milkPerDay * milkNutrition).ToDecimal(2);
-            }
+            return (milkPerDay * milkNutrition).ToDecimal(2);
         }
 
         return 0m;

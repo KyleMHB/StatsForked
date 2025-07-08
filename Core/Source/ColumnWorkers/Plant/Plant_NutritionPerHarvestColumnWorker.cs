@@ -13,14 +13,10 @@ public sealed class Plant_NutritionPerHarvestColumnWorker : NumberColumnWorker<T
 
         if (plantProps?.harvestedThingDef != null)
         {
-            var statRequest = StatRequest.For(plantProps.harvestedThingDef, null);
+            var productNutrition = plantProps.harvestedThingDef.GetStatValuePerceived(StatDefOf.Nutrition);
+            var nutritionPerHarvest = plantProps.harvestYield * productNutrition;
 
-            if (StatDefOf.Nutrition.Worker.ShouldShowFor(statRequest))
-            {
-                var result = plantProps.harvestYield * StatDefOf.Nutrition.Worker.GetValue(statRequest);
-
-                return result.ToDecimal(2);
-            }
+            return nutritionPerHarvest.ToDecimal(2);
         }
 
         return 0m;

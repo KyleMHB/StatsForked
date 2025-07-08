@@ -31,7 +31,7 @@ public sealed class Animal_ProductsColumnWorker : ThingDefSetColumnWorker<ThingA
         var eggLayerCompProps = thing.Def.GetCompProperties<CompProperties_EggLayer>();
         if (eggLayerCompProps != null)
         {
-            var eggDef = eggLayerCompProps.eggUnfertilizedDef ?? eggLayerCompProps.eggFertilizedDef;
+            var eggDef = eggLayerCompProps.GetAnyEggDef();
 
             products.Add(eggDef);
         }

@@ -13,12 +13,10 @@ public sealed class Pawn_MeatAmountColumnWorker : ThingDefCountColumnWorker<Thin
 
         if (meatDef != null)
         {
-            var statRequest = StatRequest.For(thing.Def, null);
+            var meatAmount = thing.Def.GetStatValuePerceived(StatDefOf.MeatAmount);
 
-            if (StatDefOf.MeatAmount.Worker.ShouldShowFor(statRequest))
+            if (meatAmount > 0f)
             {
-                var meatAmount = StatDefOf.MeatAmount.Worker.GetValue(statRequest);
-
                 return new(meatDef, meatAmount.ToDecimal(0));
             }
         }

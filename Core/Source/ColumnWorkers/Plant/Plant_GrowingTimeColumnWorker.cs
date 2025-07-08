@@ -1,19 +1,19 @@
 ﻿namespace Stats;
 
-public sealed class Plant_GrowingTimeColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+public sealed class Plant_GrowingTimeColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Plant_GrowingTimeColumnWorker(ColumnDef columndef) : base(columndef)
+    public Plant_GrowingTimeColumnWorker(ColumnDef columnDef) : base(columnDef, formatString: "0.0 d")
     {
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override decimal GetValue(ThingAlike thing)
     {
         var plantProps = thing.Def.plant;
 
-        if (plantProps == null)
+        if (plantProps?.growDays > 0f)
         {
-            return "";
+            return plantProps.growDays.ToDecimal(1);
         }
 
-        return $"{plantProps.growDays:0.##} d";
+        return 0m;
     }
 }

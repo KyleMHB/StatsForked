@@ -11,7 +11,7 @@ public abstract class Thing_BinaryStatColumnWorker : Thing_StatColumnWorker
     {
         Separator = columnDef.statValueSeparator[0];
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override string? GetStatDrawEntryLabel(ThingAlike thing)
     {
         var worker = Stat.Worker;
         var statRequest = StatRequest.For(thing.Def, thing.StuffDef);
@@ -26,15 +26,15 @@ public abstract class Thing_BinaryStatColumnWorker : Thing_StatColumnWorker
             // only for display purposes it can have a value of 0,
             // but display non-zero value.
 
-            if (label?.Length > 0)
+            if (label != null)
             {
                 return ParsePartFromLabel(label);
             }
         }
 
-        return "";
+        return null;
     }
-    protected abstract string ParsePartFromLabel(string label);
+    protected abstract string? ParsePartFromLabel(string label);
 }
 
 public sealed class Thing_BinaryStatColumnWorker_Left : Thing_BinaryStatColumnWorker
@@ -42,7 +42,7 @@ public sealed class Thing_BinaryStatColumnWorker_Left : Thing_BinaryStatColumnWo
     public Thing_BinaryStatColumnWorker_Left(BinaryStatColumnDef columnDef) : base(columnDef)
     {
     }
-    protected override string ParsePartFromLabel(string label)
+    protected override string? ParsePartFromLabel(string label)
     {
         label = label.Split(Separator).First();
 
@@ -51,7 +51,7 @@ public sealed class Thing_BinaryStatColumnWorker_Left : Thing_BinaryStatColumnWo
             return label.TrimEnd();
         }
 
-        return "";
+        return null;
     }
 }
 
@@ -60,7 +60,7 @@ public sealed class Thing_BinaryStatColumnWorker_Right : Thing_BinaryStatColumnW
     public Thing_BinaryStatColumnWorker_Right(BinaryStatColumnDef columnDef) : base(columnDef)
     {
     }
-    protected override string ParsePartFromLabel(string label)
+    protected override string? ParsePartFromLabel(string label)
     {
         label = label.Split(Separator).Last();
 
@@ -69,6 +69,6 @@ public sealed class Thing_BinaryStatColumnWorker_Right : Thing_BinaryStatColumnW
             return label.TrimStart();
         }
 
-        return "";
+        return null;
     }
 }

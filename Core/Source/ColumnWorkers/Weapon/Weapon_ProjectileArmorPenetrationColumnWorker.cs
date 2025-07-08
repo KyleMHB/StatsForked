@@ -1,13 +1,11 @@
-﻿using Verse;
+﻿namespace Stats;
 
-namespace Stats;
-
-public sealed class Weapon_ProjectileArmorPenetrationColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+public sealed class Weapon_ProjectileArmorPenetrationColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Weapon_ProjectileArmorPenetrationColumnWorker(ColumnDef columndef) : base(columndef)
+    public Weapon_ProjectileArmorPenetrationColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0\\%")
     {
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override decimal GetValue(ThingAlike thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
         var verb = thingDef.Verbs.Primary();
@@ -15,13 +13,13 @@ public sealed class Weapon_ProjectileArmorPenetrationColumnWorker : StatDrawEntr
 
         if (defaultProj?.damageDef is { harmsHealth: true, armorCategory: not null })
         {
-            return defaultProj.GetArmorPenetration(null).ToStringPercent();
+            return (100f * defaultProj.GetArmorPenetration(null)).ToDecimal(0);
         }
         else if (defaultProj == null && verb?.beamDamageDef != null)
         {
-            return verb.beamDamageDef.defaultArmorPenetration.ToStringPercent();
+            return (100f * verb.beamDamageDef.defaultArmorPenetration).ToDecimal(0);
         }
 
-        return "";
+        return 0m;
     }
 }

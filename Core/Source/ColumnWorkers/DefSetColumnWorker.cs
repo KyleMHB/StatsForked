@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Stats.Widgets;
 using Verse;
 
@@ -17,32 +18,33 @@ public abstract class DefSetColumnWorker<TObject, TValue> : ColumnWorker<TObject
             GetCachedValue = GetCachedValue.Memoized();
         }
 
-        GetDefLabels = FunctionExtensions.Memoized((TObject @object) =>
+        GetDefLabels = FunctionExtensions.Memoized((HashSet<TValue> defs) =>
         {
-            var defs = GetCachedValue(@object);
-
             if (defs.Count == 0)
             {
                 return "";
             }
 
-            var defLabels = defs
-                .OrderBy(GetDefLabel)
-                .Select(GetDefLabel);
+            var stringBuilder = new StringBuilder();
 
-            return string.Join("\n", defLabels);
+            foreach (var def in defs.OrderBy(GetDefLabel))
+            {
+                stringBuilder.AppendInNewLine(GetDefLabel(def));
+            }
+
+            return stringBuilder.ToString();
         });
     }
     protected readonly Func<TObject, HashSet<TValue>> GetCachedValue;
     protected abstract HashSet<TValue> GetValue(TObject @object);
-    private readonly Func<TObject, string> GetDefLabels;
+    private readonly Func<HashSet<TValue>, string> GetDefLabels;
     protected virtual string GetDefLabel(TValue def)
     {
         return def.LabelCap;
     }
     public override Widget? GetTableCellWidget(TObject @object)
     {
-        var defLabels = GetDefLabels(@object);
+        var defLabels = GetDefLabels(GetCachedValue(@object));
 
         if (defLabels.Length == 0)
         {
@@ -65,6 +67,6 @@ public abstract class DefSetColumnWorker<TObject, TValue> : ColumnWorker<TObject
     }
     public sealed override int Compare(TObject object1, TObject object2)
     {
-        return GetDefLabels(object1).CompareTo(GetDefLabels(object2));
+        return GetDefLabels(GetCachedValue(object1)).CompareTo(GetDefLabels(GetCachedValue(object2)));
     }
 }

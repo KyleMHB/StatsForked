@@ -13,12 +13,10 @@ public sealed class Pawn_LeatherAmountColumnWorker : ThingDefCountColumnWorker<T
 
         if (leatherDef != null)
         {
-            var statRequest = StatRequest.For(thing.Def, null);
+            var leatherAmount = thing.Def.GetStatValuePerceived(StatDefOf.LeatherAmount);
 
-            if (StatDefOf.LeatherAmount.Worker.ShouldShowFor(statRequest))
+            if (leatherAmount > 0f)
             {
-                var leatherAmount = StatDefOf.LeatherAmount.Worker.GetValue(statRequest);
-
                 return new(leatherDef, leatherAmount.ToDecimal(0));
             }
         }

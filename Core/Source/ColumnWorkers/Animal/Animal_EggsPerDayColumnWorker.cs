@@ -11,7 +11,7 @@ public sealed class Animal_EggsPerDayColumnWorker : NumberColumnWorker<ThingAlik
     {
         var eggLayerCompProps = thing.Def.GetCompProperties<CompProperties_EggLayer>();
 
-        if (eggLayerCompProps != null)
+        if (eggLayerCompProps is { eggLayIntervalDays: > 0f })
         {
             return (eggLayerCompProps.eggCountRange.Average / eggLayerCompProps.eggLayIntervalDays).ToDecimal(1);
         }

@@ -1,14 +1,14 @@
 ﻿namespace Stats;
 
-public sealed class Weapon_RangeColumnWorker : StatDrawEntryColumnWorker<ThingAlike>
+public sealed class Weapon_RangeColumnWorker : NumberColumnWorker<ThingAlike>
 {
-    public Weapon_RangeColumnWorker(ColumnDef columndef) : base(columndef)
+    public Weapon_RangeColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0")
     {
     }
-    protected override string GetStatDrawEntryLabel(ThingAlike thing)
+    protected override decimal GetValue(ThingAlike thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
 
-        return thingDef.Verbs.Primary()?.range.ToString("F0") ?? "";
+        return thingDef.Verbs.Primary()?.range.ToDecimal(0) ?? 0m;
     }
 }
