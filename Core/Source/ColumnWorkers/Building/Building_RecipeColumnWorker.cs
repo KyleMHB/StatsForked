@@ -81,7 +81,7 @@ public sealed class Building_RecipeColumnWorker : ColumnWorker<ThingAlike>
         // Skill(s)
         // TODO: Handle artistic skill prerequisite (if we even need to).
         var constructionSkillLevelString = thing.Def.constructionSkillPrerequisite > 0
-            ? thing.Def.constructionSkillPrerequisite.ToString().Colorize(Globals.GUI.TextHighlightColor)
+            ? thing.Def.constructionSkillPrerequisite.ToString().Colorize(Globals.GUI.TextColorHighlight)
             : "any";
 
         return new VerticalContainer([
@@ -103,10 +103,10 @@ public sealed class Building_RecipeColumnWorker : ColumnWorker<ThingAlike>
     {
         var recourcesFilter = Make.MTMThingDefFilter(GetResourceDefs, tableRecords, "Resources")
             .Tooltip("Filter by resources.");
-        var constructionSkillLevelFilter = Make.NumberFilter<ThingAlike>(thing => thing.Def.constructionSkillPrerequisite, "Constr. lvl")
+        var constructionSkillLevelFilter = Make.NumberFilter<ThingAlike>(thing => thing.Def.constructionSkillPrerequisite)
             .Tooltip($"Filter by {SkillDefOf.Construction.label} skill level.");
 
-        return Make.CompositeFilter<ThingAlike>([recourcesFilter, constructionSkillLevelFilter], true);
+        return Make.CompositeFilter<ThingAlike>([recourcesFilter, constructionSkillLevelFilter]);
     }
     private static readonly Func<ThingAlike, float> GetWorkAmount =
     FunctionExtensions.Memoized((ThingAlike thing) =>

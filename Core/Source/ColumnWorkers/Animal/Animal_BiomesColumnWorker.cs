@@ -76,7 +76,7 @@ public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
 
             if (biomeRecords.Count > 1)
             {
-                text += $" ({biomeRecords.Count})".Colorize(Globals.GUI.SecondaryTextColor);
+                text += $" ({biomeRecords.Count})".Colorize(Globals.GUI.TextColorSecondary);
 
                 var stringBuilder = new StringBuilder();
 
@@ -113,7 +113,7 @@ public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
     {
         public override string ToString()
         {
-            return $"{BiomeDef.LabelCap}: {Commonality.ToString("0.###").Colorize(Globals.GUI.TextHighlightColor)}";
+            return $"{BiomeDef.LabelCap}: {Commonality.ToString("0.###").Colorize(Globals.GUI.TextColorHighlight)}";
         }
     }
 }

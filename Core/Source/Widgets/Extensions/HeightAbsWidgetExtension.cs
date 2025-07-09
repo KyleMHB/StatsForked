@@ -2,10 +2,10 @@
 
 namespace Stats.Widgets.Extensions;
 
-public sealed class AbsHeightWidgetExtension : WidgetExtension
+public sealed class HeightAbsWidgetExtension : WidgetExtension
 {
     private readonly float Height;
-    internal AbsHeightWidgetExtension(Widget widget, float height) : base(widget)
+    internal HeightAbsWidgetExtension(Widget widget, float height) : base(widget)
     {
         Height = height;
     }

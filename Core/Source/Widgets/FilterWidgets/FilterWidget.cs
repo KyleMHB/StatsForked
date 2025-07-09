@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Verse;
 
 namespace Stats.Widgets;
@@ -11,7 +12,7 @@ public abstract class FilterWidget<TObject> : Widget
     public abstract void Reset();
 }
 
-internal abstract class FilterWidget<TObject, TExprLhs, TExprRhs> : FilterWidget<TObject> where TExprRhs : notnull
+internal abstract class FilterWidget<TObject, TExprLhs, TExprRhs> : FilterWidget<TObject>
 {
     private readonly Func<TObject, TExprLhs> Lhs;
     private TExprRhs _Rhs;
@@ -20,7 +21,7 @@ internal abstract class FilterWidget<TObject, TExprLhs, TExprRhs> : FilterWidget
         get => _Rhs;
         set
         {
-            if (_Rhs.Equals(value))
+            if (EqualityComparer<TExprRhs>.Default.Equals(Rhs, value))
             {
                 return;
             }
@@ -29,8 +30,8 @@ internal abstract class FilterWidget<TObject, TExprLhs, TExprRhs> : FilterWidget
             OnChange?.Invoke(this);
         }
     }
-    private AbsOperator _Operator = EmptyOperator.Instance;
-    protected AbsOperator Operator
+    private AbsOperator _Operator;
+    protected virtual AbsOperator Operator
     {
         get => _Operator;
         set
@@ -44,12 +45,13 @@ internal abstract class FilterWidget<TObject, TExprLhs, TExprRhs> : FilterWidget
             OnChange?.Invoke(this);
         }
     }
+    private readonly AbsOperator DefaultOperator;
     public sealed override event Action<FilterWidget<TObject>>? OnChange;
-    public sealed override bool IsActive => _Operator != EmptyOperator.Instance;
-    protected FilterWidget(Func<TObject, TExprLhs> lhs, TExprRhs rhs)
+    protected FilterWidget(Func<TObject, TExprLhs> lhs, TExprRhs rhs, AbsOperator defaultOperator)
     {
         Lhs = lhs;
         _Rhs = rhs;
+        _Operator = DefaultOperator = defaultOperator;
     }
     public sealed override bool Eval(TObject thing)
     {
@@ -67,10 +69,11 @@ internal abstract class FilterWidget<TObject, TExprLhs, TExprRhs> : FilterWidget
     }
     public override void Reset()
     {
-        Operator = EmptyOperator.Instance;
+        Operator = DefaultOperator;
     }
     protected void NotifyChanged()
     {
+        Resize();
         OnChange?.Invoke(this);
     }
 
@@ -84,15 +87,5 @@ internal abstract class FilterWidget<TObject, TExprLhs, TExprRhs> : FilterWidget
             Description = description;
         }
         public abstract bool Eval(TExprLhs lhs, TExprRhs rhs);
-    }
-
-    // This operator exists only because i don't want to define Operator property as
-    // nullable, because it will slow down the whole thing a bit. The table doesn't
-    // evaluate empty expressions anyway.
-    private sealed class EmptyOperator : AbsOperator
-    {
-        private EmptyOperator() : base("...") { }
-        public override bool Eval(TExprLhs lhs, TExprRhs rhs) => true;
-        public static EmptyOperator Instance { get; } = new();
     }
 }

@@ -42,18 +42,18 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
     public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
     {
         var anyThingIsMadeFromStuff = tableRecords.Any(record => record.StuffDef != null);
-        var labelFilter = Make.StringFilter(GetThingLabel, anyThingIsMadeFromStuff ? "Label" : null);
+        var labelFilter = Make.StringFilter(GetThingLabel);
 
         if (anyThingIsMadeFromStuff)
         {
-            var stuffFilter = Make.OTMThingDefFilter(thing => thing.StuffDef, tableRecords, "M");
-            var baseTypeFilter = Make.OTMThingDefFilter(thing => thing.Def, tableRecords, "T");
+            var stuffFilter = Make.OTMThingDefFilter(thing => thing.StuffDef, tableRecords, "Material");
+            var baseTypeFilter = Make.OTMThingDefFilter(thing => thing.Def, tableRecords, "Type");
 
             return Make.CompositeFilter<ThingAlike>([
+                labelFilter.Tooltip("Filter by label."),
+                baseTypeFilter.Tooltip("Filter by base type."),
                 new StuffedVariantsDisplayModeToggleButton(),
                 stuffFilter.Tooltip("Filter by material."),
-                baseTypeFilter.Tooltip("Filter by base type."),
-                labelFilter.WidthRel(1f).Tooltip("Filter by label.")
             ]);
         }
 
@@ -69,15 +69,11 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
         private bool _IsActive = false;
         public override bool IsActive => _IsActive;
         public override event Action<FilterWidget<ThingAlike>>? OnChange;
-        private const string ButtonTextActive = "D";
-        private const string ButtonTextDisabled = "A";
-        private string ButtonText => _IsActive ? ButtonTextActive : ButtonTextDisabled;
-        private Color ButtonTextColor => _IsActive ? Globals.GUI.TextHighlightColor : Color.white;
-        private const float ButtonPaddingHor = Globals.GUI.Pad;
+        private const string ButtonText = "Distinct";
+        private const float ButtonPaddingHor = Globals.GUI.PadSm;
         private static readonly TipSignal Manual =
-            "Click to switch material variants display mode:\n" +
-            "A - \"All\"'. Show every variant.\n" +
-            "D - \"Distinct\". Show only distinct variants. Material for each distinct variant is chosen based on item's type definition.";
+            "Show only distinct item material variants.\n\n" +
+            "Material for each distinct variant is chosen based on item's type definition.";
         protected override Vector2 CalcSize()
         {
             var size = Text.CalcSize(ButtonText);
@@ -88,9 +84,15 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
         public override void Draw(Rect rect, Vector2 _)
         {
             var origTextAnchor = Text.Anchor;
-            Text.Anchor = TextAnchor.LowerCenter;
+            Text.Anchor = TextAnchor.LowerLeft;
 
-            if (Widgets.Draw.ButtonTextSubtle(rect, ButtonText, ButtonTextColor, ButtonPaddingHor))
+            var origGUIColor = GUI.color;
+            if (_IsActive == false)
+            {
+                GUI.color = Globals.GUI.TextColorSecondary;
+            }
+
+            if (Widgets.Draw.ButtonTextSubtle(rect, ButtonText, GUI.color, ButtonPaddingHor))
             {
                 _IsActive = !_IsActive;
 
@@ -98,6 +100,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
             }
 
             Text.Anchor = origTextAnchor;
+            GUI.color = origGUIColor;
 
             TooltipHandler.TipRegion(rect, Manual);
         }

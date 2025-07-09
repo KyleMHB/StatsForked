@@ -4,7 +4,7 @@
 
     <Stats.ColumnDef>
         <defName>Thing_Label</defName>
-        <label>label</label>
+        <label>thing</label>
         <workerClass>Stats.Thing_LabelColumnWorker</workerClass>
     </Stats.ColumnDef>
 

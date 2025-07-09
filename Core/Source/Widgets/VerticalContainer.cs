@@ -68,7 +68,7 @@ public sealed class VerticalContainer : Widget
 
         if (StretchItems)
         {
-            additionalChildHeight = Mathf.Floor(size.y / Children.Count);
+            additionalChildHeight = Mathf.Round(size.y / Children.Count);
         }
 
         foreach (var child in Children)

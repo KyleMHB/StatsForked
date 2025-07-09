@@ -6,6 +6,7 @@ namespace Stats.Widgets;
 
 internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject, decimal, decimal>
 {
+    public override bool IsActive => _TextFieldText.Length > 0;
     private bool InputIsValid = true;
     private string _TextFieldText = "";
     private string TextFieldText
@@ -31,8 +32,15 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
 
             if (numWasParsed)
             {
+                var origRhs = Rhs;
                 Rhs = num;
                 InputIsValid = true;
+
+                // TODO: This is a hack to make typyng "0" in empty input field work.
+                if (origRhs == num)
+                {
+                    NotifyChanged();
+                }
             }
             else
             {
@@ -48,14 +56,14 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
         }
     }
     private static readonly Color ErrorColor = Color.red.ToTransparent(0.5f);
-    public NumberFilter(Func<TObject, decimal> lhs, string? label = null) : base(lhs, 0m, [
+    public NumberFilter(Func<TObject, decimal> lhs) : base(lhs, 0m, [
         Operators.IsEqualTo.Instance,
         Operators.IsNotEqualTo.Instance,
         Operators.IsGreaterThan.Instance,
         Operators.IsLesserThan.Instance,
         Operators.IsGreaterThanOrEqualTo.Instance,
         Operators.IsLesserThanOrEqualTo.Instance,
-    ], label: label)
+    ])
     {
     }
     protected override Vector2 CalcInputFieldContentSize()
@@ -69,14 +77,15 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
             Verse.Widgets.DrawBoxSolid(rect, ErrorColor);
         }
 
-        TextFieldText = Verse.Widgets.TextField(rect, _TextFieldText);
+        TextFieldText = GUI.TextField(rect, _TextFieldText);
     }
     public override void Reset()
     {
+        _TextFieldText = "";
+
         base.Reset();
 
         Rhs = 0m;
-        _TextFieldText = "";
     }
 
     private static class Operators

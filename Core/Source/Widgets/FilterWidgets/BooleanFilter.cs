@@ -1,52 +1,52 @@
 ﻿using System;
 using UnityEngine;
+using Verse;
 
 namespace Stats.Widgets;
 
-internal sealed class BooleanFilter<TObject> : FilterWidgetWithInputField<TObject, bool, bool>
+internal sealed class BooleanFilter<TObject> : FilterWidget<TObject, bool, bool?>
 {
-    private Action<Rect> DrawValue;
-    public BooleanFilter(Func<TObject, bool> lhs, string? label = null) : base(lhs, true, [Operators.IsEqualTo.Instance], label: label)
+    public override bool IsActive => Rhs != null;
+    public BooleanFilter(Func<TObject, bool> lhs) : base(lhs, null, Operators.IsEqualTo.Instance)
     {
-        DrawValue = DrawTrue;
     }
-    protected override void HandleStateChange(FilterWidget<TObject> _)
+    protected override Vector2 CalcSize()
     {
-        DrawValue = Rhs switch
-        {
-            true => DrawTrue,
-            false => DrawFalse,
-        };
+        return new Vector2(Text.LineHeight * 2f, Text.LineHeight);
+    }
+    public override void Draw(Rect rect, Vector2 containerSize)
+    {
+        var origGUIColor = GUI.color;
 
-        base.HandleStateChange(this);
-    }
-    private void DrawTrue(Rect rect)
-    {
-        if (Widgets.Draw.ButtonImageSubtle(rect, Verse.Widgets.CheckboxOnTex))
+        if (Rhs != true)
         {
-            Rhs = false;
+            GUI.color = Globals.GUI.TextColorSecondary;
         }
-    }
-    private void DrawFalse(Rect rect)
-    {
+
+        if (Widgets.Draw.ButtonImageSubtle(rect.CutByX(rect.width / 2f), Verse.Widgets.CheckboxOnTex))
+        {
+            Rhs = Rhs == true ? null : true;
+        }
+
+        GUI.color = origGUIColor;
+
+        if (Rhs != false)
+        {
+            GUI.color = Globals.GUI.TextColorSecondary;
+        }
+
         if (Widgets.Draw.ButtonImageSubtle(rect, Verse.Widgets.CheckboxOffTex))
         {
-            Rhs = true;
+            Rhs = Rhs == false ? null : false;
         }
-    }
-    protected override Vector2 CalcInputFieldContentSize()
-    {
-        return new Vector2(Verse.Text.LineHeight, Verse.Text.LineHeight);
-    }
-    protected override void DrawInputField(Rect rect)
-    {
-        DrawValue(rect);
+
+        GUI.color = origGUIColor;
     }
     public override void Reset()
     {
         base.Reset();
 
-        Rhs = true;
+        Rhs = null;
     }
 
     private static class Operators
@@ -54,7 +54,7 @@ internal sealed class BooleanFilter<TObject> : FilterWidgetWithInputField<TObjec
         public sealed class IsEqualTo : AbsOperator
         {
             private IsEqualTo() : base("==") { }
-            public override bool Eval(bool lhs, bool rhs) => lhs == rhs;
+            public override bool Eval(bool lhs, bool? rhs) => lhs == rhs;
             public static IsEqualTo Instance { get; } = new();
         }
     }

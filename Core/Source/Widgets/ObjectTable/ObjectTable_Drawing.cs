@@ -9,8 +9,9 @@ internal sealed partial class ObjectTable<TObject>
     private Vector2 ScrollPosition;
     private static readonly Color ColumnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
     private static readonly Color PinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
-    private const float CellPadHor = 15f;
-    private const float CellPadVer = 5f;
+    private const float CellPadHor = 12f;
+    private const float CellPadVer = 4f;
+    private Vector2 FiltersTabScrollPosition;
     public override void Draw(Rect rect)
     {
         // Why to do it like this?
@@ -22,6 +23,24 @@ internal sealed partial class ObjectTable<TObject>
         {
             ApplyFilters();
         }
+
+        // Filters tab
+        var filtersTabWidgetSize = FiltersTabWidget.GetSize(rect.size);
+        var filtersTabRect = rect.CutByX(filtersTabWidgetSize.x + GenUI.ScrollBarWidth);
+        var filtersTabRectMax = new Rect(Vector2.zero, filtersTabWidgetSize);
+        // Adds empty space for more convenient vertical scrolling.
+        filtersTabRectMax.height += filtersTabRect.height;
+
+        Verse.Widgets.BeginScrollView(filtersTabRect, ref FiltersTabScrollPosition, filtersTabRectMax, true);
+        FiltersTabWidget.DrawIn(filtersTabRectMax);
+        Verse.Widgets.EndScrollView();
+        Widgets.Draw.VerticalLine(
+            filtersTabRect.xMax,
+            rect.y,
+            rect.height,
+            MainTabWindow.BorderLineColor
+        );
+        rect.xMin += 1f;
 
         // Probably could cache this.
         var leftColumnsMinWidth = 0f;
@@ -109,6 +128,12 @@ internal sealed partial class ObjectTable<TObject>
         var horScrollPosition = scrollPosition with { y = 0f };
 
         DrawRows(headersRect, HeaderRows, horScrollPosition, cellExtraWidth, drawPinnedColumns);
+        Verse.Widgets.DrawLineHorizontal(
+            headersRect.x,
+            headersRect.yMax - 1f,
+            rect.width,
+            MainTabWindow.BorderLineColor
+        );
 
         if (drawPinnedColumns == false)
         {

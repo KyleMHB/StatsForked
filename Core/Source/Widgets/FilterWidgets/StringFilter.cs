@@ -5,15 +5,15 @@ namespace Stats.Widgets;
 
 internal sealed class StringFilter<TObject> : FilterWidgetWithInputField<TObject, string, string>
 {
-    public StringFilter(Func<TObject, string> lhs, string? label = null) : base(
+    public override bool IsActive => Rhs.Length > 0;
+    public StringFilter(Func<TObject, string> lhs) : base(
         lhs,
         "",
         [
             Operators.Contains.Instance,
             Operators.NotContains.Instance,
         ],
-        Operators.Contains.Instance,
-        label
+        Operators.Contains.Instance
     )
     {
     }
@@ -23,7 +23,7 @@ internal sealed class StringFilter<TObject> : FilterWidgetWithInputField<TObject
     }
     protected override void DrawInputField(Rect rect)
     {
-        Rhs = Verse.Widgets.TextField(rect, Rhs);
+        Rhs = GUI.TextField(rect, Rhs);
     }
     public override void Reset()
     {

@@ -11,21 +11,17 @@ internal sealed class CompositeFilter<TObject> : FilterWidget<TObject>
     public override event Action<FilterWidget<TObject>>? OnChange;
     private readonly List<FilterWidget<TObject>> Filters;
     private readonly Widget Container;
-    public CompositeFilter(List<Widget> filters, bool stretchItems = false)
+    public CompositeFilter(List<Widget> filterWidgets)
     {
-        Filters = filters.Select(widget => widget.Get<FilterWidget<TObject>>()).ToList();
+        Filters = filterWidgets.Select(widget => widget.Get<FilterWidget<TObject>>()).ToList();
 
         foreach (var filter in Filters)
         {
             filter.OnChange += filter => OnChange?.Invoke(this);
         }
 
-        Container = new HorizontalContainer(filters, shareFreeSpace: true, stretchItems: stretchItems);
+        Container = new VerticalContainer(filterWidgets.Select<Widget, Widget>(widget => widget.WidthRel(1f)).ToList(), Globals.GUI.PadXs);
         Container.Parent = this;
-    }
-    protected override Vector2 CalcSize(Vector2 containerSize)
-    {
-        return Container.GetSize(containerSize);
     }
     protected override Vector2 CalcSize()
     {
@@ -39,7 +35,7 @@ internal sealed class CompositeFilter<TObject> : FilterWidget<TObject>
     {
         // TODO: Maybe it will be a good idea to somehow pass table's filtering mode here
         // instead of hardcoding it to AND. But it may depend on the use case of the filter.
-        return Filters.All(filter => filter.Eval(@object));
+        return Filters.Where(filter => filter.IsActive).All(filter => filter.Eval(@object));
     }
     public override void Reset()
     {

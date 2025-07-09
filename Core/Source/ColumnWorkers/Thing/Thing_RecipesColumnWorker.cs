@@ -109,7 +109,7 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
 
                         if (thingDef.smallVolume)
                         {
-                            line += $" x{ThingDef.SmallUnitPerVolume}".Colorize(Globals.GUI.TextHighlightColor);
+                            line += $" x{ThingDef.SmallUnitPerVolume}".Colorize(Globals.GUI.TextColorHighlight);
                         }
 
                         stringBuilder.AppendLine(line);
@@ -175,7 +175,7 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
                 var recipeUsersTooltip = string.Join("\n", allRecipeUsers);
                 recipeUsersWidget = new HorizontalContainer([
                     recipeUsersWidget,
-                    new Label($" ({recipeUsers.Count})".Colorize(Globals.GUI.SecondaryTextColor))
+                    new Label($" ({recipeUsers.Count})".Colorize(Globals.GUI.TextColorSecondary))
                 ]).Tooltip(recipeUsersTooltip);
             }
 
@@ -206,13 +206,13 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
                 }
 
                 var skillLevelString = workSkillLevel > 0
-                    ? workSkillLevel.ToString().Colorize(Globals.GUI.TextHighlightColor)
+                    ? workSkillLevel.ToString().Colorize(Globals.GUI.TextColorHighlight)
                     : SkillLevelToString(workSkillLevel);
                 var skillString = $" | {recipeDef.workSkill.LabelCap}: {skillLevelString}";
 
                 if (skillsCount > 1)
                 {
-                    skillString += $" ({skillsCount})".Colorize(Globals.GUI.SecondaryTextColor);
+                    skillString += $" ({skillsCount})".Colorize(Globals.GUI.TextColorSecondary);
                     tooltip = MakeSkillReqLine(recipeDef.workSkill, workSkillLevel, true) + "\n" + stringBuilder.ToString();
                 }
 
@@ -320,16 +320,16 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
     {
         var recipeUsersFilter = Make.MTMThingDefFilter(GetAllRecipesUsers, tableRecords, "Bench")
             .Tooltip("Filter by crafting benches.");
-        var skillFilter = Make.NumberFilter(GetWorkSkillLevel, "Skill")
+        var skillFilter = Make.NumberFilter(GetWorkSkillLevel)
             .Tooltip("Filter by work skill level.");
-        var ingredientsFilter = Make.MTMThingDefFilter(GetAllIngredients, tableRecords, "Res.")
+        var ingredientsFilter = Make.MTMThingDefFilter(GetAllIngredients, tableRecords, "Resources")
             .Tooltip("Filter by resources.");
 
         return Make.CompositeFilter<ThingAlike>([
             ingredientsFilter,
             recipeUsersFilter,
             skillFilter,
-        ], true);
+        ]);
     }
     private static readonly Func<ThingAlike, float> GetMinWorkAmount =
     FunctionExtensions.Memoized((ThingAlike thing) =>

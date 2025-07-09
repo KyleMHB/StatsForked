@@ -7,6 +7,7 @@ namespace Stats.Widgets;
 
 internal sealed partial class ObjectTable<TObject>
 {
+    private readonly Widget FiltersTabWidget;
     private readonly HashSet<FilterWidget<TObject>> ActiveFilters;
     private bool ShouldApplyFilters;
     private TableFilterMode _FilterMode;
@@ -47,21 +48,10 @@ internal sealed partial class ObjectTable<TObject>
         if (filter.IsActive)
         {
             ActiveFilters.Add(filter);
-
-            // We do not check whether the filter was added to active filters
-            // because we have to adjust its column width regardless.
-            var filterWidth = filter.GetSize().x;
-
-            column.Width = Mathf.Max(column.InitialWidth, filterWidth);
         }
         else
         {
-            var filterWasRemoved = ActiveFilters.Remove(filter);
-
-            if (filterWasRemoved)
-            {
-                column.Width = column.InitialWidth;
-            }
+            ActiveFilters.Remove(filter);
         }
 
         ShouldApplyFilters = true;

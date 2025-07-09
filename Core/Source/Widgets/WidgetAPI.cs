@@ -13,33 +13,33 @@ public static class WidgetAPI
 {
     // --- Size constraints: absolute ---
 
-    public static AbsSizeWidgetExtension
+    public static SizeAbsWidgetExtension
         SizeAbs(this Widget widget, float width, float height) =>
         new(widget, width, height);
 
-    public static AbsSizeWidgetExtension
+    public static SizeAbsWidgetExtension
         SizeAbs(this Widget widget, float size) =>
         widget.SizeAbs(size, size);
 
-    public static AbsWidthWidgetExtension
+    public static WidthAbsWidgetExtension
         WidthAbs(this Widget widget, float width) =>
         new(widget, width);
 
-    public static AbsHeightWidgetExtension
+    public static HeightAbsWidgetExtension
         HeightAbs(this Widget widget, float height) =>
         new(widget, height);
 
     // --- Size constraints: relative ---
 
-    public static RelSizeWidgetExtension
+    public static SizeRelWidgetExtension
         SizeRel(this Widget widget, float parentWidthMultiplier, float parentHeightMultiplier) =>
         new(widget, parentWidthMultiplier, parentHeightMultiplier);
 
-    public static RelSizeWidgetExtension
+    public static SizeRelWidgetExtension
         SizeRel(this Widget widget, float parentSizeMultiplier) =>
         widget.SizeRel(parentSizeMultiplier, parentSizeMultiplier);
 
-    public static RelWidthWidgetExtension
+    public static WidthRelWidgetExtension
         WidthRel(this Widget widget, float parentWidthMultiplier) =>
         new(widget, parentWidthMultiplier);
 
@@ -47,37 +47,41 @@ public static class WidgetAPI
         WidthRel(this Widget widget, SingleAxisSizeFunc widthFunction) =>
         new(widget, widthFunction);
 
-    public static RelHeightWidgetExtension
+    public static HeightRelWidgetExtension
         HeightRel(this Widget widget, float parentHeightMultiplier) =>
         new(widget, parentHeightMultiplier);
 
     // --- Size modifiers: absolute ---
 
-    public static AbsPaddingWidgetExtension
+    public static PaddingAbsWidgetExtension
         PaddingAbs(this Widget widget, float left, float right, float top, float bottom) =>
         new(widget, left, right, top, bottom);
 
-    public static AbsPaddingWidgetExtension
+    public static PaddingAbsWidgetExtension
         PaddingAbs(this Widget widget, float horizontal, float vertical) =>
         widget.PaddingAbs(horizontal, horizontal, vertical, vertical);
 
-    public static AbsPaddingWidgetExtension
+    public static PaddingAbsWidgetExtension
         PaddingAbs(this Widget widget, float amount) =>
         widget.PaddingAbs(amount, amount);
 
     // --- Size modifiers: relative ---
 
-    public static RelPaddingWidgetExtension
+    public static PaddingRelWidgetExtension
         PaddingRel(this Widget widget, float left, float right, float top, float bottom) =>
         new(widget, left, right, top, bottom);
 
-    public static RelPaddingWidgetExtension
+    public static PaddingRelWidgetExtension
         PaddingRel(this Widget widget, float horizontal, float vertical) =>
         widget.PaddingRel(horizontal, horizontal, vertical, vertical);
 
-    public static RelPaddingWidgetExtension
+    public static PaddingRelWidgetExtension
         PaddingRel(this Widget widget, float amount) =>
         widget.PaddingRel(amount, amount);
+
+    public static WidthIncRelWidgetExtension
+        WidthIncRel(this Widget widget, float parentWidthMultiplier) =>
+        new(widget, parentWidthMultiplier);
 
     // --- Background ---
 
@@ -246,6 +250,10 @@ public static class WidgetAPI
     public static ScrollOverflowWidgetExtension
         OverflowScroll(this Widget widget) =>
         new(widget);
+
+    public static SkipNextExtensionWidgetExtension
+        SkipNextExtension(this WidgetExtension extension, Func<bool> predicate) =>
+        new(extension, predicate);
 
     // --- Transformers ---
 

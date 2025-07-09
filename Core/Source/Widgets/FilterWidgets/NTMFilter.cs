@@ -9,22 +9,23 @@ using Verse.Sound;
 
 namespace Stats.Widgets;
 
-internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidgetWithInputField<TObject, TExprLhs, HashSet<TOption>>
+internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidget<TObject, TExprLhs, HashSet<TOption>>
 {
+    public override bool IsActive => Rhs.Count > 0;
     // TODO: See if IEnumerable is most fitting type here.
     private readonly IEnumerable<NTMFilterOption<TOption>> Options;
     private List<NTMFilterOption<TOption>>? _OptionsList;
     private List<NTMFilterOption<TOption>> OptionsList => _OptionsList ??= Options.ToList();
     private OptionsWindowWidget? _OptionsWindow;
-    private OptionsWindowWidget OptionsWindow => _OptionsWindow ??= new(OptionsList, this);
-    private TipSignal? _SelectedOptionsTooltip = "";
-    private TipSignal SelectedOptionsTooltip
+    private OptionsWindowWidget OptionsWindow => _OptionsWindow ??= new(OptionsList, this, Operators);
+    private string? _Info = null;
+    private string Info
     {
         get
         {
-            if (_SelectedOptionsTooltip is TipSignal tipSignal)
+            if (_Info != null)
             {
-                return tipSignal;
+                return _Info;
             }
 
             var stringBuilder = new StringBuilder();
@@ -33,41 +34,66 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidgetWith
             {
                 if (Rhs.Contains(option.Value))
                 {
-                    stringBuilder.AppendLine($"- {option.Label}");
+                    stringBuilder.AppendInNewLine($"- {option.Label}");
                 }
             }
 
-            return (TipSignal)(_SelectedOptionsTooltip = stringBuilder.ToString());
+            return _Info = stringBuilder.ToString();
         }
     }
-    private string SelectedOptionsCountString;
-    private static readonly TipSignal Manual = "Hold [Ctrl] to select multiple options.";
+    private readonly IEnumerable<AbsOperator> Operators;
+    private string ButtonText => IsActive ? Info : ButtonTextWhenInactive;
+    private readonly string ButtonTextWhenInactive;
+    private const float ButtonMinWidth = 24f;
+    private const float ButtonPadHor = Globals.GUI.PadSm;
     protected NTMFilter(
         Func<TObject, TExprLhs> lhs,
         IEnumerable<NTMFilterOption<TOption>> options,
         IEnumerable<AbsOperator> operators,
         AbsOperator? defaultOperator = null,
         string? label = null
-    ) : base(lhs, [], operators, defaultOperator, label)
+    ) : base(lhs, [], defaultOperator ?? operators.First())
     {
         Options = options;
-        SelectedOptionsCountString = "0";
+        ButtonTextWhenInactive = label ?? "...";
+        Operators = operators;
     }
-    protected override Vector2 CalcInputFieldContentSize()
+    protected override Vector2 CalcSize()
     {
-        return Text.CalcSize(SelectedOptionsCountString);
-    }
-    protected sealed override void DrawInputField(Rect rect)
-    {
-        const float horPad = Globals.GUI.EstimatedInputFieldInnerPadding;
+        var size = Text.CalcSize(ButtonText);
+        size.x += ButtonPadHor * 2f;
 
-        if (Widgets.Draw.ButtonTextSubtle(rect, SelectedOptionsCountString, horPad))
+        if (size.x < ButtonMinWidth)
+        {
+            size.x = ButtonMinWidth;
+        }
+
+        return size;
+    }
+    public override void Draw(Rect rect, Vector2 containerSize)
+    {
+        var origGUIColor = GUI.color;
+
+        if (IsActive == false)
+        {
+            GUI.color = Globals.GUI.TextColorSecondary;
+        }
+
+        if (Widgets.Draw.ButtonTextSubtle(rect, ButtonText, GUI.color, ButtonPadHor))
         {
             Find.WindowStack.Add(OptionsWindow);
         }
 
-        TooltipHandler.TipRegion(rect, SelectedOptionsTooltip);
-        TooltipHandler.TipRegion(rect, Manual);
+        GUI.color = origGUIColor;
+    }
+    protected override AbsOperator Operator
+    {
+        get => base.Operator;
+        set
+        {
+            base.Operator = value;
+            _Info = null;
+        }
     }
     public sealed override void Reset()
     {
@@ -78,13 +104,8 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidgetWith
     private void Clear()
     {
         Rhs.Clear();
-        SelectedOptionsCountString = "0";
-        _SelectedOptionsTooltip = null;
+        _Info = null;
         NotifyChanged();
-    }
-    protected override void FocusInputField()
-    {
-        Find.WindowStack.Add(OptionsWindow);
     }
     private void HandleOptionClick(TOption option)
     {
@@ -102,8 +123,7 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidgetWith
             Rhs.Add(option);
         }
 
-        SelectedOptionsCountString = Rhs.Count.ToString();
-        _SelectedOptionsTooltip = null;
+        _Info = null;
         NotifyChanged();
     }
 
@@ -116,12 +136,13 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidgetWith
         private static readonly Color BackgroundColor = Verse.Widgets.WindowBGFillColor;
         private const float OptionHoverHorShiftAmount = 4f;
         private static readonly Color OptionHoverBackgroundColor = FloatMenuOption.ColorBGActiveMouseover;
-        private const float OptionHorPad = Globals.GUI.Pad;
-        private const float OptionVerPad = Globals.GUI.PadXs;
+        private const float OptionPadHor = Globals.GUI.Pad;
+        private const float OptionPadVer = Globals.GUI.PadXs;
         private const int ColumnCapacity = 15;
         public OptionsWindowWidget(
             List<NTMFilterOption<TOption>> options,
-            NTMFilter<TObject, TExprLhs, TOption> parent
+            NTMFilter<TObject, TExprLhs, TOption> parent,
+            IEnumerable<AbsOperator> operators
         )
         {
             doWindowBackground = false;
@@ -142,20 +163,20 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidgetWith
                 }
 
                 Widget optionWidget = option
-                    .ToWidget()
-                    .PaddingAbs(OptionHorPad, OptionVerPad)
-                    .WidthRel(1f)
-                    .HoverShiftHor(OptionHoverHorShiftAmount)
-                    .Background(rect =>
+                .ToWidget()
+                .PaddingAbs(OptionPadHor, OptionPadVer)
+                .WidthRel(1f)
+                .HoverShiftHor(OptionHoverHorShiftAmount)
+                .Background(rect =>
+                {
+                    if (parent.Rhs.Contains(option.Value))
                     {
-                        if (parent.Rhs.Contains(option.Value))
-                        {
-                            Verse.Widgets.DrawHighlightSelected(rect);
-                        }
-                    })
-                    .HoverBackground(OptionHoverBackgroundColor)
-                    .OnClick(() => parent.HandleOptionClick(option.Value))
-                    .BorderBottom(BorderColor);
+                        Verse.Widgets.DrawHighlightSelected(rect);
+                    }
+                })
+                .HoverBackground(OptionHoverBackgroundColor)
+                .OnClick(() => parent.HandleOptionClick(option.Value))
+                .BorderBottom(BorderColor);
 
                 if (option.Tooltip?.Length > 0)
                 {
@@ -170,8 +191,8 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidgetWith
             {
                 var column = columns[i];
                 Widget columnWidget = new VerticalContainer(column)
-                    .Background(BackgroundColor)
-                    .BorderRight(BorderColor);
+                .Background(BackgroundColor)
+                .BorderRight(BorderColor);
 
                 if (i == 0)
                 {
@@ -181,18 +202,36 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidgetWith
                 columnWidgets.Add(columnWidget);
             }
 
-            var clearSelectionButton = new Label("Clear selection")
-                .PaddingAbs(OptionHorPad, OptionVerPad)
-                .WidthRel(1f)
-                .ToButtonSubtle(parent.Clear);
+            Widget = new VerticalContainer([
+                new HorizontalContainer([
+                    ..operators.Select(@operator =>
+                        new Label(@operator.Symbol)
+                        .PaddingAbs(Globals.GUI.PadSm, 0f)
+                        .HoverShift(Globals.GUI.ButtonSubtleContentHoverOffset, -Globals.GUI.ButtonSubtleContentHoverOffset)
+                        .BackgroundAtlas(Verse.Widgets.ButtonSubtleAtlas)
+                        .HoverColor(GenUI.MouseoverColor)
+                        .Color(Globals.GUI.TextColorSecondary)
+                        .SkipNextExtension(() => parent.Operator == @operator)
+                        .OnClick(() => parent.Operator = @operator)
+                        .Tooltip(@operator.Description)
+                    ),
 
-            Widget = new VerticalContainer(
-                [
-                    clearSelectionButton,
-                    new HorizontalContainer(columnWidgets, stretchItems: true).WidthRel(1f),
-                ],
-                shareFreeSpace: true
-            );
+                    new Label("Clear")
+                    .PaddingAbs(Globals.GUI.PadSm, 0f)
+                    .WidthIncRel(1f)
+                    .ToButtonSubtle(parent.Clear),
+                ], shareFreeSpace: true)
+                .WidthRel(1f),
+
+                new Label("<i>Hold [Ctrl] to select multiple options.</i>")
+                .PaddingAbs(Globals.GUI.PadSm, 0f)
+                .Background(BackgroundColor)
+                .BorderLeft(BorderColor).BorderRight(BorderColor).BorderBottom(BorderColor)
+                .WidthRel(1f),
+
+                new HorizontalContainer(columnWidgets, stretchItems: true)
+                .WidthRel(1f),
+            ]);
         }
         public override void DoWindowContents(Rect rect)
         {

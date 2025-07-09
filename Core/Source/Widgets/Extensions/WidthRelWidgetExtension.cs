@@ -2,10 +2,10 @@
 
 namespace Stats.Widgets.Extensions;
 
-public sealed class RelWidthWidgetExtension : WidgetExtension
+public sealed class WidthRelWidgetExtension : WidgetExtension
 {
     private readonly float ParentWidthMultiplier;
-    internal RelWidthWidgetExtension(
+    internal WidthRelWidgetExtension(
         Widget widget,
         float parentWidthMultiplier
     ) : base(widget)

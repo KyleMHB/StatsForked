@@ -10,7 +10,6 @@ internal sealed partial class ObjectTable<TObject>
     {
         public bool IsPinned;
         public float Width;
-        public float InitialWidth;
         public readonly TextAnchor TextAnchor;
         public readonly ColumnWorker<TObject> Worker;
         public Column(ColumnWorker<TObject> worker, bool isPinned)

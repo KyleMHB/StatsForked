@@ -57,15 +57,15 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
                 try
                 {
                     row[i] = column.Worker.GetTableCellWidget(@object)
-                        ?.PaddingAbs(CellPadHor, CellPadVer);
+                    ?.PaddingAbs(CellPadHor, CellPadVer);
                 }
                 catch (Exception e)
                 {
                     row[i] = new Label("!!!")
-                        .Color(Color.red.ToTransparent(0.5f))
-                        .TextAnchor(TextAnchor.LowerCenter)
-                        .PaddingAbs(CellPadHor, CellPadVer)
-                        .Tooltip(e.Message);
+                    .Color(Color.red.ToTransparent(0.5f))
+                    .TextAnchor(TextAnchor.LowerCenter)
+                    .PaddingAbs(CellPadHor, CellPadVer)
+                    .Tooltip(e.Message);
                 }
             }
 
@@ -73,9 +73,8 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         }
 
         // Headers
-        var headerRows = new RowCollection<Row>(2);
+        var headerRows = new RowCollection<Row>(1);
         var columnTitlesRow = new ColumnTitlesRow(columns);
-        var filtersRow = new Row(columns);
 
         for (int i = 0; i < columnsCount; i++)
         {
@@ -85,7 +84,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
             // If there was no cells generated for a column, it will have width = 0. That's why, rows are initialized first.
             // The columns are still there, they are just ignored. Shouldn't cause any issues, but this is obviously inefficient.
             // Note to myself: When you'll get to refactoring this, don't forget to remove checks for width = 0.
-            if (column.InitialWidth == 0f)
+            if (column.Width == 0f)
             {
                 continue;
             }
@@ -133,21 +132,64 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
             // Title
             columnTitlesRow[i] = columnTitleWidget
-                .PaddingAbs(CellPadHor, CellPadVer)
-                .Background(drawSortIndicator)
-                .ToButtonGhostly(
-                    handleCellClick,
-                    $"<i>{columnDef.LabelCap}</i>\n\n{columnDef.Description}"
-                );
-
-            // Filter
-            var filterWidget = column.Worker.GetFilterWidget(objectArr);
-            filterWidget.OnChange += filterWidget => HandleFilterChange(filterWidget, column);
-            filtersRow[i] = filterWidget;
+            .PaddingAbs(CellPadHor, CellPadVer)
+            .Background(drawSortIndicator)
+            .ToButtonGhostly(handleCellClick, GetColumnDefDescriptionFull(columnDef));
         }
 
         headerRows.Add(columnTitlesRow);
-        headerRows.Add(filtersRow);
+
+        // Filters
+        var filters = new List<Widget>(columnsCount);
+        var filterLabels = new Widget[columnsCount];
+        var maxFilterLabelWidth = 0f;
+
+        for (int i = 0; i < columnsCount; i++)
+        {
+            var column = columns[i];
+
+            if (column.Width == 0f)
+            {
+                continue;
+            }
+
+            var filterLabel = column.Worker.ColumnDef.Title;
+            filterLabels[i] = filterLabel;
+            maxFilterLabelWidth = Mathf.Max(maxFilterLabelWidth, filterLabel.GetSize().x);
+        }
+
+        for (int i = 0; i < columnsCount; i++)
+        {
+            var column = columns[i];
+
+            if (column.Width == 0f)
+            {
+                continue;
+            }
+
+            var filterWidget = column.Worker.GetFilterWidget(objectArr);
+            filterWidget.OnChange += filterWidget => HandleFilterChange(filterWidget, column);
+            Widget filterRow = new HorizontalContainer([
+                // Just so icons doesn't get stretched out.
+                new SingleElementContainer(filterLabels[i])
+                .WidthAbs(maxFilterLabelWidth)
+                .HeightRel(1f)
+                .Tooltip(GetColumnDefDescriptionFull(column.Worker.ColumnDef)),
+
+                filterWidget
+                .WidthIncRel(1f),
+            ], Globals.GUI.Pad, true)
+            .PaddingAbs(Globals.GUI.PadXs)
+            .WidthRel(1f)
+            .HoverBackground(TexUI.HighlightTex);
+
+            if (filters.Count % 2 == 0)
+            {
+                filterRow = filterRow.Background(Verse.Widgets.LightHighlight);
+            }
+
+            filters.Add(filterRow);
+        }
 
         // Finalize
         Columns = columns;
@@ -157,9 +199,14 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         PinnedRows = new(10);
         UnfilteredBodyRows = bodyRows;
         FilteredBodyRows = new(bodyRows);
+        FiltersTabWidget = new VerticalContainer(filters).PaddingAbs(Globals.GUI.PadSm);
         ActiveFilters = new HashSet<FilterWidget<TObject>>(columnsCount);
         _FilterMode = TableFilterMode.AND;
         ObjectMatchesFilters = ObjectFilterMatchFuncAND;
         ShouldApplyFilters = false;
+    }
+    private static string GetColumnDefDescriptionFull(ColumnDef columnDef)
+    {
+        return $"<i>{columnDef.LabelCap}</i>\n\n{columnDef.Description}";
     }
 }

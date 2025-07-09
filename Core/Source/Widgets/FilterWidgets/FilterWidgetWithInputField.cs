@@ -10,53 +10,28 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
     where TExprRhs : notnull
 {
     private Vector2 OperatorButtonSize;
+    private const float OperatorButtonMinWidth = 24f;
+    private const float OperatorButtonPadding = Globals.GUI.PadXs;
     private Vector2 InputFieldSize;
-    private const float MinInputFieldWidth = 36f;
-    private readonly Vector2 ResetButtonSize;
+    private const float InputFieldMinWidth = OperatorButtonMinWidth * 2f;
     private bool ChildrenSizesAreCached = false;
-    private static readonly TipSignal ResetButtonTooltip = "Reset";
     private readonly FloatMenu OperatorsMenu;
-    private const float OperatorButtonPadding = Globals.GUI.Pad;
-    private readonly IEnumerable<AbsOperator> Operators;
-    private readonly AbsOperator? DefaultOperator = null;
-    private readonly string OperatorButtonTextWhenIncative = "...";
-    private string OperatorButtonText => IsActive ? Operator.Symbol : OperatorButtonTextWhenIncative;
     protected FilterWidgetWithInputField(
         Func<TObject, TExprLhs> lhs,
         TExprRhs rhs,
         IEnumerable<AbsOperator> operators,
-        AbsOperator? defaultOperator = null,
-        string? label = null
-    ) : base(lhs, rhs)
+        AbsOperator? defaultOperator = null
+    ) : base(lhs, rhs, defaultOperator ?? operators.First())
     {
-        Operators = operators;
-        DefaultOperator = operators.Count() == 1 ? operators.First() : defaultOperator;
-        ResetButtonSize = new Vector2(Text.LineHeight, Text.LineHeight);
-
-        if (label != null)
-        {
-            OperatorButtonTextWhenIncative = label;
-        }
-
         var operatorsMenuOptions = new List<FloatMenuOption>(operators.Count());
 
         foreach (var @operator in operators)
         {
-            void handleOptionClick()
-            {
-                // TODO: This is a hack, but it'll do for now.
-                if (IsActive == false)
-                {
-                    FocusInputField();
-                }
-
-                Operator = @operator;
-            }
-            var operatorString = @operator.Symbol.Colorize(Globals.GUI.TextHighlightColor);
+            var operatorString = @operator.Symbol.Colorize(Globals.GUI.TextColorHighlight);
             var optionLabel = @operator.Description.Length > 0
                     ? $"{operatorString} - {@operator.Description}"
                     : operatorString;
-            var option = new FloatMenuOption(optionLabel, handleOptionClick);
+            var option = new FloatMenuOption(optionLabel, () => Operator = @operator);
 
             operatorsMenuOptions.Add(option);
         }
@@ -75,12 +50,8 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
         }
 
         var size = OperatorButtonSize;
-
-        if (IsActive)
-        {
-            size.x += InputFieldSize.x + ResetButtonSize.x;
-            size.y = Mathf.Max(size.y, InputFieldSize.y, ResetButtonSize.y);
-        }
+        size.x += InputFieldSize.x;
+        size.y = Mathf.Max(size.y, InputFieldSize.y);
 
         return size;
     }
@@ -89,63 +60,39 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
         GUIDebugger.DebugRect(this, rect);
 
         var origTextAnchor = Text.Anchor;
+        var operatorButtonRect = rect.CutByX(OperatorButtonSize.x);
+        var origGUIColor = GUI.color;
+
+        if (IsActive == false)
+        {
+            GUI.color = Globals.GUI.TextColorSecondary;
+        }
+
+        Text.Anchor = TextAnchor.LowerCenter;
+
+        if (DrawOperatorButton(operatorButtonRect))
+        {
+            Find.WindowStack.Add(OperatorsMenu);
+        }
+
         Text.Anchor = TextAnchor.LowerLeft;
 
-        if (IsActive)
-        {
-            if (Operators.Count() > 1)
-            {
-                var operatorButtonRect = rect.CutByX(OperatorButtonSize.x);
-
-                if (DrawOperatorButton(operatorButtonRect))
-                {
-                    Find.WindowStack.Add(OperatorsMenu);
-                }
-            }
-
-            DrawInputField(rect with { width = rect.width - ResetButtonSize.x });
-
-            var resetButtonRect = rect.RightPartPixels(ResetButtonSize.x);
-
-            if (Widgets.Draw.ButtonImageSubtle(resetButtonRect, TexButton.CloseXSmall, 0.5f))
-            {
-                Reset();
-            }
-
-            if (Mouse.IsOver(resetButtonRect))
-            {
-                TooltipHandler.TipRegion(resetButtonRect, ResetButtonTooltip);
-            }
-        }
-        else
-        {
-            if (DrawOperatorButton(rect))
-            {
-                if (DefaultOperator != null)
-                {
-                    Operator = DefaultOperator;
-                    FocusInputField();
-                }
-                else
-                {
-                    Find.WindowStack.Add(OperatorsMenu);
-                }
-            }
-        }
+        DrawInputField(rect);
 
         Text.Anchor = origTextAnchor;
+        GUI.color = origGUIColor;
     }
     private Vector2 CalcOperatorButtonSize()
     {
-        if (IsActive == false || Operators.Count() > 1)
-        {
-            var size = Text.CalcSize(OperatorButtonText);
-            size.x += OperatorButtonPadding * 2f;
+        var size = Text.CalcSize(Operator.Symbol);
+        size.x += OperatorButtonPadding * 2f;
 
-            return size;
+        if (size.x < OperatorButtonMinWidth)
+        {
+            size.x = OperatorButtonMinWidth;
         }
 
-        return Vector2.zero;
+        return size;
     }
     private bool DrawOperatorButton(Rect rect)
     {
@@ -154,9 +101,7 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
             TooltipHandler.TipRegion(rect, Operator.Description);
         }
 
-        var color = IsActive ? Globals.GUI.TextHighlightColor : Color.white;
-
-        return Widgets.Draw.ButtonTextSubtle(rect, OperatorButtonText, color, OperatorButtonPadding);
+        return Widgets.Draw.ButtonTextSubtle(rect, Operator.Symbol, GUI.color, OperatorButtonPadding);
     }
     protected abstract Vector2 CalcInputFieldContentSize();
     private Vector2 CalcInputFieldSize()
@@ -164,9 +109,9 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
         var size = CalcInputFieldContentSize();
         size.x += Globals.GUI.EstimatedInputFieldInnerPadding * 2f;
 
-        if (size.x < MinInputFieldWidth)
+        if (size.x < InputFieldMinWidth)
         {
-            size.x = MinInputFieldWidth;
+            size.x = InputFieldMinWidth;
         }
 
         return size;
@@ -178,8 +123,5 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
         InputFieldSize = CalcInputFieldSize();
 
         Resize();
-    }
-    protected virtual void FocusInputField()
-    {
     }
 }

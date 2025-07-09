@@ -123,7 +123,7 @@ internal sealed partial class ObjectTable<TObject>
 
                     if (column.Width < cellSize.x)
                     {
-                        column.Width = column.InitialWidth = cellSize.x;
+                        column.Width = cellSize.x;
                     }
 
                     if (Height < cellSize.y)

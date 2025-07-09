@@ -8,17 +8,17 @@ namespace Stats.Widgets;
 public static class Make
 {
     #region Basic filters
-    public static FilterWidget<TObject> StringFilter<TObject>(Func<TObject, string> lhs, string? label = null)
+    public static FilterWidget<TObject> StringFilter<TObject>(Func<TObject, string> lhs)
     {
-        return new StringFilter<TObject>(lhs, label);
+        return new StringFilter<TObject>(lhs);
     }
-    public static FilterWidget<TObject> NumberFilter<TObject>(Func<TObject, decimal> lhs, string? label = null)
+    public static FilterWidget<TObject> NumberFilter<TObject>(Func<TObject, decimal> lhs)
     {
-        return new NumberFilter<TObject>(lhs, label);
+        return new NumberFilter<TObject>(lhs);
     }
-    public static FilterWidget<TObject> BooleanFilter<TObject>(Func<TObject, bool> lhs, string? label = null)
+    public static FilterWidget<TObject> BooleanFilter<TObject>(Func<TObject, bool> lhs)
     {
-        return new BooleanFilter<TObject>(lhs, label);
+        return new BooleanFilter<TObject>(lhs);
     }
     #endregion
 
@@ -129,9 +129,9 @@ public static class Make
     #endregion
 
     #region Misc filters
-    public static FilterWidget<TObject> CompositeFilter<TObject>(List<Widget> filters, bool stretchItems = false)
+    public static FilterWidget<TObject> CompositeFilter<TObject>(List<Widget> filters)
     {
-        return new CompositeFilter<TObject>(filters, stretchItems);
+        return new CompositeFilter<TObject>(filters);
     }
     #endregion
 }

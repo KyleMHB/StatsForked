@@ -67,7 +67,7 @@ public sealed class HorizontalContainer : Widget
 
         if (StretchItems)
         {
-            additionalChildWidth = Mathf.Floor(size.x / Children.Count);
+            additionalChildWidth = Mathf.Round(size.x / Children.Count);
         }
 
         foreach (var child in Children)
