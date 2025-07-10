@@ -9,18 +9,26 @@ internal sealed class CompositeFilter<TObject> : FilterWidget<TObject>
 {
     public override bool IsActive => Filters.Any(filter => filter.IsActive);
     public override event Action<FilterWidget<TObject>>? OnChange;
-    private readonly List<FilterWidget<TObject>> Filters;
+    private readonly List<FilterWidget<TObject>> Filters = [];
     private readonly Widget Container;
-    public CompositeFilter(List<Widget> filterWidgets)
+    public CompositeFilter(List<Widget> widgets)
     {
-        Filters = filterWidgets.Select(widget => widget.Get<FilterWidget<TObject>>()).ToList();
+        foreach (var widget in widgets)
+        {
+            var filterWidget = widget.Get<FilterWidget<TObject>>();
+
+            if (filterWidget != null)
+            {
+                Filters.Add(filterWidget);
+            }
+        }
 
         foreach (var filter in Filters)
         {
             filter.OnChange += filter => OnChange?.Invoke(this);
         }
 
-        Container = new VerticalContainer(filterWidgets.Select<Widget, Widget>(widget => widget.WidthRel(1f)).ToList(), Globals.GUI.PadXs);
+        Container = new VerticalContainer(widgets.Select<Widget, Widget>(widget => widget.WidthRel(1f)).ToList(), Globals.GUI.PadXs);
         Container.Parent = this;
     }
     protected override Vector2 CalcSize()

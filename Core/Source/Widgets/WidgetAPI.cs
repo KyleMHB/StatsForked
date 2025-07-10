@@ -294,7 +294,7 @@ public static class WidgetAPI
     {
         return widget.GetSize(Vector2.zero);
     }
-    public static T Get<T>(this Widget widget) where T : Widget
+    public static T? Get<T>(this Widget widget) where T : Widget
     {
         if (widget is T t)
         {
@@ -305,6 +305,6 @@ public static class WidgetAPI
             return widgetExtension.Widget.Get<T>();
         }
 
-        throw new Exception($"[{nameof(T)}] was not found!");
+        return null;
     }
 }

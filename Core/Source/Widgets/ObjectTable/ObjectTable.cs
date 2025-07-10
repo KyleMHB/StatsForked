@@ -150,7 +150,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
             var columnTitleWidget = column.Worker.ColumnDef.Title;
             // TODO: This is a hack to prevent icons from stretching out.
-            if (columnTitleWidget is InlineTexture)
+            if (columnTitleWidget.Get<InlineTexture>() != null)
             {
                 columnTitleWidget = new SingleElementContainer(columnTitleWidget);
             }
