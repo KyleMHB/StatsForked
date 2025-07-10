@@ -30,6 +30,8 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
 
             var stringBuilder = new StringBuilder();
 
+            stringBuilder.AppendInNewLine($"{Operator.Symbol.Colorize(Globals.GUI.TextColorHighlight)} - {Operator.Description}:");
+
             foreach (var option in OptionsList)
             {
                 if (SelectedOptions.Contains(option.Value))
@@ -59,6 +61,8 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
             }
 
             _Operator = value;
+            _Info = null;
+            Resize();
             OnChange?.Invoke(this);
         }
     }
@@ -223,18 +227,20 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
                 new HorizontalContainer([
                     ..operators.Select(@operator =>
                         new Label(@operator.Symbol)
-                        .PaddingAbs(Globals.GUI.PadSm, 0f)
+                        .Color(Globals.GUI.TextColorHighlight)
+                        .SkipNextExtension(() => parent.Operator != @operator)
+                        .PaddingAbs(Globals.GUI.PadSm, Globals.GUI.PadXs)
                         .HoverShift(Globals.GUI.ButtonSubtleContentHoverOffset, -Globals.GUI.ButtonSubtleContentHoverOffset)
                         .BackgroundAtlas(Verse.Widgets.ButtonSubtleAtlas)
                         .HoverColor(GenUI.MouseoverColor)
                         .Color(Globals.GUI.TextColorSecondary)
-                        .SkipNextExtension(() => parent.Operator == @operator)
+                        .SkipNextExtension(() => parent.Operator != @operator)
                         .OnClick(() => parent.Operator = @operator)
                         .Tooltip(@operator.Description)
                     ),
 
                     new Label("Clear")
-                    .PaddingAbs(Globals.GUI.PadSm, 0f)
+                    .PaddingAbs(Globals.GUI.PadSm, Globals.GUI.PadXs)
                     .WidthIncRel(1f)
                     .ToButtonSubtle(parent.Clear),
                 ], shareFreeSpace: true)

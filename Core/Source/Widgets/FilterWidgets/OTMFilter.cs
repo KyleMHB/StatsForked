@@ -26,7 +26,7 @@ internal sealed class OTMFilter<TObject, TOption> : NTMFilter<TObject, TOption, 
     {
         public sealed class IsIn : RelOperator<TOption, HashSet<TOption>>
         {
-            private IsIn() : base("∈", "Is one of selected") { }
+            private IsIn() : base("∈", "Is one of") { }
             public override bool Eval(TOption lhs, HashSet<TOption> rhs) => rhs.Contains(lhs);
             public static IsIn Instance { get; } = new();
         }
@@ -34,7 +34,7 @@ internal sealed class OTMFilter<TObject, TOption> : NTMFilter<TObject, TOption, 
         // ∉
         public sealed class IsNotIn : RelOperator<TOption, HashSet<TOption>>
         {
-            private IsNotIn() : base("!∈", "Is not one of selected") { }
+            private IsNotIn() : base("!∈", "Is not one of") { }
             public override bool Eval(TOption lhs, HashSet<TOption> rhs) => rhs.Contains(lhs) == false;
             public static IsNotIn Instance { get; } = new();
         }
