@@ -4,11 +4,28 @@ using Verse;
 
 namespace Stats.Widgets;
 
-internal sealed class BooleanFilter<TObject> : FilterWidget<TObject, bool, bool?>
+internal sealed class BooleanFilter<TObject> : FilterWidget<TObject>
 {
-    public override bool IsActive => Rhs != null;
-    public BooleanFilter(Func<TObject, bool> lhs) : base(lhs, null, Operators.IsEqualTo.Instance)
+    public override bool IsActive => Value != null;
+    public override event Action<FilterWidget<TObject>>? OnChange;
+    private bool? Value
     {
+        get => field;
+        set
+        {
+            if (field == value)
+            {
+                return;
+            }
+
+            field = value;
+            OnChange?.Invoke(this);
+        }
+    } = null;
+    private readonly Func<TObject, bool> ObjectValueFunc;
+    public BooleanFilter(Func<TObject, bool> objectValueFunc)
+    {
+        ObjectValueFunc = objectValueFunc;
     }
     protected override Vector2 CalcSize()
     {
@@ -18,44 +35,36 @@ internal sealed class BooleanFilter<TObject> : FilterWidget<TObject, bool, bool?
     {
         var origGUIColor = GUI.color;
 
-        if (Rhs != true)
+        if (Value != true)
         {
             GUI.color = Globals.GUI.TextColorSecondary;
         }
 
         if (Widgets.Draw.ButtonImageSubtle(rect.CutByX(rect.width / 2f), Verse.Widgets.CheckboxOnTex))
         {
-            Rhs = Rhs == true ? null : true;
+            Value = Value == true ? null : true;
         }
 
         GUI.color = origGUIColor;
 
-        if (Rhs != false)
+        if (Value != false)
         {
             GUI.color = Globals.GUI.TextColorSecondary;
         }
 
         if (Widgets.Draw.ButtonImageSubtle(rect, Verse.Widgets.CheckboxOffTex))
         {
-            Rhs = Rhs == false ? null : false;
+            Value = Value == false ? null : false;
         }
 
         GUI.color = origGUIColor;
     }
+    public override bool Eval(TObject @object)
+    {
+        return ObjectValueFunc(@object) == Value;
+    }
     public override void Reset()
     {
-        base.Reset();
-
-        Rhs = null;
-    }
-
-    private static class Operators
-    {
-        public sealed class IsEqualTo : AbsOperator
-        {
-            private IsEqualTo() : base("==") { }
-            public override bool Eval(bool lhs, bool? rhs) => lhs == rhs;
-            public static IsEqualTo Instance { get; } = new();
-        }
+        Value = null;
     }
 }

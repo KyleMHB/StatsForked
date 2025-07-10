@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using Verse;
 
 namespace Stats.Widgets;
 
@@ -48,13 +48,17 @@ internal sealed partial class ObjectTable<TObject>
         if (filter.IsActive)
         {
             ActiveFilters.Add(filter);
+            ShouldApplyFilters = true;
         }
         else
         {
-            ActiveFilters.Remove(filter);
-        }
+            var filterWasRemoved = ActiveFilters.Remove(filter);
 
-        ShouldApplyFilters = true;
+            if (filterWasRemoved)
+            {
+                ShouldApplyFilters = true;
+            }
+        }
     }
     private void ApplyFilters()
     {
@@ -68,7 +72,17 @@ internal sealed partial class ObjectTable<TObject>
 
             foreach (var row in UnfilteredBodyRows)
             {
-                var rowIsValid = ObjectMatchesFilters(row.Object, ActiveFilters);
+                // Evaluate to "true", so the error would be noticeable.
+                var rowIsValid = true;
+
+                try
+                {
+                    rowIsValid = ObjectMatchesFilters(row.Object, ActiveFilters);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e.Message);
+                }
 
                 if (rowIsValid)
                 {

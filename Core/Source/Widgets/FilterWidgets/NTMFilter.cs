@@ -9,9 +9,9 @@ using Verse.Sound;
 
 namespace Stats.Widgets;
 
-internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidget<TObject, TExprLhs, HashSet<TOption>>
+internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget<TObject>
 {
-    public override bool IsActive => Rhs.Count > 0;
+    public override bool IsActive => SelectedOptions.Count > 0;
     // TODO: See if IEnumerable is most fitting type here.
     private readonly IEnumerable<NTMFilterOption<TOption>> Options;
     private List<NTMFilterOption<TOption>>? _OptionsList;
@@ -32,7 +32,7 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidget<TOb
 
             foreach (var option in OptionsList)
             {
-                if (Rhs.Contains(option.Value))
+                if (SelectedOptions.Contains(option.Value))
                 {
                     stringBuilder.AppendInNewLine($"- {option.Label}");
                 }
@@ -41,19 +41,40 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidget<TOb
             return _Info = stringBuilder.ToString();
         }
     }
-    private readonly IEnumerable<AbsOperator> Operators;
+    private readonly IEnumerable<RelOperator<TObjectValue, HashSet<TOption>>> Operators;
     private string ButtonText => IsActive ? Info : ButtonTextWhenInactive;
     private readonly string ButtonTextWhenInactive;
     private const float ButtonMinWidth = 24f;
     private const float ButtonPadHor = Globals.GUI.PadSm;
-    protected NTMFilter(
-        Func<TObject, TExprLhs> lhs,
-        IEnumerable<NTMFilterOption<TOption>> options,
-        IEnumerable<AbsOperator> operators,
-        AbsOperator? defaultOperator = null,
-        string? label = null
-    ) : base(lhs, [], defaultOperator ?? operators.First())
+    private readonly HashSet<TOption> SelectedOptions = [];
+    private RelOperator<TObjectValue, HashSet<TOption>> _Operator;
+    private RelOperator<TObjectValue, HashSet<TOption>> Operator
     {
+        get => _Operator;
+        set
+        {
+            if (_Operator == value)
+            {
+                return;
+            }
+
+            _Operator = value;
+            OnChange?.Invoke(this);
+        }
+    }
+    private readonly RelOperator<TObjectValue, HashSet<TOption>> DefaultOperator;
+    public override event Action<FilterWidget<TObject>>? OnChange;
+    private readonly Func<TObject, TObjectValue> ObjectValueFunc;
+    protected NTMFilter(
+        Func<TObject, TObjectValue> objectValueFunc,
+        IEnumerable<NTMFilterOption<TOption>> options,
+        IEnumerable<RelOperator<TObjectValue, HashSet<TOption>>> operators,
+        RelOperator<TObjectValue, HashSet<TOption>> defaultOperator,
+        string? label = null
+    )
+    {
+        ObjectValueFunc = objectValueFunc;
+        _Operator = DefaultOperator = defaultOperator;
         Options = options;
         ButtonTextWhenInactive = label ?? "...";
         Operators = operators;
@@ -86,45 +107,41 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidget<TOb
 
         GUI.color = origGUIColor;
     }
-    protected override AbsOperator Operator
+    public override bool Eval(TObject @object)
     {
-        get => base.Operator;
-        set
-        {
-            base.Operator = value;
-            _Info = null;
-        }
+        return Operator.Eval(ObjectValueFunc(@object), SelectedOptions);
     }
     public sealed override void Reset()
     {
-        base.Reset();
-
+        _Operator = DefaultOperator;
         Clear();
     }
     private void Clear()
     {
-        Rhs.Clear();
+        SelectedOptions.Clear();
         _Info = null;
-        NotifyChanged();
+        Resize();
+        OnChange?.Invoke(this);
     }
     private void HandleOptionClick(TOption option)
     {
-        if (Rhs.Contains(option))
+        if (SelectedOptions.Contains(option))
         {
-            Rhs.Remove(option);
+            SelectedOptions.Remove(option);
         }
         else
         {
             if (Event.current.control == false)
             {
-                Rhs.Clear();
+                SelectedOptions.Clear();
             }
 
-            Rhs.Add(option);
+            SelectedOptions.Add(option);
         }
 
         _Info = null;
-        NotifyChanged();
+        Resize();
+        OnChange?.Invoke(this);
     }
 
     private sealed class OptionsWindowWidget : Window
@@ -141,8 +158,8 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidget<TOb
         private const int ColumnCapacity = 15;
         public OptionsWindowWidget(
             List<NTMFilterOption<TOption>> options,
-            NTMFilter<TObject, TExprLhs, TOption> parent,
-            IEnumerable<AbsOperator> operators
+            NTMFilter<TObject, TObjectValue, TOption> parent,
+            IEnumerable<RelOperator<TObjectValue, HashSet<TOption>>> operators
         )
         {
             doWindowBackground = false;
@@ -169,7 +186,7 @@ internal abstract class NTMFilter<TObject, TExprLhs, TOption> : FilterWidget<TOb
                 .HoverShiftHor(OptionHoverHorShiftAmount)
                 .Background(rect =>
                 {
-                    if (parent.Rhs.Contains(option.Value))
+                    if (parent.SelectedOptions.Contains(option.Value))
                     {
                         Verse.Widgets.DrawHighlightSelected(rect);
                     }

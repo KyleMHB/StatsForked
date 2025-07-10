@@ -6,7 +6,7 @@
         <AssemblyTitle>$(MSBuildProjectName.Replace(" ", "_"))</AssemblyTitle>
         <OutputPath>..\Assemblies</OutputPath>
         <Copyright>Copyright © Dmitry "Azzkiy" 2025</Copyright>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>preview</LangVersion>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <Nullable>enable</Nullable>
         <WarningLevel>5</WarningLevel>

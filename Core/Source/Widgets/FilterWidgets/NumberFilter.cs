@@ -6,7 +6,41 @@ namespace Stats.Widgets;
 
 internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject, decimal, decimal>
 {
-    public override bool IsActive => _TextFieldText.Length > 0;
+    public override bool IsActive => _TextFieldText.Length > 0 && InputIsValid;
+    private decimal _Value = 0m;
+    private decimal Value
+    {
+        get => _Value;
+        set
+        {
+            // We don't check if value has changed here because:
+            // - It will cause it to not update when it should.
+            //   For example, when you input 0 into an empty
+            //   input field.
+            // - It is already checked in TextFieldText.
+
+            _Value = value;
+            OnChange?.Invoke(this);
+        }
+    }
+    private RelOperator<decimal, decimal> _Operator = Operators.Default;
+    protected override RelOperator<decimal, decimal> Operator
+    {
+        get => _Operator;
+        set
+        {
+            if (_Operator == value)
+            {
+                return;
+            }
+
+            _Operator = value;
+            Resize();
+            OnChange?.Invoke(this);
+        }
+    }
+    public override event Action<FilterWidget<TObject>>? OnChange;
+    private readonly Func<TObject, decimal> ObjectValueFunc;
     private bool InputIsValid = true;
     private string _TextFieldText = "";
     private string TextFieldText
@@ -22,41 +56,28 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
 
             if (_TextFieldText.Length == 0)
             {
-                Rhs = 0m;
                 InputIsValid = true;
-
-                return;
-            }
-
-            var numWasParsed = decimal.TryParse(_TextFieldText, out var num);
-
-            if (numWasParsed)
-            {
-                var origRhs = Rhs;
-                Rhs = num;
-                InputIsValid = true;
-
-                // TODO: This is a hack to make typyng "0" in empty input field work.
-                if (origRhs == num)
-                {
-                    NotifyChanged();
-                }
+                Value = 0m;
             }
             else
             {
-                InputIsValid = false;
-                // Although operator/rhs haven't changed, we have to emit "on change" event so the
-                // widget will be resized. This is unoptimal, because table's filters will be
-                // re-applied. But given the semantics of the event ("something changed"), is
-                // correct.
-                //
-                // TODO: Think about it more.
-                NotifyChanged();
+                InputIsValid = decimal.TryParse(_TextFieldText, out var num);
+
+                if (InputIsValid)
+                {
+                    Value = num;
+                }
+                else
+                {
+                    OnChange?.Invoke(this);
+                }
             }
+
+            Resize();
         }
     }
     private static readonly Color ErrorColor = Color.red.ToTransparent(0.5f);
-    public NumberFilter(Func<TObject, decimal> lhs) : base(lhs, 0m, [
+    public NumberFilter(Func<TObject, decimal> objectValueFunc) : base([
         Operators.IsEqualTo.Instance,
         Operators.IsNotEqualTo.Instance,
         Operators.IsGreaterThan.Instance,
@@ -65,6 +86,7 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
         Operators.IsLesserThanOrEqualTo.Instance,
     ])
     {
+        ObjectValueFunc = objectValueFunc;
     }
     protected override Vector2 CalcInputFieldContentSize()
     {
@@ -79,53 +101,60 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
 
         TextFieldText = GUI.TextField(rect, _TextFieldText);
     }
+    public override bool Eval(TObject @object)
+    {
+        return Operator.Eval(ObjectValueFunc(@object), Value);
+    }
     public override void Reset()
     {
         _TextFieldText = "";
-
-        base.Reset();
-
-        Rhs = 0m;
+        InputIsValid = true;
+        _Value = 0m;
+        _Operator = Operators.Default;
+        Resize();
+        OnChange?.Invoke(this);
     }
 
     private static class Operators
     {
-        public sealed class IsEqualTo : AbsOperator
+        public static RelOperator<decimal, decimal> Default = IsGreaterThanOrEqualTo.Instance;
+
+        public sealed class IsEqualTo : RelOperator<decimal, decimal>
         {
             private IsEqualTo() : base("==") { }
             public override bool Eval(decimal lhs, decimal rhs) => lhs == rhs;
             public static IsEqualTo Instance { get; } = new();
         }
 
-        public sealed class IsNotEqualTo : AbsOperator
+        public sealed class IsNotEqualTo : RelOperator<decimal, decimal>
         {
             private IsNotEqualTo() : base("!=") { }
             public override bool Eval(decimal lhs, decimal rhs) => lhs != rhs;
             public static IsNotEqualTo Instance { get; } = new();
         }
 
-        public sealed class IsGreaterThan : AbsOperator
+        public sealed class IsGreaterThan : RelOperator<decimal, decimal>
         {
             private IsGreaterThan() : base(">") { }
             public override bool Eval(decimal lhs, decimal rhs) => lhs > rhs;
             public static IsGreaterThan Instance { get; } = new();
         }
 
-        public sealed class IsLesserThan : AbsOperator
+        public sealed class IsLesserThan : RelOperator<decimal, decimal>
         {
             private IsLesserThan() : base("<") { }
             public override bool Eval(decimal lhs, decimal rhs) => lhs < rhs;
             public static IsLesserThan Instance { get; } = new();
         }
 
-        public sealed class IsGreaterThanOrEqualTo : AbsOperator
+        public sealed class IsGreaterThanOrEqualTo : RelOperator<decimal, decimal>
         {
             private IsGreaterThanOrEqualTo() : base(">=") { }
             public override bool Eval(decimal lhs, decimal rhs) => lhs >= rhs;
             public static IsGreaterThanOrEqualTo Instance { get; } = new();
         }
 
-        public sealed class IsLesserThanOrEqualTo : AbsOperator
+        public sealed class IsLesserThanOrEqualTo : RelOperator<decimal, decimal>
         {
             private IsLesserThanOrEqualTo() : base("<=") { }
             public override bool Eval(decimal lhs, decimal rhs) => lhs <= rhs;

@@ -5,36 +5,73 @@ namespace Stats.Widgets;
 
 internal sealed class StringFilter<TObject> : FilterWidgetWithInputField<TObject, string, string>
 {
-    public override bool IsActive => Rhs.Length > 0;
-    public StringFilter(Func<TObject, string> lhs) : base(
-        lhs,
-        "",
-        [
-            Operators.Contains.Instance,
-            Operators.NotContains.Instance,
-        ],
-        Operators.Contains.Instance
-    )
+    public override bool IsActive => Value.Length > 0;
+    private string _Value = "";
+    private string Value
     {
+        get => _Value;
+        set
+        {
+            if (_Value == value)
+            {
+                return;
+            }
+
+            _Value = value;
+            Resize();
+            OnChange?.Invoke(this);
+        }
+    }
+    private RelOperator<string, string> _Operator = Operators.Default;
+    protected override RelOperator<string, string> Operator
+    {
+        get => _Operator;
+        set
+        {
+            if (_Operator == value)
+            {
+                return;
+            }
+
+            _Operator = value;
+            Resize();
+            OnChange?.Invoke(this);
+        }
+    }
+    public override event Action<FilterWidget<TObject>>? OnChange;
+    private readonly Func<TObject, string> ObjectValueFunc;
+    public StringFilter(Func<TObject, string> objectValueFunc) : base([
+        Operators.Contains.Instance,
+        Operators.NotContains.Instance,
+    ])
+    {
+        ObjectValueFunc = objectValueFunc;
     }
     protected override Vector2 CalcInputFieldContentSize()
     {
-        return Verse.Text.CalcSize(Rhs);
+        return Verse.Text.CalcSize(Value);
     }
     protected override void DrawInputField(Rect rect)
     {
-        Rhs = GUI.TextField(rect, Rhs);
+        Value = GUI.TextField(rect, Value);
+    }
+    public override bool Eval(TObject @object)
+    {
+        return Operator.Eval(ObjectValueFunc(@object), Value);
     }
     public override void Reset()
     {
-        base.Reset();
-
-        Rhs = "";
+        _Value = "";
+        _Operator = Operators.Default;
+        Resize();
+        OnChange?.Invoke(this);
     }
 
     private static class Operators
     {
-        public sealed class Contains : AbsOperator
+        public static RelOperator<string, string> Default = Contains.Instance;
+
+        public sealed class Contains : RelOperator<string, string>
         {
             public Contains() : base("~=", "Contains") { }
             public override bool Eval(string lhs, string rhs) =>
@@ -42,7 +79,7 @@ internal sealed class StringFilter<TObject> : FilterWidgetWithInputField<TObject
             public static Contains Instance { get; } = new();
         }
 
-        public sealed class NotContains : AbsOperator
+        public sealed class NotContains : RelOperator<string, string>
         {
             public NotContains() : base("!~=", "Does not contains") { }
             public override bool Eval(string lhs, string rhs) =>

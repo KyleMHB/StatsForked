@@ -1,27 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
 
 namespace Stats.Widgets;
 
-internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> : FilterWidget<TObject, TExprLhs, TExprRhs>
-    where TExprRhs : notnull
+internal abstract class FilterWidgetWithInputField<TObject, TObjectValue, TValue> : FilterWidget<TObject>
 {
     private Vector2 OperatorButtonSize;
     private const float OperatorButtonMinWidth = 24f;
-    private const float OperatorButtonPadding = Globals.GUI.PadXs;
-    private Vector2 InputFieldSize;
+    private const float OperatorButtonPaddingHor = Globals.GUI.PadXs;
     private const float InputFieldMinWidth = OperatorButtonMinWidth * 2f;
-    private bool ChildrenSizesAreCached = false;
     private readonly FloatMenu OperatorsMenu;
-    protected FilterWidgetWithInputField(
-        Func<TObject, TExprLhs> lhs,
-        TExprRhs rhs,
-        IEnumerable<AbsOperator> operators,
-        AbsOperator? defaultOperator = null
-    ) : base(lhs, rhs, defaultOperator ?? operators.First())
+    protected abstract RelOperator<TObjectValue, TValue> Operator { get; set; }
+    protected FilterWidgetWithInputField(IEnumerable<RelOperator<TObjectValue, TValue>> operators)
     {
         var operatorsMenuOptions = new List<FloatMenuOption>(operators.Count());
 
@@ -29,29 +21,20 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
         {
             var operatorString = @operator.Symbol.Colorize(Globals.GUI.TextColorHighlight);
             var optionLabel = @operator.Description.Length > 0
-                    ? $"{operatorString} - {@operator.Description}"
-                    : operatorString;
+                ? $"{operatorString} - {@operator.Description}"
+                : operatorString;
             var option = new FloatMenuOption(optionLabel, () => Operator = @operator);
-
             operatorsMenuOptions.Add(option);
         }
 
         OperatorsMenu = new FloatMenu(operatorsMenuOptions);
-
-        OnChange += HandleStateChange;
     }
     protected sealed override Vector2 CalcSize()
     {
-        if (ChildrenSizesAreCached == false)
-        {
-            OperatorButtonSize = CalcOperatorButtonSize();
-            InputFieldSize = CalcInputFieldSize();
-            ChildrenSizesAreCached = true;
-        }
-
-        var size = OperatorButtonSize;
-        size.x += InputFieldSize.x;
-        size.y = Mathf.Max(size.y, InputFieldSize.y);
+        var size = OperatorButtonSize = CalcOperatorButtonSize();
+        var inputFieldSize = CalcInputFieldSize();
+        size.x += inputFieldSize.x;
+        size.y = Mathf.Max(size.y, inputFieldSize.y);
 
         return size;
     }
@@ -85,7 +68,7 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
     private Vector2 CalcOperatorButtonSize()
     {
         var size = Text.CalcSize(Operator.Symbol);
-        size.x += OperatorButtonPadding * 2f;
+        size.x += OperatorButtonPaddingHor * 2f;
 
         if (size.x < OperatorButtonMinWidth)
         {
@@ -101,7 +84,7 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
             TooltipHandler.TipRegion(rect, Operator.Description);
         }
 
-        return Widgets.Draw.ButtonTextSubtle(rect, Operator.Symbol, GUI.color, OperatorButtonPadding);
+        return Widgets.Draw.ButtonTextSubtle(rect, Operator.Symbol, GUI.color, OperatorButtonPaddingHor);
     }
     protected abstract Vector2 CalcInputFieldContentSize();
     private Vector2 CalcInputFieldSize()
@@ -117,11 +100,4 @@ internal abstract class FilterWidgetWithInputField<TObject, TExprLhs, TExprRhs> 
         return size;
     }
     protected abstract void DrawInputField(Rect rect);
-    protected virtual void HandleStateChange(FilterWidget<TObject> _)
-    {
-        OperatorButtonSize = CalcOperatorButtonSize();
-        InputFieldSize = CalcInputFieldSize();
-
-        Resize();
-    }
 }

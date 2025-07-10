@@ -6,11 +6,11 @@ namespace Stats.Widgets;
 internal sealed class OTMFilter<TObject, TOption> : NTMFilter<TObject, TOption, TOption>
 {
     public OTMFilter(
-        Func<TObject, TOption> lhs,
+        Func<TObject, TOption> objectValueFunc,
         IEnumerable<NTMFilterOption<TOption>> options,
         string? label = null
     ) : base(
-        lhs,
+        objectValueFunc,
         options,
         [
             Operators.IsIn.Instance,
@@ -24,7 +24,7 @@ internal sealed class OTMFilter<TObject, TOption> : NTMFilter<TObject, TOption, 
 
     private static class Operators
     {
-        public sealed class IsIn : AbsOperator
+        public sealed class IsIn : RelOperator<TOption, HashSet<TOption>>
         {
             private IsIn() : base("∈", "Is one of selected") { }
             public override bool Eval(TOption lhs, HashSet<TOption> rhs) => rhs.Contains(lhs);
@@ -32,7 +32,7 @@ internal sealed class OTMFilter<TObject, TOption> : NTMFilter<TObject, TOption, 
         }
 
         // ∉
-        public sealed class IsNotIn : AbsOperator
+        public sealed class IsNotIn : RelOperator<TOption, HashSet<TOption>>
         {
             private IsNotIn() : base("!∈", "Is not one of selected") { }
             public override bool Eval(TOption lhs, HashSet<TOption> rhs) => rhs.Contains(lhs) == false;

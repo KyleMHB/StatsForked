@@ -8,19 +8,17 @@ namespace Stats.Widgets;
 internal sealed class MTMFilter<TObject, TOption> : NTMFilter<TObject, HashSet<TOption>, TOption>
 {
     public MTMFilter(
-        Func<TObject, HashSet<TOption>> lhs,
+        Func<TObject, HashSet<TOption>> objectValueFunc,
         IEnumerable<NTMFilterOption<TOption>> options,
         string? label = null
     ) : base(
-        lhs,
+        objectValueFunc,
         options,
         [
             Operators.IntersectsWith.Instance,
             Operators.NotIntersectsWith.Instance,
             Operators.IsSubsetOf.Instance,
-            //Operators.IsNotSubsetOf.Instance,
             Operators.IsSupersetOf.Instance,
-            //Operators.IsNotSupersetOf.Instance,
             Operators.IsEqualTo.Instance,
             Operators.IsNotEqualTo.Instance,
         ],
@@ -35,62 +33,46 @@ internal sealed class MTMFilter<TObject, TOption> : NTMFilter<TObject, HashSet<T
     // - Because of font the game uses, "⊄"/"⊅" are unrecognizable in the game.
     private static class Operators
     {
-        public sealed class IsEqualTo : AbsOperator
+        public sealed class IsEqualTo : RelOperator<HashSet<TOption>, HashSet<TOption>>
         {
             private IsEqualTo() : base("==", "Is equal to selected") { }
             public override bool Eval(HashSet<TOption> lhs, HashSet<TOption> rhs) => lhs.SetEquals(rhs);
             public static IsEqualTo Instance { get; } = new();
         }
 
-        public sealed class IsNotEqualTo : AbsOperator
+        public sealed class IsNotEqualTo : RelOperator<HashSet<TOption>, HashSet<TOption>>
         {
             private IsNotEqualTo() : base("!=", "Is not equal to selected") { }
             public override bool Eval(HashSet<TOption> lhs, HashSet<TOption> rhs) => lhs.SetEquals(rhs) == false;
             public static IsNotEqualTo Instance { get; } = new();
         }
 
-        public sealed class IntersectsWith : AbsOperator
+        public sealed class IntersectsWith : RelOperator<HashSet<TOption>, HashSet<TOption>>
         {
             private IntersectsWith() : base("∩", "Contains at least one of selected") { }
             public override bool Eval(HashSet<TOption> lhs, HashSet<TOption> rhs) => rhs.Any(lhs.Contains);
             public static IntersectsWith Instance { get; } = new();
         }
 
-        public sealed class NotIntersectsWith : AbsOperator
+        public sealed class NotIntersectsWith : RelOperator<HashSet<TOption>, HashSet<TOption>>
         {
             private NotIntersectsWith() : base("!∩", "Does not contain any of selected") { }
             public override bool Eval(HashSet<TOption> lhs, HashSet<TOption> rhs) => rhs.Any(lhs.Contains) == false;
             public static NotIntersectsWith Instance { get; } = new();
         }
 
-        public sealed class IsSubsetOf : AbsOperator
+        public sealed class IsSubsetOf : RelOperator<HashSet<TOption>, HashSet<TOption>>
         {
             private IsSubsetOf() : base("⊆", "Is subset of selected") { }
             public override bool Eval(HashSet<TOption> lhs, HashSet<TOption> rhs) => lhs.IsSubsetOf(rhs);
             public static IsSubsetOf Instance { get; } = new();
         }
 
-        // ⊄
-        //public sealed class IsNotSubsetOf : GenericOperator
-        //{
-        //    private IsNotSubsetOf() : base("!⊆", "") { }
-        //    public override bool Eval(HashSet<TOption> lhs, HashSet<TOption> rhs) => lhs.IsSubsetOf(rhs) == false;
-        //    public static IsNotSubsetOf Instance { get; } = new();
-        //}
-
-        public sealed class IsSupersetOf : AbsOperator
+        public sealed class IsSupersetOf : RelOperator<HashSet<TOption>, HashSet<TOption>>
         {
             private IsSupersetOf() : base("⊇", "Is superset of selected") { }
             public override bool Eval(HashSet<TOption> lhs, HashSet<TOption> rhs) => lhs.IsSupersetOf(rhs);
             public static IsSupersetOf Instance { get; } = new();
         }
-
-        // ⊅
-        //public sealed class IsNotSupersetOf : GenericOperator
-        //{
-        //    private IsNotSupersetOf() : base("!⊇", "") { }
-        //    public override bool Eval(HashSet<TOption> lhs, HashSet<TOption> rhs) => lhs.IsSupersetOf(rhs) == false;
-        //    public static IsNotSupersetOf Instance { get; } = new();
-        //}
     }
 }
