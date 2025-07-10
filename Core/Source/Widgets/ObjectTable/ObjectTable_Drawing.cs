@@ -11,7 +11,7 @@ internal sealed partial class ObjectTable<TObject>
     private static readonly Color PinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
     private const float CellPadHor = 12f;
     private const float CellPadVer = 4f;
-    private Vector2 FiltersTabScrollPosition;
+    private Vector2 ColumnsTabScrollPosition;
     public override void Draw(Rect rect)
     {
         // Why to do it like this?
@@ -24,18 +24,18 @@ internal sealed partial class ObjectTable<TObject>
             ApplyFilters();
         }
 
-        // Filters tab
-        var filtersTabWidgetSize = FiltersTabWidget.GetSize(rect.size);
-        var filtersTabRect = rect.CutByX(filtersTabWidgetSize.x + GenUI.ScrollBarWidth);
-        var filtersTabRectMax = new Rect(Vector2.zero, filtersTabWidgetSize);
+        // Columns tab
+        var columnsTabWidgetSize = ColumnsTabWidget.GetSize(rect.size);
+        var columnsTabRect = rect.CutByX(columnsTabWidgetSize.x + GenUI.ScrollBarWidth);
+        var columnsTabRectMax = new Rect(Vector2.zero, columnsTabWidgetSize);
         // Adds empty space for more convenient vertical scrolling.
-        filtersTabRectMax.height += filtersTabRect.height;
+        columnsTabRectMax.height += columnsTabRect.height;
 
-        Verse.Widgets.BeginScrollView(filtersTabRect, ref FiltersTabScrollPosition, filtersTabRectMax, true);
-        FiltersTabWidget.DrawIn(filtersTabRectMax);
+        Verse.Widgets.BeginScrollView(columnsTabRect, ref ColumnsTabScrollPosition, columnsTabRectMax, true);
+        ColumnsTabWidget.DrawIn(columnsTabRectMax);
         Verse.Widgets.EndScrollView();
         Widgets.Draw.VerticalLine(
-            filtersTabRect.xMax,
+            columnsTabRect.xMax,
             rect.y,
             rect.height,
             MainTabWindow.BorderLineColor
@@ -49,7 +49,7 @@ internal sealed partial class ObjectTable<TObject>
 
         foreach (var column in Columns)
         {
-            if (column.Width == 0f)
+            if (column.IsVisible == false)
             {
                 continue;
             }
@@ -226,7 +226,7 @@ internal sealed partial class ObjectTable<TObject>
 
         foreach (var column in columns)
         {
-            if (column.IsPinned != drawPinnedColumns || column.Width == 0f)
+            if (column.IsPinned != drawPinnedColumns || column.IsVisible == false)
             {
                 continue;
             }

@@ -32,6 +32,12 @@ internal sealed partial class ObjectTable<TObject>
         UnfilteredBodyRows.Add(row);
         SortRows(UnfilteredBodyRows);
     }
+    private void RecalcRowsHeight()
+    {
+        UnfilteredBodyRows.RecalcHeight();
+        FilteredBodyRows.RecalcHeightFast();
+        PinnedRows.RecalcHeight();
+    }
 
     private sealed class RowCollection<TRow> : ICollection<TRow>, IReadOnlyCollection<TRow> where TRow : Row
     {
@@ -95,6 +101,25 @@ internal sealed partial class ObjectTable<TObject>
         {
             return Rows.GetEnumerator();
         }
+        public void RecalcHeight()
+        {
+            TotalHeight = 0f;
+
+            foreach (var row in Rows)
+            {
+                row.RecalcHeight();
+                TotalHeight += row.Height;
+            }
+        }
+        public void RecalcHeightFast()
+        {
+            TotalHeight = 0f;
+
+            foreach (var row in Rows)
+            {
+                TotalHeight += row.Height;
+            }
+        }
     }
 
     private class Row
@@ -123,7 +148,7 @@ internal sealed partial class ObjectTable<TObject>
 
                     if (column.Width < cellSize.x)
                     {
-                        column.Width = cellSize.x;
+                        column.Width = column.WidthInitial = cellSize.x;
                     }
 
                     if (Height < cellSize.y)
@@ -154,7 +179,7 @@ internal sealed partial class ObjectTable<TObject>
                 // It seems that this is faster than attaching column props object to a cell.
                 var column = Columns[i];
 
-                if (column.IsPinned != drawPinnedColumns || column.Width == 0f)
+                if (column.IsPinned != drawPinnedColumns || column.IsVisible == false)
                 {
                     continue;
                 }
@@ -191,6 +216,26 @@ internal sealed partial class ObjectTable<TObject>
             }
 
             return false;
+        }
+        public void RecalcHeight()
+        {
+            Height = 0f;
+
+            for (int i = 0; i < Cells.Length; i++)
+            {
+                var column = Columns[i];
+                var cell = Cells[i];
+
+                if (cell != null && column.IsVisible)
+                {
+                    var cellSize = cell.GetSize();
+
+                    if (Height < cellSize.y)
+                    {
+                        Height = cellSize.y;
+                    }
+                }
+            }
         }
     }
 

@@ -33,7 +33,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         {
             var columnWorker = columnWorkers[i];
 
-            columns[i] = new Column(columnWorker, i == 0);
+            columns[i] = new Column(columnWorker, i == 0, this);
         }
 
         var sortColumn = columns[0];
@@ -80,11 +80,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         {
             var column = columns[i];
 
-            // TODO: This is a quick and dirty way of hiding empty columns.
-            // If there was no cells generated for a column, it will have width = 0. That's why, rows are initialized first.
-            // The columns are still there, they are just ignored. Shouldn't cause any issues, but this is obviously inefficient.
-            // Note to myself: When you'll get to refactoring this, don't forget to remove checks for width = 0.
-            if (column.Width == 0f)
+            if (column.IsVisible == false)
             {
                 continue;
             }
@@ -139,56 +135,92 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
         headerRows.Add(columnTitlesRow);
 
-        // Filters
-        var filters = new List<Widget>(columnsCount);
-        var filterLabels = new Widget[columnsCount];
-        var maxFilterLabelWidth = 0f;
+        // Column settings
+        var columnLabels = new Widget[columnsCount];
+        var maxColumnLabelWidth = 0f;
 
         for (int i = 0; i < columnsCount; i++)
         {
             var column = columns[i];
 
-            if (column.Width == 0f)
+            if (column.IsVisible == false)
             {
                 continue;
             }
 
-            var filterLabel = column.Worker.ColumnDef.Title;
-            filterLabels[i] = filterLabel;
-            maxFilterLabelWidth = Mathf.Max(maxFilterLabelWidth, filterLabel.GetSize().x);
+            var columnTitleWidget = column.Worker.ColumnDef.Title;
+            // TODO: This is a hack to prevent icons from stretching out.
+            if (columnTitleWidget is InlineTexture)
+            {
+                columnTitleWidget = new SingleElementContainer(columnTitleWidget);
+            }
+
+            var columnLabel = new HorizontalContainer([
+                new EmptyWidget()
+                .SizeAbs(Text.LineHeight)
+                .Background(rect => {
+                    if (Event.current.type == EventType.Repaint) {
+                        if (column.IsVisible) {
+                            Verse.Widgets.DrawTextureFitted(rect, Verse.Widgets.CheckboxOnTex, 1f);
+                        }
+                        else
+                        {
+                            Verse.Widgets.DrawTextureFitted(rect, Verse.Widgets.CheckboxOffTex, 1f);
+                        }
+                    }
+                })
+                .ToButtonGhostly(column.Toggle),
+
+                columnTitleWidget
+                .PaddingAbs(Globals.GUI.PadSm, 0f)
+                .WidthIncRel(1f)
+                .ToButtonGhostly(() => {
+                    if (Event.current.control)
+                    {
+                        column.IsPinned = !column.IsPinned;
+                    }
+                    else
+                    {
+                        SortAllRowsByColumn(column);
+                    }
+                }),
+            ], Globals.GUI.PadSm, true);
+            columnLabels[i] = columnLabel;
+            maxColumnLabelWidth = Mathf.Max(maxColumnLabelWidth, columnLabel.GetSize().x);
         }
+
+        var filters = new List<Widget>(columnsCount);
 
         for (int i = 0; i < columnsCount; i++)
         {
             var column = columns[i];
 
-            if (column.Width == 0f)
+            if (column.IsVisible == false)
             {
                 continue;
             }
 
             var filterWidget = column.Worker.GetFilterWidget(objectArr);
             filterWidget.OnChange += filterWidget => HandleFilterChange(filterWidget, column);
-            Widget filterRow = new HorizontalContainer([
-                // Just so icons doesn't get stretched out.
-                new SingleElementContainer(filterLabels[i])
-                .WidthAbs(maxFilterLabelWidth)
+            Widget columnRow = new HorizontalContainer([
+                columnLabels[i]
+                .WidthAbs(maxColumnLabelWidth)
                 .HeightRel(1f)
                 .Tooltip(GetColumnDefDescriptionFull(column.Worker.ColumnDef)),
 
                 filterWidget
                 .WidthIncRel(1f),
-            ], Globals.GUI.Pad, true)
+            ], Globals.GUI.PadSm, true)
             .PaddingAbs(Globals.GUI.PadXs)
             .WidthRel(1f)
             .HoverBackground(TexUI.HighlightTex);
 
             if (filters.Count % 2 == 0)
             {
-                filterRow = filterRow.Background(Verse.Widgets.LightHighlight);
+                columnRow = columnRow.Background(Verse.Widgets.LightHighlight);
             }
 
-            filters.Add(filterRow);
+            filters.Add(columnRow);
         }
 
         // Finalize
@@ -199,7 +231,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         PinnedRows = new(10);
         UnfilteredBodyRows = bodyRows;
         FilteredBodyRows = new(bodyRows);
-        FiltersTabWidget = new VerticalContainer(filters).PaddingAbs(Globals.GUI.PadSm);
+        ColumnsTabWidget = new VerticalContainer(filters).PaddingAbs(Globals.GUI.PadSm);
         ActiveFilters = new HashSet<FilterWidget<TObject>>(columnsCount);
         _FilterMode = TableFilterMode.AND;
         ObjectMatchesFilters = ObjectFilterMatchFuncAND;
