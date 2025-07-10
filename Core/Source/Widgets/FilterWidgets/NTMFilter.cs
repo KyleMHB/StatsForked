@@ -50,7 +50,7 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
     private const float ButtonPadHor = Globals.GUI.PadSm;
     private readonly HashSet<TOption> SelectedOptions = [];
     private RelOperator<TObjectValue, HashSet<TOption>> _Operator;
-    private RelOperator<TObjectValue, HashSet<TOption>> Operator
+    protected RelOperator<TObjectValue, HashSet<TOption>> Operator
     {
         get => _Operator;
         set

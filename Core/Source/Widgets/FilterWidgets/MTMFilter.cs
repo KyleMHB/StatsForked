@@ -7,6 +7,10 @@ namespace Stats.Widgets;
 
 internal sealed class MTMFilter<TObject, TOption> : NTMFilter<TObject, HashSet<TOption>, TOption>
 {
+    public override bool IsActive =>
+        base.IsActive
+        || Operator == Operators.IsEqualTo.Instance
+        || Operator == Operators.IsNotEqualTo.Instance;
     public MTMFilter(
         Func<TObject, HashSet<TOption>> objectValueFunc,
         IEnumerable<NTMFilterOption<TOption>> options,
