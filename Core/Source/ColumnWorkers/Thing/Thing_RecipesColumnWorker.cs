@@ -318,12 +318,9 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
     });
     public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
     {
-        var recipeUsersFilter = Make.MTMThingDefFilter(GetAllRecipesUsers, tableRecords, "Bench")
-            .Tooltip("Filter by crafting benches.");
-        var skillFilter = Make.NumberFilter(GetWorkSkillLevel)
-            .Tooltip("Filter by work skill level.");
-        var ingredientsFilter = Make.MTMThingDefFilter(GetAllIngredients, tableRecords, "Resources")
-            .Tooltip("Filter by resources.");
+        var recipeUsersFilter = Make.MTMThingDefFilter(GetAllRecipesUsers, tableRecords, "Bench");
+        var skillFilter = Make.NumberFilter(GetWorkSkillLevel, "Work skill");
+        var ingredientsFilter = Make.MTMThingDefFilter(GetAllIngredients, tableRecords, "Resources");
 
         return Make.CompositeFilter<ThingAlike>([
             ingredientsFilter,

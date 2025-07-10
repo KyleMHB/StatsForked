@@ -13,8 +13,13 @@ internal abstract class FilterWidgetWithInputField<TObject, TObjectValue, TValue
     private const float InputFieldMinWidth = OperatorButtonMinWidth * 2f;
     private readonly FloatMenu OperatorsMenu;
     protected abstract RelOperator<TObjectValue, TValue> Operator { get; set; }
-    protected FilterWidgetWithInputField(IEnumerable<RelOperator<TObjectValue, TValue>> operators)
+    private readonly string Placeholder;
+    protected abstract string InputFieldText { get; }
+    private string InputFieldContent => InputFieldText.Length == 0 ? Placeholder : InputFieldText;
+    protected FilterWidgetWithInputField(IEnumerable<RelOperator<TObjectValue, TValue>> operators, string? placeholder = null)
     {
+        Placeholder = placeholder ?? "";
+
         var operatorsMenuOptions = new List<FloatMenuOption>(operators.Count());
 
         foreach (var @operator in operators)
@@ -62,6 +67,12 @@ internal abstract class FilterWidgetWithInputField<TObject, TObjectValue, TValue
 
         DrawInputField(rect);
 
+        if (InputFieldText.Length == 0 && IsActive == false)
+        {
+            rect.xMin += Globals.GUI.EstimatedInputFieldInnerPadding;
+            Verse.Widgets.Label(rect, Placeholder);
+        }
+
         Text.Anchor = origTextAnchor;
         GUI.color = origGUIColor;
     }
@@ -86,10 +97,9 @@ internal abstract class FilterWidgetWithInputField<TObject, TObjectValue, TValue
 
         return Widgets.Draw.ButtonTextSubtle(rect, Operator.Symbol, GUI.color, OperatorButtonPaddingHor);
     }
-    protected abstract Vector2 CalcInputFieldContentSize();
     private Vector2 CalcInputFieldSize()
     {
-        var size = CalcInputFieldContentSize();
+        var size = Text.CalcSize(InputFieldContent);
         size.x += Globals.GUI.EstimatedInputFieldInnerPadding * 2f;
 
         if (size.x < InputFieldMinWidth)

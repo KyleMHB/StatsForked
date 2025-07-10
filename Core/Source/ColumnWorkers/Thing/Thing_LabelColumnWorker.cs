@@ -42,7 +42,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
     public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
     {
         var anyThingIsMadeFromStuff = tableRecords.Any(record => record.StuffDef != null);
-        var labelFilter = Make.StringFilter(GetThingLabel);
+        var labelFilter = Make.StringFilter(GetThingLabel, "Label");
 
         if (anyThingIsMadeFromStuff)
         {
@@ -50,10 +50,10 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
             var baseTypeFilter = Make.OTMThingDefFilter(thing => thing.Def, tableRecords, "Type");
 
             return Make.CompositeFilter<ThingAlike>([
-                labelFilter.Tooltip("Filter by label."),
-                baseTypeFilter.Tooltip("Filter by base type."),
+                labelFilter,
+                baseTypeFilter,
                 new StuffedVariantsDisplayModeToggleButton(),
-                stuffFilter.Tooltip("Filter by material."),
+                stuffFilter,
             ]);
         }
 

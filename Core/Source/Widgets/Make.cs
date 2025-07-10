@@ -8,13 +8,13 @@ namespace Stats.Widgets;
 public static class Make
 {
     #region Basic filters
-    public static FilterWidget<TObject> StringFilter<TObject>(Func<TObject, string> lhs)
+    public static FilterWidget<TObject> StringFilter<TObject>(Func<TObject, string> lhs, string? placeholder = null)
     {
-        return new StringFilter<TObject>(lhs);
+        return new StringFilter<TObject>(lhs, placeholder);
     }
-    public static FilterWidget<TObject> NumberFilter<TObject>(Func<TObject, decimal> lhs)
+    public static FilterWidget<TObject> NumberFilter<TObject>(Func<TObject, decimal> lhs, string? placeholder = null)
     {
-        return new NumberFilter<TObject>(lhs);
+        return new NumberFilter<TObject>(lhs, placeholder);
     }
     public static FilterWidget<TObject> BooleanFilter<TObject>(Func<TObject, bool> lhs)
     {

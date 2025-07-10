@@ -47,10 +47,8 @@ public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject>
     }
     public override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords)
     {
-        var countFilter = Make.NumberFilter<TObject>(@object => GetCachedValue(@object)?.Count ?? 0m)
-            .Tooltip("Filter by amount");
-        var typeFilter = Make.OTMThingDefFilter(@object => GetCachedValue(@object)?.Def, tableRecords, "Type")
-            .Tooltip("Filter by type");
+        var countFilter = Make.NumberFilter<TObject>(@object => GetCachedValue(@object)?.Count ?? 0m, "Amount");
+        var typeFilter = Make.OTMThingDefFilter(@object => GetCachedValue(@object)?.Def, tableRecords, "Type");
 
         return Make.CompositeFilter<TObject>([countFilter, typeFilter]);
     }

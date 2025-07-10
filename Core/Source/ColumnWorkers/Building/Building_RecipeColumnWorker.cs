@@ -101,10 +101,8 @@ public sealed class Building_RecipeColumnWorker : ColumnWorker<ThingAlike>
     });
     public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
     {
-        var recourcesFilter = Make.MTMThingDefFilter(GetResourceDefs, tableRecords, "Resources")
-            .Tooltip("Filter by resources.");
-        var constructionSkillLevelFilter = Make.NumberFilter<ThingAlike>(thing => thing.Def.constructionSkillPrerequisite)
-            .Tooltip($"Filter by {SkillDefOf.Construction.label} skill level.");
+        var recourcesFilter = Make.MTMThingDefFilter(GetResourceDefs, tableRecords, "Resources");
+        var constructionSkillLevelFilter = Make.NumberFilter<ThingAlike>(thing => thing.Def.constructionSkillPrerequisite, SkillDefOf.Construction.LabelCap);
 
         return Make.CompositeFilter<ThingAlike>([recourcesFilter, constructionSkillLevelFilter]);
     }

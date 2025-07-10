@@ -38,18 +38,15 @@ internal sealed class StringFilter<TObject> : FilterWidgetWithInputField<TObject
             OnChange?.Invoke(this);
         }
     }
+    protected override string InputFieldText => Value;
     public override event Action<FilterWidget<TObject>>? OnChange;
     private readonly Func<TObject, string> ObjectValueFunc;
-    public StringFilter(Func<TObject, string> objectValueFunc) : base([
+    public StringFilter(Func<TObject, string> objectValueFunc, string? placeholder = null) : base([
         Operators.Contains.Instance,
         Operators.NotContains.Instance,
-    ])
+    ], placeholder)
     {
         ObjectValueFunc = objectValueFunc;
-    }
-    protected override Vector2 CalcInputFieldContentSize()
-    {
-        return Verse.Text.CalcSize(Value);
     }
     protected override void DrawInputField(Rect rect)
     {

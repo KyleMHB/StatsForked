@@ -76,21 +76,18 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
             Resize();
         }
     }
+    protected override string InputFieldText => _TextFieldText;
     private static readonly Color ErrorColor = Color.red.ToTransparent(0.5f);
-    public NumberFilter(Func<TObject, decimal> objectValueFunc) : base([
+    public NumberFilter(Func<TObject, decimal> objectValueFunc, string? placeholder = null) : base([
         Operators.IsEqualTo.Instance,
         Operators.IsNotEqualTo.Instance,
         Operators.IsGreaterThan.Instance,
         Operators.IsLesserThan.Instance,
         Operators.IsGreaterThanOrEqualTo.Instance,
         Operators.IsLesserThanOrEqualTo.Instance,
-    ])
+    ], placeholder)
     {
         ObjectValueFunc = objectValueFunc;
-    }
-    protected override Vector2 CalcInputFieldContentSize()
-    {
-        return Text.CalcSize(_TextFieldText);
     }
     protected override void DrawInputField(Rect rect)
     {
