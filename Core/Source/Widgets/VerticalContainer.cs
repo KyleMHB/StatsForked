@@ -61,7 +61,6 @@ public sealed class VerticalContainer : Widget
     {
         GUIDebugger.DebugRect(this, rect);
 
-        var yMax = rect.yMax;
         var size = rect.size;
         size.y = Mathf.Max(size.y - OccupiedSpaceAmount, 0f);
         var additionalChildHeight = 0f;
@@ -73,19 +72,10 @@ public sealed class VerticalContainer : Widget
 
         foreach (var child in Children)
         {
-            if (rect.y >= yMax)
-            {
-                break;
-            }
-
             rect.size = child.GetSize(size);
             rect.height += additionalChildHeight;
 
-            // This is for (future) scroll component.
-            if (rect.yMax > 0f)
-            {
-                child.Draw(rect, size);
-            }
+            child.Draw(rect, size);
 
             rect.y = rect.yMax + Gap;
         }

@@ -60,7 +60,6 @@ public sealed class HorizontalContainer : Widget
     {
         GUIDebugger.DebugRect(this, rect);
 
-        var xMax = rect.xMax;
         var size = rect.size;
         size.x = Mathf.Max(size.x - OccupiedSpaceAmount, 0f);
         var additionalChildWidth = 0f;
@@ -72,18 +71,10 @@ public sealed class HorizontalContainer : Widget
 
         foreach (var child in Children)
         {
-            if (rect.x >= xMax)
-            {
-                break;
-            }
-
             rect.size = child.GetSize(size);
             rect.width += additionalChildWidth;
 
-            if (rect.xMax > 0f)
-            {
-                child.Draw(rect, size);
-            }
+            child.Draw(rect, size);
 
             rect.x = rect.xMax + Gap;
         }
