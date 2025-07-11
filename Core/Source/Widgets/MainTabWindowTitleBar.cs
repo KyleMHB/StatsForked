@@ -9,6 +9,8 @@ internal sealed class MainTabWindowTitleBar : WidgetWrapper
 {
     protected override Widget Widget { get; }
     private static readonly Texture2D ExpandWindowTex;
+    private static readonly Texture2D TableSettingsTex;
+    private static readonly Texture2D FilterTex;
     private const string Manual =
         "- Hold (LMB) and move mouse cursor to scroll horizontally.\n" +
         "- Hold [Ctrl] and click on a column's name to pin/unpin it.\n" +
@@ -17,7 +19,7 @@ internal sealed class MainTabWindowTitleBar : WidgetWrapper
         "  - Pinned rows are unaffected by filters.";
     internal const float Height = 30f;
     private const float IconPadding = Globals.GUI.PadXs;
-    private readonly Label LabelWidget;
+    private readonly Label TableFilterModeLabelWidget;
     private ObjectTable _TableWidget;
     public ObjectTable TableWidget
     {
@@ -31,9 +33,10 @@ internal sealed class MainTabWindowTitleBar : WidgetWrapper
             _TableWidget.OnFilterModeChange -= HandleTableFilterModeChange;
             _TableWidget = value;
             value.OnFilterModeChange += HandleTableFilterModeChange;
-            LabelWidget.Text = value.FilterMode.ToString();
+            TableFilterModeLabelWidget.Text = value.FilterMode.ToString();
         }
     }
+    public bool ShowTableSettingsMenu { get; set; } = false;
     public MainTabWindowTitleBar(
         ObjectTable tableWidget,
         Widget tableSelector,
@@ -43,74 +46,96 @@ internal sealed class MainTabWindowTitleBar : WidgetWrapper
     {
         _TableWidget = tableWidget;
         tableWidget.OnFilterModeChange += HandleTableFilterModeChange;
-        Widget = new HorizontalContainer(
-            [
-                new HorizontalContainer(
-                    [
-                        tableSelector,
-                        ToToolbarIcon(
-                            new Icon(TexUI.RotRightTex),
-                            resetTableFilters,
-                            "Reset filters"
-                    ),
-                    new Label(tableWidget.FilterMode.ToString(), out LabelWidget)
-                        .HeightAbs(Height)
-                        .PaddingAbs(Globals.GUI.PadSm, 0f)
-                        .TextAnchor(TextAnchor.MiddleCenter)
-                        .ToButtonGhostly(
-                            () => _TableWidget.ToggleFilterMode(),
-                            "Click to switch between filtering modes.\n" +
-                            "This setting is individual for each table."
-                        )
-                    ],
-                    Globals.GUI.Pad,
-                    true
-                ).WidthRel(1f),
-                ToToolbarIcon(
-                    new Icon(TexButton.Info),
-                    Manual
+        Widget = new HorizontalContainer([
+            new HorizontalContainer([
+                tableSelector,
+
+                ToToolbarButton(
+                    new Icon(TableSettingsTex),
+                    new Label("Table settings"),
+                    () => ShowTableSettingsMenu = !ShowTableSettingsMenu
                 ),
-                ToToolbarIcon(
-                    new Icon(ExpandWindowTex),
-                    expandOrResetWindow,
-                    "Expand/Reset"
+
+                ToToolbarButton(
+                    new Icon(TexUI.RotRightTex),
+                    new Label("Reset filters"),
+                    resetTableFilters
                 ),
-            ],
-            Globals.GUI.Pad,
-            true
-        )
+
+                ToToolbarButton(
+                    new Icon(FilterTex),
+                    new Label(tableWidget.FilterMode.ToString(), out TableFilterModeLabelWidget),
+                    () => _TableWidget.ToggleFilterMode()
+                )
+                .Tooltip(
+                    "Click to switch between filtering modes.\n\n" +
+                    "This setting is individual for each table."
+                ),
+            ], Globals.GUI.PadSm, true)
+            .WidthRel(1f),
+
+            ToToolbarButtonIcon(
+                new Icon(TexButton.Info),
+                Manual
+            ),
+
+            ToToolbarButtonIcon(
+                new Icon(ExpandWindowTex),
+                expandOrResetWindow,
+                "Expand/Reset"
+            ),
+        ], Globals.GUI.PadSm, true)
         .Background(Verse.Widgets.LightHighlight)
         .BorderBottom(1f, MainTabWindow.BorderLineColor);
         Widget.Parent = this;
     }
-    private static Widget ToToolbarIcon(
+    private static Widget ToToolbarButtonIcon(
         Widget widget,
         Action clickEventHandler,
-        string tooltip,
-        float pad = IconPadding
+        string tooltip
     )
     {
-        return ToToolbarIcon(widget, tooltip, pad)
+        return ToToolbarButtonIcon(widget, tooltip)
             .ToButtonGhostly(clickEventHandler);
     }
-    private static Widget ToToolbarIcon(
+    private static Widget ToToolbarButtonIcon(
         Widget widget,
-        string tooltip,
-        float pad = IconPadding
+        string tooltip
     )
     {
         return widget
-            .PaddingAbs(pad)
+            .PaddingAbs(IconPadding)
             .SizeAbs(Height)
             .Tooltip(tooltip);
     }
+    private static Widget ToToolbarButton(
+        Widget iconWidget,
+        Widget textWidget,
+        Action clickEventHandler
+    )
+    {
+        return new HorizontalContainer([
+            iconWidget
+            .PaddingAbs(IconPadding)
+            .SizeAbs(Height),
+
+            textWidget
+            .HeightAbs(Height)
+            .TextAnchor(TextAnchor.MiddleCenter)
+        ], Globals.GUI.PadXs)
+        .PaddingAbs(Globals.GUI.PadXs, 0f)
+        .HeightAbs(Height)
+        .ToButtonGhostly(clickEventHandler);
+    }
     private void HandleTableFilterModeChange(ObjectTable.TableFilterMode filterMode)
     {
-        LabelWidget.Text = filterMode.ToString();
+        TableFilterModeLabelWidget.Text = filterMode.ToString();
     }
 
     static MainTabWindowTitleBar()
     {
         ExpandWindowTex = ContentFinder<Texture2D>.Get("StatsMod/UI/Icons/ExpandWindow");
+        TableSettingsTex = ContentFinder<Texture2D>.Get("UI/Icons/Options/OptionsGeneral");
+        FilterTex = ContentFinder<Texture2D>.Get("StatsMod/UI/Icons/Filter");
     }
 }

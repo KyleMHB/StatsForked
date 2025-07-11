@@ -12,7 +12,7 @@ internal sealed partial class ObjectTable<TObject>
     private const float CellPadHor = 12f;
     private const float CellPadVer = 4f;
     private Vector2 ColumnsTabScrollPosition;
-    public override void Draw(Rect rect)
+    public override void Draw(Rect rect, bool showSettingsMenu)
     {
         // Why to do it like this?
         //
@@ -25,22 +25,25 @@ internal sealed partial class ObjectTable<TObject>
         }
 
         // Columns tab
-        var columnsTabWidgetSize = ColumnsTabWidget.GetSize(rect.size);
-        var columnsTabRect = rect.CutByX(columnsTabWidgetSize.x + GenUI.ScrollBarWidth);
-        var columnsTabRectMax = new Rect(Vector2.zero, columnsTabWidgetSize);
-        // Adds empty space for more convenient vertical scrolling.
-        columnsTabRectMax.height += columnsTabRect.height;
+        if (showSettingsMenu)
+        {
+            var columnsTabWidgetSize = ColumnsTabWidget.GetSize(rect.size);
+            var columnsTabRect = rect.CutByX(columnsTabWidgetSize.x + GenUI.ScrollBarWidth);
+            var columnsTabRectMax = new Rect(Vector2.zero, columnsTabWidgetSize);
+            // Adds empty space for more convenient vertical scrolling.
+            columnsTabRectMax.height += columnsTabRect.height;
 
-        Verse.Widgets.BeginScrollView(columnsTabRect, ref ColumnsTabScrollPosition, columnsTabRectMax, true);
-        ColumnsTabWidget.DrawIn(columnsTabRectMax);
-        Verse.Widgets.EndScrollView();
-        Widgets.Draw.VerticalLine(
-            columnsTabRect.xMax,
-            rect.y,
-            rect.height,
-            MainTabWindow.BorderLineColor
-        );
-        rect.xMin += 1f;
+            Verse.Widgets.BeginScrollView(columnsTabRect, ref ColumnsTabScrollPosition, columnsTabRectMax, true);
+            ColumnsTabWidget.DrawIn(columnsTabRectMax);
+            Verse.Widgets.EndScrollView();
+            Widgets.Draw.VerticalLine(
+                columnsTabRect.xMax,
+                rect.y,
+                rect.height,
+                MainTabWindow.BorderLineColor
+            );
+            rect.xMin += 1f;
+        }
 
         // Probably could cache this.
         var leftColumnsMinWidth = 0f;

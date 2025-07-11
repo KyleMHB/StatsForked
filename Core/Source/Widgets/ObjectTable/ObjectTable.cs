@@ -8,7 +8,7 @@ namespace Stats.Widgets;
 
 internal abstract class ObjectTable
 {
-    public abstract void Draw(Rect rect);
+    public abstract void Draw(Rect rect, bool showSettingsMenu);
     public abstract void ResetFilters();
     public abstract TableFilterMode FilterMode { get; set; }
     public abstract void ToggleFilterMode();

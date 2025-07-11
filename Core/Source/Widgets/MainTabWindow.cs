@@ -51,7 +51,10 @@ public sealed class MainTabWindow : RimWorld.MainTabWindow
 
         TitleBarWidget.Draw(rect.TopPartPixels(titleBarHeight), rectSize);
 
-        _CurTableDef.Worker.TableWidget.Draw(rect.BottomPartPixels(rect.height - titleBarHeight));
+        _CurTableDef.Worker.TableWidget.Draw(
+            rect.BottomPartPixels(rect.height - titleBarHeight),
+            TitleBar.ShowTableSettingsMenu
+        );
 
         GUIDebugger.DrawDebugInfo(rect);
 
