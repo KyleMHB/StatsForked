@@ -114,7 +114,7 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
 
     private static class Operators
     {
-        public static RelOperator<decimal, decimal> Default = IsGreaterThanOrEqualTo.Instance;
+        public static RelOperator<decimal, decimal> Default = IsGreaterThan.Instance;
 
         public sealed class IsEqualTo : RelOperator<decimal, decimal>
         {
