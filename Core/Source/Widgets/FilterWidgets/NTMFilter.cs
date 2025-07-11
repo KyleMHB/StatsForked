@@ -159,7 +159,8 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
         private static readonly Color OptionHoverBackgroundColor = FloatMenuOption.ColorBGActiveMouseover;
         private const float OptionPadHor = Globals.GUI.Pad;
         private const float OptionPadVer = Globals.GUI.PadXs;
-        private const int ColumnCapacity = 15;
+        private const int ColumnCapacity = 18;
+        private const float OperatorButtonSize = 28f;
         public OptionsWindowWidget(
             List<NTMFilterOption<TOption>> options,
             NTMFilter<TObject, TObjectValue, TOption> parent,
@@ -227,9 +228,10 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
                 new HorizontalContainer([
                     ..operators.Select(@operator =>
                         new Label(@operator.Symbol)
+                        .TextAnchor(TextAnchor.MiddleCenter)
+                        .SizeAbs(OperatorButtonSize)
                         .Color(Globals.GUI.TextColorHighlight)
                         .SkipNextExtension(() => parent.Operator != @operator)
-                        .PaddingAbs(Globals.GUI.PadSm, Globals.GUI.PadXs)
                         .HoverShift(Globals.GUI.ButtonSubtleContentHoverOffset, -Globals.GUI.ButtonSubtleContentHoverOffset)
                         .BackgroundAtlas(Verse.Widgets.ButtonSubtleAtlas)
                         .HoverColor(GenUI.MouseoverColor)
@@ -240,8 +242,10 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
                     ),
 
                     new Label("Clear")
-                    .PaddingAbs(Globals.GUI.PadSm, Globals.GUI.PadXs)
+                    .TextAnchor(TextAnchor.MiddleLeft)
+                    .PaddingAbs(Globals.GUI.PadSm, 0f)
                     .WidthIncRel(1f)
+                    .HeightAbs(OperatorButtonSize)
                     .ToButtonSubtle(parent.Clear),
                 ], shareFreeSpace: true)
                 .WidthRel(1f),

@@ -157,39 +157,29 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
             var columnLabel = new HorizontalContainer([
                 new EmptyWidget()
-                .SizeAbs(Text.LineHeight)
                 .Background(rect => {
                     if (Event.current.type == EventType.Repaint) {
                         if (column.IsVisible) {
-                            Verse.Widgets.DrawTextureFitted(rect, Verse.Widgets.CheckboxOnTex, 1f);
+                            Verse.Widgets.DrawTextureFitted(rect, Verse.Widgets.CheckboxOnTex, 0.8f);
                         }
                         else
                         {
-                            Verse.Widgets.DrawTextureFitted(rect, Verse.Widgets.CheckboxOffTex, 1f);
+                            Verse.Widgets.DrawTextureFitted(rect, Verse.Widgets.CheckboxOffTex, 0.8f);
                         }
                     }
                 })
+                .SizeAbs(Text.LineHeight)
+                .PaddingAbs(Globals.GUI.PadXs)
                 .ToButtonGhostly(column.Toggle),
 
                 columnTitleWidget
-                .PaddingAbs(Globals.GUI.PadSm, 0f)
-                .WidthIncRel(1f)
-                .ToButtonGhostly(() => {
-                    if (Event.current.control)
-                    {
-                        column.IsPinned = !column.IsPinned;
-                    }
-                    else
-                    {
-                        SortAllRowsByColumn(column);
-                    }
-                }),
-            ], Globals.GUI.PadSm, true);
+                .PaddingAbs(Globals.GUI.PadXs),
+            ], Globals.GUI.PadXs, true);
             columnLabels[i] = columnLabel;
             maxColumnLabelWidth = Mathf.Max(maxColumnLabelWidth, columnLabel.GetSize().x);
         }
 
-        var filters = new List<Widget>(columnsCount);
+        var columnRows = new List<Widget>(columnsCount);
 
         for (int i = 0; i < columnsCount; i++)
         {
@@ -209,18 +199,18 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
                 .Tooltip(GetColumnDefDescriptionFull(column.Worker.ColumnDef)),
 
                 filterWidget
+                .PaddingAbs(Globals.GUI.PadXs)
                 .WidthIncRel(1f),
-            ], Globals.GUI.PadSm, true)
-            .PaddingAbs(Globals.GUI.PadXs)
+            ], Globals.GUI.Pad, true)
             .WidthRel(1f)
             .HoverBackground(TexUI.HighlightTex);
 
-            if (filters.Count % 2 == 0)
+            if (columnRows.Count % 2 == 0)
             {
                 columnRow = columnRow.Background(Verse.Widgets.LightHighlight);
             }
 
-            filters.Add(columnRow);
+            columnRows.Add(columnRow);
         }
 
         // Finalize
@@ -231,7 +221,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         PinnedRows = new(10);
         UnfilteredBodyRows = bodyRows;
         FilteredBodyRows = new(bodyRows);
-        ColumnsTabWidget = new VerticalContainer(filters).PaddingAbs(Globals.GUI.PadSm);
+        ColumnsTabWidget = new VerticalContainer(columnRows);
         ActiveFilters = new HashSet<FilterWidget<TObject>>(columnsCount);
         _FilterMode = TableFilterMode.AND;
         ObjectMatchesFilters = ObjectFilterMatchFuncAND;
