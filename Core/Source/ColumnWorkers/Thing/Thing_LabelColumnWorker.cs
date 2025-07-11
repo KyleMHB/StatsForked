@@ -43,11 +43,11 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
     {
         var anyThingIsMadeFromStuff = tableRecords.Any(record => record.StuffDef != null);
         var labelFilter = Make.StringFilter(GetThingLabel, "Label");
+        var baseTypeFilter = Make.OTMThingDefFilter(thing => thing.Def, tableRecords, "Type");
 
         if (anyThingIsMadeFromStuff)
         {
             var stuffFilter = Make.OTMThingDefFilter(thing => thing.StuffDef, tableRecords, "Material");
-            var baseTypeFilter = Make.OTMThingDefFilter(thing => thing.Def, tableRecords, "Type");
 
             return Make.CompositeFilter<ThingAlike>([
                 labelFilter,
@@ -57,7 +57,10 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
             ]);
         }
 
-        return labelFilter;
+        return Make.CompositeFilter<ThingAlike>([
+            labelFilter,
+            baseTypeFilter,
+        ]);
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {
