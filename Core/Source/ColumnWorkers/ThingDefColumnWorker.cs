@@ -26,8 +26,8 @@ public abstract class ThingDefColumnWorker<TObject, TValue> : DefColumnWorker<TO
             Globals.GUI.PadSm
         );
     }
-    public sealed override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords)
+    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {
-        return Make.OTMThingDefFilter(GetCachedValue, tableRecords);
+        yield return new(ColumnDef.Title, Make.OTMThingDefFilter(GetCachedValue, tableRecords));
     }
 }

@@ -9,7 +9,7 @@ namespace Stats;
 
 public class Thing_StatColumnWorker : ColumnWorker<ThingAlike>
 {
-    private static readonly Regex NumberRegex = new(@"(-?[0-9]+\.?[0-9]*).*", RegexOptions.Compiled);
+    public static readonly Regex NumberRegex = new(@"(-?[0-9]+\.?[0-9]*).*", RegexOptions.Compiled);
     private readonly Func<ThingAlike, decimal> GetNumber;
     private const ToStringNumberSense _ToStringNumberSense = ToStringNumberSense.Absolute;
     protected StatDef Stat { get; }
@@ -89,9 +89,9 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike>
 
         return widget;
     }
-    public sealed override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> _)
+    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> _)
     {
-        return Make.NumberFilter(GetNumber);
+        yield return new(ColumnDef.Title, Make.NumberFilter(GetNumber));
     }
     public sealed override int Compare(ThingAlike thing1, ThingAlike thing2)
     {

@@ -25,9 +25,9 @@ public sealed class Gene_LabelColumnWorker : ColumnWorker<GeneDef>
         )
         .Tooltip(geneDef.description);
     }
-    public override FilterWidget<GeneDef> GetFilterWidget(IEnumerable<GeneDef> _)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<GeneDef> _)
     {
-        return Make.StringFilter((GeneDef geneDef) => geneDef.label);
+        yield return new(ColumnDef.Title, Make.StringFilter((GeneDef geneDef) => geneDef.label));
     }
     public override int Compare(GeneDef geneDef1, GeneDef geneDef2)
     {

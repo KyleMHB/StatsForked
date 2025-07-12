@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Stats.Widgets.Extensions;
 
-public sealed class SkipNextExtensionWidgetExtension : WidgetExtension
+internal sealed class SkipNextExtensionWidgetExtension : WidgetExtension
 {
     private readonly Func<bool> Predicate;
     internal SkipNextExtensionWidgetExtension(WidgetExtension extension, Func<bool> predicate) : base(extension)

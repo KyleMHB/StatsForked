@@ -42,7 +42,7 @@ internal sealed partial class ObjectTable<TObject>
         (@object, filters) => filters.All(filter => filter.Eval(@object));
     private static readonly ObjectFilterMatchFunc ObjectFilterMatchFuncOR =
         (@object, filters) => filters.Any(filter => filter.Eval(@object));
-    private void HandleFilterChange(FilterWidget<TObject> filter, Column column)
+    private void HandleFilterChange(FilterWidget<TObject> filter)
     {
         if (filter.IsActive)
         {

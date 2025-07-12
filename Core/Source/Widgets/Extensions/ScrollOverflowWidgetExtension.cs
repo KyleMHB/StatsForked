@@ -5,7 +5,7 @@ namespace Stats.Widgets.Extensions;
 // Basic "overflow: auto" implementation.
 // - Doesn't work in all cases.
 // - Scroll optimizations in Horizontal/Vertical containers do not work.
-public sealed class ScrollOverflowWidgetExtension : WidgetExtension
+internal sealed class ScrollOverflowWidgetExtension : WidgetExtension
 {
     private Vector2 ScrollPosition;
     internal ScrollOverflowWidgetExtension(Widget widget) : base(widget)

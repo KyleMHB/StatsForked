@@ -99,12 +99,11 @@ public sealed class Building_RecipeColumnWorker : ColumnWorker<ThingAlike>
     {
         return GetCostList(thing)?.Keys.ToHashSet() ?? [];
     });
-    public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
-        var recourcesFilter = Make.MTMThingDefFilter(GetResourceDefs, tableRecords, "Resources");
-        var constructionSkillLevelFilter = Make.NumberFilter<ThingAlike>(thing => thing.Def.constructionSkillPrerequisite, SkillDefOf.Construction.LabelCap);
-
-        return Make.CompositeFilter<ThingAlike>([recourcesFilter, constructionSkillLevelFilter]);
+        yield return new(new Label("Has any"), Make.BooleanFilter<ThingAlike>(thing => GetCostList(thing) != null));
+        yield return new(new Label("Resources"), Make.MTMThingDefFilter(GetResourceDefs, tableRecords));
+        yield return new(new Label(SkillDefOf.Construction.LabelCap), Make.NumberFilter<ThingAlike>(thing => thing.Def.constructionSkillPrerequisite));
     }
     private static readonly Func<ThingAlike, float> GetWorkAmount =
     FunctionExtensions.Memoized((ThingAlike thing) =>

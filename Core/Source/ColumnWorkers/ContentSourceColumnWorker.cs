@@ -31,7 +31,7 @@ public abstract class ContentSourceColumnWorker<TObject> : ColumnWorker<TObject>
 
         return new Label(mod.Name).Tooltip(mod.PackageIdPlayerFacing);
     }
-    public sealed override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords)
+    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {
         var filterOptions = tableRecords
             .Select(GetCachedModContentPack)
@@ -41,7 +41,7 @@ public abstract class ContentSourceColumnWorker<TObject> : ColumnWorker<TObject>
                 mod => mod == null ? new() : new(mod, mod.Name, null, mod.PackageIdPlayerFacing)
             );
 
-        return Make.OTMFilter(GetCachedModContentPack, filterOptions);
+        yield return new(ColumnDef.Title, Make.OTMFilter(GetCachedModContentPack, filterOptions));
     }
     public sealed override int Compare(TObject object1, TObject object2)
     {

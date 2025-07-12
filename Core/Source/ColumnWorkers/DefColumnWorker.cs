@@ -29,9 +29,9 @@ public abstract class DefColumnWorker<TObject, TValue> : ColumnWorker<TObject> w
 
         return new Label(def.LabelCap);
     }
-    public override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {
-        return Make.OTMDefFilter(GetCachedValue, tableRecords);
+        yield return new(ColumnDef.Title, Make.OTMDefFilter(GetCachedValue, tableRecords));
     }
     public sealed override int Compare(TObject object1, TObject object2)
     {

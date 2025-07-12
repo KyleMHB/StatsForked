@@ -30,8 +30,8 @@ public abstract class ThingDefSetColumnWorker<TObject, TValue> : DefSetColumnWor
 
         return new HorizontalContainer(icons, Globals.GUI.PadSm);
     }
-    public override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {
-        return Make.MTMThingDefFilter(GetCachedValue, tableRecords);
+        yield return new(ColumnDef.Title, Make.MTMThingDefFilter(GetCachedValue, tableRecords));
     }
 }

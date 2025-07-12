@@ -45,12 +45,13 @@ public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject>
             true
         );
     }
-    public override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {
-        var countFilter = Make.NumberFilter<TObject>(@object => GetCachedValue(@object)?.Count ?? 0m, "Amount");
-        var typeFilter = Make.OTMThingDefFilter(@object => GetCachedValue(@object)?.Def, tableRecords, "Type");
+        var countFilter = Make.NumberFilter<TObject>(@object => GetCachedValue(@object)?.Count ?? 0m);
+        var typeFilter = Make.OTMThingDefFilter(@object => GetCachedValue(@object)?.Def, tableRecords);
 
-        return Make.CompositeFilter<TObject>([countFilter, typeFilter]);
+        yield return new(new Label("Amount"), countFilter);
+        yield return new(new Label("Type"), typeFilter);
     }
     public sealed override int Compare(TObject object1, TObject object2)
     {

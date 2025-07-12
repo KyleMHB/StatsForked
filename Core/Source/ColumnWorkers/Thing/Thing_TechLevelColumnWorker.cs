@@ -26,7 +26,7 @@ public sealed class Thing_TechLevelColumnWorker : ColumnWorker<ThingAlike>
 
         return new Label(GetTechLevelString(thing.Def.techLevel));
     }
-    public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
         var options = tableRecords
             .Select(thing => thing.Def.techLevel)
@@ -36,7 +36,7 @@ public sealed class Thing_TechLevelColumnWorker : ColumnWorker<ThingAlike>
                 techLevel => new(techLevel, GetTechLevelString(techLevel))
             );
 
-        return Make.OTMFilter((ThingAlike thing) => thing.Def.techLevel, options);
+        yield return new(ColumnDef.Title, Make.OTMFilter((ThingAlike thing) => thing.Def.techLevel, options));
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {

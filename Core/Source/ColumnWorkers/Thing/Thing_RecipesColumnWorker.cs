@@ -316,17 +316,12 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
 
         return allIngredients;
     });
-    public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
-        var recipeUsersFilter = Make.MTMThingDefFilter(GetAllRecipesUsers, tableRecords, "Bench");
-        var skillFilter = Make.NumberFilter(GetWorkSkillLevel, "Work skill");
-        var ingredientsFilter = Make.MTMThingDefFilter(GetAllIngredients, tableRecords, "Resources");
-
-        return Make.CompositeFilter<ThingAlike>([
-            ingredientsFilter,
-            recipeUsersFilter,
-            skillFilter,
-        ]);
+        yield return new(new Label("Has any"), Make.BooleanFilter<ThingAlike>(thing => thing.Def.GetRecipeDefs() != null));
+        yield return new(new Label("Resources"), Make.MTMThingDefFilter(GetAllIngredients, tableRecords));
+        yield return new(new Label("Bench"), Make.MTMThingDefFilter(GetAllRecipesUsers, tableRecords));
+        yield return new(new Label("Work skill"), Make.NumberFilter(GetWorkSkillLevel));
     }
     private static readonly Func<ThingAlike, float> GetMinWorkAmount =
     FunctionExtensions.Memoized((ThingAlike thing) =>

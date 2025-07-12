@@ -54,9 +54,9 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike>
 
         return widget;
     }
-    public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
-        return Make.OTMFilter(GetCaliberName, tableRecords);
+        yield return new(ColumnDef.Title, Make.OTMFilter(GetCaliberName, tableRecords));
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {

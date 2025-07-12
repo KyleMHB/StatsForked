@@ -127,11 +127,4 @@ public static class Make
         return MTMFilter(lhs, options, label);
     }
     #endregion
-
-    #region Misc filters
-    public static FilterWidget<TObject> CompositeFilter<TObject>(List<Widget> filters)
-    {
-        return new CompositeFilter<TObject>(filters);
-    }
-    #endregion
 }

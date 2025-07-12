@@ -53,9 +53,9 @@ public abstract class NumberColumnWorker<TObject> : ColumnWorker<TObject>
 
         return label;
     }
-    public sealed override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> _)
+    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> _)
     {
-        return Make.NumberFilter(GetCachedValue);
+        yield return new(ColumnDef.Title, Make.NumberFilter(GetCachedValue));
     }
     public sealed override int Compare(TObject object1, TObject object2)
     {

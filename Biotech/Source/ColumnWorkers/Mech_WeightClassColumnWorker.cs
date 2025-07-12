@@ -22,7 +22,7 @@ public sealed class Mech_WeightClassColumnWorker : ColumnWorker<ThingAlike>
 
         return new Label(raceProps.mechWeightClass.ToStringHuman().CapitalizeFirst());
     }
-    public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
         var filterOptions = tableRecords
             .Select(thing => thing.Def.race?.mechWeightClass)
@@ -32,7 +32,7 @@ public sealed class Mech_WeightClassColumnWorker : ColumnWorker<ThingAlike>
                 mechWeightClass => mechWeightClass == null ? new() : new(mechWeightClass, ((MechWeightClass)mechWeightClass).ToStringHuman().CapitalizeFirst())
             );
 
-        return Make.OTMFilter<ThingAlike, MechWeightClass?>(thing => thing.Def.race?.mechWeightClass, filterOptions);
+        yield return new(ColumnDef.Title, Make.OTMFilter<ThingAlike, MechWeightClass?>(thing => thing.Def.race?.mechWeightClass, filterOptions));
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {

@@ -23,7 +23,7 @@ public sealed class Building_SizeColumnWorker : ColumnWorker<ThingAlike>
     {
         return new Label(GetSize(thing).ToStringCross());
     }
-    public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
         var filterOptions = tableRecords
             .Select(GetSize)
@@ -31,7 +31,7 @@ public sealed class Building_SizeColumnWorker : ColumnWorker<ThingAlike>
             .OrderBy(size => size.Area)
             .Select(size => new NTMFilterOption<IntVec2>(size, size.ToStringCross()));
 
-        return Make.OTMFilter(GetSize, filterOptions);
+        yield return new(ColumnDef.Title, Make.OTMFilter(GetSize, filterOptions));
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {

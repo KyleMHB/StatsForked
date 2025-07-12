@@ -14,39 +14,21 @@ public sealed class Thing_EquippedStatOffsetsColumnWorker : ColumnWorker<ThingAl
     public Thing_EquippedStatOffsetsColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
-    private static readonly Func<ThingDef, string> GetOffsetsString =
-    FunctionExtensions.Memoized((ThingDef thingDef) =>
-    {
-        if (GetOffsetsCount(thingDef) == 0)
-        {
-            return "";
-        }
-
-        var result = new StringBuilder();
-
-        foreach (var offset in thingDef.equippedStatOffsets)
-        {
-            result.Append(offset.stat.LabelCap);
-            result.Append(GetOffsetValueString(offset));
-        }
-
-        return result.ToString();
-    });
-    private static int GetOffsetsCount(ThingDef thingDef)
+    private static int GetStatModsCount(ThingDef thingDef)
     {
         return thingDef.equippedStatOffsets?.Count ?? 0;
     }
-    private static string GetOffsetValueString(StatModifier offset)
+    private static string GetStatModValueString(StatModifier statMod)
     {
-        return offset.stat.ValueToString(
-            offset.value,
+        return statMod.stat.ValueToString(
+            statMod.value,
             ToStringNumberSense.Offset,
-            offset.stat.finalizeEquippedStatOffset
+            statMod.stat.finalizeEquippedStatOffset
         );
     }
     public override Widget? GetTableCellWidget(ThingAlike thing)
     {
-        if (GetOffsetsCount(thing.Def) == 0)
+        if (GetStatModsCount(thing.Def) == 0)
         {
             return null;
         }
@@ -54,33 +36,65 @@ public sealed class Thing_EquippedStatOffsetsColumnWorker : ColumnWorker<ThingAl
         var labels = new StringBuilder();
         var values = new StringBuilder();
 
-        foreach (var offset in thing.Def.equippedStatOffsets.OrderBy(offset => offset.stat.label))
+        foreach (var statMod in thing.Def.equippedStatOffsets.OrderBy(statMod => statMod.stat.label))
         {
-            var offsetLabel = $"{offset.stat.LabelCap}:";
-            var offsetValueStr = GetOffsetValueString(offset);
+            var statModLabel = $"{statMod.stat.LabelCap}:";
+            var statModValueStr = GetStatModValueString(statMod);
 
-            labels.AppendInNewLine(offsetLabel);
-            values.AppendInNewLine(offsetValueStr);
+            labels.AppendInNewLine(statModLabel);
+            values.AppendInNewLine(statModValueStr);
         }
 
-        return new HorizontalContainer(
-            [
-                new Label(labels.ToString())
-                    .TextAnchor(TextAnchor.LowerLeft),
-                new Label(values.ToString())
-                    .WidthRel(1f)
-                    .TextAnchor(TextAnchor.LowerRight),
-            ],
-            Globals.GUI.Pad,
-            true
-        );
+        return new HorizontalContainer([
+            new Label(labels.ToString())
+            .TextAnchor(TextAnchor.LowerLeft),
+
+            new Label(values.ToString())
+            .WidthRel(1f)
+            .TextAnchor(TextAnchor.LowerRight),
+        ], Globals.GUI.Pad, true);
     }
-    public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> _)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
-        return Make.StringFilter<ThingAlike>(thing => GetOffsetsString(thing.Def));
+        yield return new(new Label("Has any"), Make.BooleanFilter<ThingAlike>(thing => GetStatModsCount(thing.Def) > 0));
+
+        var stats =
+            tableRecords
+            .Where(thing => thing.Def.equippedStatOffsets?.Count > 0)
+            .SelectMany(thing => thing.Def.equippedStatOffsets.Select(statMod => statMod.stat))
+            .Distinct();
+
+        foreach (var stat in stats.OrderBy(statDef => statDef.label))
+        {
+            var GetStatModValue = new Func<ThingDef, decimal>(thingDef =>
+            {
+                if (thingDef.equippedStatOffsets?.Count > 0)
+                {
+                    foreach (var statMod in thingDef.equippedStatOffsets)
+                    {
+                        if (statMod.stat == stat)
+                        {
+                            var label = statMod.ValueToStringAsOffset;
+                            var match = Thing_StatColumnWorker.NumberRegex.Match(label);
+
+                            if (match.Success)
+                            {
+                                return decimal.Parse(match.Groups[1].Captures[0].Value);
+                            }
+                        }
+                    }
+                }
+
+                return 0m;
+            }).Memoized();
+
+            var filterWidget = Make.NumberFilter<ThingAlike>(thing => GetStatModValue(thing.Def));
+
+            yield return new(new Label(stat.LabelCap), filterWidget);
+        }
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {
-        return GetOffsetsCount(thing1.Def).CompareTo(GetOffsetsCount(thing2.Def));
+        return GetStatModsCount(thing1.Def).CompareTo(GetStatModsCount(thing2.Def));
     }
 }

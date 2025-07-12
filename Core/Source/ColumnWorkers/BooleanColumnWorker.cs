@@ -31,9 +31,9 @@ public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
                 .PaddingRel(0.5f, 0f)
         );
     }
-    public sealed override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> _)
+    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> _)
     {
-        return Make.BooleanFilter(GetCachedValue);
+        yield return new(ColumnDef.Title, Make.BooleanFilter(GetCachedValue));
     }
     public sealed override int Compare(TObject object1, TObject object2)
     {

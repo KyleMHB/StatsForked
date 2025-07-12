@@ -28,6 +28,11 @@ public sealed class Label : Widget
     {
         labelWidget = this;
     }
+    internal Label(Observable<string> observable)
+    {
+        _Text = observable.Value;
+        observable.OnNext += value => Text = value;
+    }
     protected override Vector2 CalcSize()
     {
         return Verse.Text.CalcSize(Text);

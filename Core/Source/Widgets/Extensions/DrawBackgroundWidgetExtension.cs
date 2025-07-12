@@ -8,8 +8,7 @@ public sealed class DrawBackgroundWidgetExtension : WidgetExtension
     private readonly Action<Rect> DrawBackground;
     internal DrawBackgroundWidgetExtension(
         Widget widget,
-        Action<Rect>
-        drawBackground
+        Action<Rect> drawBackground
     ) : base(widget)
     {
         DrawBackground = drawBackground;

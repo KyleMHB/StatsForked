@@ -100,9 +100,9 @@ public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
 
         return null;
     }
-    public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
-        return Make.MTMDefFilter(GetBiomeDefs, tableRecords);
+        yield return new(ColumnDef.Title, Make.MTMDefFilter(GetBiomeDefs, tableRecords));
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {

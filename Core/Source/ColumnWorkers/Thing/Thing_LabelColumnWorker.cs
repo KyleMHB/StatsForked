@@ -39,28 +39,17 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
         )
         .Tooltip(thing.Def.description);
     }
-    public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
-        var anyThingIsMadeFromStuff = tableRecords.Any(record => record.StuffDef != null);
-        var labelFilter = Make.StringFilter(GetThingLabel, "Label");
-        var baseTypeFilter = Make.OTMThingDefFilter(thing => thing.Def, tableRecords, "Type");
+        yield return new(new Label("Label"), Make.StringFilter(GetThingLabel));
+        yield return new(new Label("Type"), Make.OTMThingDefFilter(thing => thing.Def, tableRecords));
 
-        if (anyThingIsMadeFromStuff)
+        if (tableRecords.Any(record => record.StuffDef != null))
         {
-            var stuffFilter = Make.OTMThingDefFilter(thing => thing.StuffDef, tableRecords, "Material");
-
-            return Make.CompositeFilter<ThingAlike>([
-                labelFilter,
-                baseTypeFilter,
-                new StuffedVariantsDisplayModeToggleButton(),
-                stuffFilter,
-            ]);
+            var stuffFilter = Make.OTMThingDefFilter(thing => thing.StuffDef, tableRecords);
+            yield return new(new Label("Distinct"), new StuffedVariantsDisplayModeToggleButton());
+            yield return new(new Label("Material"), stuffFilter);
         }
-
-        return Make.CompositeFilter<ThingAlike>([
-            labelFilter,
-            baseTypeFilter,
-        ]);
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {
@@ -72,17 +61,13 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
         private bool _IsActive = false;
         public override bool IsActive => _IsActive;
         public override event Action<FilterWidget<ThingAlike>>? OnChange;
-        private const string ButtonText = "Distinct";
-        private const float ButtonPaddingHor = Globals.GUI.PadSm;
+        private Texture2D Texture => _IsActive ? Verse.Widgets.CheckboxOnTex : Verse.Widgets.CheckboxOffTex;
         private static readonly TipSignal Manual =
-            "Show only distinct item material variants.\n\n" +
+            "Click to show only distinct item material variants.\n\n" +
             "Material for each distinct variant is chosen based on item's type definition.";
         protected override Vector2 CalcSize()
         {
-            var size = Text.CalcSize(ButtonText);
-            size.x += ButtonPaddingHor * 2f;
-
-            return size;
+            return new Vector2(Text.LineHeight, Text.LineHeight);
         }
         public override void Draw(Rect rect, Vector2 _)
         {
@@ -95,7 +80,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
                 GUI.color = Globals.GUI.TextColorSecondary;
             }
 
-            if (Widgets.Draw.ButtonTextSubtle(rect, ButtonText, GUI.color, ButtonPaddingHor))
+            if (Widgets.Draw.ButtonImageSubtle(rect, Texture))
             {
                 _IsActive = !_IsActive;
 

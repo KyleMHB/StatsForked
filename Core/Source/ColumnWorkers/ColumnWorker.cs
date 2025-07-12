@@ -36,8 +36,10 @@ public abstract class ColumnWorker<TObject> : ColumnWorker
     // We pass IEnumerable<TObject> to this method, mainly so that if a column worker returns
     // one/many-to-many filter widget, it can generate a superset of all possible distinct
     // options for it.
-    public abstract FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords);
+    public abstract IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords);
     public abstract int Compare(TObject object1, TObject object2);
+
+    public readonly record struct ObjectProp(Widget Label, FilterWidget<TObject> FilterWidget);
 }
 
 public enum ColumnCellStyle

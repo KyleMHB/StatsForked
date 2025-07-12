@@ -66,7 +66,7 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike
 
         return new Label(lifeStageLabels);
     }
-    public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
         var filterOptions = tableRecords
             .SelectMany(thing => GetValidLifeStages(thing.Def))
@@ -74,7 +74,7 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike
             .OrderBy(lifeStage => lifeStage)
             .Select(lifeStage => new NTMFilterOption<DevelopmentalStage>(lifeStage, GetLifeStageString(lifeStage)));
 
-        return Make.MTMFilter((ThingAlike thing) => GetValidLifeStages(thing.Def), filterOptions);
+        yield return new(ColumnDef.Title, Make.MTMFilter((ThingAlike thing) => GetValidLifeStages(thing.Def), filterOptions));
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {

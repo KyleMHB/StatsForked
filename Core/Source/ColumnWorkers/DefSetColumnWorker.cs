@@ -53,7 +53,7 @@ public abstract class DefSetColumnWorker<TObject, TValue> : ColumnWorker<TObject
 
         return new Label(defLabels);
     }
-    public override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {
         var filterOptions = tableRecords
             .SelectMany(GetCachedValue)
@@ -63,7 +63,7 @@ public abstract class DefSetColumnWorker<TObject, TValue> : ColumnWorker<TObject
                 def => def == null ? new() : new(def, GetDefLabel(def))
             );
 
-        return Make.MTMFilter(GetCachedValue, filterOptions);
+        yield return new(ColumnDef.Title, Make.MTMFilter(GetCachedValue, filterOptions));
     }
     public sealed override int Compare(TObject object1, TObject object2)
     {

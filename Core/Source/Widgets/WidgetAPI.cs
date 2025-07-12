@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Stats.Widgets.Extensions;
 using UnityEngine;
 using Verse;
@@ -247,13 +248,44 @@ public static class WidgetAPI
         HoverShift(this Widget widget, float amountHor, float amountVer) =>
         new(widget, amountHor, amountVer);
 
-    public static ScrollOverflowWidgetExtension
+    // --- Experimental ---
+
+    internal static ScrollOverflowWidgetExtension
         OverflowScroll(this Widget widget) =>
         new(widget);
 
-    public static SkipNextExtensionWidgetExtension
+    internal static SkipNextExtensionWidgetExtension
         SkipNextExtension(this WidgetExtension extension, Func<bool> predicate) =>
         new(extension, predicate);
+
+    internal static WidthAbsSharedWidgetExtension
+        WidthAbsShared(this Widget widget, StrongBox<float> width) =>
+        new(widget, width);
+
+    internal static DrawForegroundWidgetExtension
+        Foreground(this Widget widget, Action<Rect> drawForeground) =>
+        new(widget, drawForeground);
+
+    internal static Widget WriteWidthNowTo(this Widget widget, ref float dest)
+    {
+        dest = Mathf.Max(dest, widget.GetSize().x);
+
+        return widget;
+    }
+
+    internal static ToggleDisplayWidgetExtension
+        ToggleDisplay(this Widget widget, Observable<bool> state) =>
+        new(widget, state);
+
+    internal static Widget Background(this Widget widget, Texture2D texture, bool shouldApply)
+    {
+        if (shouldApply)
+        {
+            return widget.Background(texture);
+        }
+
+        return widget;
+    }
 
     // --- Transformers ---
 
