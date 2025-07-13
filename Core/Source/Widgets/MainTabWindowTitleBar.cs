@@ -52,14 +52,8 @@ internal sealed class MainTabWindowTitleBar : WidgetWrapper
 
                 ToToolbarButton(
                     new Icon(TableSettingsTex),
-                    new Label("Table settings"),
+                    new Label("Filters / columns"),
                     () => ShowTableSettingsMenu = !ShowTableSettingsMenu
-                ),
-
-                ToToolbarButton(
-                    new Icon(TexUI.RotRightTex),
-                    new Label("Reset filters"),
-                    resetTableFilters
                 ),
 
                 ToToolbarButton(
@@ -70,6 +64,12 @@ internal sealed class MainTabWindowTitleBar : WidgetWrapper
                 .Tooltip(
                     "Click to switch between filtering modes.\n\n" +
                     "This setting is individual for each table."
+                ),
+
+                ToToolbarButton(
+                    new Icon(TexUI.RotRightTex),
+                    new Label("Reset filters"),
+                    resetTableFilters
                 ),
             ], Globals.GUI.PadSm, true)
             .WidthRel(1f),
