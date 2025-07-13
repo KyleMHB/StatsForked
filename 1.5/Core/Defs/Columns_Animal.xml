@@ -119,10 +119,11 @@
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
-    <Stats.ColumnDef Class="Stats.StatColumnDef">
+    <Stats.ColumnDef>
         <defName>Animal_Wildness</defName>
-        <stat>Wildness</stat>
-        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+        <labelKey>Wildness</labelKey>
+        <descriptionKey>WildnessExplanation</descriptionKey>
+        <workerClass>Stats.Animal_WildnessColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>

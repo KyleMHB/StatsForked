@@ -22,6 +22,6 @@
         <DebugSymbols>false</DebugSymbols>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.*" />
+        <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.*" />
     </ItemGroup>
 </Project>
