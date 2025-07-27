@@ -13,10 +13,6 @@ public class InlineTexture : Widget
         Texture = texture;
         Scale = scale;
     }
-    public InlineTexture(Texture2D texture, out InlineTexture instance) : this(texture)
-    {
-        instance = this;
-    }
     protected override Vector2 CalcSize()
     {
         var width = Text.LineHeight * (Texture.width / (float)Texture.height);

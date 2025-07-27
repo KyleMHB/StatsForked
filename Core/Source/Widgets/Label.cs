@@ -24,10 +24,6 @@ public sealed class Label : Widget
     {
         _Text = text;
     }
-    public Label(string text, out Label labelWidget) : this(text)
-    {
-        labelWidget = this;
-    }
     internal Label(Observable<string> observable)
     {
         _Text = observable.Value;

@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Stats.Widgets.Extensions;
 
-internal sealed class WidthAbsSharedWidgetExtension : WidgetExtension
+internal sealed class ColumnWidgetExtension : WidgetExtension
 {
     private readonly StrongBox<float> Width;
-    internal WidthAbsSharedWidgetExtension(Widget widget, StrongBox<float> width) : base(widget)
+    internal ColumnWidgetExtension(Widget widget, StrongBox<float> width) : base(widget)
     {
         Width = width;
     }

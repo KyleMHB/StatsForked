@@ -58,7 +58,8 @@ internal sealed class MainTabWindowTitleBar : WidgetWrapper
 
                 ToToolbarButton(
                     new Icon(FilterTex),
-                    new Label(tableWidget.FilterMode.ToString(), out TableFilterModeLabelWidget),
+                    new Label(tableWidget.FilterMode.ToString())
+                    .Ref(out TableFilterModeLabelWidget),
                     () => _TableWidget.ToggleFilterMode()
                 )
                 .Tooltip(

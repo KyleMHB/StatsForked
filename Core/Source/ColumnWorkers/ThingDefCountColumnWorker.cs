@@ -39,7 +39,9 @@ public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject>
         return new HorizontalContainer(
             [
                 new Label(count.ToString()).PaddingRel(1f, 0f, 0f, 0f),
-                new ThingIcon(thingDef).ToButtonGhostly(() => Draw.DefInfoDialog(thingDef), thingDef.LabelCap),
+                new ThingIcon(thingDef)
+                .ToButtonGhostly(() => Draw.DefInfoDialog(thingDef))
+                .Tooltip(thingDef.LabelCap),
             ],
             Globals.GUI.PadSm,
             true

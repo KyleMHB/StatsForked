@@ -23,7 +23,9 @@ public abstract class ThingDefSetColumnWorker<TObject, TValue> : DefSetColumnWor
 
         foreach (var thingDef in thingDefs.OrderBy(thingDef => thingDef.label))
         {
-            var icon = new ThingIcon(thingDef).ToButtonGhostly(() => Draw.DefInfoDialog(thingDef), thingDef.LabelCap);
+            var icon = new ThingIcon(thingDef)
+                .ToButtonGhostly(() => Draw.DefInfoDialog(thingDef))
+                .Tooltip(thingDef.LabelCap);
 
             icons.Add(icon);
         }

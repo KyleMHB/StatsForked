@@ -139,7 +139,8 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
                 {
                     SortAllRowsByColumn(column);
                 }
-            }, GetColumnDefDescriptionFull(columnDef));
+            })
+            .Tooltip(GetColumnDefDescriptionFull(columnDef));
         }
 
         headerRows.Add(columnTitlesRow);
@@ -156,7 +157,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
                     ? columnTitle
                     : new SingleElementContainer(columnTitle))
                 .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
-                .WriteWidthNowTo(ref columnLabelWidthMax.Value)
+                .Column(columnLabelWidthMax)
                 .Foreground(rect =>
                 {
                     if (Event.current.type != EventType.Repaint || column.IsVisible) return;
@@ -168,8 +169,8 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
                     GUI.color = origGUIColor;
                 })
-                .ToButtonGhostly(column.Toggle, GetColumnDefDescriptionFull(column.Worker.ColumnDef))
-                .WidthAbsShared(columnLabelWidthMax),
+                .ToButtonGhostly(column.Toggle)
+                .Tooltip(GetColumnDefDescriptionFull(column.Worker.ColumnDef)),
 
                 filterOrToggle,
             ], 0f, true)
@@ -198,7 +199,6 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
                     .WidthIncRel(1f),
                     column
                 )
-                .WidthRel(1f)
                 .HoverBackground(TexUI.HighlightTex);
 
                 objectProp.FilterWidget.OnChange += HandleFilterChange;
@@ -221,31 +221,32 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
                         column
                     ),
 
-                    new VerticalContainer(objectProps.Select(objectProp =>
-                        new HorizontalContainer([
-                            objectProp.Label
-                            .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
-                            .WriteWidthNowTo(ref objectPropLabelWidthMax.Value)
-                            .WidthAbsShared(objectPropLabelWidthMax),
+                    new VerticalContainer(
+                        objectProps.Select(objectProp => {
+                            var row = new HorizontalContainer([
+                                objectProp.Label
+                                .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
+                                .Column(objectPropLabelWidthMax),
 
-                            objectProp.FilterWidget
-                            .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
-                            .WidthIncRel(1f),
-                        ], 0f, true)
-                        .WidthRel(1f)
-                        .HoverBackground(TexUI.HighlightTex)
-                    ).ToList<Widget>())
+                                objectProp.FilterWidget
+                                .Ref(out var filterWidget)
+                                .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
+                                .WidthIncRel(1f),
+                            ], 0f, true)
+                            .WidthRel(1f)
+                            .HoverBackground(TexUI.HighlightTex);
+
+                            filterWidget.OnChange += HandleFilterChange;
+
+                            return row;
+                        }).ToList<Widget>()
+                    )
                     .PaddingAbs(Globals.GUI.Pad * 1.5f, 0f, 0f, 0f)
                     .WidthRel(1f)
                     .ToggleDisplay(toggle)
                 ])
                 .WidthRel(1f)
                 .HoverBackground(TexUI.HighlightTex);
-
-                foreach (var objectProp in objectProps)
-                {
-                    objectProp.FilterWidget.OnChange += HandleFilterChange;
-                }
             }
 
             columnSettingsTabRows.Add(

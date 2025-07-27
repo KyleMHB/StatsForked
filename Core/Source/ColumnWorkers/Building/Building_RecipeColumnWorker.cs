@@ -69,7 +69,8 @@ public sealed class Building_RecipeColumnWorker : ColumnWorker<ThingAlike>
             var ingredientWidget = new HorizontalContainer([
                 new Label(costList[thingDef].ToString()),
                 new ThingIcon(thingDef)
-                    .ToButtonGhostly(() => Draw.DefInfoDialog(thingDef), thingDef.LabelCap),
+                    .ToButtonGhostly(() => Draw.DefInfoDialog(thingDef))
+                    .Tooltip(thingDef.LabelCap),
             ], 2f);
 
             ingredientWidgets.Add(ingredientWidget);

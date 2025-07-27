@@ -128,10 +128,6 @@ public static class WidgetAPI
         Color(this Widget widget, Color color) =>
         new(widget, color);
 
-    public static ColorWidgetExtension
-        Color(this Widget widget, Color color, out ColorWidgetExtension colorExtension) =>
-        colorExtension = widget.Color(color);
-
     public static HoverColorWidgetExtension
         HoverColor(this Widget widget, Color color) =>
         new(widget, color);
@@ -258,20 +254,16 @@ public static class WidgetAPI
         SkipNextExtension(this WidgetExtension extension, Func<bool> predicate) =>
         new(extension, predicate);
 
-    internal static WidthAbsSharedWidgetExtension
-        WidthAbsShared(this Widget widget, StrongBox<float> width) =>
-        new(widget, width);
+    internal static ColumnWidgetExtension Column(this Widget widget, StrongBox<float> width)
+    {
+        width.Value = Mathf.Max(width.Value, widget.GetSize().x);
+
+        return new(widget, width);
+    }
 
     internal static DrawForegroundWidgetExtension
         Foreground(this Widget widget, Action<Rect> drawForeground) =>
         new(widget, drawForeground);
-
-    internal static Widget WriteWidthNowTo(this Widget widget, ref float dest)
-    {
-        dest = Mathf.Max(dest, widget.GetSize().x);
-
-        return widget;
-    }
 
     internal static ToggleDisplayWidgetExtension
         ToggleDisplay(this Widget widget, Observable<bool> state) =>
@@ -287,6 +279,16 @@ public static class WidgetAPI
         return widget;
     }
 
+    internal static T Ref<T>(this T widget, out T outRef) where T : Widget
+    {
+        return outRef = widget;
+    }
+
+    internal static Widget ApplyIf(this Widget widget, Widget widgetOrExtension)
+    {
+        return widgetOrExtension;
+    }
+
     // --- Transformers ---
 
     public static Widget
@@ -294,12 +296,6 @@ public static class WidgetAPI
             widget
             .HoverBackground(TexUI.HighlightTex)
             .OnClick(clickEventHandler);
-
-    public static Widget
-        ToButtonGhostly(this Widget widget, Action clickEventHandler, string tooltip) =>
-            widget
-            .ToButtonGhostly(clickEventHandler)
-            .Tooltip(tooltip);
 
     public static Widget
         ToButtonSubtle(this Widget widget, Action clickEventHandler) =>

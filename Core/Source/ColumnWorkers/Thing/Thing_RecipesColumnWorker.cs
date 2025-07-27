@@ -97,7 +97,9 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
                 {
                     var thingDef = thingDefs[0];
 
-                    icon = new ThingIcon(thingDef).ToButtonGhostly(() => Draw.DefInfoDialog(thingDef), thingDef.LabelCap);
+                    icon = new ThingIcon(thingDef)
+                        .ToButtonGhostly(() => Draw.DefInfoDialog(thingDef))
+                        .Tooltip(thingDef.LabelCap);
                 }
                 else
                 {
@@ -165,7 +167,8 @@ public sealed class Thing_RecipesColumnWorker : ColumnWorker<ThingAlike>
             // Recipe users
             var cheapestRecipeUser = recipeUsers.OrderBy(thingDef => thingDef.GetStatValueAbstract(StatDefOf.MarketValue)).First();
             var recipeUsersWidget = new ThingIcon(cheapestRecipeUser)
-                .ToButtonGhostly(() => Draw.DefInfoDialog(cheapestRecipeUser), cheapestRecipeUser.LabelCap);
+                .ToButtonGhostly(() => Draw.DefInfoDialog(cheapestRecipeUser))
+                .Tooltip(cheapestRecipeUser.LabelCap);
 
             if (recipeUsers.Count > 1)
             {

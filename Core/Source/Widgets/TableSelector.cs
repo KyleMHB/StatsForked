@@ -27,11 +27,14 @@ internal sealed class TableSelector : WidgetWrapper
     {
         Widget = new HorizontalContainer(
             [
-                new Icon(tableDef.Icon, out IconWidget)
+                new Icon(tableDef.Icon)
+                    .Ref(out IconWidget)
                     .PaddingAbs(Globals.GUI.PadXs)
                     .SizeAbs(MainTabWindowTitleBar.Height)
-                    .Color(tableDef.IconColor, out IconColorExtension),
-                new Label(tableDef.LabelCap, out LabelWidget)
+                    .Color(tableDef.IconColor)
+                    .Ref(out IconColorExtension),
+                new Label(tableDef.LabelCap)
+                    .Ref(out LabelWidget)
                     .HeightAbs(MainTabWindowTitleBar.Height)
                     .TextAnchor(TextAnchor.MiddleLeft),
             ],
