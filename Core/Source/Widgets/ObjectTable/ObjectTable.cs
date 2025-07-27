@@ -73,6 +73,16 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
             bodyRows.Add(row);
         }
 
+        // Hide all empty columns.
+        // TODO: Remove corresponding body row cells?
+        foreach (var column in columns)
+        {
+            if (column.Width == 0f)
+            {
+                column.IsVisible = false;
+            }
+        }
+
         // Headers
         var headerRows = new RowCollection<Row>(1);
         var columnTitlesRow = new ColumnTitlesRow(columns);

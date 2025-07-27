@@ -61,9 +61,12 @@ internal sealed partial class ObjectTable<TObject>
     }
     private void ApplyFilters()
     {
+        ResetColumnsWidths();
+
         if (ActiveFilters.Count == 0)
         {
             FilteredBodyRows.ResetTo(UnfilteredBodyRows);
+            RecalcColumnsWidths();
         }
         else
         {
@@ -86,12 +89,15 @@ internal sealed partial class ObjectTable<TObject>
                 if (rowIsValid)
                 {
                     FilteredBodyRows.Add(row);
+                    row.RecalcColumnsWidths();
                 }
             }
         }
 
         ShouldApplyFilters = false;
         ScrollPosition.y = 0f;
+        PinnedRows.RecalcColumnsWidths();
+        HeaderRows.RecalcColumnsWidths();
     }
     public override void ResetFilters()
     {
@@ -111,6 +117,8 @@ internal sealed partial class ObjectTable<TObject>
         if (ActiveFilters.Count == 0)
         {
             FilteredBodyRows.ResetTo(UnfilteredBodyRows);
+            ResetColumnsWidths();
+            RecalcColumnsWidths();
             ScrollPosition.y = 0f;
         }
         else

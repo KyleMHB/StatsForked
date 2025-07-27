@@ -120,6 +120,13 @@ internal sealed partial class ObjectTable<TObject>
                 TotalHeight += row.Height;
             }
         }
+        public void RecalcColumnsWidths()
+        {
+            foreach (var row in Rows)
+            {
+                row.RecalcColumnsWidths();
+            }
+        }
     }
 
     private class Row
@@ -148,7 +155,7 @@ internal sealed partial class ObjectTable<TObject>
 
                     if (column.Width < cellSize.x)
                     {
-                        column.Width = column.WidthInitial = cellSize.x;
+                        column.Width = cellSize.x;
                     }
 
                     if (Height < cellSize.y)
@@ -233,6 +240,24 @@ internal sealed partial class ObjectTable<TObject>
                     if (Height < cellSize.y)
                     {
                         Height = cellSize.y;
+                    }
+                }
+            }
+        }
+        public void RecalcColumnsWidths()
+        {
+            for (int i = 0; i < Columns.Length; i++)
+            {
+                var cell = Cells[i];
+
+                if (cell != null)
+                {
+                    var column = Columns[i];
+                    var cellSize = cell.GetSize();
+
+                    if (column.Width < cellSize.x)
+                    {
+                        column.Width = cellSize.x;
                     }
                 }
             }
