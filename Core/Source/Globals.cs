@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using RimWorld;
+using UnityEngine;
+using Verse;
 
 namespace Stats;
 
@@ -14,5 +17,25 @@ public static class Globals
         public static readonly Color TextColorHighlight = new(1f, 0.98f, 0.62f);
         public static readonly Color TextColorSecondary = Color.grey;
         public static float Opacity { get; set; } = 1f;
+    }
+
+    public static class Events
+    {
+        public static event Action? OnResearchCompleted;
+        static Events()
+        {
+            Find.SignalManager.RegisterReceiver(new ResearchCompletedSignalReceiver());
+        }
+
+        private sealed class ResearchCompletedSignalReceiver : ISignalReceiver
+        {
+            public void Notify_SignalReceived(Signal signal)
+            {
+                if (signal.tag == "ResearchCompleted")
+                {
+                    OnResearchCompleted?.Invoke();
+                }
+            }
+        }
     }
 }

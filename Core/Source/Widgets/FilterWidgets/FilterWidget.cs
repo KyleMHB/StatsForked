@@ -8,6 +8,7 @@ public abstract class FilterWidget<TObject> : Widget
     public abstract event Action<FilterWidget<TObject>>? OnChange;
     public abstract bool Eval(TObject @object);
     public abstract void Reset();
+    public abstract void NotifyChanged();
 
     protected abstract class RelOperator<TLhs, TRhs>
     {

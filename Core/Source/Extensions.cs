@@ -103,6 +103,7 @@ public static class VerseThingDefExtensions
     private static readonly Dictionary<ThingDef, HashSet<RecipeDef>> ThingDefRecipes = [];
     private static readonly Dictionary<ThingDef, HashSet<PawnKindDef>> PawnKinds = [];
     private static readonly Dictionary<string, HashSet<ThingDef>> WeaponsByTag = [];
+    private static readonly Dictionary<ThingDef, HashSet<ResearchProjectDef>> ResearchProjects = [];
     static VerseThingDefExtensions()
     {
         foreach (var recipeDef in DefDatabase<RecipeDef>.AllDefsListForReading)
@@ -158,6 +159,26 @@ public static class VerseThingDefExtensions
                     else
                     {
                         WeaponsByTag[tag] = [thingDef];
+                    }
+                }
+            }
+        }
+
+        foreach (var researchProjectDef in DefDatabase<ResearchProjectDef>.AllDefsListForReading)
+        {
+            foreach (var def in researchProjectDef.UnlockedDefs)
+            {
+                if (def is ThingDef thingDef)
+                {
+                    ResearchProjects.TryGetValue(thingDef, out var researchProjects);
+
+                    if (researchProjects != null)
+                    {
+                        researchProjects.Add(researchProjectDef);
+                    }
+                    else
+                    {
+                        ResearchProjects[thingDef] = [researchProjectDef];
                     }
                 }
             }
@@ -248,6 +269,12 @@ public static class VerseThingDefExtensions
         }
 
         return null;
+    }
+    public static HashSet<ResearchProjectDef>? GetResearchProjectDef(this ThingDef thingDef)
+    {
+        ResearchProjects.TryGetValue(thingDef, out var researchProjectDef);
+
+        return researchProjectDef;
     }
 }
 

@@ -111,6 +111,10 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
         Resize();
         OnChange?.Invoke(this);
     }
+    public override void NotifyChanged()
+    {
+        OnChange?.Invoke(this);
+    }
 
     private static class Operators
     {

@@ -67,4 +67,8 @@ internal sealed class BooleanFilter<TObject> : FilterWidget<TObject>
     {
         Value = null;
     }
+    public override void NotifyChanged()
+    {
+        OnChange?.Invoke(this);
+    }
 }

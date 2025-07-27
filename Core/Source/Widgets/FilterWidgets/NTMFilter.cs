@@ -147,6 +147,10 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
         Resize();
         OnChange?.Invoke(this);
     }
+    public override void NotifyChanged()
+    {
+        OnChange?.Invoke(this);
+    }
 
     private sealed class OptionsWindowWidget : Window
     {

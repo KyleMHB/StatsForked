@@ -63,6 +63,10 @@ internal sealed class StringFilter<TObject> : FilterWidgetWithInputField<TObject
         Resize();
         OnChange?.Invoke(this);
     }
+    public override void NotifyChanged()
+    {
+        OnChange?.Invoke(this);
+    }
 
     private static class Operators
     {

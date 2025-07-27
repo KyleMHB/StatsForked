@@ -43,6 +43,17 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
     {
         yield return new(new Label("Label"), Make.StringFilter(GetThingLabel));
         yield return new(new Label("Type"), Make.OTMThingDefFilter(thing => thing.Def, tableRecords));
+        var filterWidget_Researched = Make.BooleanFilter<ThingAlike>(
+            thing => thing.Def.GetResearchProjectDef()?.All(researchProjectDef => researchProjectDef.IsFinished) is true or null
+        );
+        Globals.Events.OnResearchCompleted += () =>
+        {
+            if (filterWidget_Researched.IsActive)
+            {
+                filterWidget_Researched.NotifyChanged();
+            }
+        };
+        yield return new(new Label("Researched"), filterWidget_Researched);
 
         if (tableRecords.Any(record => record.StuffDef != null))
         {
@@ -108,6 +119,10 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
         }
         public override void Reset()
         {
+        }
+        public override void NotifyChanged()
+        {
+            OnChange?.Invoke(this);
         }
     }
 }
