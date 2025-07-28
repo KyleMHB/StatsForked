@@ -104,10 +104,14 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
     }
     public override void Reset()
     {
+        _Operator = Operators.Default;
+        ClearInputField();
+    }
+    protected override void ClearInputField()
+    {
         _TextFieldText = "";
         InputIsValid = true;
         _Value = 0m;
-        _Operator = Operators.Default;
         Resize();
         OnChange?.Invoke(this);
     }

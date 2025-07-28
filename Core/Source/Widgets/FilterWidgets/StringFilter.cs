@@ -58,8 +58,12 @@ internal sealed class StringFilter<TObject> : FilterWidgetWithInputField<TObject
     }
     public override void Reset()
     {
-        _Value = "";
         _Operator = Operators.Default;
+        ClearInputField();
+    }
+    protected override void ClearInputField()
+    {
+        _Value = "";
         Resize();
         OnChange?.Invoke(this);
     }

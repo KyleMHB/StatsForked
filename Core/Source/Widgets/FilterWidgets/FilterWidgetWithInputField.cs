@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 
 namespace Stats.Widgets;
 
@@ -15,7 +16,8 @@ internal abstract class FilterWidgetWithInputField<TObject, TObjectValue, TValue
     protected abstract RelOperator<TObjectValue, TValue> Operator { get; set; }
     private readonly string Placeholder;
     protected abstract string InputFieldText { get; }
-    private string InputFieldContent => InputFieldText.Length == 0 ? Placeholder : InputFieldText;
+    private bool InputFieldIsEmpty => InputFieldText.Length == 0;
+    private readonly Widget ClearButton;
     protected FilterWidgetWithInputField(IEnumerable<RelOperator<TObjectValue, TValue>> operators, string? placeholder = null)
     {
         Placeholder = placeholder ?? "";
@@ -33,6 +35,8 @@ internal abstract class FilterWidgetWithInputField<TObject, TObjectValue, TValue
         }
 
         OperatorsMenu = new FloatMenu(operatorsMenuOptions);
+        ClearButton = new Icon(TexButton.CloseXSmall, 0.5f)
+        .HoverColor(Globals.GUI.TextColorSecondary);
     }
     protected sealed override Vector2 CalcSize()
     {
@@ -64,13 +68,30 @@ internal abstract class FilterWidgetWithInputField<TObject, TObjectValue, TValue
         }
 
         Text.Anchor = TextAnchor.LowerLeft;
+        var clearButtonRect = rect.RightPartPixels(ClearButton.GetSize().x);
+
+        if
+        (
+            InputFieldIsEmpty == false
+            && Event.current.type == EventType.MouseDown
+            && Mouse.IsOver(clearButtonRect)
+        )
+        {
+            ClearInputField();
+            Event.current.Use();
+        }
 
         DrawInputField(rect);
 
-        if (InputFieldText.Length == 0 && IsActive == false)
+        if (InputFieldIsEmpty && IsActive == false)
         {
             rect.xMin += Globals.GUI.EstimatedInputFieldInnerPadding;
             Verse.Widgets.Label(rect, Placeholder);
+        }
+        else
+        {
+            MouseoverSounds.DoRegion(clearButtonRect);
+            ClearButton.DrawIn(clearButtonRect);
         }
 
         Text.Anchor = origTextAnchor;
@@ -99,8 +120,18 @@ internal abstract class FilterWidgetWithInputField<TObject, TObjectValue, TValue
     }
     private Vector2 CalcInputFieldSize()
     {
-        var size = Text.CalcSize(InputFieldContent);
-        size.x += Globals.GUI.EstimatedInputFieldInnerPadding * 2f;
+        Vector2 size;
+
+        if (InputFieldIsEmpty)
+        {
+            size = Text.CalcSize(Placeholder);
+            size.x += Globals.GUI.EstimatedInputFieldInnerPadding * 2f;
+        }
+        else
+        {
+            size = Text.CalcSize(InputFieldText);
+            size.x += Globals.GUI.Pad + ClearButton.GetSize().x;
+        }
 
         if (size.x < InputFieldMinWidth)
         {
@@ -110,4 +141,5 @@ internal abstract class FilterWidgetWithInputField<TObject, TObjectValue, TValue
         return size;
     }
     protected abstract void DrawInputField(Rect rect);
+    protected abstract void ClearInputField();
 }
