@@ -166,7 +166,6 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
         private const float OptionPadHor = Globals.GUI.Pad;
         private const float OptionPadVer = Globals.GUI.PadXs;
         private const float OperatorButtonSize = 28f;
-        private readonly float MaxWidth;
         private bool WillScrollHor = false;
         private Vector2 ScrollPosition;
         private static readonly float OptionWidgetHeight = Text.LineHeight + OptionPadVer * 2f;
@@ -179,7 +178,6 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
             doWindowBackground = false;
             drawShadow = false;
             closeOnClickedOutside = true;
-            MaxWidth = UI.screenWidth * 0.8f;
             Toolbar = new VerticalContainer([
                 new HorizontalContainer([
                     ..operators.Select(@operator =>
@@ -214,7 +212,7 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
             ]);
             ToolbarSize = Toolbar.GetSize();
 
-            var optionsListMaxHeight = UI.screenHeight * 0.7f - ToolbarSize.y;
+            var optionsListMaxHeight = UI.screenHeight * 0.6f - ToolbarSize.y;
             var columns = new List<List<Widget>>()
             {
                 new()
@@ -321,7 +319,7 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
 
                 if (Event.current.type == EventType.ScrollWheel && Mouse.IsOver(rect))
                 {
-                    ScrollPosition.x = Mathf.Max(ScrollPosition.x + Event.current.delta.y * 10f, 0f);
+                    ScrollPosition.x = Mathf.Max(ScrollPosition.x + Event.current.delta.y * 20f, 0f);
                     Event.current.Use();
                 }
 
@@ -374,17 +372,18 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
                 Mathf.Max(ToolbarSize.x, OptionsListSize.x + 2f),
                 ToolbarSize.y + OptionsListSize.y + 2f
             );
+            var maxWidth = UI.screenWidth * 0.9f;
 
-            if (size.x > MaxWidth)
+            if (size.x > maxWidth)
             {
                 WillScrollHor = true;
-                size.x = MaxWidth;
+                size.x = maxWidth;
                 size.y += GenUI.ScrollBarWidth + 1f;
             }
 
             if (position.x + size.x > UI.screenWidth)
             {
-                position.x = UI.screenWidth - size.x - Globals.GUI.Pad - GenUI.ScrollBarWidth;
+                position.x = UI.screenWidth - size.x - Globals.GUI.Pad;
             }
 
             if (position.y + size.y > UI.screenHeight)
