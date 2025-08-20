@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using Verse;
 
 namespace Stats;
 
@@ -7,7 +8,7 @@ public sealed class Animal_MilkAmountColumnWorker : ThingDefCountColumnWorker<Th
     public Animal_MilkAmountColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override ThingDefCount? GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
     {
         var milkableCompProps = thing.Def.GetCompProperties<CompProperties_Milkable>();
 
@@ -16,6 +17,6 @@ public sealed class Animal_MilkAmountColumnWorker : ThingDefCountColumnWorker<Th
             return new(milkableCompProps.milkDef, milkableCompProps.milkAmount);
         }
 
-        return null;
+        return new();
     }
 }

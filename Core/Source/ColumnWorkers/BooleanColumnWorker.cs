@@ -1,42 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Stats.Widgets;
+using Verse;
 
 namespace Stats;
 
-public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
+public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject, bool>
 {
-    private readonly Func<TObject, bool> GetCachedValue;
-    protected BooleanColumnWorker(ColumnDef columndef, bool cached = true) : base(columndef, ColumnCellStyle.Boolean)
+    protected BooleanColumnWorker(ColumnDef columndef) : base(columndef, ColumnCellStyle.Boolean)
     {
-        GetCachedValue = GetValue;
-
-        if (cached)
-        {
-            GetCachedValue = GetCachedValue.Memoized();
-        }
     }
     protected abstract bool GetValue(TObject @object);
-    public sealed override Widget? GetTableCellWidget(TObject @object)
+    protected sealed override Cell GetCell(TObject @object)
     {
         var value = GetValue(@object);
 
-        if (value == false)
+        if (value == true)
         {
-            return null;
+            var widget = new Icon(Verse.Widgets.CheckboxOnTex)
+            .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+
+            return new(widget, true);
         }
 
-        return new SingleElementContainer(
-            new Icon(Verse.Widgets.CheckboxOnTex)
-                .PaddingRel(0.5f, 0f)
-        );
+        return new();
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> _)
     {
-        yield return new(ColumnDef.Title, Make.BooleanFilter(GetCachedValue));
+        yield return new(ColumnDef.Title, Make.BooleanFilter<TObject>(@object => Cells[@object].Data));
     }
     public sealed override int Compare(TObject object1, TObject object2)
     {
-        return GetCachedValue(object1).CompareTo(GetCachedValue(object2));
+        return Cells[object1].Data.CompareTo(Cells[object2].Data);
     }
 }

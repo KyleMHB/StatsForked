@@ -2,7 +2,7 @@
 
 public sealed class Apparel_CountsAsClothingForNudityColumnWorker : BooleanColumnWorker<ThingAlike>
 {
-    public Apparel_CountsAsClothingForNudityColumnWorker(ColumnDef columnDef) : base(columnDef, false)
+    public Apparel_CountsAsClothingForNudityColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
     protected override bool GetValue(ThingAlike thing)

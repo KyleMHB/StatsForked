@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Stats.Widgets;
@@ -7,46 +6,43 @@ using Verse;
 
 namespace Stats;
 
-public abstract class ContentSourceColumnWorker<TObject> : ColumnWorker<TObject>
+public abstract class ContentSourceColumnWorker<TObject> : ColumnWorker<TObject, ModContentPack?>
 {
-    private readonly Func<TObject, ModContentPack?> GetCachedModContentPack;
-    protected ContentSourceColumnWorker(ColumnDef columndef, bool cached = true) : base(columndef, ColumnCellStyle.String)
+    protected ContentSourceColumnWorker(ColumnDef columndef) : base(columndef, ColumnCellStyle.String)
     {
-        GetCachedModContentPack = GetModContentPack;
-
-        if (cached)
-        {
-            GetCachedModContentPack = GetCachedModContentPack.Memoized();
-        }
     }
     protected abstract ModContentPack? GetModContentPack(TObject @object);
-    public sealed override Widget? GetTableCellWidget(TObject @object)
+    protected sealed override Cell GetCell(TObject @object)
     {
         var mod = GetModContentPack(@object);
 
-        if (mod == null)
+        if (mod != null)
         {
-            return null;
+            var widget = new Label(mod.Name)
+            .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)
+            .Tooltip(mod.PackageIdPlayerFacing);
+
+            return new(widget, mod);
         }
 
-        return new Label(mod.Name).Tooltip(mod.PackageIdPlayerFacing);
+        return new();
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {
         var filterOptions = tableRecords
-            .Select(GetCachedModContentPack)
+            .Select(record => Cells[record].Data)
             .Distinct()
             .OrderBy(mod => mod?.Name)
             .Select<ModContentPack?, NTMFilterOption<ModContentPack?>>(
                 mod => mod == null ? new() : new(mod, mod.Name, null, mod.PackageIdPlayerFacing)
             );
 
-        yield return new(ColumnDef.Title, Make.OTMFilter(GetCachedModContentPack, filterOptions));
+        yield return new(ColumnDef.Title, Make.OTMFilter<TObject, ModContentPack?>(@object => Cells[@object].Data, filterOptions));
     }
     public sealed override int Compare(TObject object1, TObject object2)
     {
-        var modName1 = GetCachedModContentPack(object1)?.Name;
-        var modName2 = GetCachedModContentPack(object2)?.Name;
+        var modName1 = Cells[object1].Data?.Name;
+        var modName2 = Cells[object1].Data?.Name;
 
         return Comparer.Default.Compare(modName1, modName2);
     }

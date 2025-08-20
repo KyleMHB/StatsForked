@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using RimWorld;
 using Stats.Widgets;
@@ -7,10 +6,9 @@ using Verse;
 
 namespace Stats;
 
-public class Thing_StatColumnWorker : ColumnWorker<ThingAlike>
+public class Thing_StatColumnWorker : ColumnWorker<ThingAlike, decimal>
 {
     public static readonly Regex NumberRegex = new(@"(-?[0-9]+\.?[0-9]*).*", RegexOptions.Compiled);
-    private readonly Func<ThingAlike, decimal> GetNumber;
     private const ToStringNumberSense _ToStringNumberSense = ToStringNumberSense.Absolute;
     protected StatDef Stat { get; }
     private readonly StatValueExplanationType ExplanationType;
@@ -18,83 +16,66 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike>
     {
         Stat = columnDef.stat;
         ExplanationType = columnDef.statValueExplanationType;
-        GetNumber = new Func<ThingAlike, decimal>(thing =>
-        {
-            var label = GetStatDrawEntryLabel(thing);
-
-            if (label != null)
-            {
-                var match = NumberRegex.Match(label);
-
-                if (match.Success)
-                {
-                    return decimal.Parse(match.Groups[1].Captures[0].Value);
-                }
-            }
-
-            return 0m;
-        }).Memoized();
     }
-    protected virtual string? GetStatValueExplanation(ThingAlike thing)
+    protected virtual string? GetStatDrawEntryLabel(StatDef stat, float value, ToStringNumberSense numberSense, StatRequest statRequest)
     {
-        var worker = Stat.Worker;
-        var statRequest = StatRequest.For(thing.Def, thing.StuffDef);
-        var statValue = worker.GetValue(statRequest);
-
-        return ExplanationType switch
-        {
-            StatValueExplanationType.Full => worker.GetExplanationFull(statRequest, _ToStringNumberSense, statValue),
-            StatValueExplanationType.Unfinalized => worker.GetExplanationUnfinalized(statRequest, _ToStringNumberSense),
-            StatValueExplanationType.FinalizePart => worker.GetExplanationFinalizePart(statRequest, _ToStringNumberSense, statValue),
-            _ => null,
-        };
+        return stat.Worker.GetStatDrawEntryLabel(stat, value, _ToStringNumberSense, statRequest);
     }
-    protected virtual string? GetStatDrawEntryLabel(ThingAlike thing)
+    protected override Cell GetCell(ThingAlike thing)
     {
-        var worker = Stat.Worker;
-        var statRequest = StatRequest.For(thing.Def, thing.StuffDef);
+        var statWorker = Stat.Worker;
+        var statRequest = thing.Thing != null
+            ? StatRequest.For(thing.Thing)
+            : StatRequest.For(thing.Def, thing.StuffDef);
 
-        if (worker.ShouldShowFor(statRequest))
+        if (statWorker.ShouldShowFor(statRequest))
         {
-            var statValue = worker.GetValue(statRequest);
+            var statValue = statWorker.GetValue(statRequest);
 
             if (statValue != 0f)
             {
-                return worker.GetStatDrawEntryLabel(Stat, statValue, _ToStringNumberSense, statRequest);
+                var cellText = GetStatDrawEntryLabel(Stat, statValue, _ToStringNumberSense, statRequest);
+
+                if (cellText != null)
+                {
+                    var displayedValue = 0m;
+                    var match = NumberRegex.Match(cellText);
+
+                    if (match.Success)
+                    {
+                        displayedValue = decimal.Parse(match.Groups[1].Captures[0].Value);
+                    }
+
+                    var tooltip = ExplanationType switch
+                    {
+                        StatValueExplanationType.Full => statWorker.GetExplanationFull(statRequest, _ToStringNumberSense, statValue),
+                        StatValueExplanationType.Unfinalized => statWorker.GetExplanationUnfinalized(statRequest, _ToStringNumberSense),
+                        StatValueExplanationType.FinalizePart => statWorker.GetExplanationFinalizePart(statRequest, _ToStringNumberSense, statValue),
+                        _ => null,
+                    };
+
+                    Widget widget = new Label(cellText)
+                    .TextAnchor(CellTextAnchor)
+                    .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+
+                    if (tooltip != null)
+                    {
+                        widget = widget.Tooltip(tooltip);
+                    }
+
+                    return new(widget, displayedValue);
+                }
             }
         }
 
-        return null;
-    }
-    public sealed override Widget? GetTableCellWidget(ThingAlike thing)
-    {
-        var label = GetStatDrawEntryLabel(thing);
-
-        if (label == null)
-        {
-            return null;
-        }
-
-        var widget = new Label(label);
-
-        if (ExplanationType != StatValueExplanationType.None)
-        {
-            var tooltip = GetStatValueExplanation(thing);
-
-            if (tooltip != null)
-            {
-                return widget.Tooltip(tooltip);
-            }
-        }
-
-        return widget;
+        return new();
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> _)
     {
-        yield return new(ColumnDef.Title, Make.NumberFilter(GetNumber));
+        yield return new(ColumnDef.Title, Make.NumberFilter((ThingAlike thing) => Cells[thing].Data));
     }
     public sealed override int Compare(ThingAlike thing1, ThingAlike thing2)
     {
-        return GetNumber(thing1).CompareTo(GetNumber(thing2));
+        return Cells[thing1].Data.CompareTo(Cells[thing2].Data);
     }
 }

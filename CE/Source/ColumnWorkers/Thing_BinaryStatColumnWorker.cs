@@ -11,25 +11,18 @@ public abstract class Thing_BinaryStatColumnWorker : Thing_StatColumnWorker
     {
         Separator = columnDef.statValueSeparator[0];
     }
-    protected override string? GetStatDrawEntryLabel(ThingAlike thing)
+    protected override string? GetStatDrawEntryLabel(StatDef stat, float value, ToStringNumberSense numberSense, StatRequest statRequest)
     {
-        var worker = Stat.Worker;
-        var statRequest = StatRequest.For(thing.Def, thing.StuffDef);
+        var label = base.GetStatDrawEntryLabel(stat, value, numberSense, statRequest);
 
-        if (worker.ShouldShowFor(statRequest))
+        // We do not check whether statValue is 0 here,
+        // because since this type of stat is often times used
+        // only for display purposes it can have a value of 0,
+        // but display non-zero value.
+
+        if (label != null)
         {
-            var statValue = worker.GetValue(statRequest);
-            var label = worker.GetStatDrawEntryLabel(Stat, statValue, ToStringNumberSense.Absolute, statRequest);
-
-            // We do not check whether statValue is 0 here,
-            // because since this type of stat is often times used
-            // only for display purposes it can have a value of 0,
-            // but display non-zero value.
-
-            if (label != null)
-            {
-                return ParsePartFromLabel(label);
-            }
+            return ParsePartFromLabel(label);
         }
 
         return null;

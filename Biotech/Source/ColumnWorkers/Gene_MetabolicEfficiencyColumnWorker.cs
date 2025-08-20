@@ -11,7 +11,7 @@ public sealed class Gene_MetabolicEfficiencyColumnWorker : NumberColumnWorker<Ge
     {
         MetabolismIcon = ContentFinder<Texture2D>.Get("UI/Icons/Biostats/Metabolism");
     }
-    public Gene_MetabolicEfficiencyColumnWorker(ColumnDef columnDef) : base(columnDef, false, MetabolismIcon)
+    public Gene_MetabolicEfficiencyColumnWorker(ColumnDef columnDef) : base(columnDef, MetabolismIcon)
     {
     }
     protected override decimal GetValue(GeneDef geneDef)

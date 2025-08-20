@@ -7,8 +7,10 @@ using Verse;
 
 namespace Stats.Widgets;
 
-internal abstract class ObjectTable
+public abstract class ObjectTable
 {
+    public const float CellPadHor = 12f;
+    public const float CellPadVer = 4f;
     public abstract void Draw(Rect rect, bool showSettingsMenu);
     public abstract void ResetFilters();
     public abstract TableFilterMode FilterMode { get; set; }
@@ -22,134 +24,85 @@ internal abstract class ObjectTable
     }
 }
 
-internal sealed partial class ObjectTable<TObject> : ObjectTable
+public sealed partial class ObjectTable<TObject> : ObjectTable
 {
-    public ObjectTable(List<ColumnWorker<TObject>> columnWorkers, IEnumerable<TObject> objects)
+    private readonly List<ColumnWorker<TObject>> Columns;
+    private readonly Widget ColumnsTabWidget;
+    internal ColumnWorker<TObject> SortColumn;
+    internal int SortDirection = SortDirectionAscending;
+    internal const int SortDirectionAscending = 1;
+    internal const int SortDirectionDescending = -1;
+    private readonly List<FilterWidget<TObject>> Filters;
+    private readonly HashSet<FilterWidget<TObject>> ActiveFilters;
+    public override TableFilterMode FilterMode
     {
-        // Columns
-        var columnsCount = columnWorkers.Count;
-        var columns = new Column[columnsCount];
-
-        for (int i = 0; i < columnsCount; i++)
+        get => field;
+        set
         {
-            var columnWorker = columnWorkers[i];
+            if (value == field)
+            {
+                return;
+            }
 
-            columns[i] = new Column(columnWorker, i == 0, this);
+            field = value;
+            ObjectMatchesFilters = value switch
+            {
+                TableFilterMode.AND => ObjectFilterMatchFuncAND,
+                TableFilterMode.OR => ObjectFilterMatchFuncOR,
+                _ => throw new NotSupportedException("Unsupported table filtering mode.")
+            };
+
+            OnFilterModeChange?.Invoke(value);
         }
+    } = TableFilterMode.AND;
+    public override event Action<TableFilterMode>? OnFilterModeChange;
+    private ObjectFilterMatchFunc ObjectMatchesFilters = ObjectFilterMatchFuncAND;
+    private static readonly ObjectFilterMatchFunc ObjectFilterMatchFuncAND =
+    (@object, filters) =>
+    {
+        return filters.All(filter => filter.Eval(@object));
+    };
+    private static readonly ObjectFilterMatchFunc ObjectFilterMatchFuncOR =
+    (@object, filters) =>
+    {
+        return filters.Any(filter => filter.Eval(@object));
+    };
+    private readonly List<Row> HeaderRows;
+    private float HeaderRowsHeight;
+    private readonly List<ObjectRow> PinnedRows = new(10);
+    private float PinnedRowsHeight;
+    private readonly List<ObjectRow> UnpinnedRows;
+    private float UnpinnedRowsHeight;
+    private Vector2 ScrollPosition;
+    private static readonly Color ColumnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
+    private static readonly Color PinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
+    private Vector2 ColumnsTabScrollPosition;
+    private bool DoFilter;
+    private bool DoSort = true;
+    private bool DoResize = true;
+    public ObjectTable(List<ColumnWorker<TObject>> columns, IEnumerable<TObject> objects)
+    {
+        columns[0].IsPinned = true;
 
-        var sortColumn = columns[0];
-        const int sorDirection = SortDirectionAscending;
         // TODO: Maybe the constructor should accept list from the beginning.
         var objectArr = objects.ToArray();
-        // This is a bit of a hack. We rely on default sort direction being just what we need.
-        Array.Sort(objectArr, sortColumn.Worker.Compare);
 
-        // Body rows
-        var bodyRows = new RowCollection<ObjectRow>(objectArr.Length);
+        // Rows
+        var rows = new List<ObjectRow>(objectArr.Length);
 
         foreach (var @object in objectArr)
         {
             var row = new ObjectRow(columns, @object);
 
-            for (int i = 0; i < columnsCount; i++)
-            {
-                var column = columns[i];
-
-                try
-                {
-                    row[i] = column.Worker.GetTableCellWidget(@object)
-                    ?.PaddingAbs(CellPadHor, CellPadVer);
-                }
-                catch (Exception e)
-                {
-                    row[i] = new Label("!!!")
-                    .Color(Color.red.ToTransparent(0.5f))
-                    .TextAnchor(TextAnchor.LowerCenter)
-                    .PaddingAbs(CellPadHor, CellPadVer)
-                    .Tooltip(e.Message);
-                }
-            }
-
-            bodyRows.Add(row);
+            rows.Add(row);
         }
 
-        // Hide all empty columns.
-        // TODO: Remove corresponding body row cells?
-        foreach (var column in columns)
-        {
-            if (column.Width == 0f)
-            {
-                column.IsVisible = false;
-            }
-        }
-
-        // Headers
-        var headerRows = new RowCollection<Row>(1);
-        var columnTitlesRow = new ColumnTitlesRow(columns);
-
-        string GetColumnDefDescriptionFull(ColumnDef columnDef)
-        {
-            return $"<i>{columnDef.LabelCap}</i>\n\n{columnDef.Description}";
-        }
-
-        for (int i = 0; i < columnsCount; i++)
-        {
-            var column = columns[i];
-
-            if (column.IsVisible == false) continue;
-
-            var columnDef = column.Worker.ColumnDef;
-            var columnTitleWidget = columnDef.Title;
-
-            if (column.Worker.CellStyle == ColumnCellStyle.Number)
-            {
-                columnTitleWidget = new SingleElementContainer(columnTitleWidget.PaddingRel(1f, 0f, 0f, 0f));
-            }
-            else if (column.Worker.CellStyle == ColumnCellStyle.Boolean)
-            {
-                columnTitleWidget = new SingleElementContainer(columnTitleWidget.PaddingRel(0.5f, 0f));
-            }
-
-            // Title
-            columnTitlesRow[i] = columnTitleWidget
-            .PaddingAbs(CellPadHor, CellPadVer)
-            .Background((Rect rect) =>
-            {
-                if (SortColumn != column) return;
-
-                if (SortDirection == SortDirectionAscending)
-                {
-                    rect.y = rect.yMax - SortIndicatorHeight;
-                    rect.height = SortIndicatorHeight;
-                }
-                else
-                {
-                    rect.height = SortIndicatorHeight;
-                }
-
-                Verse.Widgets.DrawBoxSolid(rect, SortIndicatorColor);
-            })
-            .ToButtonGhostly(() =>
-            {
-                if (Event.current.control)
-                {
-                    column.IsPinned = !column.IsPinned;
-                }
-                else
-                {
-                    SortAllRowsByColumn(column);
-                }
-            })
-            .Tooltip(GetColumnDefDescriptionFull(columnDef));
-        }
-
-        headerRows.Add(columnTitlesRow);
-
-        // Column settings
-        var columnSettingsTabRows = new List<Widget>(columnsCount);
+        // Settings tab
+        var columnSettingsTabRows = new List<Widget>(columns.Count);
         var columnLabelWidthMax = new StrongBox<float>(0f);
+        var filters = new List<FilterWidget<TObject>>(columns.Count);
 
-        Widget MakeColumnTitleRow(Widget columnTitle, Widget filterOrToggle, Column column)
+        Widget MakeColumnTitleRow(Widget columnTitle, Widget filterOrToggle, ColumnWorker<TObject> column)
         {
             return new HorizontalContainer([
                 // TODO: This is a hack to prevent icons from stretching out.
@@ -170,20 +123,17 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
                     GUI.color = origGUIColor;
                 })
                 .ToButtonGhostly(column.Toggle)
-                .Tooltip(GetColumnDefDescriptionFull(column.Worker.ColumnDef)),
+                .Tooltip(column.Tooltip),
 
                 filterOrToggle,
             ], 0f, true)
             .WidthRel(1f);
         }
 
-        for (int i = 0; i < columnsCount; i++)
+        for (int i = 0; i < columns.Count; i++)
         {
             var column = columns[i];
-
-            if (column.IsVisible == false) continue;
-
-            var objectProps = column.Worker.GetObjectProps(objectArr).ToList();
+            var objectProps = column.GetObjectProps(objectArr).ToList();
 
             if (objectProps.Count == 0) continue;
 
@@ -201,6 +151,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
                 )
                 .HoverBackground(TexUI.HighlightTex);
 
+                filters.Add(objectProp.FilterWidget);
                 objectProp.FilterWidget.OnChange += HandleFilterChange;
             }
             else
@@ -209,7 +160,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
                 var toggle = new Observable<bool>(true);
                 row = new VerticalContainer([
                     MakeColumnTitleRow(
-                        column.Worker.ColumnDef.Title,
+                        column.ColumnDef.Title,
                         new Label(toggle.Map(state => state
                             ? $"<i>Hide ({objectProps.Count}) filters</i>"
                             : $"<i>Show ({objectProps.Count}) filters</i>"
@@ -236,6 +187,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
                             .WidthRel(1f)
                             .HoverBackground(TexUI.HighlightTex);
 
+                            filters.Add(filterWidget);
                             filterWidget.OnChange += HandleFilterChange;
 
                             return row;
@@ -256,16 +208,19 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
         // Finalize
         Columns = columns;
-        SortColumn = sortColumn;
-        SortDirection = sorDirection;
-        HeaderRows = headerRows;
-        PinnedRows = new(10);
-        UnfilteredBodyRows = bodyRows;
-        FilteredBodyRows = new(bodyRows);
+        SortColumn = columns[0];
+        HeaderRows = [new ColumnTitlesRow(columns, this)];
+        UnpinnedRows = rows;
         ColumnsTabWidget = new VerticalContainer(columnSettingsTabRows);
-        ActiveFilters = new HashSet<FilterWidget<TObject>>(columnsCount);
-        _FilterMode = TableFilterMode.AND;
-        ObjectMatchesFilters = ObjectFilterMatchFuncAND;
-        ShouldApplyFilters = false;
+        Filters = filters;
+        ActiveFilters = new HashSet<FilterWidget<TObject>>(columns.Count);
+    }
+    // Note: Add/Remove methods have to be as fast as possible
+    // because they can be called multiple times in a row.
+    public void AddObject(TObject @object)
+    {
+    }
+    public void RemoveObject(TObject @object)
+    {
     }
 }

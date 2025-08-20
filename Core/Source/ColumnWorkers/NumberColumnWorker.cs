@@ -1,64 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Stats.Widgets;
 using UnityEngine;
 
 namespace Stats;
 
-public abstract class NumberColumnWorker<TObject> : ColumnWorker<TObject>
+public abstract class NumberColumnWorker<TObject> : ColumnWorker<TObject, decimal>
 {
     private readonly Texture2D? Icon = null;
-    private readonly Func<TObject, decimal> GetCachedValue;
     private readonly string FormatString;
     protected NumberColumnWorker(
         ColumnDef columndef,
-        bool cached = true,
         Texture2D? icon = null,
         string formatString = ""
     ) : base(columndef, ColumnCellStyle.Number)
     {
-        GetCachedValue = GetValue;
-
-        if (cached)
-        {
-            GetCachedValue = GetCachedValue.Memoized();
-        }
-
         Icon = icon;
         FormatString = formatString;
     }
     protected abstract decimal GetValue(TObject @object);
-    public sealed override Widget? GetTableCellWidget(TObject @object)
+    protected sealed override Cell GetCell(TObject @object)
     {
         var value = GetValue(@object);
 
-        if (value == 0m)
+        if (value != 0m)
         {
-            return null;
+            Widget cellWidget = new Label(value.ToString(FormatString))
+            .TextAnchor(CellTextAnchor);
+
+            if (Icon != null)
+            {
+                cellWidget = new HorizontalContainer(
+                    [
+                        cellWidget.WidthRel(1f),
+                        new Icon(Icon)
+                    ],
+                    Globals.GUI.PadSm,
+                    true
+                );
+            }
+
+            return new(cellWidget.PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer), value);
         }
 
-        var label = new Label(value.ToString(FormatString));
-
-        if (Icon != null)
-        {
-            return new HorizontalContainer(
-                [
-                    label.WidthRel(1f),
-                    new Icon(Icon)
-                ],
-                Globals.GUI.PadSm,
-                true
-            );
-        }
-
-        return label;
+        return new();
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> _)
     {
-        yield return new(ColumnDef.Title, Make.NumberFilter(GetCachedValue));
+        yield return new(ColumnDef.Title, Make.NumberFilter<TObject>(@object => Cells[@object].Data));
     }
     public sealed override int Compare(TObject object1, TObject object2)
     {
-        return GetCachedValue(object1).CompareTo(GetCachedValue(object2));
+        return Cells[object1].Data.CompareTo(Cells[object2].Data);
     }
 }

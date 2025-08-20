@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Stats.Widgets;
 
 namespace Stats;
@@ -22,16 +23,15 @@ public abstract class TableWorker<TObject> : TableWorker
     protected TableWorker(TableDef tableDef) : base(tableDef)
     {
     }
-    private ObjectTable MakeTableWidget()
+    protected virtual ObjectTable MakeTableWidget()
     {
         var columnWorkers = new List<ColumnWorker<TObject>>(TableDef.columns.Count);
 
         foreach (var columnDef in TableDef.columns)
         {
-            if (columnDef.Worker is ColumnWorker<TObject> columnWorker)
-            {
-                columnWorkers.Add(columnWorker);
-            }
+            var columnWorker = (ColumnWorker<TObject>)Activator.CreateInstance(columnDef.workerClass, columnDef);
+
+            columnWorkers.Add(columnWorker);
         }
 
         return new ObjectTable<TObject>(columnWorkers, Records);

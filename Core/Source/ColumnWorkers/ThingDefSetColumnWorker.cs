@@ -5,35 +5,42 @@ using Verse;
 
 namespace Stats;
 
-public abstract class ThingDefSetColumnWorker<TObject, TValue> : DefSetColumnWorker<TObject, TValue> where TValue : ThingDef
+public abstract class ThingDefSetColumnWorker<TObject, TDef> : ColumnWorker<TObject, HashSet<TDef>> where TDef : ThingDef
 {
-    protected ThingDefSetColumnWorker(ColumnDef columnDef, bool cached = true) : base(columnDef, cached)
+    protected ThingDefSetColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
-    public override Widget? GetTableCellWidget(TObject @object)
+    protected abstract HashSet<TDef> GetValue(TObject @object);
+    protected sealed override Cell GetCell(TObject @object)
     {
-        var thingDefs = GetCachedValue(@object);
+        var defs = GetValue(@object);
 
-        if (thingDefs.Count == 0)
+        if (defs.Count > 0)
         {
-            return null;
-        }
+            var icons = new List<Widget>(defs.Count);
 
-        var icons = new List<Widget>(thingDefs.Count);
-
-        foreach (var thingDef in thingDefs.OrderBy(thingDef => thingDef.label))
-        {
-            var icon = new ThingIcon(thingDef)
+            foreach (var thingDef in defs.OrderBy(thingDef => thingDef.label))
+            {
+                var icon = new ThingIcon(thingDef)
                 .ToButtonGhostly(() => Draw.DefInfoDialog(thingDef))
                 .Tooltip(thingDef.LabelCap);
 
-            icons.Add(icon);
+                icons.Add(icon);
+            }
+
+            var widget = new HorizontalContainer(icons, Globals.GUI.PadSm).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+
+            return new(widget, defs);
         }
 
-        return new HorizontalContainer(icons, Globals.GUI.PadSm);
+        return new(null, []);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
+    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {
-        yield return new(ColumnDef.Title, Make.MTMThingDefFilter(GetCachedValue, tableRecords));
+        yield return new(ColumnDef.Title, Make.MTMThingDefFilter(@object => Cells[@object].Data, tableRecords));
+    }
+    public sealed override int Compare(TObject object1, TObject object2)
+    {
+        return Cells[object1].Data.Count.CompareTo(Cells[object2].Data.Count);
     }
 }

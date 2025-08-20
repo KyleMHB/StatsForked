@@ -4,26 +4,21 @@ using Verse;
 
 namespace Stats.Compat.Biotech;
 
-public sealed class Gene_LabelColumnWorker : ColumnWorker<GeneDef>
+public sealed class Gene_LabelColumnWorker : ColumnWorker<GeneDef, GeneDef>
 {
     public Gene_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
-    public override Widget? GetTableCellWidget(GeneDef geneDef)
+    protected override Cell GetCell(GeneDef geneDef)
     {
-        void openDefInfoDialog()
-        {
-            Draw.DefInfoDialog(geneDef);
-        }
-
-        return new HorizontalContainer(
-            [
-                new Icon(geneDef.Icon).ToButtonGhostly(openDefInfoDialog),
-                new Label(geneDef.LabelCap),
-            ],
-            Globals.GUI.Pad
-        )
+        var widget = new HorizontalContainer([
+            new Icon(geneDef.Icon).ToButtonGhostly(() => Draw.DefInfoDialog(geneDef)),
+            new Label(geneDef.LabelCap),
+        ], Globals.GUI.Pad)
+        .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)
         .Tooltip(geneDef.description);
+
+        return new(widget, geneDef);
     }
     public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<GeneDef> _)
     {

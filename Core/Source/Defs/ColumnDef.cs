@@ -17,7 +17,6 @@ public class ColumnDef : Def
     public Widget Title => title?.ToWidget() ?? new Label(LabelCap);
 #pragma warning disable CS8618
     public Type workerClass;
-    public ColumnWorker Worker { get; private set; }
 #pragma warning restore CS8618
     public override void ResolveReferences()
     {
@@ -32,11 +31,6 @@ public class ColumnDef : Def
         {
             description = descriptionKey.Translate();
         }
-
-        LongEventHandler.ExecuteWhenFinished(() =>
-        {
-            Worker = (ColumnWorker)Activator.CreateInstance(workerClass, this);
-        });
     }
 }
 
@@ -97,10 +91,12 @@ public sealed class ColumnTitleXmlNode
     private sealed class IconElement : Element
     {
         public IconDef Def;
+#pragma warning disable CS8618
         public IconElement(XmlNode xmlRoot)
         {
             DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, nameof(Def), xmlRoot.Name);
         }
+#pragma warning restore CS8618
         public override Widget ToWidget()
         {
             Widget widget = new InlineTexture(Def.Texture, Def.scale);

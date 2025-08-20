@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Verse;
 
 namespace Stats;
 
@@ -7,7 +8,7 @@ public sealed class Plant_HarvestYieldColumnWorker : ThingDefCountColumnWorker<T
     public Plant_HarvestYieldColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override ThingDefCount? GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
     {
         var plantProps = thing.Def.plant;
 
@@ -18,6 +19,6 @@ public sealed class Plant_HarvestYieldColumnWorker : ThingDefCountColumnWorker<T
             return new(plantProps.harvestedThingDef, yield);
         }
 
-        return null;
+        return new();
     }
 }

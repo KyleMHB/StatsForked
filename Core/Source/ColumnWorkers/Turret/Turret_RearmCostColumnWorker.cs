@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using UnityEngine;
+using Verse;
 
 namespace Stats;
 
@@ -8,7 +9,7 @@ public sealed class Turret_RearmCostColumnWorker : ThingDefCountColumnWorker<Thi
     public Turret_RearmCostColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
-    protected override ThingDefCount? GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
     {
         var refuelableCompProps = thing.Def.GetCompProperties<CompProperties_Refuelable>();
 
@@ -24,6 +25,6 @@ public sealed class Turret_RearmCostColumnWorker : ThingDefCountColumnWorker<Thi
             }
         }
 
-        return null;
+        return (null, 0m);
     }
 }

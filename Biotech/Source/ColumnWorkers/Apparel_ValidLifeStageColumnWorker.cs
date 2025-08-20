@@ -7,7 +7,7 @@ using Verse;
 
 namespace Stats.Compat.Biotech;
 
-public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike>
+public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike, (HashSet<DevelopmentalStage> LifeStages, string? Text)>
 {
     public Apparel_ValidLifeStageColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
@@ -31,40 +31,31 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike
 
         return lifeStages;
     });
-    private static readonly Func<ThingDef, string> GetLifeStageLabels =
-    FunctionExtensions.Memoized((ThingDef thingDef) =>
-    {
-        var lifeStages = GetValidLifeStages(thingDef);
-
-        if (lifeStages.Count == 0)
-        {
-            return "";
-        }
-
-        var stringBuilder = new StringBuilder();
-
-        foreach (var lifeStage in lifeStages.OrderBy(lifeStage => lifeStage))
-        {
-            stringBuilder.AppendInNewLine(GetLifeStageString(lifeStage));
-        }
-
-        return stringBuilder.ToString();
-    });
     private static readonly Func<DevelopmentalStage, string> GetLifeStageString =
     FunctionExtensions.Memoized((DevelopmentalStage lifeStage) =>
     {
         return lifeStage.ToString().Translate().CapitalizeFirst().RawText;
     });
-    public override Widget? GetTableCellWidget(ThingAlike thing)
+    protected override Cell GetCell(ThingAlike thing)
     {
-        var lifeStageLabels = GetLifeStageLabels(thing.Def);
+        var lifeStages = GetValidLifeStages(thing.Def);
 
-        if (lifeStageLabels.Length == 0)
+        if (lifeStages.Count > 0)
         {
-            return null;
+            var stringBuilder = new StringBuilder();
+
+            foreach (var lifeStage in lifeStages.OrderBy(lifeStage => lifeStage))
+            {
+                stringBuilder.AppendInNewLine(GetLifeStageString(lifeStage));
+            }
+
+            var text = stringBuilder.ToString();
+            var widget = new Label(text);
+
+            return new(widget, (lifeStages, text));
         }
 
-        return new Label(lifeStageLabels);
+        return new(null, ([], null));
     }
     public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
@@ -74,10 +65,13 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike
             .OrderBy(lifeStage => lifeStage)
             .Select(lifeStage => new NTMFilterOption<DevelopmentalStage>(lifeStage, GetLifeStageString(lifeStage)));
 
-        yield return new(ColumnDef.Title, Make.MTMFilter((ThingAlike thing) => GetValidLifeStages(thing.Def), filterOptions));
+        yield return new(ColumnDef.Title, Make.MTMFilter((ThingAlike thing) => Cells[thing].Data.LifeStages, filterOptions));
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {
-        return GetLifeStageLabels(thing1.Def).CompareTo(GetLifeStageLabels(thing2.Def));
+        return Comparer<string?>.Default.Compare(
+            Cells[thing1].Data.Text,
+            Cells[thing2].Data.Text
+        );
     }
 }

@@ -6,7 +6,7 @@ namespace Stats.Widgets.Extensions;
 public sealed class TooltipWidgetExtension : WidgetExtension
 {
     private readonly TipSignal Tip;
-    internal TooltipWidgetExtension(Widget widget, string tip) : base(widget)
+    internal TooltipWidgetExtension(Widget widget, TipSignal tip) : base(widget)
     {
         Tip = tip;
     }

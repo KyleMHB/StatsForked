@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using Verse;
 
 namespace Stats;
 
@@ -7,7 +8,7 @@ public sealed class Animal_EggsAmountColumnWorker : ThingDefCountColumnWorker<Th
     public Animal_EggsAmountColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override ThingDefCount? GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
     {
         var eggLayerCompProps = thing.Def.GetCompProperties<CompProperties_EggLayer>();
 
@@ -19,6 +20,6 @@ public sealed class Animal_EggsAmountColumnWorker : ThingDefCountColumnWorker<Th
             return new(eggDef, count);
         }
 
-        return null;
+        return new();
     }
 }

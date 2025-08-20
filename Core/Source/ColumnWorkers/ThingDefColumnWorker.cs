@@ -4,30 +4,30 @@ using Verse;
 
 namespace Stats;
 
-public abstract class ThingDefColumnWorker<TObject, TValue> : DefColumnWorker<TObject, TValue> where TValue : ThingDef?
+public abstract class ThingDefColumnWorker<TObject, TDef> : DefColumnWorker<TObject, TDef> where TDef : ThingDef?
 {
-    protected ThingDefColumnWorker(ColumnDef columnDef, bool cached = true) : base(columnDef, cached)
+    protected ThingDefColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
-    public sealed override Widget? GetTableCellWidget(TObject @object)
+    protected sealed override Cell GetCell(TObject @object)
     {
-        var thingDef = GetCachedValue(@object);
+        var def = GetValue(@object);
 
-        if (thingDef == null)
+        if (def != null)
         {
-            return null;
+            var widget = new HorizontalContainer([
+                new ThingIcon(def).ToButtonGhostly(() => Draw.DefInfoDialog(def)),
+                new Label(def.LabelCap),
+            ], Globals.GUI.PadSm)
+            .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+
+            return new(widget, def);
         }
 
-        return new HorizontalContainer(
-            [
-                new ThingIcon(thingDef).ToButtonGhostly(() => Draw.DefInfoDialog(thingDef)),
-                new Label(thingDef.LabelCap),
-            ],
-            Globals.GUI.PadSm
-        );
+        return new();
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {
-        yield return new(ColumnDef.Title, Make.OTMThingDefFilter(GetCachedValue, tableRecords));
+        yield return new(ColumnDef.Title, Make.OTMThingDefFilter(@object => Cells[@object].Data, tableRecords));
     }
 }

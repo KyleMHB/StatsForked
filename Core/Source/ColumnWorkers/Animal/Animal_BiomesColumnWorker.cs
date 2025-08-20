@@ -8,17 +8,17 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
+public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike, (HashSet<BiomeDef> Biomes, float AverageCommonality)>
 {
     public Animal_BiomesColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
     // This exists mainly for consistency, for when this column worker is used by several tables.
-    private static readonly Func<ThingAlike, List<BiomeRecord>> GetBiomeRecords =
-    FunctionExtensions.Memoized((ThingAlike thing) =>
+    private static readonly Func<ThingDef, List<BiomeRecord>> GetBiomeRecords =
+    FunctionExtensions.Memoized((ThingDef thingDef) =>
     {
         var biomeRecords = new List<BiomeRecord>();
-        var raceProps = thing.Def.race;
+        var raceProps = thingDef.race;
 
         if (raceProps?.Animal == true)
         {
@@ -39,35 +39,9 @@ public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
 
         return biomeRecords;
     });
-    private static readonly Func<ThingAlike, HashSet<BiomeDef>> GetBiomeDefs =
-    FunctionExtensions.Memoized((ThingAlike thing) =>
+    protected override Cell GetCell(ThingAlike thing)
     {
-        var biomeRecords = GetBiomeRecords(thing);
-
-        return biomeRecords.Select(biomeRecord => biomeRecord.BiomeDef).ToHashSet();
-    });
-    private static readonly Func<ThingAlike, float> GetAverageAnimalCommonality =
-    FunctionExtensions.Memoized((ThingAlike thing) =>
-    {
-        var biomeRecords = GetBiomeRecords(thing);
-
-        if (biomeRecords.Count == 0)
-        {
-            return 0f;
-        }
-
-        var animalCommonalitySum = 0f;
-
-        foreach (var biomeRecord in biomeRecords)
-        {
-            animalCommonalitySum += biomeRecord.Commonality;
-        }
-
-        return animalCommonalitySum / biomeRecords.Count;
-    });
-    public override Widget? GetTableCellWidget(ThingAlike thing)
-    {
-        var biomeRecords = GetBiomeRecords(thing);
+        var biomeRecords = GetBiomeRecords(thing.Def);
 
         if (biomeRecords.Count > 0)
         {
@@ -88,25 +62,36 @@ public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
                 tooltip = stringBuilder.ToString();
             }
 
-            Widget widget = new Label(text);
+            var animalCommonalitySum = 0f;
+
+            foreach (var biomeRecord in biomeRecords)
+            {
+                animalCommonalitySum += biomeRecord.Commonality;
+            }
+
+            var averageCommonality = animalCommonalitySum / biomeRecords.Count;
+
+            var biomeDefs = biomeRecords.Select(biomeRecord => biomeRecord.BiomeDef).ToHashSet();
+
+            Widget widget = new Label(text).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
 
             if (tooltip != null)
             {
                 widget = widget.Tooltip(tooltip);
             }
 
-            return widget;
+            return new(widget, (biomeDefs, averageCommonality));
         }
 
-        return null;
+        return new(null, ([], 0f));
     }
     public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
-        yield return new(ColumnDef.Title, Make.MTMDefFilter(GetBiomeDefs, tableRecords));
+        yield return new(ColumnDef.Title, Make.MTMDefFilter(thing => Cells[thing].Data.Biomes, tableRecords));
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {
-        return GetAverageAnimalCommonality(thing1).CompareTo(GetAverageAnimalCommonality(thing2));
+        return Cells[thing1].Data.AverageCommonality.CompareTo(Cells[thing2].Data.AverageCommonality);
     }
 
     private readonly record struct BiomeRecord(BiomeDef BiomeDef, float Commonality)

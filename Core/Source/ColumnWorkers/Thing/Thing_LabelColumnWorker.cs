@@ -7,41 +7,32 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
+public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike, string>
 {
     public Thing_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
-    private static readonly Func<ThingAlike, string> GetThingLabel =
-    FunctionExtensions.Memoized((ThingAlike thing) =>
+    protected override Cell GetCell(ThingAlike thing)
     {
         // Note to myself: Don't remove stuff label. It's important because
         // modded stuffs may have the same color as vanilla ones or other modded stuffs.
         // Replacing label with icon won't do, because ex. all of the leathers have the same
         // icon but of different color.
-        return thing.StuffDef == null
+        var text = thing.StuffDef == null
             ? thing.Def.LabelCap.RawText
             : $"{thing.StuffDef.LabelAsStuff.CapitalizeFirst()} {thing.Def.label}";
-    });
-    public override Widget? GetTableCellWidget(ThingAlike thing)
-    {
-        void openDefInfoDialog()
-        {
-            Draw.DefInfoDialog(thing.Def, thing.StuffDef);
-        }
-
-        return new HorizontalContainer(
-            [
-                new ThingIcon(thing.Def, thing.StuffDef).ToButtonGhostly(openDefInfoDialog),
-                new Label(GetThingLabel(thing)),
-            ],
-            Globals.GUI.Pad
-        )
+        var widget = new HorizontalContainer([
+            new ThingIcon(thing.Def, thing.StuffDef).ToButtonGhostly(()=>Draw.DefInfoDialog(thing.Def, thing.StuffDef)),
+            new Label(text),
+        ], Globals.GUI.Pad)
+        .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)
         .Tooltip(thing.Def.description);
+
+        return new(widget, text);
     }
     public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
-        yield return new(new Label("Label"), Make.StringFilter(GetThingLabel));
+        yield return new(new Label("Label"), Make.StringFilter<ThingAlike>(thing => Cells[thing].Data));
         yield return new(new Label("Type"), Make.OTMThingDefFilter(thing => thing.Def, tableRecords));
         var filterWidget_Researched = Make.BooleanFilter<ThingAlike>(
             thing => thing.Def.GetResearchProjectDef()?.All(researchProjectDef => researchProjectDef.IsFinished) is true or null
@@ -64,7 +55,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
     }
     public override int Compare(ThingAlike thing1, ThingAlike thing2)
     {
-        return GetThingLabel(thing1).CompareTo(GetThingLabel(thing2));
+        return Cells[thing1].Data.CompareTo(Cells[thing2].Data);
     }
 
     private sealed class StuffedVariantsDisplayModeToggleButton : FilterWidget<ThingAlike>

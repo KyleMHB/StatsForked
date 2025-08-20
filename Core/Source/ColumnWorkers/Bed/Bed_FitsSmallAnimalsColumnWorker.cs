@@ -2,7 +2,7 @@
 
 public sealed class Bed_FitsSmallAnimalsColumnWorker : BooleanColumnWorker<ThingAlike>
 {
-    public Bed_FitsSmallAnimalsColumnWorker(ColumnDef columndef) : base(columndef, false)
+    public Bed_FitsSmallAnimalsColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
     protected override bool GetValue(ThingAlike thing)

@@ -1,29 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
 namespace Stats.Widgets;
 
-internal sealed partial class ObjectTable<TObject>
+public sealed partial class ObjectTable<TObject>
 {
-    private Vector2 ScrollPosition;
-    private static readonly Color ColumnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
-    private static readonly Color PinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
-    private const float CellPadHor = 12f;
-    private const float CellPadVer = 4f;
-    private Vector2 ColumnsTabScrollPosition;
     public override void Draw(Rect rect, bool showSettingsMenu)
     {
-        // Why to do it like this?
-        //
-        // Filters can spam events (though not very often).
-        // On each filter's OnChange event we set ShouldApplyFilters flag
-        // to then apply filters only once.
-        if (ShouldApplyFilters && Event.current.type == EventType.Layout)
-        {
-            ApplyFilters();
-        }
-
         // Columns tab
         if (showSettingsMenu)
         {
@@ -43,6 +28,47 @@ internal sealed partial class ObjectTable<TObject>
                 MainTabWindow.BorderLineColor
             );
             rect.xMin += 1f;
+        }
+
+        if (Event.current.type == EventType.Layout)
+        {
+            if (DoFilter)
+            {
+                foreach (var row in UnpinnedRows)
+                {
+                    // Evaluate to "true", so the error would be noticeable.
+                    var rowIsValid = true;
+
+                    try
+                    {
+                        rowIsValid = ObjectMatchesFilters(row.Object, ActiveFilters);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e.Message);
+                    }
+
+                    row.IsVisible = rowIsValid;
+                }
+
+                DoFilter = false;
+                DoResize = true;
+            }
+
+            if (DoSort)
+            {
+                SortRows(PinnedRows);
+                SortRows(UnpinnedRows);
+
+                DoSort = false;
+            }
+
+            if (DoResize)
+            {
+                Resize();
+
+                DoResize = false;
+            }
         }
 
         // Probably could cache this.
@@ -72,11 +98,11 @@ internal sealed partial class ObjectTable<TObject>
             // Min. row width
             leftColumnsMinWidth + rightColumnsMinWidth,
             // Total rows height
-            HeaderRows.TotalHeight + PinnedRows.TotalHeight + FilteredBodyRows.TotalHeight
+            HeaderRowsHeight + PinnedRowsHeight + UnpinnedRowsHeight
         );
         var contentSizeVisible = new Vector2(
             // Will scroll vertically
-            FilteredBodyRows.TotalHeight > 0f
+            UnpinnedRowsHeight > 0f
                 ? rect.width - GenUI.ScrollBarWidth
                 : rect.width,
             // Will scroll horizontally
@@ -89,7 +115,7 @@ internal sealed partial class ObjectTable<TObject>
             Vector2.Max(contentSizeMax, contentSizeVisible)
         );
         // Adds empty space for more convenient vertical scrolling.
-        contentRectMax.height += Mathf.Min(contentSizeMax.y, contentSizeVisible.y) - HeaderRows.TotalHeight - PinnedRows.TotalHeight;
+        contentRectMax.height += Mathf.Min(contentSizeMax.y, contentSizeVisible.y) - HeaderRowsHeight - PinnedRowsHeight;
 
         Verse.Widgets.BeginScrollView(rect, ref ScrollPosition, contentRectMax, true);
 
@@ -127,7 +153,7 @@ internal sealed partial class ObjectTable<TObject>
     )
     {
         var origRect = rect;
-        var headersRect = rect.CutByY(HeaderRows.TotalHeight);
+        var headersRect = rect.CutByY(HeaderRowsHeight);
         var horScrollPosition = scrollPosition with { y = 0f };
 
         DrawRows(headersRect, HeaderRows, horScrollPosition, cellExtraWidth, drawPinnedColumns);
@@ -146,7 +172,7 @@ internal sealed partial class ObjectTable<TObject>
 
         if (PinnedRows.Count > 0)
         {
-            var pinnedBodyRowsRect = rect.CutByY(PinnedRows.TotalHeight);
+            var pinnedBodyRowsRect = rect.CutByY(PinnedRowsHeight);
 
             Verse.Widgets.DrawStrongHighlight(pinnedBodyRowsRect, PinnedRowsBGColor);
             DrawRows(pinnedBodyRowsRect, PinnedRows, horScrollPosition, cellExtraWidth, drawPinnedColumns);
@@ -158,7 +184,7 @@ internal sealed partial class ObjectTable<TObject>
             );
         }
 
-        DrawRows(rect, FilteredBodyRows, scrollPosition, cellExtraWidth, drawPinnedColumns);
+        DrawRows(rect, UnpinnedRows, scrollPosition, cellExtraWidth, drawPinnedColumns);
 
         DrawColumnSeparators(origRect, Columns, scrollPosition.x, cellExtraWidth, drawPinnedColumns);
     }
@@ -179,6 +205,11 @@ internal sealed partial class ObjectTable<TObject>
 
         foreach (var row in rows)
         {
+            if (row.IsVisible == false)
+            {
+                continue;
+            }
+
             if (rect.y >= yMax)
             {
                 break;
@@ -214,7 +245,7 @@ internal sealed partial class ObjectTable<TObject>
     // individual column's cell is huge. So we have to keep this.
     private static void DrawColumnSeparators(
         Rect rect,
-        Column[] columns,
+        List<ColumnWorker<TObject>> columns,
         float offsetX,
         float cellExtraWidth,
         bool drawPinnedColumns
@@ -258,6 +289,39 @@ internal sealed partial class ObjectTable<TObject>
             scrollPosition.x = Mathf.Max(scrollPosition.x + Event.current.delta.x * -1f, 0f);
 
             // Why no "Event.current.Use();"? Because the thing locks itself on mouse-up.
+        }
+    }
+    private void Resize()
+    {
+        // Resize
+        HeaderRowsHeight = 0f;
+        PinnedRowsHeight = 0f;
+        UnpinnedRowsHeight = 0f;
+
+        foreach (var column in Columns)
+        {
+            column.Width = 0f;
+        }
+
+        foreach (var row in HeaderRows)
+        {
+            row.Resize();
+            HeaderRowsHeight += row.Height;
+        }
+
+        foreach (var row in PinnedRows)
+        {
+            row.Resize();
+            PinnedRowsHeight += row.Height;
+        }
+
+        foreach (var row in UnpinnedRows)
+        {
+            if (row.IsVisible)
+            {
+                row.Resize();
+                UnpinnedRowsHeight += row.Height;
+            }
         }
     }
 }

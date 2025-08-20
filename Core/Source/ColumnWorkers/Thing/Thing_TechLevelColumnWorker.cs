@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Stats.Widgets;
@@ -7,24 +6,24 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Thing_TechLevelColumnWorker : ColumnWorker<ThingAlike>
+public sealed class Thing_TechLevelColumnWorker : ColumnWorker<ThingAlike, TechLevel>
 {
     public Thing_TechLevelColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
-    private static readonly Func<TechLevel, string> GetTechLevelString =
-    FunctionExtensions.Memoized((TechLevel techLevel) =>
+    protected override Cell GetCell(ThingAlike thing)
     {
-        return techLevel.ToStringHuman().CapitalizeFirst();
-    });
-    public override Widget? GetTableCellWidget(ThingAlike thing)
-    {
-        if (thing.Def.techLevel == TechLevel.Undefined)
+        var techLevel = thing.Def.techLevel;
+
+        if (thing.Def.techLevel != TechLevel.Undefined)
         {
-            return null;
+            var text = techLevel.ToStringHuman().CapitalizeFirst();
+            var widget = new Label(text).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+
+            return new(widget, techLevel);
         }
 
-        return new Label(GetTechLevelString(thing.Def.techLevel));
+        return new(null, TechLevel.Undefined);
     }
     public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {
@@ -33,7 +32,7 @@ public sealed class Thing_TechLevelColumnWorker : ColumnWorker<ThingAlike>
             .Distinct()
             .OrderBy(techLevel => techLevel)
             .Select<TechLevel, NTMFilterOption<TechLevel>>(
-                techLevel => new(techLevel, GetTechLevelString(techLevel))
+                techLevel => new(techLevel, techLevel.ToStringHuman().CapitalizeFirst())
             );
 
         yield return new(ColumnDef.Title, Make.OTMFilter((ThingAlike thing) => thing.Def.techLevel, options));

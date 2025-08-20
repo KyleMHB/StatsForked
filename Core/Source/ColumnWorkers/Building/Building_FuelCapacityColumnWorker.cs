@@ -1,11 +1,13 @@
-﻿namespace Stats;
+﻿using Verse;
+
+namespace Stats;
 
 public sealed class Building_FuelCapacityColumnWorker : ThingDefCountColumnWorker<ThingAlike>
 {
     public Building_FuelCapacityColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override ThingDefCount? GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
     {
         var refuelableCompProps = thing.Def.GetRefuelableCompProperties();
 
@@ -21,6 +23,6 @@ public sealed class Building_FuelCapacityColumnWorker : ThingDefCountColumnWorke
             }
         }
 
-        return null;
+        return new();
     }
 }

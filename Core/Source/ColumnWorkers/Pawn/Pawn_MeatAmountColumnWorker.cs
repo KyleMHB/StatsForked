@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using Verse;
 
 namespace Stats;
 
@@ -7,7 +8,7 @@ public sealed class Pawn_MeatAmountColumnWorker : ThingDefCountColumnWorker<Thin
     public Pawn_MeatAmountColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
-    protected override ThingDefCount? GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
     {
         var meatDef = thing.Def.race?.meatDef;
 
@@ -21,6 +22,6 @@ public sealed class Pawn_MeatAmountColumnWorker : ThingDefCountColumnWorker<Thin
             }
         }
 
-        return null;
+        return new();
     }
 }

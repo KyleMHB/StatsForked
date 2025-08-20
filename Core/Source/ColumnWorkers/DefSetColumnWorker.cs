@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Stats.Widgets;
@@ -7,24 +6,22 @@ using Verse;
 
 namespace Stats;
 
-public abstract class DefSetColumnWorker<TObject, TValue> : ColumnWorker<TObject> where TValue : Def
+public abstract class DefSetColumnWorker<TObject, TDef> : ColumnWorker<TObject, (HashSet<TDef> Defs, string? Text)> where TDef : Def
 {
-    protected DefSetColumnWorker(ColumnDef columnDef, bool cached = true) : base(columnDef, ColumnCellStyle.String)
+    protected DefSetColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
-        GetCachedValue = GetValue;
+    }
+    protected abstract HashSet<TDef> GetValue(TObject @object);
+    protected virtual string GetDefLabel(TDef def)
+    {
+        return def.LabelCap;
+    }
+    protected sealed override Cell GetCell(TObject @object)
+    {
+        var defs = GetValue(@object);
 
-        if (cached)
+        if (defs.Count > 0)
         {
-            GetCachedValue = GetCachedValue.Memoized();
-        }
-
-        GetDefLabels = FunctionExtensions.Memoized((HashSet<TValue> defs) =>
-        {
-            if (defs.Count == 0)
-            {
-                return "";
-            }
-
             var stringBuilder = new StringBuilder();
 
             foreach (var def in defs.OrderBy(GetDefLabel))
@@ -32,41 +29,28 @@ public abstract class DefSetColumnWorker<TObject, TValue> : ColumnWorker<TObject
                 stringBuilder.AppendInNewLine(GetDefLabel(def));
             }
 
-            return stringBuilder.ToString();
-        });
-    }
-    protected readonly Func<TObject, HashSet<TValue>> GetCachedValue;
-    protected abstract HashSet<TValue> GetValue(TObject @object);
-    private readonly Func<HashSet<TValue>, string> GetDefLabels;
-    protected virtual string GetDefLabel(TValue def)
-    {
-        return def.LabelCap;
-    }
-    public override Widget? GetTableCellWidget(TObject @object)
-    {
-        var defLabels = GetDefLabels(GetCachedValue(@object));
+            var text = stringBuilder.ToString();
+            var widget = new Label(text).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
 
-        if (defLabels.Length == 0)
-        {
-            return null;
+            return new(widget, (defs, text));
         }
 
-        return new Label(defLabels);
+        return new(null, ([], null));
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
+    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {
         var filterOptions = tableRecords
-            .SelectMany(GetCachedValue)
+            .SelectMany(record => Cells[record].Data.Defs)
             .Distinct()
             .OrderBy(GetDefLabel)
-            .Select<TValue, NTMFilterOption<TValue>>(
+            .Select<TDef, NTMFilterOption<TDef>>(
                 def => def == null ? new() : new(def, GetDefLabel(def))
             );
 
-        yield return new(ColumnDef.Title, Make.MTMFilter(GetCachedValue, filterOptions));
+        yield return new(ColumnDef.Title, Make.MTMFilter<TObject, TDef>(@object => Cells[@object].Data.Defs, filterOptions));
     }
     public sealed override int Compare(TObject object1, TObject object2)
     {
-        return GetDefLabels(GetCachedValue(object1)).CompareTo(GetDefLabels(GetCachedValue(object2)));
+        return Comparer<string?>.Default.Compare(Cells[object1].Data.Text, Cells[object2].Data.Text);
     }
 }

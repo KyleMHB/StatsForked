@@ -1,169 +1,31 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Verse;
 
 namespace Stats.Widgets;
 
-internal sealed partial class ObjectTable<TObject>
+public sealed partial class ObjectTable<TObject>
 {
-    private readonly RowCollection<Row> HeaderRows;
-    private readonly RowCollection<ObjectRow> PinnedRows;
-    private readonly RowCollection<ObjectRow> UnfilteredBodyRows;
-    private readonly RowCollection<ObjectRow> FilteredBodyRows;
     private void PinRow(ObjectRow row)
     {
         PinnedRows.Add(row);
-        SortRows(PinnedRows);
-        FilteredBodyRows.Remove(row);
-        UnfilteredBodyRows.Remove(row);
+        UnpinnedRows.Remove(row);
     }
     private void UnpinRow(ObjectRow row)
     {
         PinnedRows.Remove(row);
-
-        if (ActiveFilters.Count == 0 || ObjectMatchesFilters(row.Object, ActiveFilters))
-        {
-            FilteredBodyRows.Add(row);
-            SortRows(FilteredBodyRows);
-        }
-
-        UnfilteredBodyRows.Add(row);
-        SortRows(UnfilteredBodyRows);
-    }
-    private void RecalcRowsHeight()
-    {
-        UnfilteredBodyRows.RecalcHeight();
-        FilteredBodyRows.RecalcHeightFast();
-        PinnedRows.RecalcHeight();
+        UnpinnedRows.Add(row);
     }
 
-    private sealed class RowCollection<TRow> : ICollection<TRow>, IReadOnlyCollection<TRow> where TRow : Row
+    private abstract class Row
     {
-        private readonly List<TRow> Rows;
-        public int Count => Rows.Count;
-        public bool IsReadOnly => ((ICollection<TRow>)Rows).IsReadOnly;
-        public float TotalHeight { get; private set; }
-        public RowCollection(int capacity = 0)
-        {
-            Rows = new(capacity);
-        }
-        public RowCollection(RowCollection<TRow> rowCollection)
-        {
-            Rows = [.. rowCollection];
-            TotalHeight = rowCollection.TotalHeight;
-        }
-        public void Add(TRow row)
-        {
-            Rows.Add(row);
-            TotalHeight += row.Height;
-        }
-        public bool Remove(TRow row)
-        {
-            var rowWasRemoved = Rows.Remove(row);
-
-            if (rowWasRemoved)
-            {
-                TotalHeight -= row.Height;
-            }
-
-            return rowWasRemoved;
-        }
-        public void Clear()
-        {
-            Rows.Clear();
-            TotalHeight = 0f;
-        }
-        public bool Contains(TRow row)
-        {
-            return Rows.Contains(row);
-        }
-        public void CopyTo(TRow[] array, int arrayIndex)
-        {
-            Rows.CopyTo(array, arrayIndex);
-        }
-        public void ResetTo(RowCollection<TRow> rowCollection)
-        {
-            Rows.Clear();
-            Rows.AddRange(rowCollection);
-            TotalHeight = rowCollection.TotalHeight;
-        }
-        public void Sort(Comparison<TRow> comparison)
-        {
-            Rows.Sort(comparison);
-        }
-        public IEnumerator<TRow> GetEnumerator()
-        {
-            return Rows.GetEnumerator();
-        }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return Rows.GetEnumerator();
-        }
-        public void RecalcHeight()
-        {
-            TotalHeight = 0f;
-
-            foreach (var row in Rows)
-            {
-                row.RecalcHeight();
-                TotalHeight += row.Height;
-            }
-        }
-        public void RecalcHeightFast()
-        {
-            TotalHeight = 0f;
-
-            foreach (var row in Rows)
-            {
-                TotalHeight += row.Height;
-            }
-        }
-        public void RecalcColumnsWidths()
-        {
-            foreach (var row in Rows)
-            {
-                row.RecalcColumnsWidths();
-            }
-        }
-    }
-
-    private class Row
-    {
-        private readonly Column[] Columns;
-        private readonly Widget?[] Cells;
+        protected readonly List<ColumnWorker<TObject>> Columns;
         public float Height;
-        public Row(Column[] columns)
+        public bool IsVisible = true;
+        public Row(List<ColumnWorker<TObject>> columns)
         {
             Columns = columns;
-            Cells = new Widget?[columns.Length];
-        }
-        // Note to myself: Remember that table's row is not just simply a collection of cells.
-        // Add(cell) method wouldn't even be correct for it. You can't just put a cell into a row.
-        // Add(cell, columnIndex) is more correct version and is implemented below with an indexer.
-        public Widget? this[int i]
-        {
-            set
-            {
-                Cells[i] = value;
-
-                if (value != null)
-                {
-                    var cellSize = value.GetSize();
-                    var column = Columns[i];
-
-                    if (column.Width < cellSize.x)
-                    {
-                        column.Width = cellSize.x;
-                    }
-
-                    if (Height < cellSize.y)
-                    {
-                        Height = cellSize.y;
-                    }
-                }
-            }
         }
         public virtual bool Draw(
             Rect rect,
@@ -176,15 +38,12 @@ internal sealed partial class ObjectTable<TObject>
             var xMax = rect.width;
             rect.x = -offsetX;
 
-            for (int i = 0; i < Cells.Length; i++)
+            foreach (var column in Columns)
             {
                 if (rect.x >= xMax)
                 {
                     break;
                 }
-
-                // It seems that this is faster than attaching column props object to a cell.
-                var column = Columns[i];
 
                 if (column.IsPinned != drawPinnedColumns || column.IsVisible == false)
                 {
@@ -194,28 +53,13 @@ internal sealed partial class ObjectTable<TObject>
                 rect.width = column.Width + cellExtraWidth;
                 if (rect.xMax > 0f)
                 {
-                    var cell = Cells[i];
-
-                    if (cell != null)
+                    try
                     {
-                        var origTextAnchor = Text.Anchor;
-                        Text.Anchor = column.TextAnchor;
-
-                        try
-                        {
-                            // Basically, relative size extensions are not allowed on table cell widgets.
-                            // Saves us some CPU cycles and is pointless to do anyway.
-                            var cellSize = cell.GetSize();
-                            rect.height = cellSize.y;
-
-                            cell.Draw(rect, cellSize);
-                        }
-                        catch
-                        {
-                            // TODO: ?
-                        }
-
-                        Text.Anchor = origTextAnchor;
+                        GetCell(column)?.Draw(rect, Vector2.zero);
+                    }
+                    catch
+                    {
+                        // TODO: ?
                     }
                 }
 
@@ -224,18 +68,25 @@ internal sealed partial class ObjectTable<TObject>
 
             return false;
         }
-        public void RecalcHeight()
+        protected abstract Widget? GetCell(ColumnWorker<TObject> column);
+        public void Resize()
         {
             Height = 0f;
 
-            for (int i = 0; i < Cells.Length; i++)
+            foreach (var column in Columns)
             {
-                var column = Columns[i];
-                var cell = Cells[i];
+                if (column.IsVisible == false) continue;
 
-                if (cell != null && column.IsVisible)
+                var cell = GetCell(column);
+
+                if (cell != null)
                 {
                     var cellSize = cell.GetSize();
+
+                    if (column.Width < cellSize.x)
+                    {
+                        column.Width = cellSize.x;
+                    }
 
                     if (Height < cellSize.y)
                     {
@@ -244,30 +95,41 @@ internal sealed partial class ObjectTable<TObject>
                 }
             }
         }
-        public void RecalcColumnsWidths()
-        {
-            for (int i = 0; i < Columns.Length; i++)
-            {
-                var cell = Cells[i];
-
-                if (cell != null)
-                {
-                    var column = Columns[i];
-                    var cellSize = cell.GetSize();
-
-                    if (column.Width < cellSize.x)
-                    {
-                        column.Width = cellSize.x;
-                    }
-                }
-            }
-        }
     }
 
     private sealed class ColumnTitlesRow : Row
     {
-        public ColumnTitlesRow(Column[] columns) : base(columns)
+        public ColumnTitlesRow(List<ColumnWorker<TObject>> columns, ObjectTable<TObject> parent) : base(columns)
         {
+            foreach (var column in columns)
+            {
+                column.InitHeaderCell(parent);
+                column.OnVisibilityChange += () => parent.DoResize = true;
+                column.OnHeaderCellClick += () =>
+                {
+                    if (Event.current.control)
+                    {
+                        column.IsPinned = !column.IsPinned;
+                    }
+                    else
+                    {
+                        if (parent.SortColumn == column)
+                        {
+                            parent.SortDirection *= -1;
+                        }
+                        else
+                        {
+                            parent.SortColumn = column;
+                        }
+
+                        parent.DoSort = true;
+                    }
+                };
+            }
+        }
+        protected override Widget? GetCell(ColumnWorker<TObject> column)
+        {
+            return column.HeaderCell;
         }
         public override bool Draw(
             Rect rect,
@@ -287,9 +149,18 @@ internal sealed partial class ObjectTable<TObject>
     {
         public readonly TObject Object;
         private bool IsHovered = false;
-        public ObjectRow(Column[] columns, TObject @object) : base(columns)
+        public ObjectRow(List<ColumnWorker<TObject>> columns, TObject @object) : base(columns)
         {
             Object = @object;
+
+            foreach (var column in columns)
+            {
+                column.InitCell(@object);
+            }
+        }
+        protected override Widget? GetCell(ColumnWorker<TObject> column)
+        {
+            return column.GetCellWidget(Object);
         }
         public override bool Draw(
             Rect rect,

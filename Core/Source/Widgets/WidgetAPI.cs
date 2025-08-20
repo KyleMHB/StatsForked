@@ -232,6 +232,10 @@ public static class WidgetAPI
         Tooltip(this Widget widget, string text) =>
         new(widget, text);
 
+    public static TooltipWidgetExtension
+        Tooltip(this Widget widget, TipSignal tipSignal) =>
+        new(widget, tipSignal);
+
     public static ClickEventWidgetExtension
         OnClick(this Widget widget, Action action) =>
         new(widget, action);

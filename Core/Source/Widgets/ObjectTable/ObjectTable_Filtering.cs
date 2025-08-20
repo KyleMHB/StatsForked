@@ -1,104 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Verse;
 
 namespace Stats.Widgets;
 
-internal sealed partial class ObjectTable<TObject>
+public sealed partial class ObjectTable<TObject>
 {
-    private readonly HashSet<FilterWidget<TObject>> ActiveFilters;
-    private bool ShouldApplyFilters;
-    private TableFilterMode _FilterMode;
-    public override TableFilterMode FilterMode
-    {
-        get => _FilterMode;
-        set
-        {
-            if (value == _FilterMode)
-            {
-                return;
-            }
-
-            _FilterMode = value;
-            ObjectMatchesFilters = value switch
-            {
-                TableFilterMode.AND => ObjectFilterMatchFuncAND,
-                TableFilterMode.OR => ObjectFilterMatchFuncOR,
-                _ => throw new NotSupportedException("Unsupported table filtering mode.")
-            };
-
-            OnFilterModeChange?.Invoke(value);
-
-            if (ActiveFilters.Count > 1)
-            {
-                ShouldApplyFilters = true;
-            }
-        }
-    }
-    public override event Action<TableFilterMode>? OnFilterModeChange;
-    private ObjectFilterMatchFunc ObjectMatchesFilters;
-    private static readonly ObjectFilterMatchFunc ObjectFilterMatchFuncAND =
-        (@object, filters) => filters.All(filter => filter.Eval(@object));
-    private static readonly ObjectFilterMatchFunc ObjectFilterMatchFuncOR =
-        (@object, filters) => filters.Any(filter => filter.Eval(@object));
     private void HandleFilterChange(FilterWidget<TObject> filter)
     {
         if (filter.IsActive)
         {
             ActiveFilters.Add(filter);
-            ShouldApplyFilters = true;
         }
         else
         {
-            var filterWasRemoved = ActiveFilters.Remove(filter);
-
-            if (filterWasRemoved)
-            {
-                ShouldApplyFilters = true;
-            }
+            ActiveFilters.Remove(filter);
         }
     }
-    private void ApplyFilters()
-    {
-        ResetColumnsWidths();
+    //private void ApplyFilters()
+    //{
+    //    FilteredBodyRows.Clear();
 
-        if (ActiveFilters.Count == 0)
-        {
-            FilteredBodyRows.ResetTo(UnfilteredBodyRows);
-            RecalcColumnsWidths();
-        }
-        else
-        {
-            FilteredBodyRows.Clear();
+    //    foreach (var row in UnfilteredBodyRows)
+    //    {
+    //        // Evaluate to "true", so the error would be noticeable.
+    //        var rowIsValid = true;
 
-            foreach (var row in UnfilteredBodyRows)
-            {
-                // Evaluate to "true", so the error would be noticeable.
-                var rowIsValid = true;
+    //        try
+    //        {
+    //            rowIsValid = ObjectMatchesFilters(row.Object, ActiveFilters);
+    //        }
+    //        catch (Exception e)
+    //        {
+    //            Log.Error(e.Message);
+    //        }
 
-                try
-                {
-                    rowIsValid = ObjectMatchesFilters(row.Object, ActiveFilters);
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e.Message);
-                }
+    //        if (rowIsValid)
+    //        {
+    //            FilteredBodyRows.Add(row);
+    //        }
+    //    }
 
-                if (rowIsValid)
-                {
-                    FilteredBodyRows.Add(row);
-                    row.RecalcColumnsWidths();
-                }
-            }
-        }
-
-        ShouldApplyFilters = false;
-        ScrollPosition.y = 0f;
-        PinnedRows.RecalcColumnsWidths();
-        HeaderRows.RecalcColumnsWidths();
-    }
+    //    Reflow();
+    //    SortRows(FilteredBodyRows);
+    //}
     public override void ResetFilters()
     {
         if (ActiveFilters.Count == 0)
@@ -106,24 +50,12 @@ internal sealed partial class ObjectTable<TObject>
             return;
         }
 
-        // We have to copy the thing because resetting a filter will remove it from
-        // original collection, which will cause an exception, if we were to iterate
-        // over it at the same time. Hope compiler/JIT will optimize this.
-        foreach (var filter in ActiveFilters.ToArray())
+        foreach (var filter in Filters)
         {
-            filter.Reset();
-        }
-
-        if (ActiveFilters.Count == 0)
-        {
-            FilteredBodyRows.ResetTo(UnfilteredBodyRows);
-            ResetColumnsWidths();
-            RecalcColumnsWidths();
-            ScrollPosition.y = 0f;
-        }
-        else
-        {
-            ShouldApplyFilters = true;
+            if (filter.IsActive)
+            {
+                filter.Reset();
+            }
         }
     }
     public override void ToggleFilterMode()

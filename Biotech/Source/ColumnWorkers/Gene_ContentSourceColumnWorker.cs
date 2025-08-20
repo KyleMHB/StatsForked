@@ -4,7 +4,7 @@ namespace Stats.Compat.Biotech;
 
 public sealed class Gene_ContentSourceColumnWorker : ContentSourceColumnWorker<GeneDef>
 {
-    public Gene_ContentSourceColumnWorker(ColumnDef columnDef) : base(columnDef, false)
+    public Gene_ContentSourceColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
     protected override ModContentPack? GetModContentPack(GeneDef geneDef)

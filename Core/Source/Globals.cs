@@ -22,9 +22,19 @@ public static class Globals
     public static class Events
     {
         public static event Action? OnResearchCompleted;
+        public static event Action<Thing>? ThingSpawned;
+        public static event Action<Thing>? ThingDespawned;
         static Events()
         {
             Find.SignalManager.RegisterReceiver(new ResearchCompletedSignalReceiver());
+        }
+        internal static void NotifyThingSpawned(Thing thing)
+        {
+            ThingSpawned?.Invoke(thing);
+        }
+        internal static void NotifyThingDespawned(Thing thing)
+        {
+            ThingDespawned?.Invoke(thing);
         }
 
         private sealed class ResearchCompletedSignalReceiver : ISignalReceiver

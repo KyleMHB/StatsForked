@@ -2,11 +2,11 @@
 
 <Defs>
 
-    <Stats.ColumnDef>
+    <!-- <Stats.ColumnDef>
         <defName>Building_Recipe</defName>
         <label>recipe</label>
         <workerClass>Stats.Building_RecipeColumnWorker</workerClass>
-    </Stats.ColumnDef>
+    </Stats.ColumnDef> -->
 
     <Stats.ColumnDef>
         <defName>Building_Size</defName>
