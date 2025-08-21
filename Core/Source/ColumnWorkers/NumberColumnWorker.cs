@@ -24,8 +24,7 @@ public abstract class NumberColumnWorker<TObject> : ColumnWorker<TObject, decima
 
         if (value != 0m)
         {
-            Widget cellWidget = new Label(value.ToString(FormatString))
-            .TextAnchor(CellTextAnchor);
+            Widget cellWidget = new Label(value.ToString(FormatString));
 
             if (Icon != null)
             {

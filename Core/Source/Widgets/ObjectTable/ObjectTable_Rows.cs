@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using Verse;
 
@@ -20,17 +19,15 @@ public sealed partial class ObjectTable<TObject>
 
     private abstract class Row
     {
-        protected readonly List<ColumnWorker<TObject>> Columns;
         public float Height;
         public bool IsVisible = true;
-        public Row(List<ColumnWorker<TObject>> columns)
+        public Row()
         {
-            Columns = columns;
         }
         public virtual bool Draw(
             Rect rect,
+            List<ColumnWorker<TObject>> columns,
             float offsetX,
-            bool drawPinnedColumns,
             float cellExtraWidth,
             int index
         )
@@ -38,28 +35,38 @@ public sealed partial class ObjectTable<TObject>
             var xMax = rect.width;
             rect.x = -offsetX;
 
-            foreach (var column in Columns)
+            foreach (var column in columns)
             {
                 if (rect.x >= xMax)
                 {
                     break;
                 }
 
-                if (column.IsPinned != drawPinnedColumns || column.IsVisible == false)
-                {
-                    continue;
-                }
-
                 rect.width = column.Width + cellExtraWidth;
                 if (rect.xMax > 0f)
                 {
-                    try
+                    var cell = GetCell(column);
+
+                    if (cell != null)
                     {
-                        GetCell(column)?.Draw(rect, Vector2.zero);
-                    }
-                    catch
-                    {
-                        // TODO: ?
+                        try
+                        {
+                            var origTextAnchor = Text.Anchor;
+                            Text.Anchor = column.CellTextAnchor;
+
+                            // Basically, relative size extensions are not allowed on table cell widgets.
+                            // Saves us some CPU cycles and is pointless to do anyway.
+                            var cellSize = cell.GetSize();
+                            rect.height = cellSize.y;
+
+                            cell.Draw(rect, cellSize);
+
+                            Text.Anchor = origTextAnchor;
+                        }
+                        catch
+                        {
+                            // TODO: ?
+                        }
                     }
                 }
 
@@ -69,14 +76,12 @@ public sealed partial class ObjectTable<TObject>
             return false;
         }
         protected abstract Widget? GetCell(ColumnWorker<TObject> column);
-        public void Resize()
+        public void Resize(List<ColumnWorker<TObject>> columns)
         {
             Height = 0f;
 
-            foreach (var column in Columns)
+            foreach (var column in columns)
             {
-                if (column.IsVisible == false) continue;
-
                 var cell = GetCell(column);
 
                 if (cell != null)
@@ -99,17 +104,23 @@ public sealed partial class ObjectTable<TObject>
 
     private sealed class ColumnTitlesRow : Row
     {
-        public ColumnTitlesRow(List<ColumnWorker<TObject>> columns, ObjectTable<TObject> parent) : base(columns)
+        public ColumnTitlesRow(List<ColumnWorker<TObject>> columns, ObjectTable<TObject> parent) : base()
         {
             foreach (var column in columns)
             {
                 column.InitHeaderCell(parent);
-                column.OnVisibilityChange += () => parent.DoResize = true;
+                column.OnVisibilityChange += () =>
+                {
+                    parent.DoResize = true;
+                    parent.DoUpdateCachedColumns = true;
+                };
                 column.OnHeaderCellClick += () =>
                 {
                     if (Event.current.control)
                     {
                         column.IsPinned = !column.IsPinned;
+
+                        parent.DoUpdateCachedColumns = true;
                     }
                     else
                     {
@@ -133,15 +144,15 @@ public sealed partial class ObjectTable<TObject>
         }
         public override bool Draw(
             Rect rect,
+            List<ColumnWorker<TObject>> columns,
             float offsetX,
-            bool drawPinnedColumns,
             float cellExtraWidth,
             int index
         )
         {
             Verse.Widgets.DrawHighlight(rect);
 
-            return base.Draw(rect, offsetX, drawPinnedColumns, cellExtraWidth, index);
+            return base.Draw(rect, columns, offsetX, cellExtraWidth, index);
         }
     }
 
@@ -149,7 +160,7 @@ public sealed partial class ObjectTable<TObject>
     {
         public readonly TObject Object;
         private bool IsHovered = false;
-        public ObjectRow(List<ColumnWorker<TObject>> columns, TObject @object) : base(columns)
+        public ObjectRow(List<ColumnWorker<TObject>> columns, TObject @object) : base()
         {
             Object = @object;
 
@@ -164,8 +175,8 @@ public sealed partial class ObjectTable<TObject>
         }
         public override bool Draw(
             Rect rect,
+            List<ColumnWorker<TObject>> columns,
             float offsetX,
-            bool drawPinnedColumns,
             float cellExtraWidth,
             int index
         )
@@ -195,7 +206,7 @@ public sealed partial class ObjectTable<TObject>
                 }
             }
 
-            base.Draw(rect, offsetX, drawPinnedColumns, cellExtraWidth, index);
+            base.Draw(rect, columns, offsetX, cellExtraWidth, index);
 
             // This must go after cells to not interfere with their GUI events.
             if

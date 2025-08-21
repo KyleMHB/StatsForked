@@ -16,7 +16,7 @@ public sealed class Building_SizeColumnWorker : ColumnWorker<ThingAlike, IntVec2
         var size = thing.Def.size;
         // Because 4x5=5x4.
         size = new IntVec2(Math.Max(size.x, size.z), Math.Min(size.x, size.z));
-        var widget = new Label(size.ToStringCross());
+        var widget = new Label(size.ToStringCross()).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
 
         return new(widget, size);
     }

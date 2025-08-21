@@ -27,6 +27,9 @@ public abstract class ObjectTable
 public sealed partial class ObjectTable<TObject> : ObjectTable
 {
     private readonly List<ColumnWorker<TObject>> Columns;
+    private readonly List<ColumnWorker<TObject>> ColumnsVisible;
+    private readonly List<ColumnWorker<TObject>> ColumnsVisiblePinned;
+    private readonly List<ColumnWorker<TObject>> ColumnsVisibleUnpinned;
     private readonly Widget ColumnsTabWidget;
     internal ColumnWorker<TObject> SortColumn;
     internal int SortDirection = SortDirectionAscending;
@@ -53,6 +56,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
             };
 
             OnFilterModeChange?.Invoke(value);
+            DoFilter = true;
         }
     } = TableFilterMode.AND;
     public override event Action<TableFilterMode>? OnFilterModeChange;
@@ -80,17 +84,18 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
     private bool DoFilter;
     private bool DoSort = true;
     private bool DoResize = true;
-    public ObjectTable(List<ColumnWorker<TObject>> columns, IEnumerable<TObject> objects)
+    private bool DoUpdateCachedColumns = true;
+    public ObjectTable(List<ColumnWorker<TObject>> columns, IEnumerable<TObject> initialObjects)
     {
         columns[0].IsPinned = true;
 
         // TODO: Maybe the constructor should accept list from the beginning.
-        var objectArr = objects.ToArray();
+        var initialObjectsArray = initialObjects.ToArray();
 
         // Rows
-        var rows = new List<ObjectRow>(objectArr.Length);
+        var rows = new List<ObjectRow>(initialObjectsArray.Length);
 
-        foreach (var @object in objectArr)
+        foreach (var @object in initialObjectsArray)
         {
             var row = new ObjectRow(columns, @object);
 
@@ -133,7 +138,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
         for (int i = 0; i < columns.Count; i++)
         {
             var column = columns[i];
-            var objectProps = column.GetObjectProps(objectArr).ToList();
+            var objectProps = column.GetObjectProps(initialObjectsArray).ToList();
 
             if (objectProps.Count == 0) continue;
 
@@ -208,6 +213,9 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
 
         // Finalize
         Columns = columns;
+        ColumnsVisible = new(columns.Capacity);
+        ColumnsVisiblePinned = new(columns.Capacity);
+        ColumnsVisibleUnpinned = new(columns.Capacity);
         SortColumn = columns[0];
         HeaderRows = [new ColumnTitlesRow(columns, this)];
         UnpinnedRows = rows;

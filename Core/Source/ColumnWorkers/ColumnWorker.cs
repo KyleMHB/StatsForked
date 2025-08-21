@@ -27,9 +27,9 @@ public abstract class ColumnWorker<TObject>
     // This part of a column representation is governed by column worker,
     // because only column worker knows what type of data it encapsulates.
     private ColumnCellStyle CellStyle { get; }
-    protected readonly TextAnchor CellTextAnchor;
+    internal readonly TextAnchor CellTextAnchor;
     public ColumnDef ColumnDef { get; }
-    public event Action? OnChange;
+    //public event Action? OnChange;
     internal event Action? OnVisibilityChange;
     internal event Action? OnHeaderCellClick;
     protected ColumnWorker(ColumnDef columnDef, ColumnCellStyle cellStyle)
@@ -88,10 +88,10 @@ public abstract class ColumnWorker<TObject>
     //{
     //    OnChange?.Invoke();
     //}
-    //public virtual bool Refresh()
-    //{
-    //    return false;
-    //}
+    public virtual bool Refresh()
+    {
+        return false;
+    }
 
     public readonly record struct ObjectProp(Widget Label, FilterWidget<TObject> FilterWidget);
 }
@@ -106,6 +106,7 @@ public abstract class ColumnWorker<TObject, TData> : ColumnWorker<TObject>
     protected abstract Cell GetCell(TObject @object);
     internal sealed override void InitCell(TObject @object)
     {
+        // TODO: Handle possible exception
         Cells[@object] = GetCell(@object);
     }
     internal sealed override Widget? GetCellWidget(TObject @object)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Verse;
 
 namespace Stats.Widgets;
 
@@ -15,34 +16,33 @@ public sealed partial class ObjectTable<TObject>
         {
             ActiveFilters.Remove(filter);
         }
+
+        DoFilter = true;
     }
-    //private void ApplyFilters()
-    //{
-    //    FilteredBodyRows.Clear();
+    private void ApplyFilters()
+    {
+        foreach (var row in UnpinnedRows)
+        {
+            var rowIsValid = true;
 
-    //    foreach (var row in UnfilteredBodyRows)
-    //    {
-    //        // Evaluate to "true", so the error would be noticeable.
-    //        var rowIsValid = true;
+            if (ActiveFilters.Count > 0)
+            {
+                try
+                {
+                    rowIsValid = ObjectMatchesFilters(row.Object, ActiveFilters);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e.Message);
+                }
+            }
 
-    //        try
-    //        {
-    //            rowIsValid = ObjectMatchesFilters(row.Object, ActiveFilters);
-    //        }
-    //        catch (Exception e)
-    //        {
-    //            Log.Error(e.Message);
-    //        }
+            row.IsVisible = rowIsValid;
+        }
 
-    //        if (rowIsValid)
-    //        {
-    //            FilteredBodyRows.Add(row);
-    //        }
-    //    }
-
-    //    Reflow();
-    //    SortRows(FilteredBodyRows);
-    //}
+        DoFilter = false;
+        DoResize = true;
+    }
     public override void ResetFilters()
     {
         if (ActiveFilters.Count == 0)

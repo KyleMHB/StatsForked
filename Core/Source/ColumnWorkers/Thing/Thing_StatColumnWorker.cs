@@ -55,7 +55,6 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike, decimal>
                     };
 
                     Widget widget = new Label(cellText)
-                    .TextAnchor(CellTextAnchor)
                     .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
 
                     if (tooltip != null)
@@ -77,5 +76,19 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike, decimal>
     public sealed override int Compare(ThingAlike thing1, ThingAlike thing2)
     {
         return Cells[thing1].Data.CompareTo(Cells[thing2].Data);
+    }
+    public override bool Refresh()
+    {
+        var result = false;
+
+        foreach (var (thing, cell) in Cells)
+        {
+            if (thing.Thing != null)
+            {
+                // TODO
+            }
+        }
+
+        return result;
     }
 }

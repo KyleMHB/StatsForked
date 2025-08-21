@@ -22,10 +22,14 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike, string>
             ? thing.Def.LabelCap.RawText
             : $"{thing.StuffDef.LabelAsStuff.CapitalizeFirst()} {thing.Def.label}";
         var widget = new HorizontalContainer([
-            new ThingIcon(thing.Def, thing.StuffDef).ToButtonGhostly(()=>Draw.DefInfoDialog(thing.Def, thing.StuffDef)),
-            new Label(text),
+            new ThingIcon(thing.Def, thing.StuffDef)
+            .SizeAbs(Text.LineHeight + (ObjectTable.CellPadVer - 2f) * 2f)
+            .PaddingAbs(2f)
+            .ToButtonGhostly(()=>Draw.DefInfoDialog(thing.Def, thing.StuffDef)),
+            new Label(text).PaddingAbs(0f, ObjectTable.CellPadVer),
         ], Globals.GUI.Pad)
-        .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)
+        .PaddingAbs(ObjectTable.CellPadHor, 0f)
+        //.PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)
         .Tooltip(thing.Def.description);
 
         return new(widget, text);

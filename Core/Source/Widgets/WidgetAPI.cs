@@ -283,6 +283,10 @@ public static class WidgetAPI
         return widget;
     }
 
+    public static HoverForegroundWidgetExtension
+        HoverForeground(this Widget widget, Texture2D texture) =>
+        new(widget, texture, UnityEngine.Color.white);
+
     internal static T Ref<T>(this T widget, out T outRef) where T : Widget
     {
         return outRef = widget;
@@ -298,7 +302,7 @@ public static class WidgetAPI
     public static Widget
         ToButtonGhostly(this Widget widget, Action clickEventHandler) =>
             widget
-            .HoverBackground(TexUI.HighlightTex)
+            .HoverForeground(TexUI.HighlightTex)
             .OnClick(clickEventHandler);
 
     public static Widget

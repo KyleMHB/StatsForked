@@ -32,66 +32,46 @@ public sealed partial class ObjectTable<TObject>
 
         if (Event.current.type == EventType.Layout)
         {
-            if (DoFilter)
+            var shouldUpdate = false;
+
+            foreach (var column in Columns)
             {
-                foreach (var row in UnpinnedRows)
-                {
-                    // Evaluate to "true", so the error would be noticeable.
-                    var rowIsValid = true;
-
-                    try
-                    {
-                        rowIsValid = ObjectMatchesFilters(row.Object, ActiveFilters);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e.Message);
-                    }
-
-                    row.IsVisible = rowIsValid;
-                }
-
-                DoFilter = false;
-                DoResize = true;
+                shouldUpdate |= column.Refresh();
             }
 
-            if (DoSort)
+            if (DoFilter || shouldUpdate)
             {
-                SortRows(PinnedRows);
-                SortRows(UnpinnedRows);
+                ApplyFilters();
+            }
 
-                DoSort = false;
+            if (DoSort || shouldUpdate)
+            {
+                SortRows();
+            }
+
+            if (DoUpdateCachedColumns)
+            {
+                UpdateCachedColumns();
             }
 
             if (DoResize)
             {
                 Resize();
-
-                DoResize = false;
             }
         }
 
         // Probably could cache this.
         var leftColumnsMinWidth = 0f;
         var rightColumnsMinWidth = 0f;
-        var rightColumnsCount = 0;
 
-        foreach (var column in Columns)
+        foreach (var column in ColumnsVisiblePinned)
         {
-            if (column.IsVisible == false)
-            {
-                continue;
-            }
+            leftColumnsMinWidth += column.Width;
+        }
 
-            if (column.IsPinned)
-            {
-                leftColumnsMinWidth += column.Width;
-            }
-            else
-            {
-                rightColumnsMinWidth += column.Width;
-                rightColumnsCount++;
-            }
+        foreach (var column in ColumnsVisibleUnpinned)
+        {
+            rightColumnsMinWidth += column.Width;
         }
 
         var contentSizeMax = new Vector2(
@@ -126,7 +106,7 @@ public sealed partial class ObjectTable<TObject>
         {
             var leftPartRect = contentRectVisible.CutByX(leftColumnsMinWidth);
 
-            DrawPart(leftPartRect, ScrollPosition with { x = 0f }, 0f, true);
+            DrawPart(leftPartRect, ColumnsVisiblePinned, ScrollPosition with { x = 0f }, 0f);
 
             // Separator line
             Widgets.Draw.VerticalLine(
@@ -139,24 +119,29 @@ public sealed partial class ObjectTable<TObject>
 
         // Right part
         var rightPartFreeSpace = contentRectVisible.width - rightColumnsMinWidth;
-        var cellExtraWidth = Mathf.Max(rightPartFreeSpace / rightColumnsCount, 0f);
+        var cellExtraWidth = Mathf.Max(rightPartFreeSpace / ColumnsVisibleUnpinned.Count, 0f);
 
-        DrawPart(contentRectVisible, ScrollPosition, cellExtraWidth, false);
+        DrawPart(contentRectVisible, ColumnsVisibleUnpinned, ScrollPosition, cellExtraWidth);
 
         Verse.Widgets.EndScrollView();
     }
     private void DrawPart(
         Rect rect,
+        List<ColumnWorker<TObject>> columns,
         Vector2 scrollPosition,
-        float cellExtraWidth,
-        bool drawPinnedColumns
+        float cellExtraWidth
     )
     {
+        if (columns.Count == 0)
+        {
+            return;
+        }
+
         var origRect = rect;
         var headersRect = rect.CutByY(HeaderRowsHeight);
         var horScrollPosition = scrollPosition with { y = 0f };
 
-        DrawRows(headersRect, HeaderRows, horScrollPosition, cellExtraWidth, drawPinnedColumns);
+        DrawRows(headersRect, HeaderRows, columns, horScrollPosition, cellExtraWidth);
         Verse.Widgets.DrawLineHorizontal(
             headersRect.x,
             headersRect.yMax - 1f,
@@ -164,7 +149,7 @@ public sealed partial class ObjectTable<TObject>
             MainTabWindow.BorderLineColor
         );
 
-        if (drawPinnedColumns == false)
+        if (columns == ColumnsVisibleUnpinned)
         {
             // Register mouse-drag only below headers row to not interfere with filter inputs.
             DoHorScroll(rect, ref ScrollPosition);
@@ -175,7 +160,7 @@ public sealed partial class ObjectTable<TObject>
             var pinnedBodyRowsRect = rect.CutByY(PinnedRowsHeight);
 
             Verse.Widgets.DrawStrongHighlight(pinnedBodyRowsRect, PinnedRowsBGColor);
-            DrawRows(pinnedBodyRowsRect, PinnedRows, horScrollPosition, cellExtraWidth, drawPinnedColumns);
+            DrawRows(pinnedBodyRowsRect, PinnedRows, columns, horScrollPosition, cellExtraWidth);
             Verse.Widgets.DrawLineHorizontal(
                 pinnedBodyRowsRect.x,
                 pinnedBodyRowsRect.yMax - 1f,
@@ -184,16 +169,16 @@ public sealed partial class ObjectTable<TObject>
             );
         }
 
-        DrawRows(rect, UnpinnedRows, scrollPosition, cellExtraWidth, drawPinnedColumns);
+        DrawRows(rect, UnpinnedRows, columns, scrollPosition, cellExtraWidth);
 
-        DrawColumnSeparators(origRect, Columns, scrollPosition.x, cellExtraWidth, drawPinnedColumns);
+        DrawColumnSeparators(origRect, columns, scrollPosition.x, cellExtraWidth);
     }
     private void DrawRows(
         Rect rect,
         IReadOnlyCollection<Row> rows,
+        List<ColumnWorker<TObject>> columns,
         Vector2 scrollPosition,
-        float cellExtraWidth,
-        bool drawPinnedColumns
+        float cellExtraWidth
     )
     {
         GUI.BeginClip(rect);
@@ -218,7 +203,7 @@ public sealed partial class ObjectTable<TObject>
             rect.height = row.Height;
             if (rect.yMax > 0f)
             {
-                var rowWasClicked = row.Draw(rect, scrollPosition.x, drawPinnedColumns, cellExtraWidth, i);
+                var rowWasClicked = row.Draw(rect, columns, scrollPosition.x, cellExtraWidth, i);
 
                 if (rowWasClicked && row is ObjectRow objectRow)
                 {
@@ -247,8 +232,7 @@ public sealed partial class ObjectTable<TObject>
         Rect rect,
         List<ColumnWorker<TObject>> columns,
         float offsetX,
-        float cellExtraWidth,
-        bool drawPinnedColumns
+        float cellExtraWidth
     )
     {
         if (Event.current.type != EventType.Repaint)
@@ -260,11 +244,6 @@ public sealed partial class ObjectTable<TObject>
 
         foreach (var column in columns)
         {
-            if (column.IsPinned != drawPinnedColumns || column.IsVisible == false)
-            {
-                continue;
-            }
-
             x += column.Width + cellExtraWidth;
             if (x >= rect.width)
             {
@@ -305,13 +284,13 @@ public sealed partial class ObjectTable<TObject>
 
         foreach (var row in HeaderRows)
         {
-            row.Resize();
+            row.Resize(ColumnsVisible);
             HeaderRowsHeight += row.Height;
         }
 
         foreach (var row in PinnedRows)
         {
-            row.Resize();
+            row.Resize(ColumnsVisible);
             PinnedRowsHeight += row.Height;
         }
 
@@ -319,9 +298,11 @@ public sealed partial class ObjectTable<TObject>
         {
             if (row.IsVisible)
             {
-                row.Resize();
+                row.Resize(ColumnsVisible);
                 UnpinnedRowsHeight += row.Height;
             }
         }
+
+        DoResize = false;
     }
 }
