@@ -48,6 +48,7 @@
         <defName>Pawn_ComfyTemperatureMin</defName>
         <title><Temp_Cold/></title>
         <stat>ComfyTemperatureMin</stat>
+        <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -55,6 +56,7 @@
         <defName>Pawn_ComfyTemperatureMax</defName>
         <title><Temp_Hot/></title>
         <stat>ComfyTemperatureMax</stat>
+        <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -106,6 +108,13 @@
         <description>Possible weapons that this creature can spawn with.</description>
         <title><RangedWeapon/></title>
         <workerClass>Stats.Pawn_WeaponsColumnWorker</workerClass>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Pawn_Name</defName>
+        <label>pawn</label>
+        <description>pawn</description>
+        <workerClass>Stats.Pawn_NameColumnWorker</workerClass>
     </Stats.ColumnDef>
 
 </Defs>

@@ -489,4 +489,19 @@
         </columns>
     </Stats.TableDef>
 
+    <Stats.TableDef>
+        <defName>Pawns</defName>
+        <label>Pawns</label>
+        <iconPath>StatsMod/UI/Icons/PawnHumanlike</iconPath>
+        <workerClass>Stats.PawnsTableWorker</workerClass>
+        <columns>
+            <li>Pawn_Name</li>
+            <li>Pawn_ComfyTemperatureMin</li>
+            <li>Pawn_ComfyTemperatureMax</li>
+            <li>Thing_Flammability</li>
+            <li>Thing_Mass</li>
+            <li>Thing_MarketValue</li>
+        </columns>
+    </Stats.TableDef>
+
 </Defs>

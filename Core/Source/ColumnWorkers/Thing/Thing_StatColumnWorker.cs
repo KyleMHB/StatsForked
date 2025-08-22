@@ -79,6 +79,11 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike, decimal>
     }
     public override bool Refresh()
     {
+        if (Stat.immutable)
+        {
+            return false;
+        }
+
         var result = false;
 
         foreach (var (thing, cell) in Cells)
