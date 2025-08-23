@@ -24,7 +24,7 @@ public abstract class ThingDefColumnWorker<TObject, TDef> : DefColumnWorker<TObj
             return new(widget, def);
         }
 
-        return new();
+        return new(null, null);
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {

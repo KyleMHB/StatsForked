@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
@@ -32,43 +31,41 @@ public sealed partial class ObjectTable<TObject>
 
         if (Event.current.type == EventType.Layout)
         {
-            var shouldUpdate = false;
-
-            foreach (var column in Columns)
-            {
-                shouldUpdate |= column.Refresh();
-            }
-
-            if (DoFilter || shouldUpdate)
-            {
-                ApplyFilters();
-            }
-
-            if (DoSort || shouldUpdate)
-            {
-                SortRows();
-            }
-
             if (DoUpdateCachedColumns)
             {
                 UpdateCachedColumns();
             }
 
-            if (DoResize)
+            if (DoRefreshColumns)
+            {
+                RefreshColumns();
+            }
+            else if (DoFilter)
+            {
+                ApplyFilters();
+            }
+            else if (DoSort)
+            {
+                SortRows();
+            }
+            else if (DoResize)
             {
                 Resize();
             }
+            else
+            {
+                DoRefreshColumns = true;
+            }
         }
 
-        // Probably could cache this.
+        // Probably could cache these.
         var leftColumnsMinWidth = 0f;
-        var rightColumnsMinWidth = 0f;
-
         foreach (var column in ColumnsVisiblePinned)
         {
             leftColumnsMinWidth += column.Width;
         }
 
+        var rightColumnsMinWidth = 0f;
         foreach (var column in ColumnsVisibleUnpinned)
         {
             rightColumnsMinWidth += column.Width;
@@ -133,9 +130,7 @@ public sealed partial class ObjectTable<TObject>
     )
     {
         if (columns.Count == 0)
-        {
             return;
-        }
 
         var origRect = rect;
         var headersRect = rect.CutByY(HeaderRowsHeight);
@@ -191,16 +186,13 @@ public sealed partial class ObjectTable<TObject>
         foreach (var row in rows)
         {
             if (row.IsVisible == false)
-            {
                 continue;
-            }
 
             if (rect.y >= yMax)
-            {
                 break;
-            }
 
             rect.height = row.Height;
+
             if (rect.yMax > 0f)
             {
                 var rowWasClicked = row.Draw(rect, columns, scrollPosition.x, cellExtraWidth, i);
@@ -236,19 +228,16 @@ public sealed partial class ObjectTable<TObject>
     )
     {
         if (Event.current.type != EventType.Repaint)
-        {
             return;
-        }
 
         var x = -offsetX;
 
         foreach (var column in columns)
         {
             x += column.Width + cellExtraWidth;
+
             if (x >= rect.width)
-            {
                 break;
-            }
 
             if (x > 0f)
             {
@@ -272,34 +261,29 @@ public sealed partial class ObjectTable<TObject>
     }
     private void Resize()
     {
-        // Resize
-        HeaderRowsHeight = 0f;
-        PinnedRowsHeight = 0f;
-        UnpinnedRowsHeight = 0f;
-
         foreach (var column in Columns)
         {
             column.Width = 0f;
         }
 
+        HeaderRowsHeight = 0f;
         foreach (var row in HeaderRows)
         {
-            row.Resize(ColumnsVisible);
-            HeaderRowsHeight += row.Height;
+            HeaderRowsHeight += row.Resize(ColumnsVisible);
         }
 
+        PinnedRowsHeight = 0f;
         foreach (var row in PinnedRows)
         {
-            row.Resize(ColumnsVisible);
-            PinnedRowsHeight += row.Height;
+            PinnedRowsHeight += row.Resize(ColumnsVisible);
         }
 
+        UnpinnedRowsHeight = 0f;
         foreach (var row in UnpinnedRows)
         {
             if (row.IsVisible)
             {
-                row.Resize(ColumnsVisible);
-                UnpinnedRowsHeight += row.Height;
+                UnpinnedRowsHeight += row.Resize(ColumnsVisible);
             }
         }
 

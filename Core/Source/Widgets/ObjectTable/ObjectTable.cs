@@ -42,10 +42,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
         get => field;
         set
         {
-            if (value == field)
-            {
-                return;
-            }
+            if (value == field) return;
 
             field = value;
             ObjectMatchesFilters = value switch
@@ -85,6 +82,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
     private bool DoSort = true;
     private bool DoResize = true;
     private bool DoUpdateCachedColumns = true;
+    private bool DoRefreshColumns;
     public ObjectTable(List<ColumnWorker<TObject>> columns, IEnumerable<TObject> initialObjects)
     {
         columns[0].IsPinned = true;

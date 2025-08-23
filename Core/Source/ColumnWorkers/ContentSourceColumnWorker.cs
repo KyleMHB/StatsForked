@@ -25,7 +25,7 @@ public abstract class ContentSourceColumnWorker<TObject> : ColumnWorker<TObject,
             return new(widget, mod);
         }
 
-        return new();
+        return new(null, null);
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {

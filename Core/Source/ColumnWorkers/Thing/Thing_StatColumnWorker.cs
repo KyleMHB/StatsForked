@@ -67,7 +67,7 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike, decimal>
             }
         }
 
-        return new();
+        return new(null, 0m);
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> _)
     {

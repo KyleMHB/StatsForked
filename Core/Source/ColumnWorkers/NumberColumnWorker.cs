@@ -41,7 +41,7 @@ public abstract class NumberColumnWorker<TObject> : ColumnWorker<TObject, decima
             return new(cellWidget.PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer), value);
         }
 
-        return new();
+        return new(null, 0m);
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> _)
     {

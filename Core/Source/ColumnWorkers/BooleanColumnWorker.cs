@@ -21,7 +21,7 @@ public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject, bool>
             return new(widget, true);
         }
 
-        return new();
+        return new(null, false);
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> _)
     {

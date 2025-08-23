@@ -38,11 +38,10 @@ public sealed partial class ObjectTable<TObject>
             foreach (var column in columns)
             {
                 if (rect.x >= xMax)
-                {
                     break;
-                }
 
                 rect.width = column.Width + cellExtraWidth;
+
                 if (rect.xMax > 0f)
                 {
                     var cell = GetCell(column);
@@ -76,7 +75,7 @@ public sealed partial class ObjectTable<TObject>
             return false;
         }
         protected abstract Widget? GetCell(ColumnWorker<TObject> column);
-        public void Resize(List<ColumnWorker<TObject>> columns)
+        public float Resize(List<ColumnWorker<TObject>> columns)
         {
             Height = 0f;
 
@@ -99,6 +98,8 @@ public sealed partial class ObjectTable<TObject>
                     }
                 }
             }
+
+            return Height;
         }
     }
 

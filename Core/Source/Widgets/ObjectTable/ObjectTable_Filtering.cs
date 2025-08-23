@@ -46,9 +46,7 @@ public sealed partial class ObjectTable<TObject>
     public override void ResetFilters()
     {
         if (ActiveFilters.Count == 0)
-        {
             return;
-        }
 
         foreach (var filter in Filters)
         {

@@ -27,4 +27,22 @@ public sealed partial class ObjectTable<TObject>
 
         DoUpdateCachedColumns = false;
     }
+    private void RefreshColumns()
+    {
+        var anyColumnWasUpdated = false;
+
+        foreach (var column in Columns)
+        {
+            anyColumnWasUpdated |= column.Refresh();
+        }
+
+        if (anyColumnWasUpdated)
+        {
+            DoFilter = true;
+            DoSort = true;
+            DoResize = true;
+        }
+
+        DoRefreshColumns = false;
+    }
 }

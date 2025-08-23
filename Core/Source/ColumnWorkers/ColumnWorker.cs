@@ -29,7 +29,6 @@ public abstract class ColumnWorker<TObject>
     private ColumnCellStyle CellStyle { get; }
     internal readonly TextAnchor CellTextAnchor;
     public ColumnDef ColumnDef { get; }
-    //public event Action? OnChange;
     internal event Action? OnVisibilityChange;
     internal event Action? OnHeaderCellClick;
     protected ColumnWorker(ColumnDef columnDef, ColumnCellStyle cellStyle)
@@ -55,7 +54,8 @@ public abstract class ColumnWorker<TObject>
         .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)
         .Background(rect =>
         {
-            if (parent.SortColumn != this) return;
+            if (parent.SortColumn != this)
+                return;
 
             if (parent.SortDirection == ObjectTable<TObject>.SortDirectionAscending)
             {
@@ -84,10 +84,6 @@ public abstract class ColumnWorker<TObject>
         IsVisible = !IsVisible;
         OnVisibilityChange?.Invoke();
     }
-    //protected void NotifyChanged()
-    //{
-    //    OnChange?.Invoke();
-    //}
     public virtual bool Refresh()
     {
         return false;
@@ -114,7 +110,7 @@ public abstract class ColumnWorker<TObject, TData> : ColumnWorker<TObject>
         return Cells[@object].Widget;
     }
 
-    protected readonly record struct Cell(Widget? Widget, TData Data);
+    protected record class Cell(Widget? Widget, TData Data);
 }
 
 public enum ColumnCellStyle

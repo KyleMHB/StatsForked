@@ -42,7 +42,7 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike, string
             }
         }
 
-        return new();
+        return new(null, null);
     }
     public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
     {

@@ -28,7 +28,7 @@ public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject,
             return new(widget, thingDefCount);
         }
 
-        return new();
+        return new(null, (null, 0m));
     }
     public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {

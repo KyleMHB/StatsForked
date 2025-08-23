@@ -21,7 +21,7 @@ public abstract class DefColumnWorker<TObject, TDef> : ColumnWorker<TObject, TDe
             return new(widget, def);
         }
 
-        return new();
+        return new(null, null);
     }
     public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
     {
