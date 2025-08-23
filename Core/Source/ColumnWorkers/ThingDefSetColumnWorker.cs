@@ -11,7 +11,7 @@ public abstract class ThingDefSetColumnWorker<TObject, TDef> : ColumnWorker<TObj
     {
     }
     protected abstract HashSet<TDef> GetValue(TObject @object);
-    protected sealed override Cell GetCell(TObject @object)
+    protected sealed override DataCell GetCell(TObject @object)
     {
         var defs = GetValue(@object);
 

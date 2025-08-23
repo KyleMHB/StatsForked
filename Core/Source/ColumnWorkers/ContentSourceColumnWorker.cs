@@ -12,7 +12,7 @@ public abstract class ContentSourceColumnWorker<TObject> : ColumnWorker<TObject,
     {
     }
     protected abstract ModContentPack? GetModContentPack(TObject @object);
-    protected sealed override Cell GetCell(TObject @object)
+    protected sealed override DataCell GetCell(TObject @object)
     {
         var mod = GetModContentPack(@object);
 

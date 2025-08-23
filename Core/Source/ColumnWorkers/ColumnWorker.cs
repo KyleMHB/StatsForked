@@ -19,7 +19,6 @@ public abstract class ColumnWorker<TObject>
     internal float Width;
     internal bool IsVisible = true;
     internal readonly TipSignal Tooltip;
-    internal Widget HeaderCell;
     private static readonly Color SortIndicatorColor = Color.yellow.ToTransparent(0.3f);
     private const float SortIndicatorHeight = 5f;
     // Why is this not in ColumnDef?
@@ -36,21 +35,22 @@ public abstract class ColumnWorker<TObject>
         ColumnDef = columnDef;
         CellStyle = cellStyle;
         CellTextAnchor = (TextAnchor)cellStyle;
-        HeaderCell = columnDef.Title;
         Tooltip = $"<i>{ColumnDef.LabelCap}</i>\n\n{ColumnDef.Description}";
     }
-    internal void InitHeaderCell(ObjectTable<TObject> parent)
+    internal Widget InitHeaderCell(ObjectTable<TObject> parent)
     {
+        var columnTitle = ColumnDef.Title;
+
         if (CellStyle == ColumnCellStyle.Number)
         {
-            HeaderCell = new SingleElementContainer(HeaderCell.PaddingRel(1f, 0f, 0f, 0f));
+            columnTitle = new SingleElementContainer(columnTitle.PaddingRel(1f, 0f, 0f, 0f));
         }
         else if (CellStyle == ColumnCellStyle.Boolean)
         {
-            HeaderCell = new SingleElementContainer(HeaderCell.PaddingRel(0.5f, 0f));
+            columnTitle = new SingleElementContainer(columnTitle.PaddingRel(0.5f, 0f));
         }
 
-        HeaderCell = HeaderCell
+        var cellWidget = columnTitle
         .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)
         .Background(rect =>
         {
@@ -71,9 +71,10 @@ public abstract class ColumnWorker<TObject>
         })
         .ToButtonGhostly(() => OnHeaderCellClick?.Invoke())
         .Tooltip(Tooltip);
+
+        return cellWidget;
     }
-    internal abstract void InitCell(TObject @object);
-    internal abstract Widget? GetCellWidget(TObject @object);
+    internal abstract Widget InitCell(TObject @object);
     // We pass IEnumerable<TObject> to this method, mainly so that if a column worker returns
     // one/many-to-many filter widget, it can generate a superset of all possible distinct
     // options for it.
@@ -94,23 +95,38 @@ public abstract class ColumnWorker<TObject>
 
 public abstract class ColumnWorker<TObject, TData> : ColumnWorker<TObject>
 {
-    protected readonly Dictionary<TObject, Cell> Cells;
+    protected readonly Dictionary<TObject, DataCell> Cells;
     protected ColumnWorker(ColumnDef columnDef, ColumnCellStyle cellStyle) : base(columnDef, cellStyle)
     {
-        Cells = new Dictionary<TObject, Cell>(250);
+        Cells = new Dictionary<TObject, DataCell>(250);
     }
-    protected abstract Cell GetCell(TObject @object);
-    internal sealed override void InitCell(TObject @object)
+    protected abstract DataCell GetCell(TObject @object);
+    internal sealed override Widget InitCell(TObject @object)
     {
         // TODO: Handle possible exception
-        Cells[@object] = GetCell(@object);
-    }
-    internal sealed override Widget? GetCellWidget(TObject @object)
-    {
-        return Cells[@object].Widget;
+        return Cells[@object] = GetCell(@object);
     }
 
-    protected record class Cell(Widget? Widget, TData Data);
+    protected sealed class DataCell : Widget
+    {
+        public TData Data { get; set; }
+        // TODO: Resize on set
+        public Widget? Widget { get; set; }
+        public DataCell(Widget? widget, TData data)
+        {
+            Widget = widget;
+            // TODO: Assign parent
+            Data = data;
+        }
+        protected override Vector2 CalcSize()
+        {
+            return Widget?.GetSize() ?? Vector2.zero;
+        }
+        public override void Draw(Rect rect, Vector2 containerSize)
+        {
+            Widget?.Draw(rect, containerSize);
+        }
+    }
 }
 
 public enum ColumnCellStyle

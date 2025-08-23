@@ -10,7 +10,7 @@ public abstract class DefColumnWorker<TObject, TDef> : ColumnWorker<TObject, TDe
     {
     }
     protected abstract TDef GetValue(TObject @object);
-    protected override Cell GetCell(TObject @object)
+    protected override DataCell GetCell(TObject @object)
     {
         var def = GetValue(@object);
 

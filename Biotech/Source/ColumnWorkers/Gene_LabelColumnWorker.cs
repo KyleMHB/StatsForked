@@ -9,7 +9,7 @@ public sealed class Gene_LabelColumnWorker : ColumnWorker<GeneDef, GeneDef>
     public Gene_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
-    protected override Cell GetCell(GeneDef geneDef)
+    protected override DataCell GetCell(GeneDef geneDef)
     {
         var widget = new HorizontalContainer([
             new Icon(geneDef.Icon).ToButtonGhostly(() => Draw.DefInfoDialog(geneDef)),

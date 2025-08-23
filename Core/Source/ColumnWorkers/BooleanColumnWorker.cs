@@ -9,7 +9,7 @@ public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject, bool>
     {
     }
     protected abstract bool GetValue(TObject @object);
-    protected sealed override Cell GetCell(TObject @object)
+    protected sealed override DataCell GetCell(TObject @object)
     {
         var value = GetValue(@object);
 

@@ -10,7 +10,7 @@ public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject,
     {
     }
     protected abstract (ThingDef? Def, decimal Count) GetValue(TObject @object);
-    protected sealed override Cell GetCell(TObject @object)
+    protected sealed override DataCell GetCell(TObject @object)
     {
         var thingDefCount = GetValue(@object);
         var (thingDef, count) = thingDefCount;

@@ -9,7 +9,7 @@ public sealed class Pawn_NameColumnWorker : ColumnWorker<ThingAlike, string>
     public Pawn_NameColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
-    protected override Cell GetCell(ThingAlike thing)
+    protected override DataCell GetCell(ThingAlike thing)
     {
         if (thing.Thing is Pawn pawn)
         {

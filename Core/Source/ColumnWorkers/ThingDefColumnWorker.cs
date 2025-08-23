@@ -9,7 +9,7 @@ public abstract class ThingDefColumnWorker<TObject, TDef> : DefColumnWorker<TObj
     protected ThingDefColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
-    protected sealed override Cell GetCell(TObject @object)
+    protected sealed override DataCell GetCell(TObject @object)
     {
         var def = GetValue(@object);
 

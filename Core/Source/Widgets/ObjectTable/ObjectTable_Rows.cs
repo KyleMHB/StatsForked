@@ -9,18 +9,25 @@ public sealed partial class ObjectTable<TObject>
     private void PinRow(ObjectRow row)
     {
         PinnedRows.Add(row);
+        PinnedRowsHeight += row.Height;
         UnpinnedRows.Remove(row);
+        UnpinnedRowsHeight -= row.Height;
+        SortRows(PinnedRows);
     }
     private void UnpinRow(ObjectRow row)
     {
         PinnedRows.Remove(row);
+        PinnedRowsHeight -= row.Height;
         UnpinnedRows.Add(row);
+        row.IsVisible = ObjectMatchesFilters(row.Object, ActiveFilters);
+        SortRows(UnpinnedRows);
     }
 
     private abstract class Row
     {
         public float Height;
         public bool IsVisible = true;
+        protected abstract Dictionary<ColumnWorker<TObject>, Widget> Cells { get; }
         public Row()
         {
         }
@@ -44,28 +51,25 @@ public sealed partial class ObjectTable<TObject>
 
                 if (rect.xMax > 0f)
                 {
-                    var cell = GetCell(column);
+                    var cell = Cells[column];
 
-                    if (cell != null)
+                    try
                     {
-                        try
-                        {
-                            var origTextAnchor = Text.Anchor;
-                            Text.Anchor = column.CellTextAnchor;
+                        var origTextAnchor = Text.Anchor;
+                        Text.Anchor = column.CellTextAnchor;
 
-                            // Basically, relative size extensions are not allowed on table cell widgets.
-                            // Saves us some CPU cycles and is pointless to do anyway.
-                            var cellSize = cell.GetSize();
-                            rect.height = cellSize.y;
+                        // Basically, relative size extensions are not allowed on table cell widgets.
+                        // Saves us some CPU cycles and is pointless to do anyway.
+                        var cellSize = cell.GetSize();
+                        rect.height = cellSize.y;
 
-                            cell.Draw(rect, cellSize);
+                        cell.Draw(rect, cellSize);
 
-                            Text.Anchor = origTextAnchor;
-                        }
-                        catch
-                        {
-                            // TODO: ?
-                        }
+                        Text.Anchor = origTextAnchor;
+                    }
+                    catch
+                    {
+                        // TODO: ?
                     }
                 }
 
@@ -74,42 +78,20 @@ public sealed partial class ObjectTable<TObject>
 
             return false;
         }
-        protected abstract Widget? GetCell(ColumnWorker<TObject> column);
-        public float Resize(List<ColumnWorker<TObject>> columns)
-        {
-            Height = 0f;
-
-            foreach (var column in columns)
-            {
-                var cell = GetCell(column);
-
-                if (cell != null)
-                {
-                    var cellSize = cell.GetSize();
-
-                    if (column.Width < cellSize.x)
-                    {
-                        column.Width = cellSize.x;
-                    }
-
-                    if (Height < cellSize.y)
-                    {
-                        Height = cellSize.y;
-                    }
-                }
-            }
-
-            return Height;
-        }
+        public abstract float Resize(List<ColumnWorker<TObject>> columns);
     }
 
     private sealed class ColumnTitlesRow : Row
     {
+        protected override Dictionary<ColumnWorker<TObject>, Widget> Cells { get; }
         public ColumnTitlesRow(List<ColumnWorker<TObject>> columns, ObjectTable<TObject> parent) : base()
         {
+            var cells = new Dictionary<ColumnWorker<TObject>, Widget>(columns.Count);
+
             foreach (var column in columns)
             {
-                column.InitHeaderCell(parent);
+                var cell = column.InitHeaderCell(parent);
+
                 column.OnVisibilityChange += () =>
                 {
                     parent.DoResize = true;
@@ -137,11 +119,11 @@ public sealed partial class ObjectTable<TObject>
                         parent.DoSort = true;
                     }
                 };
+
+                cells[column] = cell;
             }
-        }
-        protected override Widget? GetCell(ColumnWorker<TObject> column)
-        {
-            return column.HeaderCell;
+
+            Cells = cells;
         }
         public override bool Draw(
             Rect rect,
@@ -155,24 +137,43 @@ public sealed partial class ObjectTable<TObject>
 
             return base.Draw(rect, columns, offsetX, cellExtraWidth, index);
         }
+        public override float Resize(List<ColumnWorker<TObject>> columns)
+        {
+            Height = 0f;
+
+            foreach (var column in columns)
+            {
+                var cell = Cells[column];
+                var cellSize = cell.GetSize();
+
+                column.Width = cellSize.x;
+
+                if (Height < cellSize.y)
+                {
+                    Height = cellSize.y;
+                }
+            }
+
+            return Height;
+        }
     }
 
     private sealed class ObjectRow : Row
     {
+        protected override Dictionary<ColumnWorker<TObject>, Widget> Cells { get; }
         public readonly TObject Object;
         private bool IsHovered = false;
         public ObjectRow(List<ColumnWorker<TObject>> columns, TObject @object) : base()
         {
-            Object = @object;
+            var cells = new Dictionary<ColumnWorker<TObject>, Widget>(columns.Count);
 
             foreach (var column in columns)
             {
-                column.InitCell(@object);
+                cells[column] = column.InitCell(@object);
             }
-        }
-        protected override Widget? GetCell(ColumnWorker<TObject> column)
-        {
-            return column.GetCellWidget(Object);
+
+            Cells = cells;
+            Object = @object;
         }
         public override bool Draw(
             Rect rect,
@@ -184,13 +185,13 @@ public sealed partial class ObjectTable<TObject>
         {
             var mouseIsOverRect = Mouse.IsOver(rect);
 
+            if (mouseIsOverRect)
+            {
+                IsHovered = true;
+            }
+
             if (Event.current.type == EventType.Repaint)
             {
-                if (mouseIsOverRect)
-                {
-                    IsHovered = true;
-                }
-
                 // IsHovered may be true even if mouse is not over rect.
                 if (IsHovered)
                 {
@@ -200,11 +201,11 @@ public sealed partial class ObjectTable<TObject>
                 {
                     Verse.Widgets.DrawLightHighlight(rect);
                 }
+            }
 
-                if (mouseIsOverRect == false)
-                {
-                    IsHovered = false;
-                }
+            if (mouseIsOverRect == false)
+            {
+                IsHovered = false;
             }
 
             base.Draw(rect, columns, offsetX, cellExtraWidth, index);
@@ -224,6 +225,28 @@ public sealed partial class ObjectTable<TObject>
             }
 
             return false;
+        }
+        public override float Resize(List<ColumnWorker<TObject>> columns)
+        {
+            Height = 0f;
+
+            foreach (var column in columns)
+            {
+                var cell = Cells[column];
+                var cellSize = cell.GetSize();
+
+                if (column.Width < cellSize.x)
+                {
+                    column.Width = cellSize.x;
+                }
+
+                if (Height < cellSize.y)
+                {
+                    Height = cellSize.y;
+                }
+            }
+
+            return Height;
         }
     }
 }

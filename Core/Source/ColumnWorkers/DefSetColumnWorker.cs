@@ -16,7 +16,7 @@ public abstract class DefSetColumnWorker<TObject, TDef> : ColumnWorker<TObject, 
     {
         return def.LabelCap;
     }
-    protected sealed override Cell GetCell(TObject @object)
+    protected sealed override DataCell GetCell(TObject @object)
     {
         var defs = GetValue(@object);
 

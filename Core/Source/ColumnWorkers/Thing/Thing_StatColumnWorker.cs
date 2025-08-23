@@ -21,7 +21,7 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike, decimal>
     {
         return stat.Worker.GetStatDrawEntryLabel(stat, value, _ToStringNumberSense, statRequest);
     }
-    protected override Cell GetCell(ThingAlike thing)
+    protected override DataCell GetCell(ThingAlike thing)
     {
         var statWorker = Stat.Worker;
         var statRequest = thing.Thing != null

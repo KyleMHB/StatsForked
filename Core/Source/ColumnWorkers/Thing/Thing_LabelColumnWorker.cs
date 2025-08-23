@@ -12,7 +12,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike, string>
     public Thing_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
-    protected override Cell GetCell(ThingAlike thing)
+    protected override DataCell GetCell(ThingAlike thing)
     {
         // Note to myself: Don't remove stuff label. It's important because
         // modded stuffs may have the same color as vanilla ones or other modded stuffs.

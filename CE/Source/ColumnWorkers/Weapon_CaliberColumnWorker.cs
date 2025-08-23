@@ -10,7 +10,7 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike, string
     public Weapon_CaliberColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
-    protected override Cell GetCell(ThingAlike thing)
+    protected override DataCell GetCell(ThingAlike thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
         var statRequest = StatRequest.For(thingDef, null);

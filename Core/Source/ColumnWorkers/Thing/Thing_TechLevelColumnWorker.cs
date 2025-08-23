@@ -11,7 +11,7 @@ public sealed class Thing_TechLevelColumnWorker : ColumnWorker<ThingAlike, TechL
     public Thing_TechLevelColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
     {
     }
-    protected override Cell GetCell(ThingAlike thing)
+    protected override DataCell GetCell(ThingAlike thing)
     {
         var techLevel = thing.Def.techLevel;
 

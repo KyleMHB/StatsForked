@@ -11,7 +11,7 @@ public sealed class Building_SizeColumnWorker : ColumnWorker<ThingAlike, IntVec2
     public Building_SizeColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.Number)
     {
     }
-    protected override Cell GetCell(ThingAlike thing)
+    protected override DataCell GetCell(ThingAlike thing)
     {
         var size = thing.Def.size;
         // Because 4x5=5x4.

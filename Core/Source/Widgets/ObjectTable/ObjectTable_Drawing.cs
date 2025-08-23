@@ -8,54 +8,14 @@ public sealed partial class ObjectTable<TObject>
 {
     public override void Draw(Rect rect, bool showSettingsMenu)
     {
-        // Columns tab
         if (showSettingsMenu)
         {
-            var columnsTabWidgetSize = ColumnsTabWidget.GetSize(rect.size);
-            var columnsTabRect = rect.CutByX(columnsTabWidgetSize.x + GenUI.ScrollBarWidth);
-            var columnsTabRectMax = new Rect(Vector2.zero, columnsTabWidgetSize);
-            // Adds empty space for more convenient vertical scrolling.
-            columnsTabRectMax.height += columnsTabRect.height;
-
-            Verse.Widgets.BeginScrollView(columnsTabRect, ref ColumnsTabScrollPosition, columnsTabRectMax, true);
-            ColumnsTabWidget.DrawIn(columnsTabRectMax);
-            Verse.Widgets.EndScrollView();
-            Widgets.Draw.VerticalLine(
-                columnsTabRect.xMax,
-                rect.y,
-                rect.height,
-                MainTabWindow.BorderLineColor
-            );
-            rect.xMin += 1f;
+            DrawColumnsTab(ref rect);
         }
 
         if (Event.current.type == EventType.Layout)
         {
-            if (DoUpdateCachedColumns)
-            {
-                UpdateCachedColumns();
-            }
-
-            if (DoRefreshColumns)
-            {
-                RefreshColumns();
-            }
-            else if (DoFilter)
-            {
-                ApplyFilters();
-            }
-            else if (DoSort)
-            {
-                SortRows();
-            }
-            else if (DoResize)
-            {
-                Resize();
-            }
-            else
-            {
-                DoRefreshColumns = true;
-            }
+            DoTasks();
         }
 
         // Probably could cache these.
@@ -132,7 +92,7 @@ public sealed partial class ObjectTable<TObject>
         if (columns.Count == 0)
             return;
 
-        var origRect = rect;
+        //var origRect = rect;
         var headersRect = rect.CutByY(HeaderRowsHeight);
         var horScrollPosition = scrollPosition with { y = 0f };
 
@@ -166,7 +126,7 @@ public sealed partial class ObjectTable<TObject>
 
         DrawRows(rect, UnpinnedRows, columns, scrollPosition, cellExtraWidth);
 
-        DrawColumnSeparators(origRect, columns, scrollPosition.x, cellExtraWidth);
+        //DrawColumnSeparators(origRect, columns, scrollPosition.x, cellExtraWidth);
     }
     private void DrawRows(
         Rect rect,
@@ -220,35 +180,54 @@ public sealed partial class ObjectTable<TObject>
     }
     // The performance impact of instead drawing a vertical border for each
     // individual column's cell is huge. So we have to keep this.
-    private static void DrawColumnSeparators(
-        Rect rect,
-        List<ColumnWorker<TObject>> columns,
-        float offsetX,
-        float cellExtraWidth
-    )
+    //private static void DrawColumnSeparators(
+    //    Rect rect,
+    //    List<ColumnWorker<TObject>> columns,
+    //    float offsetX,
+    //    float cellExtraWidth
+    //)
+    //{
+    //    if (Event.current.type != EventType.Repaint)
+    //        return;
+
+    //    var x = -offsetX;
+
+    //    foreach (var column in columns)
+    //    {
+    //        x += column.Width + cellExtraWidth;
+
+    //        if (x >= rect.width)
+    //            break;
+
+    //        if (x > 0f)
+    //        {
+    //            Widgets.Draw.VerticalLine(
+    //                x + rect.x - 1f,
+    //                rect.y,
+    //                rect.height,
+    //                ColumnSeparatorLineColor
+    //            );
+    //        }
+    //    }
+    //}
+    private void DrawColumnsTab(ref Rect rect)
     {
-        if (Event.current.type != EventType.Repaint)
-            return;
+        var columnsTabWidgetSize = ColumnsTabWidget.GetSize(rect.size);
+        var columnsTabRect = rect.CutByX(columnsTabWidgetSize.x + GenUI.ScrollBarWidth);
+        var columnsTabRectMax = new Rect(Vector2.zero, columnsTabWidgetSize);
+        // Adds empty space for more convenient vertical scrolling.
+        columnsTabRectMax.height += columnsTabRect.height;
 
-        var x = -offsetX;
-
-        foreach (var column in columns)
-        {
-            x += column.Width + cellExtraWidth;
-
-            if (x >= rect.width)
-                break;
-
-            if (x > 0f)
-            {
-                Widgets.Draw.VerticalLine(
-                    x + rect.x - 1f,
-                    rect.y,
-                    rect.height,
-                    ColumnSeparatorLineColor
-                );
-            }
-        }
+        Verse.Widgets.BeginScrollView(columnsTabRect, ref ColumnsTabScrollPosition, columnsTabRectMax, true);
+        ColumnsTabWidget.DrawIn(columnsTabRectMax);
+        Verse.Widgets.EndScrollView();
+        Widgets.Draw.VerticalLine(
+            columnsTabRect.xMax,
+            rect.y,
+            rect.height,
+            MainTabWindow.BorderLineColor
+        );
+        rect.xMin += 1f;
     }
     private static void DoHorScroll(Rect rect, ref Vector2 scrollPosition)
     {
@@ -259,13 +238,36 @@ public sealed partial class ObjectTable<TObject>
             // Why no "Event.current.Use();"? Because the thing locks itself on mouse-up.
         }
     }
-    private void Resize()
+    private void DoTasks()
     {
-        foreach (var column in Columns)
+        if (DoUpdateCachedColumns)
         {
-            column.Width = 0f;
+            UpdateCachedColumns();
         }
 
+        if (DoRefreshColumns)
+        {
+            RefreshColumns();
+        }
+        else if (DoFilter)
+        {
+            ApplyFilters();
+        }
+        else if (DoSort)
+        {
+            SortRows();
+        }
+        else if (DoResize)
+        {
+            Resize();
+        }
+        else
+        {
+            DoRefreshColumns = true;
+        }
+    }
+    private void Resize()
+    {
         HeaderRowsHeight = 0f;
         foreach (var row in HeaderRows)
         {

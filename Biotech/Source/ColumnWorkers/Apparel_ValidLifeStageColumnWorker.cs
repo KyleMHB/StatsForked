@@ -36,7 +36,7 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike
     {
         return lifeStage.ToString().Translate().CapitalizeFirst().RawText;
     });
-    protected override Cell GetCell(ThingAlike thing)
+    protected override DataCell GetCell(ThingAlike thing)
     {
         var lifeStages = GetValidLifeStages(thing.Def);
 

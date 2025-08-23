@@ -18,7 +18,7 @@ public abstract class NumberColumnWorker<TObject> : ColumnWorker<TObject, decima
         FormatString = formatString;
     }
     protected abstract decimal GetValue(TObject @object);
-    protected sealed override Cell GetCell(TObject @object)
+    protected sealed override DataCell GetCell(TObject @object)
     {
         var value = GetValue(@object);
 

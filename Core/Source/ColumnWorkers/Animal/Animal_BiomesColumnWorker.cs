@@ -39,7 +39,7 @@ public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike, (HashSe
 
         return biomeRecords;
     });
-    protected override Cell GetCell(ThingAlike thing)
+    protected override DataCell GetCell(ThingAlike thing)
     {
         var biomeRecords = GetBiomeRecords(thing.Def);
 
