@@ -1,46 +1,66 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Stats.Widgets;
 using Verse;
 
 namespace Stats;
 
-public abstract class ThingDefSetColumnWorker<TObject, TDef> : ColumnWorker<TObject, HashSet<TDef>> where TDef : ThingDef
+public abstract class ThingDefSetColumnWorker<TObject, TDef> : ColumnWorker<TObject> where TDef : ThingDef
 {
-    protected ThingDefSetColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
+    protected ThingDefSetColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
     {
     }
     protected abstract HashSet<TDef> GetValue(TObject @object);
-    protected sealed override DataCell GetCell(TObject @object)
+    public sealed override ObjectTable.Cell GetCell(TObject @object)
     {
         var defs = GetValue(@object);
 
-        if (defs.Count > 0)
+        return new Cell(defs);
+    }
+    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> contextObjects)
+    {
+        var options = contextObjects
+            .SelectMany(GetValue)
+            .Distinct()
+            .OrderBy(thingDef => thingDef.label)
+            .Select<TDef, NTMFilterOption<TDef>>(
+                thingDef => thingDef == null
+                    ? new()
+                    : new(thingDef, thingDef.LabelCap, new ThingIcon(thingDef))
+            );
+
+        yield return new(ColumnDef.Title, new MTMFilter<Cell, TDef>(cell => cell.Defs, options, this));
+    }
+
+    private sealed class Cell : ObjectTable.WidgetCell
+    {
+        protected override Widget? Widget { get; set; }
+        public override event Action? OnChange;
+        public HashSet<TDef> Defs { get; }
+        public Cell(HashSet<TDef> defs)
         {
-            var icons = new List<Widget>(defs.Count);
+            Defs = defs;
 
-            foreach (var thingDef in defs.OrderBy(thingDef => thingDef.label))
+            if (defs.Count > 0)
             {
-                var icon = new ThingIcon(thingDef)
-                .ToButtonGhostly(() => Draw.DefInfoDialog(thingDef))
-                .Tooltip(thingDef.LabelCap);
+                var icons = new List<Widget>(defs.Count);
 
-                icons.Add(icon);
+                foreach (var thingDef in defs.OrderBy(thingDef => thingDef.label))
+                {
+                    var icon = new ThingIcon(thingDef)
+                    .ToButtonGhostly(() => Widgets.Draw.DefInfoDialog(thingDef))
+                    .Tooltip(thingDef.LabelCap);
+
+                    icons.Add(icon);
+                }
+
+                Widget = new HorizontalContainer(icons, Globals.GUI.PadSm).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
             }
-
-            var widget = new HorizontalContainer(icons, Globals.GUI.PadSm).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
-
-            return new(widget, defs);
         }
-
-        return new(null, []);
-    }
-    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
-    {
-        yield return new(ColumnDef.Title, Make.MTMThingDefFilter(@object => Cells[@object].Data, tableRecords));
-    }
-    public sealed override int Compare(TObject object1, TObject object2)
-    {
-        return Cells[object1].Data.Count.CompareTo(Cells[object2].Data.Count);
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return Defs.Count.CompareTo(((Cell)cell).Defs.Count);
+        }
     }
 }

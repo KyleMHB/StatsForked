@@ -1,28 +1,65 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using Stats.Widgets;
 using Verse;
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike, string?>
+public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Weapon_CaliberColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
+    public Weapon_CaliberColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
     {
     }
-    protected override DataCell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(ThingAlike thing)
     {
-        var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
-        var statRequest = StatRequest.For(thingDef, null);
-
+        return new Cell(thing, this);
+    }
+    private string? GetCaliberName(StatRequest statRequest)
+    {
         if (StatDefOf.Caliber.Worker.ShouldShowFor(statRequest))
         {
-            var caliberName = StatDefOf.Caliber.Worker.GetStatDrawEntryLabel(
+            return StatDefOf.Caliber.Worker.GetStatDrawEntryLabel(
                 StatDefOf.Caliber,
                 StatDefOf.Caliber.Worker.GetValue(statRequest),
                 ToStringNumberSense.Absolute,
                 statRequest
             );
+        }
+
+        return null;
+    }
+    private string? GetCaliberName(ThingAlike thing)
+    {
+        var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
+        var statRequest = StatRequest.For(thingDef, null);
+
+        return GetCaliberName(statRequest);
+    }
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> contextObjects)
+    {
+        var options = contextObjects
+            .Select(GetCaliberName)
+            .Distinct()
+            .OrderBy(option => option)
+            .Select<string?, NTMFilterOption<string?>>(
+                option => option == null ? new() : new(option, option.ToString())
+            );
+
+        yield return new(ColumnDef.Title, new OTMFilter<Cell, string?>(cell => cell.Value, options, this));
+    }
+
+    private sealed class Cell : ObjectTable.WidgetCell
+    {
+        protected override Widget? Widget { get; set; }
+        public override event Action? OnChange;
+        public string? Value { get; }
+        public Cell(ThingAlike thing, Weapon_CaliberColumnWorker column)
+        {
+            var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
+            var statRequest = StatRequest.For(thingDef, null);
+            var caliberName = column.GetCaliberName(statRequest);
 
             if (caliberName?.Length > 0)
             {
@@ -38,18 +75,13 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike, string
                     widget = widget.Tooltip(tooltip);
                 }
 
-                return new(widget, caliberName);
+                Widget = widget;
+                Value = caliberName;
             }
         }
-
-        return new(null, null);
-    }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
-    {
-        yield return new(ColumnDef.Title, Make.OTMFilter(thing => Cells[thing].Data, tableRecords));
-    }
-    public override int Compare(ThingAlike thing1, ThingAlike thing2)
-    {
-        return Comparer<string?>.Default.Compare(Cells[thing1].Data, Cells[thing2].Data);
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return Comparer<string?>.Default.Compare(Value, ((Cell)cell).Value);
+        }
     }
 }

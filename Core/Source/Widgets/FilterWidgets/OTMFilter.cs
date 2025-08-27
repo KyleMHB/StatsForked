@@ -3,11 +3,12 @@ using System.Collections.Generic;
 
 namespace Stats.Widgets;
 
-internal sealed class OTMFilter<TObject, TOption> : NTMFilter<TObject, TOption, TOption>
+public sealed class OTMFilter<TCell, TOption> : NTMFilter<TCell, TOption, TOption> where TCell : ObjectTable.Cell
 {
     public OTMFilter(
-        Func<TObject, TOption> objectValueFunc,
+        Func<TCell, TOption> objectValueFunc,
         IEnumerable<NTMFilterOption<TOption>> options,
+        ColumnWorker column,
         string? label = null
     ) : base(
         objectValueFunc,
@@ -17,6 +18,7 @@ internal sealed class OTMFilter<TObject, TOption> : NTMFilter<TObject, TOption, 
             Operators.IsNotIn.Instance
         ],
         Operators.IsIn.Instance,
+        column,
         label
     )
     {

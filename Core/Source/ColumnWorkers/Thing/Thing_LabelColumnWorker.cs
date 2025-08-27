@@ -7,39 +7,35 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike, string>
+// Note to myself: Don't remove stuff label. It's important because
+// modded stuffs may have the same color as vanilla ones or other modded stuffs.
+// Replacing label with icon won't do, because ex. all of the leathers have the same
+// icon but of different color.
+public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Thing_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
+    public Thing_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
     {
     }
-    protected override DataCell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(ThingAlike thing)
     {
-        // Note to myself: Don't remove stuff label. It's important because
-        // modded stuffs may have the same color as vanilla ones or other modded stuffs.
-        // Replacing label with icon won't do, because ex. all of the leathers have the same
-        // icon but of different color.
-        var text = thing.StuffDef == null
-            ? thing.Def.LabelCap.RawText
-            : $"{thing.StuffDef.LabelAsStuff.CapitalizeFirst()} {thing.Def.label}";
-        var widget = new HorizontalContainer([
-            new ThingIcon(thing.Def, thing.StuffDef)
-            .SizeAbs(Text.LineHeight + (ObjectTable.CellPadVer - 2f) * 2f)
-            .PaddingAbs(2f)
-            .ToButtonGhostly(()=>Draw.DefInfoDialog(thing.Def, thing.StuffDef)),
-            new Label(text).PaddingAbs(0f, ObjectTable.CellPadVer),
-        ], Globals.GUI.Pad)
-        .PaddingAbs(ObjectTable.CellPadHor, 0f)
-        //.PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)
-        .Tooltip(thing.Def.description);
+        return new Cell(thing);
+    }
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> contextObjects)
+    {
+        yield return new(new Label("Label"), new StringFilter<Cell>(cell => cell.Text, this));
 
-        return new(widget, text);
-    }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
-    {
-        yield return new(new Label("Label"), Make.StringFilter<ThingAlike>(thing => Cells[thing].Data));
-        yield return new(new Label("Type"), Make.OTMThingDefFilter(thing => thing.Def, tableRecords));
-        var filterWidget_Researched = Make.BooleanFilter<ThingAlike>(
-            thing => thing.Def.GetResearchProjectDef()?.All(researchProjectDef => researchProjectDef.IsFinished) is true or null
+        var typeFilterOptions = contextObjects
+            .Select(@object => @object.Def)
+            .Distinct()
+            .OrderBy(thingDef => thingDef.label)
+            .Select<ThingDef, NTMFilterOption<ThingDef>>(
+                thingDef => new(thingDef, thingDef.LabelCap, new ThingIcon(thingDef))
+            );
+        yield return new(new Label("Type"), new OTMFilter<Cell, ThingDef>(cell => cell.Def, typeFilterOptions, this));
+
+        var filterWidget_Researched = new BooleanFilter<Cell>(
+            thing => thing.Def.GetResearchProjectDef()?.All(researchProjectDef => researchProjectDef.IsFinished) is true or null,
+            this
         );
         Globals.Events.OnResearchCompleted += () =>
         {
@@ -50,27 +46,74 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike, string>
         };
         yield return new(new Label("Researched"), filterWidget_Researched);
 
-        if (tableRecords.Any(record => record.StuffDef != null))
+        if (contextObjects.Any(@object => @object.StuffDef != null))
         {
-            var stuffFilter = Make.OTMThingDefFilter(thing => thing.StuffDef, tableRecords);
-            yield return new(new Label("Distinct"), new StuffedVariantsDisplayModeToggleButton());
+            yield return new(new Label("Distinct"), new StuffedVariantsDisplayModeToggleButton(this));
+
+            var stuffFilterOptions = contextObjects
+                .Select(@object => @object.StuffDef)
+                .Distinct()
+                .OrderBy(thingDef => thingDef?.label)
+                .Select<ThingDef?, NTMFilterOption<ThingDef?>>(
+                    thingDef => thingDef == null
+                        ? new()
+                        : new(thingDef, thingDef.LabelCap, new ThingIcon(thingDef))
+                );
+            var stuffFilter = new OTMFilter<Cell, ThingDef?>(cell => cell.StuffDef, stuffFilterOptions, this);
             yield return new(new Label("Material"), stuffFilter);
         }
     }
-    public override int Compare(ThingAlike thing1, ThingAlike thing2)
+
+    private sealed class Cell : ObjectTable.WidgetCell
     {
-        return Cells[thing1].Data.CompareTo(Cells[thing2].Data);
+        protected override Widget? Widget { get; set; }
+        public override event Action? OnChange;
+        public string Text { get; }
+        public ThingDef Def { get; }
+        public ThingDef? StuffDef { get; }
+        public bool IsMadeFromDefaultStuff { get; }
+        public Cell(ThingAlike thing)
+        {
+            Def = thing.Def;
+            StuffDef = thing.StuffDef;
+            IsMadeFromDefaultStuff = thing.StuffDef == thing.Def.GetDefaultStuff();
+
+            var text = thing.StuffDef == null
+                ? thing.Def.LabelCap.RawText
+                : $"{thing.StuffDef.LabelAsStuff.CapitalizeFirst()} {thing.Def.label}";
+            var widget = new HorizontalContainer([
+                new ThingIcon(thing.Def, thing.StuffDef)
+                .PaddingAbs(2f)
+                .SizeAbs(Verse.Text.LineHeight + ObjectTable.CellPadVer * 2f)
+                .ToButtonGhostly(() => Widgets.Draw.DefInfoDialog(thing.Def, thing.StuffDef)),
+                new Label(text).PaddingAbs(0f, ObjectTable.CellPadVer),
+            ], Globals.GUI.Pad)
+            .PaddingAbs(ObjectTable.CellPadHor, 0f)
+            .Tooltip(thing.Def.description);
+
+            Widget = widget;
+            Text = text;
+        }
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return Text.CompareTo(((Cell)cell).Text);
+        }
     }
 
-    private sealed class StuffedVariantsDisplayModeToggleButton : FilterWidget<ThingAlike>
+    private sealed class StuffedVariantsDisplayModeToggleButton : FilterWidget
     {
         private bool _IsActive = false;
         public override bool IsActive => _IsActive;
-        public override event Action<FilterWidget<ThingAlike>>? OnChange;
+        public override event Action<FilterWidget>? OnChange;
         private Texture2D Texture => _IsActive ? Verse.Widgets.CheckboxOnTex : Verse.Widgets.CheckboxOffTex;
         private static readonly TipSignal Manual =
             "Click to show only distinct item material variants.\n\n" +
             "Material for each distinct variant is chosen based on item's type definition.";
+        private readonly Thing_LabelColumnWorker Column;
+        public StuffedVariantsDisplayModeToggleButton(Thing_LabelColumnWorker column)
+        {
+            Column = column;
+        }
         protected override Vector2 CalcSize()
         {
             return new Vector2(Text.LineHeight, Text.LineHeight);
@@ -98,7 +141,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike, string>
 
             TooltipHandler.TipRegion(rect, Manual);
         }
-        public override bool Eval(ThingAlike thing)
+        public override bool Eval(Dictionary<ColumnWorker, ObjectTable.Cell> cells)
         {
             if (_IsActive)
             {
@@ -107,7 +150,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike, string>
                 // - There are cases where one may want to compare
                 //   things by stats unrelated to stuff. Ex. equipped
                 //   stat offsets.
-                return thing.StuffDef == thing.Def.GetDefaultStuff();
+                return ((Cell)cells[Column]).IsMadeFromDefaultStuff;
             }
 
             return true;

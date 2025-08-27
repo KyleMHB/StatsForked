@@ -19,7 +19,6 @@
         <defName>Thing_MaxHitPoints</defName>
         <title>HP</title>
         <stat>MaxHitPoints</stat>
-        <statValueExplanationType>Unfinalized</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -27,14 +26,12 @@
         <defName>Thing_Flammability</defName>
         <title><Damage_Heat/></title>
         <stat>Flammability</stat>
-        <statValueExplanationType>Unfinalized</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Thing_Mass</defName>
         <stat>Mass</stat>
-        <statValueExplanationType>Unfinalized</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -66,7 +63,6 @@
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Thing_Beauty</defName>
         <stat>Beauty</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -74,7 +70,6 @@
         <defName>Thing_ArmorRatingSharp</defName>
         <title><Armor/><Damage_Sharp/></title>
         <stat>ArmorRating_Sharp</stat>
-        <statValueExplanationType>FinalizePart</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -82,7 +77,6 @@
         <defName>Thing_ArmorRatingBlunt</defName>
         <title><Armor/><Damage_Blunt/></title>
         <stat>ArmorRating_Blunt</stat>
-        <statValueExplanationType>FinalizePart</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -90,7 +84,6 @@
         <defName>Thing_ArmorRatingHeat</defName>
         <title><Armor/><Damage_Heat/></title>
         <stat>ArmorRating_Heat</stat>
-        <statValueExplanationType>FinalizePart</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 

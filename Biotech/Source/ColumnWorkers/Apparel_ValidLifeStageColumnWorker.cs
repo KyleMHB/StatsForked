@@ -7,9 +7,9 @@ using Verse;
 
 namespace Stats.Compat.Biotech;
 
-public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike, (HashSet<DevelopmentalStage> LifeStages, string? Text)>
+public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Apparel_ValidLifeStageColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
+    public Apparel_ValidLifeStageColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
     {
     }
     private static readonly Func<ThingDef, HashSet<DevelopmentalStage>> GetValidLifeStages =
@@ -36,42 +36,51 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike
     {
         return lifeStage.ToString().Translate().CapitalizeFirst().RawText;
     });
-    protected override DataCell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(ThingAlike thing)
     {
         var lifeStages = GetValidLifeStages(thing.Def);
 
-        if (lifeStages.Count > 0)
-        {
-            var stringBuilder = new StringBuilder();
-
-            foreach (var lifeStage in lifeStages.OrderBy(lifeStage => lifeStage))
-            {
-                stringBuilder.AppendInNewLine(GetLifeStageString(lifeStage));
-            }
-
-            var text = stringBuilder.ToString();
-            var widget = new Label(text);
-
-            return new(widget, (lifeStages, text));
-        }
-
-        return new(null, ([], null));
+        return new Cell(lifeStages);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> contextObjects)
     {
-        var filterOptions = tableRecords
+        var filterOptions = contextObjects
             .SelectMany(thing => GetValidLifeStages(thing.Def))
             .Distinct()
             .OrderBy(lifeStage => lifeStage)
             .Select(lifeStage => new NTMFilterOption<DevelopmentalStage>(lifeStage, GetLifeStageString(lifeStage)));
 
-        yield return new(ColumnDef.Title, Make.MTMFilter((ThingAlike thing) => Cells[thing].Data.LifeStages, filterOptions));
+        yield return new(ColumnDef.Title, new MTMFilter<Cell, DevelopmentalStage>(cell => cell.Value, filterOptions, this));
     }
-    public override int Compare(ThingAlike thing1, ThingAlike thing2)
+
+    private sealed class Cell : ObjectTable.WidgetCell
     {
-        return Comparer<string?>.Default.Compare(
-            Cells[thing1].Data.Text,
-            Cells[thing2].Data.Text
-        );
+        protected override Widget? Widget { get; set; }
+        public override event Action? OnChange;
+        public HashSet<DevelopmentalStage> Value { get; }
+        public string? Text { get; }
+        public Cell(HashSet<DevelopmentalStage> value)
+        {
+            Value = value;
+
+            if (value.Count > 0)
+            {
+                var stringBuilder = new StringBuilder();
+
+                foreach (var lifeStage in value.OrderBy(lifeStage => lifeStage))
+                {
+                    stringBuilder.AppendInNewLine(GetLifeStageString(lifeStage));
+                }
+
+                var text = stringBuilder.ToString();
+
+                Widget = new Label(text);
+                Text = text;
+            }
+        }
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return Comparer<string?>.Default.Compare(Text, ((Cell)cell).Text);
+        }
     }
 }

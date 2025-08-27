@@ -1,11 +1,13 @@
-﻿namespace Stats;
+﻿using Stats.Widgets;
+
+namespace Stats;
 
 public sealed class Thing_GunStatColumnWorker : Thing_StatColumnWorker
 {
     public Thing_GunStatColumnWorker(StatColumnDef columnDef) : base(columnDef)
     {
     }
-    protected override DataCell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(ThingAlike thing)
     {
         var turretGunDef = thing.Def.building?.turretGunDef;
 

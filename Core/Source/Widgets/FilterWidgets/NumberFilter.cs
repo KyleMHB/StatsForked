@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
 namespace Stats.Widgets;
 
-internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject, decimal, decimal>
+public sealed class NumberFilter<TCell> : FilterWidgetWithInputField<decimal, decimal> where TCell : ObjectTable.Cell
 {
     public override bool IsActive => _TextFieldText.Length > 0 && InputIsValid;
     private decimal _Value = 0m;
@@ -39,8 +40,8 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
             OnChange?.Invoke(this);
         }
     }
-    public override event Action<FilterWidget<TObject>>? OnChange;
-    private readonly Func<TObject, decimal> ObjectValueFunc;
+    public override event Action<FilterWidget>? OnChange;
+    private readonly Func<TCell, decimal> ObjectValueFunc;
     private bool InputIsValid = true;
     private string _TextFieldText = "";
     private string TextFieldText
@@ -78,7 +79,8 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
     }
     protected override string InputFieldText => _TextFieldText;
     private static readonly Color ErrorColor = Color.red.ToTransparent(0.5f);
-    public NumberFilter(Func<TObject, decimal> objectValueFunc, string? placeholder = null) : base([
+    private readonly ColumnWorker Column;
+    public NumberFilter(Func<TCell, decimal> objectValueFunc, ColumnWorker column, string? placeholder = null) : base([
         Operators.IsEqualTo.Instance,
         Operators.IsNotEqualTo.Instance,
         Operators.IsGreaterThan.Instance,
@@ -88,6 +90,7 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
     ], placeholder)
     {
         ObjectValueFunc = objectValueFunc;
+        Column = column;
     }
     protected override void DrawInputField(Rect rect)
     {
@@ -98,9 +101,9 @@ internal sealed class NumberFilter<TObject> : FilterWidgetWithInputField<TObject
 
         TextFieldText = GUI.TextField(rect, _TextFieldText);
     }
-    public override bool Eval(TObject @object)
+    public override bool Eval(Dictionary<ColumnWorker, ObjectTable.Cell> cells)
     {
-        return Operator.Eval(ObjectValueFunc(@object), Value);
+        return Operator.Eval(ObjectValueFunc((TCell)cells[Column]), Value);
     }
     public override void Reset()
     {

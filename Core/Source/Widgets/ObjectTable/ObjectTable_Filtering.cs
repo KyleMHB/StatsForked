@@ -6,7 +6,7 @@ namespace Stats.Widgets;
 
 public sealed partial class ObjectTable<TObject>
 {
-    private void HandleFilterChange(FilterWidget<TObject> filter)
+    private void HandleFilterChange(FilterWidget filter)
     {
         if (filter.IsActive)
         {
@@ -29,7 +29,7 @@ public sealed partial class ObjectTable<TObject>
             {
                 try
                 {
-                    rowIsValid = ObjectMatchesFilters(row.Object, ActiveFilters);
+                    rowIsValid = MatchRowCells(row.Cells, ActiveFilters);
                 }
                 catch (Exception e)
                 {
@@ -66,5 +66,5 @@ public sealed partial class ObjectTable<TObject>
         };
     }
 
-    private delegate bool ObjectFilterMatchFunc(TObject @object, HashSet<FilterWidget<TObject>> filters);
+    private delegate bool RowCellsMatcher(Dictionary<ColumnWorker, Cell> cells, HashSet<FilterWidget> filters);
 }

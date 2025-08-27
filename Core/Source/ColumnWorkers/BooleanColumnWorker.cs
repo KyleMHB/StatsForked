@@ -1,34 +1,44 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Stats.Widgets;
 
 namespace Stats;
 
-public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject, bool>
+public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
 {
-    protected BooleanColumnWorker(ColumnDef columndef) : base(columndef, ColumnCellStyle.Boolean)
+    protected BooleanColumnWorker(ColumnDef columndef) : base(columndef, CellStyleType.Boolean)
     {
     }
     protected abstract bool GetValue(TObject @object);
-    protected sealed override DataCell GetCell(TObject @object)
+    public sealed override ObjectTable.Cell GetCell(TObject @object)
     {
         var value = GetValue(@object);
 
-        if (value == true)
-        {
-            var widget = new Icon(Verse.Widgets.CheckboxOnTex)
-            .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
-
-            return new(widget, true);
-        }
-
-        return new(null, false);
+        return new Cell(value);
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> _)
     {
-        yield return new(ColumnDef.Title, Make.BooleanFilter<TObject>(@object => Cells[@object].Data));
+        yield return new(ColumnDef.Title, new BooleanFilter<Cell>(cell => cell.Value, this));
     }
-    public sealed override int Compare(TObject object1, TObject object2)
+
+    private sealed class Cell : ObjectTable.WidgetCell
     {
-        return Cells[object1].Data.CompareTo(Cells[object2].Data);
+        protected override Widget? Widget { get; set; }
+        public override event Action? OnChange;
+        public bool Value { get; }
+        public Cell(bool value)
+        {
+            Value = value;
+
+            if (value == true)
+            {
+                Widget = new Icon(Verse.Widgets.CheckboxOnTex)
+                .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+            }
+        }
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return Value.CompareTo(((Cell)cell).Value);
+        }
     }
 }

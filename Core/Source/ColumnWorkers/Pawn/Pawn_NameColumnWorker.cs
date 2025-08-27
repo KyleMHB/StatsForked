@@ -1,37 +1,47 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Stats.Widgets;
 using Verse;
 
 namespace Stats;
 
-public sealed class Pawn_NameColumnWorker : ColumnWorker<ThingAlike, string>
+public sealed class Pawn_NameColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Pawn_NameColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
+    public Pawn_NameColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
     {
     }
-    protected override DataCell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(ThingAlike thing)
     {
-        if (thing.Thing is Pawn pawn)
+        return new Cell(thing);
+    }
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> _)
+    {
+        yield return new(ColumnDef.Title, new StringFilter<Cell>(cell => cell.Text, this));
+    }
+
+    private sealed class Cell : ObjectTable.WidgetCell
+    {
+        protected override Widget? Widget { get; set; }
+        public override event Action? OnChange;
+        public string Text { get; }
+        public Cell(ThingAlike thing)
         {
-            var text = pawn.Name.ToStringShort.CapitalizeFirst() ?? "";
-            var widget = new Label(text).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+            if (thing.Thing is Pawn pawn)
+            {
+                var text = pawn.Name.ToStringShort.CapitalizeFirst();
+                var widget = new Label(text).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
 
-            return new(widget, text);
+                Widget = widget;
+                Text = text;
+            }
+            else
+            {
+                Text = "";
+            }
         }
-
-        return new(null, "");
-    }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
-    {
-        yield return new(ColumnDef.Title, Make.StringFilter<ThingAlike>(thing => Cells[thing].Data));
-    }
-    public override int Compare(ThingAlike thing1, ThingAlike thing2)
-    {
-        return Comparer<string?>.Default.Compare(Cells[thing1].Data, Cells[thing2].Data);
-    }
-    public override bool Refresh()
-    {
-        // TODO: Handle name change.
-        return base.Refresh();
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return Text.CompareTo(((Cell)cell).Text);
+        }
     }
 }

@@ -48,7 +48,6 @@
         <defName>Pawn_ComfyTemperatureMin</defName>
         <title><Temp_Cold/></title>
         <stat>ComfyTemperatureMin</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -56,7 +55,6 @@
         <defName>Pawn_ComfyTemperatureMax</defName>
         <title><Temp_Hot/></title>
         <stat>ComfyTemperatureMax</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 

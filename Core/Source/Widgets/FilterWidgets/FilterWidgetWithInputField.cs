@@ -6,19 +6,19 @@ using Verse.Sound;
 
 namespace Stats.Widgets;
 
-internal abstract class FilterWidgetWithInputField<TObject, TObjectValue, TValue> : FilterWidget<TObject>
+public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
 {
     private Vector2 OperatorButtonSize;
     private const float OperatorButtonMinWidth = 24f;
     private const float OperatorButtonPaddingHor = Globals.GUI.PadXs;
     private const float InputFieldMinWidth = OperatorButtonMinWidth * 2f;
     private readonly FloatMenu OperatorsMenu;
-    protected abstract RelOperator<TObjectValue, TValue> Operator { get; set; }
+    protected abstract RelOperator<TLhs, TRhs> Operator { get; set; }
     private readonly string Placeholder;
     protected abstract string InputFieldText { get; }
     private bool InputFieldIsEmpty => InputFieldText.Length == 0;
     private readonly Widget ClearButton;
-    protected FilterWidgetWithInputField(IEnumerable<RelOperator<TObjectValue, TValue>> operators, string? placeholder = null)
+    protected FilterWidgetWithInputField(IEnumerable<RelOperator<TLhs, TRhs>> operators, string? placeholder = null)
     {
         Placeholder = placeholder ?? "";
 

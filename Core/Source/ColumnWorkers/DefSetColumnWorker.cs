@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Stats.Widgets;
@@ -6,9 +7,9 @@ using Verse;
 
 namespace Stats;
 
-public abstract class DefSetColumnWorker<TObject, TDef> : ColumnWorker<TObject, (HashSet<TDef> Defs, string? Text)> where TDef : Def
+public abstract class DefSetColumnWorker<TObject, TDef> : ColumnWorker<TObject> where TDef : Def
 {
-    protected DefSetColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
+    protected DefSetColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
     {
     }
     protected abstract HashSet<TDef> GetValue(TObject @object);
@@ -16,41 +17,52 @@ public abstract class DefSetColumnWorker<TObject, TDef> : ColumnWorker<TObject, 
     {
         return def.LabelCap;
     }
-    protected sealed override DataCell GetCell(TObject @object)
+    public sealed override ObjectTable.Cell GetCell(TObject @object)
     {
         var defs = GetValue(@object);
 
-        if (defs.Count > 0)
-        {
-            var stringBuilder = new StringBuilder();
-
-            foreach (var def in defs.OrderBy(GetDefLabel))
-            {
-                stringBuilder.AppendInNewLine(GetDefLabel(def));
-            }
-
-            var text = stringBuilder.ToString();
-            var widget = new Label(text).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
-
-            return new(widget, (defs, text));
-        }
-
-        return new(null, ([], null));
+        return new Cell(defs, this);
     }
-    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
+    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> contextObjects)
     {
-        var filterOptions = tableRecords
-            .SelectMany(record => Cells[record].Data.Defs)
+        var filterOptions = contextObjects
+            .SelectMany(GetValue)
             .Distinct()
             .OrderBy(GetDefLabel)
             .Select<TDef, NTMFilterOption<TDef>>(
                 def => def == null ? new() : new(def, GetDefLabel(def))
             );
 
-        yield return new(ColumnDef.Title, Make.MTMFilter<TObject, TDef>(@object => Cells[@object].Data.Defs, filterOptions));
+        yield return new(ColumnDef.Title, new MTMFilter<Cell, TDef>(cell => cell.Defs, filterOptions, this));
     }
-    public sealed override int Compare(TObject object1, TObject object2)
+
+    private sealed class Cell : ObjectTable.WidgetCell
     {
-        return Comparer<string?>.Default.Compare(Cells[object1].Data.Text, Cells[object2].Data.Text);
+        protected override Widget? Widget { get; set; }
+        public override event Action? OnChange;
+        public HashSet<TDef> Defs { get; }
+        public string? Text { get; }
+        public Cell(HashSet<TDef> defs, DefSetColumnWorker<TObject, TDef> column)
+        {
+            Defs = defs;
+
+            if (defs.Count > 0)
+            {
+                var stringBuilder = new StringBuilder();
+
+                foreach (var def in defs.OrderBy(column.GetDefLabel))
+                {
+                    stringBuilder.AppendInNewLine(column.GetDefLabel(def));
+                }
+
+                var text = stringBuilder.ToString();
+                Widget = new Label(text).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+                Text = text;
+            }
+        }
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return Comparer<string?>.Default.Compare(Text, ((Cell)cell).Text);
+        }
     }
 }

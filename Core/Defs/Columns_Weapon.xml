@@ -6,7 +6,6 @@
         <defName>Weapon_MeleeDPS</defName>
         <title>DPS</title>
         <stat>MeleeWeapon_AverageDPS</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using RimWorld;
 using Stats.Widgets;
@@ -6,35 +7,67 @@ using Verse;
 
 namespace Stats;
 
-public class Thing_StatColumnWorker : ColumnWorker<ThingAlike, decimal>
+public class Thing_StatColumnWorker : ColumnWorker<ThingAlike>
 {
     public static readonly Regex NumberRegex = new(@"(-?[0-9]+\.?[0-9]*).*", RegexOptions.Compiled);
     private const ToStringNumberSense _ToStringNumberSense = ToStringNumberSense.Absolute;
     protected StatDef Stat { get; }
-    private readonly StatValueExplanationType ExplanationType;
-    public Thing_StatColumnWorker(StatColumnDef columnDef) : base(columnDef, ColumnCellStyle.Number)
+    public Thing_StatColumnWorker(StatColumnDef columnDef) : base(columnDef, CellStyleType.Number)
     {
         Stat = columnDef.stat;
-        ExplanationType = columnDef.statValueExplanationType;
     }
     protected virtual string? GetStatDrawEntryLabel(StatDef stat, float value, ToStringNumberSense numberSense, StatRequest statRequest)
     {
         return stat.Worker.GetStatDrawEntryLabel(stat, value, _ToStringNumberSense, statRequest);
     }
-    protected override DataCell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(ThingAlike thing)
     {
-        var statWorker = Stat.Worker;
-        var statRequest = thing.Thing != null
-            ? StatRequest.For(thing.Thing)
-            : StatRequest.For(thing.Def, thing.StuffDef);
+        return new Cell(thing, this);
+    }
+    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> _)
+    {
+        yield return new(ColumnDef.Title, new NumberFilter<Cell>(cell => cell.ValueDisplayed, this));
+    }
 
-        if (statWorker.ShouldShowFor(statRequest))
+    private class Cell : ObjectTable.WidgetCell
+    {
+        public override event Action? OnChange;
+        protected override Widget? Widget { get; set; }
+        public float ValueRaw { get; private set; }
+        public decimal ValueDisplayed { get; private set; }
+        private readonly bool IsValidForThing;
+        private readonly Thing_StatColumnWorker Column;
+        private readonly StatDef Stat;
+        private readonly StatWorker StatWorker;
+        private readonly ThingAlike Thing;
+        public Cell(ThingAlike thing, Thing_StatColumnWorker column)
         {
-            var statValue = statWorker.GetValue(statRequest);
+            Thing = thing;
+            Column = column;
+            Stat = column.Stat;
+            StatWorker = column.Stat.Worker;
+            var statRequest = thing.Thing != null
+                ? StatRequest.For(thing.Thing)
+                : StatRequest.For(thing.Def, thing.StuffDef);
+            IsValidForThing = StatWorker.ShouldShowFor(statRequest);
 
-            if (statValue != 0f)
+            if (IsValidForThing)
             {
-                var cellText = GetStatDrawEntryLabel(Stat, statValue, _ToStringNumberSense, statRequest);
+                var statValue = StatWorker.GetValue(statRequest);
+
+                Refresh(statRequest, statValue);
+            }
+
+            if (thing.Thing != null && column.Stat.immutable == false && IsValidForThing)
+            {
+                column.OnRefresh += HandleColumnRefresh;
+            }
+        }
+        private void Refresh(StatRequest statRequest, float statValue)
+        {
+            if (IsValidForThing && statValue != 0f)
+            {
+                var cellText = Column.GetStatDrawEntryLabel(Stat, statValue, _ToStringNumberSense, statRequest);
 
                 if (cellText != null)
                 {
@@ -46,13 +79,7 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike, decimal>
                         displayedValue = decimal.Parse(match.Groups[1].Captures[0].Value);
                     }
 
-                    var tooltip = ExplanationType switch
-                    {
-                        StatValueExplanationType.Full => statWorker.GetExplanationFull(statRequest, _ToStringNumberSense, statValue),
-                        StatValueExplanationType.Unfinalized => statWorker.GetExplanationUnfinalized(statRequest, _ToStringNumberSense),
-                        StatValueExplanationType.FinalizePart => statWorker.GetExplanationFinalizePart(statRequest, _ToStringNumberSense, statValue),
-                        _ => null,
-                    };
+                    var tooltip = StatWorker.GetExplanationFull(statRequest, _ToStringNumberSense, statValue);
 
                     Widget widget = new Label(cellText)
                     .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
@@ -62,38 +89,38 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike, decimal>
                         widget = widget.Tooltip(tooltip);
                     }
 
-                    return new(widget, displayedValue);
+                    Widget = widget;
+                    ValueRaw = statValue;
+                    ValueDisplayed = displayedValue;
+                }
+            }
+            else
+            {
+                Widget = null;
+                ValueRaw = 0f;
+                ValueDisplayed = 0m;
+            }
+
+            OnChange?.Invoke();
+        }
+        private void HandleColumnRefresh()
+        {
+            if (IsValidForThing)
+            {
+                var statRequest = Thing.Thing != null
+                    ? StatRequest.For(Thing.Thing)
+                    : StatRequest.For(Thing.Def, Thing.StuffDef);
+                var statValue = StatWorker.GetValue(statRequest);
+
+                if (ValueRaw != statValue)
+                {
+                    Refresh(statRequest, statValue);
                 }
             }
         }
-
-        return new(null, 0m);
-    }
-    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> _)
-    {
-        yield return new(ColumnDef.Title, Make.NumberFilter((ThingAlike thing) => Cells[thing].Data));
-    }
-    public sealed override int Compare(ThingAlike thing1, ThingAlike thing2)
-    {
-        return Cells[thing1].Data.CompareTo(Cells[thing2].Data);
-    }
-    public override bool Refresh()
-    {
-        if (Stat.immutable)
+        public override int CompareTo(ObjectTable.Cell cell)
         {
-            return false;
+            return ValueDisplayed.CompareTo(((Cell)cell).ValueDisplayed);
         }
-
-        var result = false;
-
-        foreach (var (thing, cell) in Cells)
-        {
-            if (thing.Thing != null)
-            {
-                // TODO
-            }
-        }
-
-        return result;
     }
 }

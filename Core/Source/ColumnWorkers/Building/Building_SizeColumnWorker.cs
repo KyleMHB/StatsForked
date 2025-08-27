@@ -6,32 +6,50 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Building_SizeColumnWorker : ColumnWorker<ThingAlike, IntVec2>
+public sealed class Building_SizeColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Building_SizeColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.Number)
+    public Building_SizeColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.Number)
     {
     }
-    protected override DataCell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(ThingAlike thing)
+    {
+        return new Cell(thing, this);
+    }
+    private IntVec2 GetSize(ThingAlike thing)
     {
         var size = thing.Def.size;
-        // Because 4x5=5x4.
-        size = new IntVec2(Math.Max(size.x, size.z), Math.Min(size.x, size.z));
-        var widget = new Label(size.ToStringCross()).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
 
-        return new(widget, size);
+        // Because 4x5=5x4.
+        return new IntVec2(Math.Max(size.x, size.z), Math.Min(size.x, size.z));
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> contextObjects)
     {
-        var filterOptions = tableRecords
-            .Select(record => Cells[record].Data)
+        var filterOptions = contextObjects
+            .Select(GetSize)
             .Distinct()
             .OrderBy(size => size.Area)
             .Select(size => new NTMFilterOption<IntVec2>(size, size.ToStringCross()));
 
-        yield return new(ColumnDef.Title, Make.OTMFilter<ThingAlike, IntVec2>(@object => Cells[@object].Data, filterOptions));
+        yield return new(ColumnDef.Title, new OTMFilter<Cell, IntVec2>(cell => cell.BuildingSize, filterOptions, this));
     }
-    public override int Compare(ThingAlike thing1, ThingAlike thing2)
+
+    private sealed class Cell : ObjectTable.WidgetCell
     {
-        return thing1.Def.size.Area.CompareTo(thing2.Def.size.Area);
+        protected override Widget? Widget { get; set; }
+        public override event Action? OnChange;
+        public IntVec2 BuildingSize { get; }
+        public int BuildingArea { get; }
+        public Cell(ThingAlike thing, Building_SizeColumnWorker column)
+        {
+            var size = column.GetSize(thing);
+
+            BuildingSize = size;
+            Widget = new Label(size.ToStringCross()).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+            BuildingArea = size.Area;
+        }
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return BuildingArea.CompareTo(((Cell)cell).BuildingArea);
+        }
     }
 }

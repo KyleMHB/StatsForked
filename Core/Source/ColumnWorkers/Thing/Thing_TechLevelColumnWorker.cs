@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Stats.Widgets;
@@ -6,28 +7,18 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Thing_TechLevelColumnWorker : ColumnWorker<ThingAlike, TechLevel>
+public sealed class Thing_TechLevelColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Thing_TechLevelColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
+    public Thing_TechLevelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
     {
     }
-    protected override DataCell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(ThingAlike thing)
     {
-        var techLevel = thing.Def.techLevel;
-
-        if (thing.Def.techLevel != TechLevel.Undefined)
-        {
-            var text = techLevel.ToStringHuman().CapitalizeFirst();
-            var widget = new Label(text).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
-
-            return new(widget, techLevel);
-        }
-
-        return new(null, TechLevel.Undefined);
+        return new Cell(thing.Def.techLevel);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> contextObjects)
     {
-        var options = tableRecords
+        var options = contextObjects
             .Select(thing => thing.Def.techLevel)
             .Distinct()
             .OrderBy(techLevel => techLevel)
@@ -35,10 +26,29 @@ public sealed class Thing_TechLevelColumnWorker : ColumnWorker<ThingAlike, TechL
                 techLevel => new(techLevel, techLevel.ToStringHuman().CapitalizeFirst())
             );
 
-        yield return new(ColumnDef.Title, Make.OTMFilter((ThingAlike thing) => thing.Def.techLevel, options));
+        yield return new(ColumnDef.Title, new OTMFilter<Cell, TechLevel>(cell => cell.Value, options, this));
     }
-    public override int Compare(ThingAlike thing1, ThingAlike thing2)
+
+    private sealed class Cell : ObjectTable.WidgetCell
     {
-        return thing1.Def.techLevel.CompareTo(thing2.Def.techLevel);
+        protected override Widget? Widget { get; set; }
+        public override event Action? OnChange;
+        public TechLevel Value { get; }
+        public Cell(TechLevel value)
+        {
+            Value = value;
+
+            if (value != TechLevel.Undefined)
+            {
+                var text = value.ToStringHuman().CapitalizeFirst();
+                var widget = new Label(text).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+
+                Widget = widget;
+            }
+        }
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return Value.CompareTo(((Cell)cell).Value);
+        }
     }
 }

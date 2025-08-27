@@ -34,6 +34,6 @@ public abstract class TableWorker<TObject> : TableWorker
             columnWorkers.Add(columnWorker);
         }
 
-        return new ObjectTable<TObject>(columnWorkers, Records);
+        return new ObjectTable<TObject>(columnWorkers, Records, Records);
     }
 }

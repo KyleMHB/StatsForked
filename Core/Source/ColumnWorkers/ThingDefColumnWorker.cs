@@ -1,33 +1,59 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Stats.Widgets;
 using Verse;
 
 namespace Stats;
 
-public abstract class ThingDefColumnWorker<TObject, TDef> : DefColumnWorker<TObject, TDef> where TDef : ThingDef?
+public abstract class ThingDefColumnWorker<TObject, TDef> : ColumnWorker<TObject> where TDef : ThingDef?
 {
-    protected ThingDefColumnWorker(ColumnDef columnDef) : base(columnDef)
+    protected ThingDefColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
     {
     }
-    protected sealed override DataCell GetCell(TObject @object)
+    protected abstract TDef GetValue(TObject @object);
+    public sealed override ObjectTable.Cell GetCell(TObject @object)
     {
         var def = GetValue(@object);
 
-        if (def != null)
-        {
-            var widget = new HorizontalContainer([
-                new ThingIcon(def).ToButtonGhostly(() => Draw.DefInfoDialog(def)),
-                new Label(def.LabelCap),
-            ], Globals.GUI.PadSm)
-            .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
-
-            return new(widget, def);
-        }
-
-        return new(null, null);
+        return new Cell(def);
     }
-    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
+    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> contextObjects)
     {
-        yield return new(ColumnDef.Title, Make.OTMThingDefFilter(@object => Cells[@object].Data, tableRecords));
+        var options = contextObjects
+            .Select(GetValue)
+            .Distinct()
+            .OrderBy(def => def?.label)
+            .Select<TDef, NTMFilterOption<TDef>>(
+                def => def == null ? new() : new(def, def.LabelCap)
+            );
+
+        yield return new(ColumnDef.Title, new OTMFilter<Cell, TDef>(cell => cell.Def, options, this));
+    }
+
+    private sealed class Cell : ObjectTable.WidgetCell
+    {
+        protected override Widget? Widget { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override event Action? OnChange;
+        public TDef Def { get; }
+        public string? DefLabel { get; }
+        public Cell(TDef def)
+        {
+            Def = def;
+            DefLabel = def?.label;
+
+            if (def != null)
+            {
+                Widget = new HorizontalContainer([
+                    new ThingIcon(def).ToButtonGhostly(() => Widgets.Draw.DefInfoDialog(def)),
+                    new Label(def.LabelCap),
+                ], Globals.GUI.PadSm)
+                .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+            }
+        }
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return Comparer<string?>.Default.Compare(DefLabel, ((Cell)cell).DefLabel);
+        }
     }
 }

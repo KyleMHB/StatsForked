@@ -18,7 +18,6 @@
         <defName>Building_JoyGainFactor</defName>
         <title><Recreation/>Power</title>
         <stat>JoyGainFactor</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -33,7 +32,6 @@
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Building_Comfort</defName>
         <stat>Comfort</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -41,7 +39,6 @@
         <defName>Building_ImmunityGainSpeedFactor</defName>
         <title>Immunity *%</title>
         <stat>ImmunityGainSpeedFactor</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -49,7 +46,6 @@
         <defName>Building_MedicalTendQualityOffset</defName>
         <title>Tend +%</title>
         <stat>MedicalTendQualityOffset</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -57,7 +53,6 @@
         <defName>Building_SurgerySuccessChanceFactor</defName>
         <title>Surgery *%</title>
         <stat>SurgerySuccessChanceFactor</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 

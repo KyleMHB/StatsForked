@@ -8,9 +8,9 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike, (HashSet<BiomeDef> Biomes, float AverageCommonality)>
+public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Animal_BiomesColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
+    public Animal_BiomesColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
     {
     }
     // This exists mainly for consistency, for when this column worker is used by several tables.
@@ -39,59 +39,82 @@ public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike, (HashSe
 
         return biomeRecords;
     });
-    protected override DataCell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(ThingAlike thing)
     {
         var biomeRecords = GetBiomeRecords(thing.Def);
 
-        if (biomeRecords.Count > 0)
+        return new Cell(biomeRecords);
+    }
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> contextObjects)
+    {
+        var options = contextObjects
+            .SelectMany(thing => GetBiomeRecords(thing.Def).Select(biomeRecord => biomeRecord.BiomeDef).ToHashSet())
+            .Distinct()
+            .OrderBy(def => def.label)
+            .Select<BiomeDef, NTMFilterOption<BiomeDef>>(
+                def => def == null ? new() : new(def, def.LabelCap)
+            );
+
+        yield return new(ColumnDef.Title, new MTMFilter<Cell, BiomeDef>(cell => cell.Biomes, options, this));
+    }
+
+    private sealed class Cell : ObjectTable.WidgetCell
+    {
+        protected override Widget? Widget { get; set; }
+        public override event Action? OnChange;
+        public HashSet<BiomeDef> Biomes { get; }
+        public float AverageCommonality { get; }
+        public Cell(List<BiomeRecord> biomeRecords)
         {
-            var text = biomeRecords[0].ToString();
-            string? tooltip = null;
-
-            if (biomeRecords.Count > 1)
+            if (biomeRecords.Count > 0)
             {
-                text += $" ({biomeRecords.Count})".Colorize(Globals.GUI.TextColorSecondary);
+                var text = biomeRecords[0].ToString();
+                string? tooltip = null;
 
-                var stringBuilder = new StringBuilder();
+                if (biomeRecords.Count > 1)
+                {
+                    text += $" ({biomeRecords.Count})".Colorize(Globals.GUI.TextColorSecondary);
+
+                    var stringBuilder = new StringBuilder();
+
+                    foreach (var biomeRecord in biomeRecords)
+                    {
+                        stringBuilder.AppendLine(biomeRecord.ToString());
+                    }
+
+                    tooltip = stringBuilder.ToString();
+                }
+
+                var animalCommonalitySum = 0f;
 
                 foreach (var biomeRecord in biomeRecords)
                 {
-                    stringBuilder.AppendLine(biomeRecord.ToString());
+                    animalCommonalitySum += biomeRecord.Commonality;
                 }
 
-                tooltip = stringBuilder.ToString();
+                var averageCommonality = animalCommonalitySum / biomeRecords.Count;
+
+                var biomeDefs = biomeRecords.Select(biomeRecord => biomeRecord.BiomeDef).ToHashSet();
+
+                Widget widget = new Label(text).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+
+                if (tooltip != null)
+                {
+                    widget = widget.Tooltip(tooltip);
+                }
+
+                Widget = widget;
+                Biomes = biomeDefs;
             }
-
-            var animalCommonalitySum = 0f;
-
-            foreach (var biomeRecord in biomeRecords)
+            else
             {
-                animalCommonalitySum += biomeRecord.Commonality;
+                Biomes = [];
             }
-
-            var averageCommonality = animalCommonalitySum / biomeRecords.Count;
-
-            var biomeDefs = biomeRecords.Select(biomeRecord => biomeRecord.BiomeDef).ToHashSet();
-
-            Widget widget = new Label(text).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
-
-            if (tooltip != null)
-            {
-                widget = widget.Tooltip(tooltip);
-            }
-
-            return new(widget, (biomeDefs, averageCommonality));
         }
-
-        return new(null, ([], 0f));
-    }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
-    {
-        yield return new(ColumnDef.Title, Make.MTMDefFilter(thing => Cells[thing].Data.Biomes, tableRecords));
-    }
-    public override int Compare(ThingAlike thing1, ThingAlike thing2)
-    {
-        return Cells[thing1].Data.AverageCommonality.CompareTo(Cells[thing2].Data.AverageCommonality);
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return AverageCommonality.CompareTo(((Cell)cell).AverageCommonality);
+        }
     }
 
     private readonly record struct BiomeRecord(BiomeDef BiomeDef, float Commonality)

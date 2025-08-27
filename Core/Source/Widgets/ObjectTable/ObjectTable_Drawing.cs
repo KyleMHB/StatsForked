@@ -84,7 +84,7 @@ public sealed partial class ObjectTable<TObject>
     }
     private void DrawPart(
         Rect rect,
-        List<ColumnWorker<TObject>> columns,
+        List<ColumnWorker> columns,
         Vector2 scrollPosition,
         float cellExtraWidth
     )
@@ -92,7 +92,7 @@ public sealed partial class ObjectTable<TObject>
         if (columns.Count == 0)
             return;
 
-        //var origRect = rect;
+        var origRect = rect;
         var headersRect = rect.CutByY(HeaderRowsHeight);
         var horScrollPosition = scrollPosition with { y = 0f };
 
@@ -126,12 +126,12 @@ public sealed partial class ObjectTable<TObject>
 
         DrawRows(rect, UnpinnedRows, columns, scrollPosition, cellExtraWidth);
 
-        //DrawColumnSeparators(origRect, columns, scrollPosition.x, cellExtraWidth);
+        DrawColumnSeparators(origRect, columns, scrollPosition.x, cellExtraWidth);
     }
     private void DrawRows(
         Rect rect,
         IReadOnlyCollection<Row> rows,
-        List<ColumnWorker<TObject>> columns,
+        List<ColumnWorker> columns,
         Vector2 scrollPosition,
         float cellExtraWidth
     )
@@ -180,36 +180,36 @@ public sealed partial class ObjectTable<TObject>
     }
     // The performance impact of instead drawing a vertical border for each
     // individual column's cell is huge. So we have to keep this.
-    //private static void DrawColumnSeparators(
-    //    Rect rect,
-    //    List<ColumnWorker<TObject>> columns,
-    //    float offsetX,
-    //    float cellExtraWidth
-    //)
-    //{
-    //    if (Event.current.type != EventType.Repaint)
-    //        return;
+    private static void DrawColumnSeparators(
+        Rect rect,
+        List<ColumnWorker> columns,
+        float offsetX,
+        float cellExtraWidth
+    )
+    {
+        if (Event.current.type != EventType.Repaint)
+            return;
 
-    //    var x = -offsetX;
+        var x = -offsetX;
 
-    //    foreach (var column in columns)
-    //    {
-    //        x += column.Width + cellExtraWidth;
+        foreach (var column in columns)
+        {
+            x += column.Width + cellExtraWidth;
 
-    //        if (x >= rect.width)
-    //            break;
+            if (x >= rect.width)
+                break;
 
-    //        if (x > 0f)
-    //        {
-    //            Widgets.Draw.VerticalLine(
-    //                x + rect.x - 1f,
-    //                rect.y,
-    //                rect.height,
-    //                ColumnSeparatorLineColor
-    //            );
-    //        }
-    //    }
-    //}
+            if (x > 0f)
+            {
+                Widgets.Draw.VerticalLine(
+                    x + rect.x - 1f,
+                    rect.y,
+                    rect.height,
+                    ColumnSeparatorLineColor
+                );
+            }
+        }
+    }
     private void DrawColumnsTab(ref Rect rect)
     {
         var columnsTabWidgetSize = ColumnsTabWidget.GetSize(rect.size);

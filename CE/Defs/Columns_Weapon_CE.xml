@@ -13,7 +13,6 @@
         <defName>Weapon_MeleeArmorPenetrationSharp</defName>
         <title>AP<Damage_Sharp/></title>
         <stat>MeleeWeapon_AverageArmorPenetration</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>,</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Left</workerClass>
     </Stats.ColumnDef>
@@ -22,7 +21,6 @@
         <defName>Weapon_MeleeArmorPenetrationBlunt</defName>
         <title>AP<Damage_Blunt/></title>
         <stat>MeleeWeapon_AverageArmorPenetration</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>,</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Right</workerClass>
     </Stats.ColumnDef>
@@ -31,7 +29,6 @@
         <defName>Weapon_MeleeArmorPenetrationFactor</defName>
         <title>AP %</title>
         <stat>MeleePenetrationFactor</stat>
-        <statValueExplanationType>FinalizePart</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -46,7 +43,6 @@
         <defName>Weapon_MeleeDamageMin</defName>
         <title><MeleeWeaponDamage/>Min.</title>
         <stat>MeleeDamage</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>-</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Left</workerClass>
     </Stats.ColumnDef>
@@ -55,7 +51,6 @@
         <defName>Weapon_MeleeDamageMax</defName>
         <title><MeleeWeaponDamage/>Max.</title>
         <stat>MeleeDamage</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>-</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Right</workerClass>
     </Stats.ColumnDef>

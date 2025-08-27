@@ -6,7 +6,6 @@
         <defName>Apparel_InsulationCold</defName>
         <title><Temp_Cold/></title>
         <stat>Insulation_Cold</stat>
-        <statValueExplanationType>FinalizePart</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
@@ -14,7 +13,6 @@
         <defName>Apparel_InsulationHeat</defName>
         <title><Temp_Hot/></title>
         <stat>Insulation_Heat</stat>
-        <statValueExplanationType>FinalizePart</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 

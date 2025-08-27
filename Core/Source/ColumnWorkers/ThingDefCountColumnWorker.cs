@@ -1,48 +1,67 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Stats.Widgets;
 using Verse;
 
 namespace Stats;
 
-public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject, (ThingDef? Def, decimal Count)>
+public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject>
 {
-    protected ThingDefCountColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.Number)
+    protected ThingDefCountColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.Number)
     {
     }
     protected abstract (ThingDef? Def, decimal Count) GetValue(TObject @object);
-    protected sealed override DataCell GetCell(TObject @object)
+    public sealed override ObjectTable.Cell GetCell(TObject @object)
     {
         var thingDefCount = GetValue(@object);
         var (thingDef, count) = thingDefCount;
 
-        if (thingDef != null && count > 0)
-        {
-            var widget = new HorizontalContainer([
-                new Label(count.ToString()).PaddingRel(1f, 0f, 0f, 0f),
-                new ThingIcon(thingDef)
-                .ToButtonGhostly(() => Draw.DefInfoDialog(thingDef))
-                .Tooltip(thingDef.LabelCap),
-            ], Globals.GUI.PadSm, true)
-            .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
-
-            return new(widget, thingDefCount);
-        }
-
-        return new(null, (null, 0m));
+        return new Cell(thingDef, count);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> contextObjects)
     {
-        var countFilter = Make.NumberFilter<TObject>(@object => Cells[@object].Data.Count);
-        var typeFilter = Make.OTMThingDefFilter(@object => Cells[@object].Data.Def, tableRecords);
+        var countFilter = new NumberFilter<Cell>(cell => cell.Count, this);
+        var typeFilterOptions = contextObjects
+        .Select(@object => GetValue(@object).Def)
+        .Distinct()
+        .OrderBy(thingDef => thingDef?.label)
+        .Select<ThingDef?, NTMFilterOption<ThingDef?>>(
+            thingDef => thingDef == null
+                ? new()
+                : new(thingDef, thingDef.LabelCap, new ThingIcon(thingDef))
+        );
+        var typeFilter = new OTMFilter<Cell, ThingDef?>(cell => cell.ThingDef, typeFilterOptions, this);
 
         yield return new(new Label("Amount"), countFilter);
         yield return new(new Label("Type"), typeFilter);
     }
-    public sealed override int Compare(TObject object1, TObject object2)
-    {
-        var count1 = Cells[object1].Data.Count;
-        var count2 = Cells[object2].Data.Count;
 
-        return Comparer<decimal?>.Default.Compare(count1, count2);
+    private sealed class Cell : ObjectTable.WidgetCell
+    {
+        protected override Widget? Widget { get; set; }
+        public override event Action? OnChange;
+        public ThingDef? ThingDef { get; }
+        public decimal Count { get; }
+        public Cell(ThingDef? thingDef, decimal count)
+        {
+            ThingDef = thingDef;
+            Count = count;
+
+            if (thingDef != null && count > 0)
+            {
+                Widget = new HorizontalContainer([
+                    new Label(count.ToString()).PaddingRel(1f, 0f, 0f, 0f),
+                    new ThingIcon(thingDef)
+                    .ToButtonGhostly(() => Widgets.Draw.DefInfoDialog(thingDef))
+                    .Tooltip(thingDef.LabelCap),
+                ], Globals.GUI.PadSm, true)
+                .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+            }
+        }
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return Count.CompareTo(((Cell)cell).Count);
+        }
     }
 }

@@ -6,7 +6,6 @@
         <defName>Bed_RestEffectiveness</defName>
         <title>Rest *%</title>
         <stat>BedRestEffectiveness</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <workerClass>Stats.Thing_StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 

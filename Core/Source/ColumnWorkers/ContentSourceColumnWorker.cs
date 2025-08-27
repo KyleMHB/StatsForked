@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Stats.Widgets;
@@ -6,44 +7,52 @@ using Verse;
 
 namespace Stats;
 
-public abstract class ContentSourceColumnWorker<TObject> : ColumnWorker<TObject, ModContentPack?>
+public abstract class ContentSourceColumnWorker<TObject> : ColumnWorker<TObject>
 {
-    protected ContentSourceColumnWorker(ColumnDef columndef) : base(columndef, ColumnCellStyle.String)
+    protected ContentSourceColumnWorker(ColumnDef columndef) : base(columndef, CellStyleType.String)
     {
     }
     protected abstract ModContentPack? GetModContentPack(TObject @object);
-    protected sealed override DataCell GetCell(TObject @object)
+    public sealed override ObjectTable.Cell GetCell(TObject @object)
     {
         var mod = GetModContentPack(@object);
 
-        if (mod != null)
-        {
-            var widget = new Label(mod.Name)
-            .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)
-            .Tooltip(mod.PackageIdPlayerFacing);
-
-            return new(widget, mod);
-        }
-
-        return new(null, null);
+        return new Cell(mod);
     }
-    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> tableRecords)
+    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> contextObjects)
     {
-        var filterOptions = tableRecords
-            .Select(record => Cells[record].Data)
+        var filterOptions = contextObjects
+            .Select(GetModContentPack)
             .Distinct()
             .OrderBy(mod => mod?.Name)
             .Select<ModContentPack?, NTMFilterOption<ModContentPack?>>(
                 mod => mod == null ? new() : new(mod, mod.Name, null, mod.PackageIdPlayerFacing)
             );
 
-        yield return new(ColumnDef.Title, Make.OTMFilter<TObject, ModContentPack?>(@object => Cells[@object].Data, filterOptions));
+        yield return new(ColumnDef.Title, new OTMFilter<Cell, ModContentPack?>(cell => cell.Mod, filterOptions, this));
     }
-    public sealed override int Compare(TObject object1, TObject object2)
-    {
-        var modName1 = Cells[object1].Data?.Name;
-        var modName2 = Cells[object1].Data?.Name;
 
-        return Comparer.Default.Compare(modName1, modName2);
+    private sealed class Cell : ObjectTable.WidgetCell
+    {
+        protected override Widget? Widget { get; set; }
+        public override event Action? OnChange;
+        public ModContentPack? Mod { get; }
+        public string? ModName { get; }
+        public Cell(ModContentPack? mod)
+        {
+            Mod = mod;
+            ModName = mod?.Name;
+
+            if (mod != null)
+            {
+                Widget = new Label(mod.Name)
+                .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)
+                .Tooltip(mod.PackageIdPlayerFacing);
+            }
+        }
+        public override int CompareTo(ObjectTable.Cell cell)
+        {
+            return Comparer.Default.Compare(ModName, ((Cell)cell).ModName);
+        }
     }
 }

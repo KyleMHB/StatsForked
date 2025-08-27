@@ -19,7 +19,7 @@ public sealed partial class ObjectTable<TObject>
         PinnedRows.Remove(row);
         PinnedRowsHeight -= row.Height;
         UnpinnedRows.Add(row);
-        row.IsVisible = ObjectMatchesFilters(row.Object, ActiveFilters);
+        row.IsVisible = MatchRowCells(row.Cells, ActiveFilters);
         SortRows(UnpinnedRows);
     }
 
@@ -27,13 +27,22 @@ public sealed partial class ObjectTable<TObject>
     {
         public float Height;
         public bool IsVisible = true;
-        protected abstract Dictionary<ColumnWorker<TObject>, Widget> Cells { get; }
-        public Row()
-        {
-        }
-        public virtual bool Draw(
+        public abstract bool Draw(
             Rect rect,
-            List<ColumnWorker<TObject>> columns,
+            List<ColumnWorker> columns,
+            float offsetX,
+            float cellExtraWidth,
+            int index
+        );
+        public abstract float Resize(List<ColumnWorker> columns);
+    }
+
+    private abstract class Row<TCell> : Row where TCell : Widget
+    {
+        public abstract Dictionary<ColumnWorker, TCell> Cells { get; }
+        public override bool Draw(
+            Rect rect,
+            List<ColumnWorker> columns,
             float offsetX,
             float cellExtraWidth,
             int index
@@ -78,19 +87,18 @@ public sealed partial class ObjectTable<TObject>
 
             return false;
         }
-        public abstract float Resize(List<ColumnWorker<TObject>> columns);
     }
 
-    private sealed class ColumnTitlesRow : Row
+    private sealed class ColumnTitlesRow : Row<Widget>
     {
-        protected override Dictionary<ColumnWorker<TObject>, Widget> Cells { get; }
-        public ColumnTitlesRow(List<ColumnWorker<TObject>> columns, ObjectTable<TObject> parent) : base()
+        public override Dictionary<ColumnWorker, Widget> Cells { get; }
+        public ColumnTitlesRow(IReadOnlyList<ColumnWorker<TObject>> columns, ObjectTable<TObject> parent) : base()
         {
-            var cells = new Dictionary<ColumnWorker<TObject>, Widget>(columns.Count);
+            var cells = new Dictionary<ColumnWorker, Widget>(columns.Count);
 
             foreach (var column in columns)
             {
-                var cell = column.InitHeaderCell(parent);
+                var cell = column.GetHeaderCell(parent);
 
                 column.OnVisibilityChange += () =>
                 {
@@ -127,7 +135,7 @@ public sealed partial class ObjectTable<TObject>
         }
         public override bool Draw(
             Rect rect,
-            List<ColumnWorker<TObject>> columns,
+            List<ColumnWorker> columns,
             float offsetX,
             float cellExtraWidth,
             int index
@@ -137,7 +145,7 @@ public sealed partial class ObjectTable<TObject>
 
             return base.Draw(rect, columns, offsetX, cellExtraWidth, index);
         }
-        public override float Resize(List<ColumnWorker<TObject>> columns)
+        public override float Resize(List<ColumnWorker> columns)
         {
             Height = 0f;
 
@@ -158,26 +166,27 @@ public sealed partial class ObjectTable<TObject>
         }
     }
 
-    private sealed class ObjectRow : Row
+    private sealed class ObjectRow : Row<Cell>
     {
-        protected override Dictionary<ColumnWorker<TObject>, Widget> Cells { get; }
-        public readonly TObject Object;
+        public override Dictionary<ColumnWorker, Cell> Cells { get; }
         private bool IsHovered = false;
-        public ObjectRow(List<ColumnWorker<TObject>> columns, TObject @object) : base()
+        public ObjectRow(List<ColumnWorker<TObject>> columns, TObject @object, ObjectTable<TObject> parent) : base()
         {
-            var cells = new Dictionary<ColumnWorker<TObject>, Widget>(columns.Count);
+            var cells = new Dictionary<ColumnWorker, Cell>(columns.Count);
 
             foreach (var column in columns)
             {
-                cells[column] = column.InitCell(@object);
+                var cell = column.GetCell(@object);
+
+                cells[column] = cell;
+                cell.OnChange += () => parent.HandleCellUpdate(column);
             }
 
             Cells = cells;
-            Object = @object;
         }
         public override bool Draw(
             Rect rect,
-            List<ColumnWorker<TObject>> columns,
+            List<ColumnWorker> columns,
             float offsetX,
             float cellExtraWidth,
             int index
@@ -226,7 +235,7 @@ public sealed partial class ObjectTable<TObject>
 
             return false;
         }
-        public override float Resize(List<ColumnWorker<TObject>> columns)
+        public override float Resize(List<ColumnWorker> columns)
         {
             Height = 0f;
 
@@ -247,6 +256,20 @@ public sealed partial class ObjectTable<TObject>
             }
 
             return Height;
+        }
+        public int CompareToByColumn(ObjectRow row, ColumnWorker column)
+        {
+            // Idea: Upon sorting, if SortColumn != column, move the sort columns cell to a row,
+            // so when the data updates we won't have to go through the Cells dictionary to find the cell.
+            // Although, this will only optimize resorting on cell updates, not the sorting itself.
+            var result = Cells[column].CompareTo(row.Cells[column]);
+
+            if (result == 0)
+            {
+                result = GetHashCode().CompareTo(row.GetHashCode());
+            }
+
+            return result;
         }
     }
 }

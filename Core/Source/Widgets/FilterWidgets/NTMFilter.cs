@@ -9,13 +9,13 @@ using Verse.Sound;
 
 namespace Stats.Widgets;
 
-internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget<TObject>
+public abstract class NTMFilter<TCell, TLhs, TRhs> : FilterWidget where TCell : ObjectTable.Cell
 {
     public override bool IsActive => SelectedOptions.Count > 0;
     // TODO: See if IEnumerable is most fitting type here.
-    private readonly IEnumerable<NTMFilterOption<TOption>> Options;
-    private List<NTMFilterOption<TOption>>? _OptionsList;
-    private List<NTMFilterOption<TOption>> OptionsList => _OptionsList ??= Options.ToList();
+    private readonly IEnumerable<NTMFilterOption<TRhs>> Options;
+    private List<NTMFilterOption<TRhs>>? _OptionsList;
+    private List<NTMFilterOption<TRhs>> OptionsList => _OptionsList ??= Options.ToList();
     private OptionsWindowWidget? _OptionsWindow;
     private OptionsWindowWidget OptionsWindow => _OptionsWindow ??= new(OptionsList, this, Operators);
     private string? _Info = null;
@@ -43,14 +43,14 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
             return _Info = stringBuilder.ToString();
         }
     }
-    private readonly IEnumerable<RelOperator<TObjectValue, HashSet<TOption>>> Operators;
+    private readonly IEnumerable<RelOperator<TLhs, HashSet<TRhs>>> Operators;
     private string ButtonText => IsActive ? Info : ButtonTextWhenInactive;
     private readonly string ButtonTextWhenInactive;
     private const float ButtonMinWidth = 24f;
     private const float ButtonPadHor = Globals.GUI.PadSm;
-    private readonly HashSet<TOption> SelectedOptions = [];
-    private RelOperator<TObjectValue, HashSet<TOption>> _Operator;
-    protected RelOperator<TObjectValue, HashSet<TOption>> Operator
+    private readonly HashSet<TRhs> SelectedOptions = [];
+    private RelOperator<TLhs, HashSet<TRhs>> _Operator;
+    protected RelOperator<TLhs, HashSet<TRhs>> Operator
     {
         get => _Operator;
         set
@@ -66,14 +66,16 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
             OnChange?.Invoke(this);
         }
     }
-    private readonly RelOperator<TObjectValue, HashSet<TOption>> DefaultOperator;
-    public override event Action<FilterWidget<TObject>>? OnChange;
-    private readonly Func<TObject, TObjectValue> ObjectValueFunc;
+    private readonly RelOperator<TLhs, HashSet<TRhs>> DefaultOperator;
+    public override event Action<FilterWidget>? OnChange;
+    private readonly Func<TCell, TLhs> ObjectValueFunc;
+    private readonly ColumnWorker Column;
     protected NTMFilter(
-        Func<TObject, TObjectValue> objectValueFunc,
-        IEnumerable<NTMFilterOption<TOption>> options,
-        IEnumerable<RelOperator<TObjectValue, HashSet<TOption>>> operators,
-        RelOperator<TObjectValue, HashSet<TOption>> defaultOperator,
+        Func<TCell, TLhs> objectValueFunc,
+        IEnumerable<NTMFilterOption<TRhs>> options,
+        IEnumerable<RelOperator<TLhs, HashSet<TRhs>>> operators,
+        RelOperator<TLhs, HashSet<TRhs>> defaultOperator,
+        ColumnWorker column,
         string? label = null
     )
     {
@@ -82,6 +84,7 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
         Options = options;
         ButtonTextWhenInactive = label ?? "...";
         Operators = operators;
+        Column = column;
     }
     protected override Vector2 CalcSize()
     {
@@ -111,9 +114,9 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
 
         GUI.color = origGUIColor;
     }
-    public override bool Eval(TObject @object)
+    public override bool Eval(Dictionary<ColumnWorker, ObjectTable.Cell> cells)
     {
-        return Operator.Eval(ObjectValueFunc(@object), SelectedOptions);
+        return Operator.Eval(ObjectValueFunc((TCell)cells[Column]), SelectedOptions);
     }
     public sealed override void Reset()
     {
@@ -127,7 +130,7 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
         Resize();
         OnChange?.Invoke(this);
     }
-    private void HandleOptionClick(TOption option)
+    private void HandleOptionClick(TRhs option)
     {
         if (SelectedOptions.Contains(option))
         {
@@ -170,9 +173,9 @@ internal abstract class NTMFilter<TObject, TObjectValue, TOption> : FilterWidget
         private Vector2 ScrollPosition;
         private static readonly float OptionWidgetHeight = Text.LineHeight + OptionPadVer * 2f;
         public OptionsWindowWidget(
-            List<NTMFilterOption<TOption>> options,
-            NTMFilter<TObject, TObjectValue, TOption> parent,
-            IEnumerable<RelOperator<TObjectValue, HashSet<TOption>>> operators
+            List<NTMFilterOption<TRhs>> options,
+            NTMFilter<TCell, TLhs, TRhs> parent,
+            IEnumerable<RelOperator<TLhs, HashSet<TRhs>>> operators
         )
         {
             doWindowBackground = false;

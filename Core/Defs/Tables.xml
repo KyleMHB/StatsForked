@@ -496,6 +496,9 @@
         <workerClass>Stats.PawnsTableWorker</workerClass>
         <columns>
             <li>Pawn_Name</li>
+            <li>Thing_ArmorRatingSharp</li>
+            <li>Thing_ArmorRatingBlunt</li>
+            <li>Thing_ArmorRatingHeat</li>
             <li>Pawn_ComfyTemperatureMin</li>
             <li>Pawn_ComfyTemperatureMax</li>
             <li>Thing_Flammability</li>
