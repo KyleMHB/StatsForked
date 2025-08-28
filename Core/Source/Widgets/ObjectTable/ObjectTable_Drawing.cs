@@ -16,6 +16,9 @@ public sealed partial class ObjectTable<TObject>
         if (Event.current.type == EventType.Layout)
         {
             DoTasks();
+
+            // Skip the event? This coould save us around 2ms/frame, but is it safe to do?
+            // Maybe skip only if some tasks are scheduled.
         }
 
         // Probably could cache these.
@@ -245,9 +248,11 @@ public sealed partial class ObjectTable<TObject>
             UpdateCachedColumns();
         }
 
-        if (DoRefreshColumns)
+        //if (DoRefreshColumns)
+        if (ColumnsToRefresh.Count > 0)
         {
-            RefreshColumns();
+            ColumnsToRefresh.Pop().RefreshCells();
+            //RefreshColumns();
         }
         else if (DoFilter)
         {
@@ -263,7 +268,13 @@ public sealed partial class ObjectTable<TObject>
         }
         else
         {
-            DoRefreshColumns = true;
+            //DoRefreshColumns = true;
+
+            // TODO: Do not add "static" columns.
+            foreach (var column in Columns)
+            {
+                ColumnsToRefresh.Push(column);
+            }
         }
     }
     private void Resize()

@@ -23,7 +23,7 @@ public abstract class TableWorker<TObject> : TableWorker
     protected TableWorker(TableDef tableDef) : base(tableDef)
     {
     }
-    protected virtual ObjectTable MakeTableWidget()
+    protected virtual ObjectTable<TObject> MakeTableWidget()
     {
         var columnWorkers = new List<ColumnWorker<TObject>>(TableDef.columns.Count);
 

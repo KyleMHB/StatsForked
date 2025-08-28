@@ -27,7 +27,9 @@ public abstract class ObjectTable
     {
         public abstract event Action? OnChange;
         public abstract int CompareTo(Cell cell);
-        //public abstract void Dispose();
+        public virtual void Dispose()
+        {
+        }
     }
 
     public abstract class WidgetCell : Cell
@@ -102,7 +104,8 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
     private bool DoSort = true;
     private bool DoResize = true;
     private bool DoUpdateCachedColumns = true;
-    private bool DoRefreshColumns;
+    //private bool DoRefreshColumns;
+    private readonly Stack<ColumnWorker> ColumnsToRefresh;
     public ObjectTable(List<ColumnWorker<TObject>> columns, IEnumerable<TObject> initialObjects, IEnumerable<TObject> contextObjects)
     {
         columns[0].IsPinned = true;
@@ -234,6 +237,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
         ColumnsVisible = new(columns.Count);
         ColumnsVisiblePinned = new(columns.Count);
         ColumnsVisibleUnpinned = new(columns.Count);
+        ColumnsToRefresh = new(columns.Count);
         SortColumn = columns[0];
         HeaderRows = [new ColumnTitlesRow(columns, this)];
         UnpinnedRows = rows;
@@ -257,10 +261,35 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
     }
     // Note: Add/Remove methods have to be as fast as possible
     // because they can be called multiple times in a row.
+    //
+    // TODO: Do not add/remove rows if the table is not shown on the screen.
     public void AddObject(TObject @object)
     {
+        UnpinnedRows.Add(new ObjectRow(Columns, @object, this));
+        //DoSort = true;
+        SortRows(UnpinnedRows);
+        if (ActiveFilters.Count > 0)
+        {
+            DoFilter = true;
+        }
+        DoResize = true;
     }
     public void RemoveObject(TObject @object)
     {
+        PinnedRows.RemoveWhere(row => DisposeOfRowIfMatch(row, @object));
+        UnpinnedRows.RemoveWhere(row => DisposeOfRowIfMatch(row, @object));
+
+        DoResize = true;
+    }
+    private static bool DisposeOfRowIfMatch(ObjectRow row, TObject @object)
+    {
+        var isObj = row.Object.Equals(@object);
+
+        if (isObj)
+        {
+            row.Dispose();
+        }
+
+        return isObj;
     }
 }

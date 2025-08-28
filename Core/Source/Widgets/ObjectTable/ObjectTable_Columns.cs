@@ -27,13 +27,13 @@ public sealed partial class ObjectTable<TObject>
 
         DoUpdateCachedColumns = false;
     }
-    private void RefreshColumns()
-    {
-        foreach (var column in Columns)
-        {
-            column.RefreshCells();
-        }
+    //private void RefreshColumns()
+    //{
+    //    foreach (var column in Columns)
+    //    {
+    //        column.RefreshCells();
+    //    }
 
-        DoRefreshColumns = false;
-    }
+    //    DoRefreshColumns = false;
+    //}
 }

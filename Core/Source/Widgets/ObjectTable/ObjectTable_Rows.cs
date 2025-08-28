@@ -170,6 +170,7 @@ public sealed partial class ObjectTable<TObject>
     {
         public override Dictionary<ColumnWorker, Cell> Cells { get; }
         private bool IsHovered = false;
+        public TObject Object { get; }
         public ObjectRow(List<ColumnWorker<TObject>> columns, TObject @object, ObjectTable<TObject> parent) : base()
         {
             var cells = new Dictionary<ColumnWorker, Cell>(columns.Count);
@@ -183,6 +184,7 @@ public sealed partial class ObjectTable<TObject>
             }
 
             Cells = cells;
+            Object = @object;
         }
         public override bool Draw(
             Rect rect,
@@ -270,6 +272,13 @@ public sealed partial class ObjectTable<TObject>
             }
 
             return result;
+        }
+        public void Dispose()
+        {
+            foreach (var cell in Cells.Values)
+            {
+                cell.Dispose();
+            }
         }
     }
 }

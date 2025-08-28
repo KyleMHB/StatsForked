@@ -122,5 +122,9 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike>
         {
             return ValueDisplayed.CompareTo(((Cell)cell).ValueDisplayed);
         }
+        public override void Dispose()
+        {
+            Column.OnRefresh -= HandleColumnRefresh;
+        }
     }
 }
