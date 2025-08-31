@@ -10,7 +10,7 @@ namespace Stats;
 
 public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Animal_BiomesColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
+    public Animal_BiomesColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     // This exists mainly for consistency, for when this column worker is used by several tables.
@@ -55,7 +55,7 @@ public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
                 def => def == null ? new() : new(def, def.LabelCap)
             );
 
-        yield return new(ColumnDef.Title, new MTMFilter<Cell, BiomeDef>(cell => cell.Biomes, options, this));
+        yield return new(Def.Title, new MTMFilter<Cell, BiomeDef>(cell => cell.Biomes, options, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell

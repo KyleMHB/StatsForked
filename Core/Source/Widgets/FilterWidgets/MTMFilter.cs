@@ -5,19 +5,18 @@ using Verse;
 
 namespace Stats.Widgets;
 
-public sealed class MTMFilter<TCell, TOption> : NTMFilter<TCell, HashSet<TOption>, TOption> where TCell : ObjectTable.Cell
+public sealed class MTMFilter<TOption> : NTMFilter<HashSet<TOption>, TOption>
 {
     public override bool IsActive =>
         base.IsActive
         || Operator == Operators.IsEqualTo.Instance
         || Operator == Operators.IsNotEqualTo.Instance;
     public MTMFilter(
-        Func<TCell, HashSet<TOption>> objectValueFunc,
+        Func<ObjectTable.Cell, HashSet<TOption>> cellValueFunc,
         IEnumerable<NTMFilterOption<TOption>> options,
-        ColumnWorker column,
         string? label = null
     ) : base(
-        objectValueFunc,
+        cellValueFunc,
         options,
         [
             Operators.IntersectsWith.Instance,
@@ -28,7 +27,6 @@ public sealed class MTMFilter<TCell, TOption> : NTMFilter<TCell, HashSet<TOption
             Operators.IsNotEqualTo.Instance,
         ],
         Operators.IntersectsWith.Instance,
-        column,
         label
     )
     {

@@ -7,12 +7,12 @@ using Verse;
 
 namespace Stats;
 
-public class Thing_StatColumnWorker : ColumnWorker<ThingAlike>
+public class Thing_StatColumnWorker : ColumnWorker, IColumnWorker<ThingAlike>, IColumnWorker<Thing>
 {
     public static readonly Regex NumberRegex = new(@"(-?[0-9]+\.?[0-9]*).*", RegexOptions.Compiled);
     private const ToStringNumberSense _ToStringNumberSense = ToStringNumberSense.Absolute;
     protected StatDef Stat { get; }
-    public Thing_StatColumnWorker(StatColumnDef columnDef) : base(columnDef, CellStyleType.Number)
+    public Thing_StatColumnWorker(StatColumnDef columnDef) : base(columnDef, IColumnWorker.CellStyleType.Number)
     {
         Stat = columnDef.stat;
     }
@@ -20,18 +20,25 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike>
     {
         return stat.Worker.GetStatDrawEntryLabel(stat, value, _ToStringNumberSense, statRequest);
     }
-    public override ObjectTable.Cell GetCell(ThingAlike thing)
+    public ObjectTable.Cell GetCell(ThingAlike thing)
     {
         return new Cell(thing, this);
     }
-    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> _)
+    public IEnumerable<ObjectTable.ObjectProp> GetObjectProps(TableWorker<ThingAlike> _)
     {
-        yield return new(ColumnDef.Title, new NumberFilter<Cell>(cell => cell.ValueDisplayed, this));
+        yield return new(Def.Title, new NumberFilter(cell => ((Cell)cell).ValueDisplayed));
+    }
+    public ObjectTable.Cell GetCell(Thing thing)
+    {
+        throw new NotImplementedException();
+    }
+    public IEnumerable<ObjectTable.ObjectProp> GetObjectProps(TableWorker<Thing> _)
+    {
+        throw new NotImplementedException();
     }
 
-    private class Cell : ObjectTable.WidgetCell
+    private class Cell : ObjectTable.WidgetCell, ObjectTable.Cell.IRefreshable
     {
-        public override event Action? OnChange;
         protected override Widget? Widget { get; set; }
         public float ValueRaw { get; private set; }
         public decimal ValueDisplayed { get; private set; }
@@ -55,15 +62,14 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike>
             {
                 var statValue = StatWorker.GetValue(statRequest);
 
-                Refresh(statRequest, statValue);
+                Refresh_Int(statRequest, statValue);
             }
 
-            if (thing.Thing != null && column.Stat.immutable == false && IsValidForThing)
-            {
-                column.OnRefresh += HandleColumnRefresh;
-            }
+            //if (thing.Thing != null && column.Stat.immutable == false && IsValidForThing)
+            //{
+            //}
         }
-        private void Refresh(StatRequest statRequest, float statValue)
+        private void Refresh_Int(StatRequest statRequest, float statValue)
         {
             if (IsValidForThing && statValue != 0f)
             {
@@ -100,10 +106,8 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike>
                 ValueRaw = 0f;
                 ValueDisplayed = 0m;
             }
-
-            OnChange?.Invoke();
         }
-        private void HandleColumnRefresh()
+        public bool Refresh()
         {
             if (IsValidForThing)
             {
@@ -114,17 +118,17 @@ public class Thing_StatColumnWorker : ColumnWorker<ThingAlike>
 
                 if (ValueRaw != statValue)
                 {
-                    Refresh(statRequest, statValue);
+                    Refresh_Int(statRequest, statValue);
+
+                    return true;
                 }
             }
+
+            return false;
         }
         public override int CompareTo(ObjectTable.Cell cell)
         {
             return ValueDisplayed.CompareTo(((Cell)cell).ValueDisplayed);
-        }
-        public override void Dispose()
-        {
-            Column.OnRefresh -= HandleColumnRefresh;
         }
     }
 }

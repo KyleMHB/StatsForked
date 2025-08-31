@@ -7,7 +7,7 @@ namespace Stats;
 
 public sealed class Pawn_NameColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Pawn_NameColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
+    public Pawn_NameColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     public override ObjectTable.Cell GetCell(ThingAlike thing)
@@ -16,7 +16,7 @@ public sealed class Pawn_NameColumnWorker : ColumnWorker<ThingAlike>
     }
     public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> _)
     {
-        yield return new(ColumnDef.Title, new StringFilter<Cell>(cell => cell.Text, this));
+        yield return new(Def.Title, new StringFilter<Cell>(cell => cell.Text, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell

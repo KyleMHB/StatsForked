@@ -8,7 +8,7 @@ namespace Stats;
 
 public sealed class Building_SizeColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Building_SizeColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.Number)
+    public Building_SizeColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.Number, TODO)
     {
     }
     public override ObjectTable.Cell GetCell(ThingAlike thing)
@@ -30,7 +30,7 @@ public sealed class Building_SizeColumnWorker : ColumnWorker<ThingAlike>
             .OrderBy(size => size.Area)
             .Select(size => new NTMFilterOption<IntVec2>(size, size.ToStringCross()));
 
-        yield return new(ColumnDef.Title, new OTMFilter<Cell, IntVec2>(cell => cell.BuildingSize, filterOptions, this));
+        yield return new(Def.Title, new OTMFilter<Cell, IntVec2>(cell => cell.BuildingSize, filterOptions, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell

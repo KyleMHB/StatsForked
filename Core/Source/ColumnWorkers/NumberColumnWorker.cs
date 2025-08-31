@@ -13,7 +13,7 @@ public abstract class NumberColumnWorker<TObject> : ColumnWorker<TObject>
         ColumnDef columndef,
         Texture2D? icon = null,
         string formatString = ""
-    ) : base(columndef, CellStyleType.Number)
+    ) : base(columndef, CellStyleType.Number, TODO)
     {
         Icon = icon;
         FormatString = formatString;
@@ -27,7 +27,7 @@ public abstract class NumberColumnWorker<TObject> : ColumnWorker<TObject>
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> _)
     {
-        yield return new(ColumnDef.Title, new NumberFilter<Cell>(cell => cell.Value, this));
+        yield return new(Def.Title, new NumberFilter<Cell>(cell => cell.Value, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell

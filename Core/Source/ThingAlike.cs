@@ -32,16 +32,9 @@ public readonly record struct ThingAlike
 {
     public ThingDef Def { get; }
     public ThingDef? StuffDef { get; }
-    public Thing? Thing { get; }
     public ThingAlike(ThingDef def, ThingDef? stuffDef = null)
     {
         Def = def;
         StuffDef = stuffDef;
-    }
-    public ThingAlike(Thing thing)
-    {
-        Def = thing.def;
-        StuffDef = thing.Stuff;
-        Thing = thing;
     }
 }

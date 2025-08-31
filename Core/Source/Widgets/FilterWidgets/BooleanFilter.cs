@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
 namespace Stats.Widgets;
 
-public sealed class BooleanFilter<TCell> : FilterWidget where TCell : ObjectTable.Cell
+public sealed class BooleanFilter : FilterWidget
 {
     public override bool IsActive => Value != null;
     public override event Action<FilterWidget>? OnChange;
@@ -23,12 +22,10 @@ public sealed class BooleanFilter<TCell> : FilterWidget where TCell : ObjectTabl
             OnChange?.Invoke(this);
         }
     } = null;
-    private readonly Func<TCell, bool> ObjectValueFunc;
-    private readonly ColumnWorker Column;
-    public BooleanFilter(Func<TCell, bool> objectValueFunc, ColumnWorker column)
+    private readonly Func<ObjectTable.Cell, bool> CellValueFunc;
+    public BooleanFilter(Func<ObjectTable.Cell, bool> cellValueFunc)
     {
-        ObjectValueFunc = objectValueFunc;
-        Column = column;
+        CellValueFunc = cellValueFunc;
     }
     protected override Vector2 CalcSize()
     {
@@ -62,9 +59,9 @@ public sealed class BooleanFilter<TCell> : FilterWidget where TCell : ObjectTabl
 
         GUI.color = origGUIColor;
     }
-    public override bool Eval(Dictionary<ColumnWorker, ObjectTable.Cell> cells)
+    public override bool Eval(ObjectTable.Cell cell)
     {
-        return ObjectValueFunc((TCell)cells[Column]) == Value;
+        return CellValueFunc(cell) == Value;
     }
     public override void Reset()
     {

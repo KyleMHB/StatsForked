@@ -7,7 +7,7 @@ namespace Stats.Compat.Biotech;
 
 public sealed class Gene_LabelColumnWorker : ColumnWorker<GeneDef>
 {
-    public Gene_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
+    public Gene_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     public override ObjectTable.Cell GetCell(GeneDef geneDef)
@@ -16,7 +16,7 @@ public sealed class Gene_LabelColumnWorker : ColumnWorker<GeneDef>
     }
     public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<GeneDef> _)
     {
-        yield return new(ColumnDef.Title, new StringFilter<Cell>(cell => cell.Text, this));
+        yield return new(Def.Title, new StringFilter<Cell>(cell => cell.Text, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell

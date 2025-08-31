@@ -8,7 +8,7 @@ namespace Stats;
 
 public abstract class ThingDefSetColumnWorker<TObject, TDef> : ColumnWorker<TObject> where TDef : ThingDef
 {
-    protected ThingDefSetColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
+    protected ThingDefSetColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     protected abstract HashSet<TDef> GetValue(TObject @object);
@@ -27,10 +27,10 @@ public abstract class ThingDefSetColumnWorker<TObject, TDef> : ColumnWorker<TObj
             .Select<TDef, NTMFilterOption<TDef>>(
                 thingDef => thingDef == null
                     ? new()
-                    : new(thingDef, thingDef.LabelCap, new ThingIcon(thingDef))
+                    : new(thingDef, thingDef.LabelCap, new ThingDefIcon(thingDef))
             );
 
-        yield return new(ColumnDef.Title, new MTMFilter<Cell, TDef>(cell => cell.Defs, options, this));
+        yield return new(Def.Title, new MTMFilter<Cell, TDef>(cell => cell.Defs, options, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell
@@ -48,7 +48,7 @@ public abstract class ThingDefSetColumnWorker<TObject, TDef> : ColumnWorker<TObj
 
                 foreach (var thingDef in defs.OrderBy(thingDef => thingDef.label))
                 {
-                    var icon = new ThingIcon(thingDef)
+                    var icon = new ThingDefIcon(thingDef)
                     .ToButtonGhostly(() => Widgets.Draw.DefInfoDialog(thingDef))
                     .Tooltip(thingDef.LabelCap);
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Stats.Widgets;
 
@@ -8,7 +7,7 @@ public abstract class FilterWidget : Widget
 {
     public abstract bool IsActive { get; }
     public abstract event Action<FilterWidget>? OnChange;
-    public abstract bool Eval(Dictionary<ColumnWorker, ObjectTable.Cell> cells);
+    public abstract bool Eval(ObjectTable.Cell cell);
     public abstract void Reset();
     public abstract void NotifyChanged();
 

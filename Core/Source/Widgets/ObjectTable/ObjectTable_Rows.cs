@@ -25,24 +25,24 @@ public sealed partial class ObjectTable<TObject>
 
     private abstract class Row
     {
-        public float Height;
-        public bool IsVisible = true;
+        public float Height { get; protected set; }
+        public bool IsVisible { get; set; } = true;
         public abstract bool Draw(
             Rect rect,
-            List<ColumnWorker> columns,
+            List<Column> columns,
             float offsetX,
             float cellExtraWidth,
             int index
         );
-        public abstract float Resize(List<ColumnWorker> columns);
+        public abstract float Resize(List<Column> columns);
     }
 
     private abstract class Row<TCell> : Row where TCell : Widget
     {
-        public abstract Dictionary<ColumnWorker, TCell> Cells { get; }
+        public abstract Dictionary<Column, TCell> Cells { get; }
         public override bool Draw(
             Rect rect,
-            List<ColumnWorker> columns,
+            List<Column> columns,
             float offsetX,
             float cellExtraWidth,
             int index
@@ -60,10 +60,9 @@ public sealed partial class ObjectTable<TObject>
 
                 if (rect.xMax > 0f)
                 {
-                    var cell = Cells[column];
-
                     try
                     {
+                        var cell = Cells[column];
                         var origTextAnchor = Text.Anchor;
                         Text.Anchor = column.CellTextAnchor;
 
@@ -91,51 +90,21 @@ public sealed partial class ObjectTable<TObject>
 
     private sealed class ColumnTitlesRow : Row<Widget>
     {
-        public override Dictionary<ColumnWorker, Widget> Cells { get; }
-        public ColumnTitlesRow(IReadOnlyList<ColumnWorker<TObject>> columns, ObjectTable<TObject> parent) : base()
+        public override Dictionary<Column, Widget> Cells { get; }
+        public ColumnTitlesRow(IReadOnlyList<Column> columns) : base()
         {
-            var cells = new Dictionary<ColumnWorker, Widget>(columns.Count);
+            var cells = new Dictionary<Column, Widget>(columns.Count);
 
             foreach (var column in columns)
             {
-                var cell = column.GetHeaderCell(parent);
-
-                column.OnVisibilityChange += () =>
-                {
-                    parent.DoResize = true;
-                    parent.DoUpdateCachedColumns = true;
-                };
-                column.OnHeaderCellClick += () =>
-                {
-                    if (Event.current.control)
-                    {
-                        column.IsPinned = !column.IsPinned;
-
-                        parent.DoUpdateCachedColumns = true;
-                    }
-                    else
-                    {
-                        if (parent.SortColumn == column)
-                        {
-                            parent.SortDirection *= -1;
-                        }
-                        else
-                        {
-                            parent.SortColumn = column;
-                        }
-
-                        parent.DoSort = true;
-                    }
-                };
-
-                cells[column] = cell;
+                cells[column] = column.GetHeaderCell();
             }
 
             Cells = cells;
         }
         public override bool Draw(
             Rect rect,
-            List<ColumnWorker> columns,
+            List<Column> columns,
             float offsetX,
             float cellExtraWidth,
             int index
@@ -145,7 +114,7 @@ public sealed partial class ObjectTable<TObject>
 
             return base.Draw(rect, columns, offsetX, cellExtraWidth, index);
         }
-        public override float Resize(List<ColumnWorker> columns)
+        public override float Resize(List<Column> columns)
         {
             Height = 0f;
 
@@ -168,19 +137,16 @@ public sealed partial class ObjectTable<TObject>
 
     private sealed class ObjectRow : Row<Cell>
     {
-        public override Dictionary<ColumnWorker, Cell> Cells { get; }
+        public override Dictionary<Column, Cell> Cells { get; }
         private bool IsHovered = false;
         public TObject Object { get; }
-        public ObjectRow(List<ColumnWorker<TObject>> columns, TObject @object, ObjectTable<TObject> parent) : base()
+        public ObjectRow(List<Column> columns, TObject @object) : base()
         {
-            var cells = new Dictionary<ColumnWorker, Cell>(columns.Count);
+            var cells = new Dictionary<Column, Cell>(columns.Count);
 
             foreach (var column in columns)
             {
-                var cell = column.GetCell(@object);
-
-                cells[column] = cell;
-                cell.OnChange += () => parent.HandleCellUpdate(column);
+                cells[column] = column.GetCell(@object);
             }
 
             Cells = cells;
@@ -188,7 +154,7 @@ public sealed partial class ObjectTable<TObject>
         }
         public override bool Draw(
             Rect rect,
-            List<ColumnWorker> columns,
+            List<Column> columns,
             float offsetX,
             float cellExtraWidth,
             int index
@@ -237,7 +203,7 @@ public sealed partial class ObjectTable<TObject>
 
             return false;
         }
-        public override float Resize(List<ColumnWorker> columns)
+        public override float Resize(List<Column> columns)
         {
             Height = 0f;
 
@@ -259,7 +225,7 @@ public sealed partial class ObjectTable<TObject>
 
             return Height;
         }
-        public int CompareToByColumn(ObjectRow row, ColumnWorker column)
+        public int CompareToByColumn(ObjectRow row, Column column)
         {
             // Idea: Upon sorting, if SortColumn != column, move the sort columns cell to a row,
             // so when the data updates we won't have to go through the Cells dictionary to find the cell.
@@ -275,9 +241,9 @@ public sealed partial class ObjectTable<TObject>
         }
         public void Dispose()
         {
-            foreach (var cell in Cells.Values)
+            foreach (var (column, cell) in Cells)
             {
-                cell.Dispose();
+                column.DisposeOfCell(cell);
             }
         }
     }

@@ -6,7 +6,7 @@ namespace Stats;
 
 public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
 {
-    protected BooleanColumnWorker(ColumnDef columndef) : base(columndef, CellStyleType.Boolean)
+    protected BooleanColumnWorker(ColumnDef columndef) : base(columndef, CellStyleType.Boolean, TODO)
     {
     }
     protected abstract bool GetValue(TObject @object);
@@ -18,7 +18,7 @@ public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
     }
     public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> _)
     {
-        yield return new(ColumnDef.Title, new BooleanFilter<Cell>(cell => cell.Value, this));
+        yield return new(Def.Title, new BooleanFilter<Cell>(cell => cell.Value, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell

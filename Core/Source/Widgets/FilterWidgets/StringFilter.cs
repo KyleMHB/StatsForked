@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Stats.Widgets;
 
-public sealed class StringFilter<TCell> : FilterWidgetWithInputField<string, string> where TCell : ObjectTable.Cell
+public sealed class StringFilter : FilterWidgetWithInputField<string, string>
 {
     public override bool IsActive => Value.Length > 0;
     private string _Value = "";
@@ -41,23 +40,21 @@ public sealed class StringFilter<TCell> : FilterWidgetWithInputField<string, str
     }
     protected override string InputFieldText => Value;
     public override event Action<FilterWidget>? OnChange;
-    private readonly Func<TCell, string> ObjectValueFunc;
-    private readonly ColumnWorker Column;
-    public StringFilter(Func<TCell, string> objectValueFunc, ColumnWorker column, string? placeholder = null) : base([
+    private readonly Func<ObjectTable.Cell, string> CellValueFunc;
+    public StringFilter(Func<ObjectTable.Cell, string> cellValueFunc, string? placeholder = null) : base([
         Operators.Contains.Instance,
         Operators.NotContains.Instance,
     ], placeholder)
     {
-        ObjectValueFunc = objectValueFunc;
-        Column = column;
+        CellValueFunc = cellValueFunc;
     }
     protected override void DrawInputField(Rect rect)
     {
         Value = GUI.TextField(rect, Value);
     }
-    public override bool Eval(Dictionary<ColumnWorker, ObjectTable.Cell> cells)
+    public override bool Eval(ObjectTable.Cell cell)
     {
-        return Operator.Eval(ObjectValueFunc((TCell)cells[Column]), Value);
+        return Operator.Eval(CellValueFunc(cell), Value);
     }
     public override void Reset()
     {

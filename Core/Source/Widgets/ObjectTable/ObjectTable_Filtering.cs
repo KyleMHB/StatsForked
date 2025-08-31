@@ -66,5 +66,7 @@ public sealed partial class ObjectTable<TObject>
         };
     }
 
-    private delegate bool RowCellsMatcher(Dictionary<ColumnWorker, Cell> cells, HashSet<FilterWidget> filters);
+    private readonly record struct Filter(Column Column, FilterWidget Widget);
+
+    private delegate bool RowCellsMatcher(Dictionary<Column, Cell> cells, HashSet<Filter> filters);
 }

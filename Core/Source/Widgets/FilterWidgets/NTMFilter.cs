@@ -9,7 +9,7 @@ using Verse.Sound;
 
 namespace Stats.Widgets;
 
-public abstract class NTMFilter<TCell, TLhs, TRhs> : FilterWidget where TCell : ObjectTable.Cell
+public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 {
     public override bool IsActive => SelectedOptions.Count > 0;
     // TODO: See if IEnumerable is most fitting type here.
@@ -68,23 +68,20 @@ public abstract class NTMFilter<TCell, TLhs, TRhs> : FilterWidget where TCell : 
     }
     private readonly RelOperator<TLhs, HashSet<TRhs>> DefaultOperator;
     public override event Action<FilterWidget>? OnChange;
-    private readonly Func<TCell, TLhs> ObjectValueFunc;
-    private readonly ColumnWorker Column;
+    private readonly Func<ObjectTable.Cell, TLhs> CellValueFunc;
     protected NTMFilter(
-        Func<TCell, TLhs> objectValueFunc,
+        Func<ObjectTable.Cell, TLhs> cellValueFunc,
         IEnumerable<NTMFilterOption<TRhs>> options,
         IEnumerable<RelOperator<TLhs, HashSet<TRhs>>> operators,
         RelOperator<TLhs, HashSet<TRhs>> defaultOperator,
-        ColumnWorker column,
         string? label = null
     )
     {
-        ObjectValueFunc = objectValueFunc;
+        CellValueFunc = cellValueFunc;
         _Operator = DefaultOperator = defaultOperator;
         Options = options;
         ButtonTextWhenInactive = label ?? "...";
         Operators = operators;
-        Column = column;
     }
     protected override Vector2 CalcSize()
     {
@@ -114,9 +111,9 @@ public abstract class NTMFilter<TCell, TLhs, TRhs> : FilterWidget where TCell : 
 
         GUI.color = origGUIColor;
     }
-    public override bool Eval(Dictionary<ColumnWorker, ObjectTable.Cell> cells)
+    public override bool Eval(ObjectTable.Cell cell)
     {
-        return Operator.Eval(ObjectValueFunc((TCell)cells[Column]), SelectedOptions);
+        return Operator.Eval(CellValueFunc(cell), SelectedOptions);
     }
     public sealed override void Reset()
     {
@@ -174,7 +171,7 @@ public abstract class NTMFilter<TCell, TLhs, TRhs> : FilterWidget where TCell : 
         private static readonly float OptionWidgetHeight = Text.LineHeight + OptionPadVer * 2f;
         public OptionsWindowWidget(
             List<NTMFilterOption<TRhs>> options,
-            NTMFilter<TCell, TLhs, TRhs> parent,
+            NTMFilter<TLhs, TRhs> parent,
             IEnumerable<RelOperator<TLhs, HashSet<TRhs>>> operators
         )
         {

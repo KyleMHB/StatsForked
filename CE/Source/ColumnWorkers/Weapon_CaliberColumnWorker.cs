@@ -9,7 +9,7 @@ namespace Stats.Compat.CE;
 
 public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Weapon_CaliberColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
+    public Weapon_CaliberColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     public override ObjectTable.Cell GetCell(ThingAlike thing)
@@ -47,7 +47,7 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike>
                 option => option == null ? new() : new(option, option.ToString())
             );
 
-        yield return new(ColumnDef.Title, new OTMFilter<Cell, string?>(cell => cell.Value, options, this));
+        yield return new(Def.Title, new OTMFilter<Cell, string?>(cell => cell.Value, options, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell

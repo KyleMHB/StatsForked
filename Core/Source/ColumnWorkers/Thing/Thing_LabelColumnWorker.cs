@@ -13,7 +13,7 @@ namespace Stats;
 // icon but of different color.
 public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Thing_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
+    public Thing_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     public override ObjectTable.Cell GetCell(ThingAlike thing)
@@ -29,7 +29,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
             .Distinct()
             .OrderBy(thingDef => thingDef.label)
             .Select<ThingDef, NTMFilterOption<ThingDef>>(
-                thingDef => new(thingDef, thingDef.LabelCap, new ThingIcon(thingDef))
+                thingDef => new(thingDef, thingDef.LabelCap, new ThingDefIcon(thingDef))
             );
         yield return new(new Label("Type"), new OTMFilter<Cell, ThingDef>(cell => cell.Def, typeFilterOptions, this));
 
@@ -57,7 +57,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
                 .Select<ThingDef?, NTMFilterOption<ThingDef?>>(
                     thingDef => thingDef == null
                         ? new()
-                        : new(thingDef, thingDef.LabelCap, new ThingIcon(thingDef))
+                        : new(thingDef, thingDef.LabelCap, new ThingDefIcon(thingDef))
                 );
             var stuffFilter = new OTMFilter<Cell, ThingDef?>(cell => cell.StuffDef, stuffFilterOptions, this);
             yield return new(new Label("Material"), stuffFilter);
@@ -82,7 +82,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
                 ? thing.Def.LabelCap.RawText
                 : $"{thing.StuffDef.LabelAsStuff.CapitalizeFirst()} {thing.Def.label}";
             var widget = new HorizontalContainer([
-                new ThingIcon(thing.Def, thing.StuffDef)
+                new ThingDefIcon(thing.Def, thing.StuffDef)
                 .PaddingAbs(2f)
                 .SizeAbs(Verse.Text.LineHeight + ObjectTable.CellPadVer * 2f)
                 .ToButtonGhostly(() => Widgets.Draw.DefInfoDialog(thing.Def, thing.StuffDef)),

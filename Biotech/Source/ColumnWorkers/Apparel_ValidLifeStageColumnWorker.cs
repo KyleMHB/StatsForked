@@ -9,7 +9,7 @@ namespace Stats.Compat.Biotech;
 
 public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Apparel_ValidLifeStageColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
+    public Apparel_ValidLifeStageColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     private static readonly Func<ThingDef, HashSet<DevelopmentalStage>> GetValidLifeStages =
@@ -50,7 +50,7 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike
             .OrderBy(lifeStage => lifeStage)
             .Select(lifeStage => new NTMFilterOption<DevelopmentalStage>(lifeStage, GetLifeStageString(lifeStage)));
 
-        yield return new(ColumnDef.Title, new MTMFilter<Cell, DevelopmentalStage>(cell => cell.Value, filterOptions, this));
+        yield return new(Def.Title, new MTMFilter<Cell, DevelopmentalStage>(cell => cell.Value, filterOptions, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell

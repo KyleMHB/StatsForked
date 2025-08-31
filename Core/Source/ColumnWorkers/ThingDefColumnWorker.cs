@@ -8,7 +8,7 @@ namespace Stats;
 
 public abstract class ThingDefColumnWorker<TObject, TDef> : ColumnWorker<TObject> where TDef : ThingDef?
 {
-    protected ThingDefColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
+    protected ThingDefColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     protected abstract TDef GetValue(TObject @object);
@@ -28,7 +28,7 @@ public abstract class ThingDefColumnWorker<TObject, TDef> : ColumnWorker<TObject
                 def => def == null ? new() : new(def, def.LabelCap)
             );
 
-        yield return new(ColumnDef.Title, new OTMFilter<Cell, TDef>(cell => cell.Def, options, this));
+        yield return new(Def.Title, new OTMFilter<Cell, TDef>(cell => cell.Def, options, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell
@@ -45,7 +45,7 @@ public abstract class ThingDefColumnWorker<TObject, TDef> : ColumnWorker<TObject
             if (def != null)
             {
                 Widget = new HorizontalContainer([
-                    new ThingIcon(def).ToButtonGhostly(() => Widgets.Draw.DefInfoDialog(def)),
+                    new ThingDefIcon(def).ToButtonGhostly(() => Widgets.Draw.DefInfoDialog(def)),
                     new Label(def.LabelCap),
                 ], Globals.GUI.PadSm)
                 .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);

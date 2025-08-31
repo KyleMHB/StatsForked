@@ -9,7 +9,7 @@ namespace Stats;
 
 public sealed class Thing_TechLevelColumnWorker : ColumnWorker<ThingAlike>
 {
-    public Thing_TechLevelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
+    public Thing_TechLevelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     public override ObjectTable.Cell GetCell(ThingAlike thing)
@@ -26,7 +26,7 @@ public sealed class Thing_TechLevelColumnWorker : ColumnWorker<ThingAlike>
                 techLevel => new(techLevel, techLevel.ToStringHuman().CapitalizeFirst())
             );
 
-        yield return new(ColumnDef.Title, new OTMFilter<Cell, TechLevel>(cell => cell.Value, options, this));
+        yield return new(Def.Title, new OTMFilter<Cell, TechLevel>(cell => cell.Value, options, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell

@@ -9,7 +9,7 @@ namespace Stats;
 
 public abstract class DefSetColumnWorker<TObject, TDef> : ColumnWorker<TObject> where TDef : Def
 {
-    protected DefSetColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
+    protected DefSetColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     protected abstract HashSet<TDef> GetValue(TObject @object);
@@ -33,7 +33,7 @@ public abstract class DefSetColumnWorker<TObject, TDef> : ColumnWorker<TObject> 
                 def => def == null ? new() : new(def, GetDefLabel(def))
             );
 
-        yield return new(ColumnDef.Title, new MTMFilter<Cell, TDef>(cell => cell.Defs, filterOptions, this));
+        yield return new(Def.Title, new MTMFilter<Cell, TDef>(cell => cell.Defs, filterOptions, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell

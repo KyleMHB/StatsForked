@@ -9,7 +9,7 @@ namespace Stats;
 
 public abstract class ContentSourceColumnWorker<TObject> : ColumnWorker<TObject>
 {
-    protected ContentSourceColumnWorker(ColumnDef columndef) : base(columndef, CellStyleType.String)
+    protected ContentSourceColumnWorker(ColumnDef columndef) : base(columndef, CellStyleType.String, TODO)
     {
     }
     protected abstract ModContentPack? GetModContentPack(TObject @object);
@@ -29,7 +29,7 @@ public abstract class ContentSourceColumnWorker<TObject> : ColumnWorker<TObject>
                 mod => mod == null ? new() : new(mod, mod.Name, null, mod.PackageIdPlayerFacing)
             );
 
-        yield return new(ColumnDef.Title, new OTMFilter<Cell, ModContentPack?>(cell => cell.Mod, filterOptions, this));
+        yield return new(Def.Title, new OTMFilter<Cell, ModContentPack?>(cell => cell.Mod, filterOptions, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell

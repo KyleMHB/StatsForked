@@ -8,7 +8,7 @@ namespace Stats;
 
 public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject>
 {
-    protected ThingDefCountColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.Number)
+    protected ThingDefCountColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.Number, TODO)
     {
     }
     protected abstract (ThingDef? Def, decimal Count) GetValue(TObject @object);
@@ -29,7 +29,7 @@ public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject>
         .Select<ThingDef?, NTMFilterOption<ThingDef?>>(
             thingDef => thingDef == null
                 ? new()
-                : new(thingDef, thingDef.LabelCap, new ThingIcon(thingDef))
+                : new(thingDef, thingDef.LabelCap, new ThingDefIcon(thingDef))
         );
         var typeFilter = new OTMFilter<Cell, ThingDef?>(cell => cell.ThingDef, typeFilterOptions, this);
 
@@ -52,7 +52,7 @@ public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject>
             {
                 Widget = new HorizontalContainer([
                     new Label(count.ToString()).PaddingRel(1f, 0f, 0f, 0f),
-                    new ThingIcon(thingDef)
+                    new ThingDefIcon(thingDef)
                     .ToButtonGhostly(() => Widgets.Draw.DefInfoDialog(thingDef))
                     .Tooltip(thingDef.LabelCap),
                 ], Globals.GUI.PadSm, true)

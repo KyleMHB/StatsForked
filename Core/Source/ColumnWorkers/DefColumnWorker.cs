@@ -8,7 +8,7 @@ namespace Stats;
 
 public abstract class DefColumnWorker<TObject, TDef> : ColumnWorker<TObject> where TDef : Def?
 {
-    protected DefColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String)
+    protected DefColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     protected abstract TDef GetValue(TObject @object);
@@ -28,7 +28,7 @@ public abstract class DefColumnWorker<TObject, TDef> : ColumnWorker<TObject> whe
                 def => def == null ? new() : new(def, def.LabelCap)
             );
 
-        yield return new(ColumnDef.Title, new OTMFilter<Cell, TDef>(cell => cell.Def, options, this));
+        yield return new(Def.Title, new OTMFilter<Cell, TDef>(cell => cell.Def, options, this));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell

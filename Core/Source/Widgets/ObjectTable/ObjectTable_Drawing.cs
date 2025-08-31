@@ -87,7 +87,7 @@ public sealed partial class ObjectTable<TObject>
     }
     private void DrawPart(
         Rect rect,
-        List<ColumnWorker> columns,
+        List<Column> columns,
         Vector2 scrollPosition,
         float cellExtraWidth
     )
@@ -134,7 +134,7 @@ public sealed partial class ObjectTable<TObject>
     private void DrawRows(
         Rect rect,
         IReadOnlyCollection<Row> rows,
-        List<ColumnWorker> columns,
+        List<Column> columns,
         Vector2 scrollPosition,
         float cellExtraWidth
     )
@@ -185,7 +185,7 @@ public sealed partial class ObjectTable<TObject>
     // individual column's cell is huge. So we have to keep this.
     private static void DrawColumnSeparators(
         Rect rect,
-        List<ColumnWorker> columns,
+        List<Column> columns,
         float offsetX,
         float cellExtraWidth
     )
@@ -248,11 +248,26 @@ public sealed partial class ObjectTable<TObject>
             UpdateCachedColumns();
         }
 
-        //if (DoRefreshColumns)
         if (ColumnsToRefresh.Count > 0)
         {
-            ColumnsToRefresh.Pop().RefreshCells();
-            //RefreshColumns();
+            // TODO: 
+            var column = ColumnsToRefresh.Pop();
+            var columnWasUpdated = column.RefreshCells();
+
+            if (columnWasUpdated)
+            {
+                if (ActiveFilters.Count > 0)
+                {
+                    DoFilter = true;
+                }
+
+                if (SortColumn == column)
+                {
+                    DoSort = true;
+                }
+
+                DoResize = true;
+            }
         }
         else if (DoFilter)
         {
@@ -268,12 +283,12 @@ public sealed partial class ObjectTable<TObject>
         }
         else
         {
-            //DoRefreshColumns = true;
-
-            // TODO: Do not add "static" columns.
             foreach (var column in Columns)
             {
-                ColumnsToRefresh.Push(column);
+                if (column.NeedsRefresh)
+                {
+                    ColumnsToRefresh.Push(column);
+                }
             }
         }
     }

@@ -25,10 +25,11 @@ public abstract class ObjectTable
 
     public abstract class Cell : Widget
     {
-        public abstract event Action? OnChange;
         public abstract int CompareTo(Cell cell);
-        public virtual void Dispose()
+
+        public interface IRefreshable
         {
+            public bool Refresh();
         }
     }
 
@@ -44,21 +45,25 @@ public abstract class ObjectTable
             Widget?.Draw(rect, containerSize);
         }
     }
+
+    public readonly record struct ObjectProp(Widget Label, FilterWidget FilterWidget);
 }
 
 public sealed partial class ObjectTable<TObject> : ObjectTable
 {
-    internal ColumnWorker SortColumn;
-    internal int SortDirection = SortDirectionAscending;
-    internal const int SortDirectionAscending = 1;
-    internal const int SortDirectionDescending = -1;
-    private readonly List<ColumnWorker<TObject>> Columns;
-    private readonly List<ColumnWorker> ColumnsVisible;
-    private readonly List<ColumnWorker> ColumnsVisiblePinned;
-    private readonly List<ColumnWorker> ColumnsVisibleUnpinned;
+    private Column SortColumn;
+    private int SortDirection = SortDirectionAscending;
+    private const int SortDirectionAscending = 1;
+    private const int SortDirectionDescending = -1;
+    private static readonly Color SortIndicatorColor = Color.yellow.ToTransparent(0.3f);
+    private const float SortIndicatorHeight = 5f;
+    private readonly List<Column> Columns;
+    private readonly List<Column> ColumnsVisible;
+    private readonly List<Column> ColumnsVisiblePinned;
+    private readonly List<Column> ColumnsVisibleUnpinned;
     private readonly Widget ColumnsTabWidget;
-    private readonly List<FilterWidget> Filters;
-    private readonly HashSet<FilterWidget> ActiveFilters;
+    private readonly List<Filter> Filters;
+    private readonly HashSet<Filter> ActiveFilters;
     public override TableFilterMode FilterMode
     {
         get => field;
@@ -83,12 +88,12 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
     private static readonly RowCellsMatcher MatchRowCells_AND =
     (cells, filters) =>
     {
-        return filters.All(filter => filter.Eval(cells));
+        return filters.All(filter => filter.Widget.Eval(cells[filter.Column]));
     };
     private static readonly RowCellsMatcher MatchRowCells_OR =
     (cells, filters) =>
     {
-        return filters.Any(filter => filter.Eval(cells));
+        return filters.Any(filter => filter.Widget.Eval(cells[filter.Column]));
     };
     private readonly List<Row> HeaderRows;
     private float HeaderRowsHeight;
@@ -104,8 +109,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
     private bool DoSort = true;
     private bool DoResize = true;
     private bool DoUpdateCachedColumns = true;
-    //private bool DoRefreshColumns;
-    private readonly Stack<ColumnWorker> ColumnsToRefresh;
+    private readonly Stack<Column> ColumnsToRefresh;
     public ObjectTable(List<ColumnWorker<TObject>> columns, IEnumerable<TObject> initialObjects, IEnumerable<TObject> contextObjects)
     {
         columns[0].IsPinned = true;
@@ -118,7 +122,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
 
         foreach (var @object in initialObjectsArray)
         {
-            var row = new ObjectRow(columns, @object, this);
+            var row = new ObjectRow(columns, @object);
 
             rows.Add(row);
         }
@@ -126,7 +130,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
         // Settings tab
         var columnSettingsTabRows = new List<Widget>(columns.Count);
         var columnLabelWidthMax = new StrongBox<float>(0f);
-        var filters = new List<FilterWidget>(columns.Count);
+        var filters = new List<Filter>(columns.Count);
 
         Widget MakeColumnTitleRow(Widget columnTitle, Widget filterOrToggle, ColumnWorker column)
         {
@@ -159,7 +163,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
         for (int i = 0; i < columns.Count; i++)
         {
             var column = columns[i];
-            var objectProps = column.GetObjectProps(contextObjects).ToList();
+            var objectProps = column.GetObjectProps().ToList();
 
             if (objectProps.Count == 0) continue;
 
@@ -177,7 +181,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
                 )
                 .HoverBackground(TexUI.HighlightTex);
 
-                filters.Add(objectProp.FilterWidget);
+                filters.Add(new(column, objectProp.FilterWidget));
                 objectProp.FilterWidget.OnChange += HandleFilterChange;
             }
             else
@@ -186,7 +190,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
                 var toggle = new Observable<bool>(true);
                 row = new VerticalContainer([
                     MakeColumnTitleRow(
-                        column.ColumnDef.Title,
+                        column.Def.Title,
                         new Label(toggle.Map(state => state
                             ? $"<i>Hide ({objectProps.Count}) filters</i>"
                             : $"<i>Show ({objectProps.Count}) filters</i>"
@@ -213,7 +217,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
                             .WidthRel(1f)
                             .HoverBackground(TexUI.HighlightTex);
 
-                            filters.Add(filterWidget);
+                            filters.Add(new(column, filterWidget));
                             filterWidget.OnChange += HandleFilterChange;
 
                             return row;
@@ -239,25 +243,11 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
         ColumnsVisibleUnpinned = new(columns.Count);
         ColumnsToRefresh = new(columns.Count);
         SortColumn = columns[0];
-        HeaderRows = [new ColumnTitlesRow(columns, this)];
+        HeaderRows = [new ColumnTitlesRow(columns)];
         UnpinnedRows = rows;
         ColumnsTabWidget = new VerticalContainer(columnSettingsTabRows);
         Filters = filters;
-        ActiveFilters = new HashSet<FilterWidget>(columns.Count);
-    }
-    private void HandleCellUpdate(ColumnWorker column)
-    {
-        if (ActiveFilters.Count > 0)
-        {
-            DoFilter = true;
-        }
-
-        if (SortColumn == column)
-        {
-            DoSort = true;
-        }
-
-        DoResize = true;
+        ActiveFilters = new HashSet<Filter>(columns.Count);
     }
     // Note: Add/Remove methods have to be as fast as possible
     // because they can be called multiple times in a row.
@@ -265,7 +255,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
     // TODO: Do not add/remove rows if the table is not shown on the screen.
     public void AddObject(TObject @object)
     {
-        UnpinnedRows.Add(new ObjectRow(Columns, @object, this));
+        UnpinnedRows.Add(new ObjectRow(Columns, @object));
         //DoSort = true;
         SortRows(UnpinnedRows);
         if (ActiveFilters.Count > 0)

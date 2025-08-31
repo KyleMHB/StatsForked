@@ -29,7 +29,7 @@ public abstract class TableWorker<TObject> : TableWorker
 
         foreach (var columnDef in TableDef.columns)
         {
-            var columnWorker = (ColumnWorker<TObject>)Activator.CreateInstance(columnDef.workerClass, columnDef);
+            var columnWorker = (ColumnWorker<TObject>)Activator.CreateInstance(columnDef.workerClass, columnDef, this);
 
             columnWorkers.Add(columnWorker);
         }
