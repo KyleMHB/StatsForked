@@ -43,7 +43,7 @@ internal sealed partial class ObjectTable<TObject>
         private readonly ObjectTable<TObject> Parent;
         public TextAnchor CellTextAnchor => (TextAnchor)Worker.CellStyle;
         public TipSignal Tooltip { get; }
-        private readonly List<Cell.IRefreshable> CellsToRefresh = new(250);
+        private readonly List<Cell.IRefreshable> CellsToRefresh = new(InitialRowCapacity);
         public bool NeedsRefresh => CellsToRefresh.Count > 0;
         public Column(IColumnWorker<TObject> worker, ObjectTable<TObject> parent)
         {

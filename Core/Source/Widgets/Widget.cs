@@ -27,7 +27,7 @@ public abstract class Widget
     {
         return GetSize();
     }
-    public Vector2 GetSize(Vector2 containerSize)
+    public virtual Vector2 GetSize(Vector2 containerSize)
     {
         // I don't think we have to use Mathf.Approximately() here. Once everything settles down and
         // GUI becomes static, the same math should give the same results.
@@ -45,7 +45,7 @@ public abstract class Widget
     // This method is used to calculate the "absolute" size of a widget,
     // ie. without any relative-size-related extensions.
     protected abstract Vector2 CalcSize();
-    public Vector2 GetSize()
+    public virtual Vector2 GetSize()
     {
         if (AbsSizeCacheIsValid)
         {

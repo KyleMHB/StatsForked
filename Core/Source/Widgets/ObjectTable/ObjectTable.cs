@@ -33,12 +33,22 @@ public abstract class ObjectTable
         }
     }
 
+    // No need to set "Parent" on child widget since
+    // we are bypassing size caching.
     public abstract class WidgetCell : Cell
     {
         protected abstract Widget? Widget { get; set; }
         protected override Vector2 CalcSize()
         {
             return Widget?.GetSize() ?? Vector2.zero;
+        }
+        public override Vector2 GetSize()
+        {
+            return CalcSize();
+        }
+        public override Vector2 GetSize(Vector2 containerSize)
+        {
+            return Widget?.GetSize(containerSize) ?? Vector2.zero;
         }
         public override void Draw(Rect rect, Vector2 containerSize)
         {
@@ -95,6 +105,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     {
         return filters.Any(filter => filter.Widget.Eval(cells[filter.Column]));
     };
+    private const int InitialRowCapacity = 250;
     private readonly List<Row> HeaderRows;
     private float HeaderRowsHeight;
     private readonly List<ObjectRow> PinnedRows = new(10);
@@ -130,13 +141,10 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
         columns[0].IsPinned = true;
 
-        // TODO: Maybe this should be a list from the beginning.
-        var initialObjectsArray = worker.InitialRecords.ToArray();
-
         // Rows
-        var rows = new List<ObjectRow>(initialObjectsArray.Length);
+        var rows = new List<ObjectRow>(InitialRowCapacity);
 
-        foreach (var @object in initialObjectsArray)
+        foreach (var @object in worker.InitialObjects)
         {
             var row = new ObjectRow(columns, @object);
 

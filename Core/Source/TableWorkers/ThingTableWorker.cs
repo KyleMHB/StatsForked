@@ -31,7 +31,7 @@ public abstract class ThingTableWorker : TableWorker<ThingAlike>
             }
         }
     }
-    protected sealed override IEnumerable<ThingAlike> InitialRecords
+    protected sealed override IEnumerable<ThingAlike> InitialObjects
     {
         get
         {
