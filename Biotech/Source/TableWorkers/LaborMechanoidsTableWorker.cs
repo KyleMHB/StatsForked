@@ -2,7 +2,7 @@
 
 namespace Stats.Compat.Biotech;
 
-public sealed class LaborMechanoidsTableWorker : ThingTableWorker
+public sealed class LaborMechanoidsTableWorker : AbstractThingTableWorker
 {
     public LaborMechanoidsTableWorker(TableDef tableDef) : base(tableDef)
     {

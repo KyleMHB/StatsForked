@@ -7,7 +7,7 @@ using Verse;
 
 namespace Stats;
 
-public class Thing_StatColumnWorker : ColumnWorker, IColumnWorker<ThingAlike>, IColumnWorker<Thing>
+public class Thing_StatColumnWorker : ColumnWorker, IColumnWorker<AbstractThing>, IColumnWorker<Thing>
 {
     public static readonly Regex NumberRegex = new(@"(-?[0-9]+\.?[0-9]*).*", RegexOptions.Compiled);
     private const ToStringNumberSense _ToStringNumberSense = ToStringNumberSense.Absolute;
@@ -20,11 +20,11 @@ public class Thing_StatColumnWorker : ColumnWorker, IColumnWorker<ThingAlike>, I
     {
         return stat.Worker.GetStatDrawEntryLabel(stat, value, _ToStringNumberSense, statRequest);
     }
-    public ObjectTable.Cell GetCell(ThingAlike thing)
+    public ObjectTable.Cell GetCell(AbstractThing thing)
     {
         return new Cell(thing, this);
     }
-    public IEnumerable<ObjectTable.ObjectProp> GetObjectProps(TableWorker<ThingAlike> _)
+    public IEnumerable<ObjectTable.ObjectProp> GetObjectProps(TableWorker<AbstractThing> _)
     {
         yield return new(Def.Title, new NumberFilter(cell => ((Cell)cell).ValueDisplayed));
     }
@@ -46,8 +46,8 @@ public class Thing_StatColumnWorker : ColumnWorker, IColumnWorker<ThingAlike>, I
         private readonly Thing_StatColumnWorker Column;
         private readonly StatDef Stat;
         private readonly StatWorker StatWorker;
-        private readonly ThingAlike Thing;
-        public Cell(ThingAlike thing, Thing_StatColumnWorker column)
+        private readonly AbstractThing Thing;
+        public Cell(AbstractThing thing, Thing_StatColumnWorker column)
         {
             Thing = thing;
             Column = column;

@@ -4,12 +4,12 @@ using Verse;
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_ReloadTimeColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Weapon_ReloadTimeColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Weapon_ReloadTimeColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.00 " + "LetterSecond".Translate())
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
         var statRequest = StatRequest.For(thingDef, null);

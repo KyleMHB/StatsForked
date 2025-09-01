@@ -1,11 +1,11 @@
 ﻿namespace Stats;
 
-public sealed class Weapon_RangeColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Weapon_RangeColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Weapon_RangeColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
 

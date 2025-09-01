@@ -11,16 +11,16 @@ namespace Stats;
 // modded stuffs may have the same color as vanilla ones or other modded stuffs.
 // Replacing label with icon won't do, because ex. all of the leathers have the same
 // icon but of different color.
-public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
+public sealed class Thing_LabelColumnWorker : ColumnWorker<AbstractThing>
 {
     public Thing_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
-    public override ObjectTable.Cell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(AbstractThing thing)
     {
         return new Cell(thing);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> contextObjects)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<AbstractThing> contextObjects)
     {
         yield return new(new Label("Label"), new StringFilter<Cell>(cell => cell.Text, this));
 
@@ -72,7 +72,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<ThingAlike>
         public ThingDef Def { get; }
         public ThingDef? StuffDef { get; }
         public bool IsMadeFromDefaultStuff { get; }
-        public Cell(ThingAlike thing)
+        public Cell(AbstractThing thing)
         {
             Def = thing.Def;
             StuffDef = thing.StuffDef;

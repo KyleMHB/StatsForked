@@ -2,7 +2,7 @@
 
 namespace Stats;
 
-public sealed class PowerGeneratorsTableWorker : ThingTableWorker
+public sealed class PowerGeneratorsTableWorker : AbstractThingTableWorker
 {
     public PowerGeneratorsTableWorker(TableDef tableDef) : base(tableDef)
     {

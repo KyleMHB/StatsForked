@@ -1,11 +1,11 @@
 ﻿namespace Stats;
 
-public sealed class Building_PowerOutputColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Building_PowerOutputColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Building_PowerOutputColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0 W")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var powerCompProps = thing.Def.GetPowerCompProperties();
 

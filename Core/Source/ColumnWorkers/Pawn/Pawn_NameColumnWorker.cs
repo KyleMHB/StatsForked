@@ -5,16 +5,16 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Pawn_NameColumnWorker : ColumnWorker<ThingAlike>
+public sealed class Pawn_NameColumnWorker : ColumnWorker<AbstractThing>
 {
     public Pawn_NameColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
-    public override ObjectTable.Cell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(AbstractThing thing)
     {
         return new Cell(thing);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> _)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<AbstractThing> _)
     {
         yield return new(Def.Title, new StringFilter<Cell>(cell => cell.Text, this));
     }
@@ -24,7 +24,7 @@ public sealed class Pawn_NameColumnWorker : ColumnWorker<ThingAlike>
         protected override Widget? Widget { get; set; }
         public override event Action? OnChange;
         public string Text { get; }
-        public Cell(ThingAlike thing)
+        public Cell(AbstractThing thing)
         {
             if (thing.Thing is Pawn pawn)
             {

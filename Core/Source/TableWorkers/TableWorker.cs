@@ -13,6 +13,12 @@ public abstract class TableWorker
         TableDef = tableDef;
     }
 
+    public interface IStreaming<TObject>
+    {
+        public event Action<TObject> OnObjectAdded;
+        public event Action<TObject> OnObjectRemoved;
+    }
+
     public interface IReferenceObjectsProvider<TObject>
     {
         public IEnumerable<TObject> ReferenceObjects { get; }
@@ -26,11 +32,5 @@ public abstract class TableWorker<TObject> : TableWorker
     public abstract IEnumerable<TObject> InitialObjects { get; }
     protected TableWorker(TableDef tableDef) : base(tableDef)
     {
-    }
-
-    public interface IStreaming
-    {
-        public event Action<TObject> OnObjectAdded;
-        public event Action<TObject> OnObjectRemoved;
     }
 }

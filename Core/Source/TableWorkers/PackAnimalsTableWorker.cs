@@ -2,7 +2,7 @@
 
 namespace Stats;
 
-public sealed class PackAnimalsTableWorker : ThingTableWorker
+public sealed class PackAnimalsTableWorker : AbstractThingTableWorker
 {
     public PackAnimalsTableWorker(TableDef tableDef) : base(tableDef)
     {

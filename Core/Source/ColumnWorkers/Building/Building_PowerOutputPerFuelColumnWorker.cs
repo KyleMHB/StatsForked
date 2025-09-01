@@ -1,11 +1,11 @@
 ﻿namespace Stats;
 
-public sealed class Building_PowerOutputPerFuelColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Building_PowerOutputPerFuelColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Building_PowerOutputPerFuelColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0 W/u")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var powerCompProps = thing.Def.GetPowerCompProperties();
         var refuelableCompProps = thing.Def.GetRefuelableCompProperties();

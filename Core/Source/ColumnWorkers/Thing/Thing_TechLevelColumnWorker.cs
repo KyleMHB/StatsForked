@@ -7,16 +7,16 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Thing_TechLevelColumnWorker : ColumnWorker<ThingAlike>
+public sealed class Thing_TechLevelColumnWorker : ColumnWorker<AbstractThing>
 {
     public Thing_TechLevelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
-    public override ObjectTable.Cell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(AbstractThing thing)
     {
         return new Cell(thing.Def.techLevel);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> contextObjects)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<AbstractThing> contextObjects)
     {
         var options = contextObjects
             .Select(thing => thing.Def.techLevel)

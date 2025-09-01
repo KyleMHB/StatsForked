@@ -2,12 +2,12 @@
 
 namespace Stats;
 
-public sealed class Plant_RawNutritionPerDayColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Plant_RawNutritionPerDayColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Plant_RawNutritionPerDayColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.000/d")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var plantProps = thing.Def.plant;
 

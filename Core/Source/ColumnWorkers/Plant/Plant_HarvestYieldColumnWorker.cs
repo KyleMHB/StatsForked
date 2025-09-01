@@ -3,12 +3,12 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Plant_HarvestYieldColumnWorker : ThingDefCountColumnWorker<ThingAlike>
+public sealed class Plant_HarvestYieldColumnWorker : ThingDefCountColumnWorker<AbstractThing>
 {
     public Plant_HarvestYieldColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(AbstractThing thing)
     {
         var plantProps = thing.Def.plant;
 

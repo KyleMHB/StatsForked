@@ -7,7 +7,7 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Animal_ProductsColumnWorker : ThingDefSetColumnWorker<ThingAlike, ThingDef>
+public sealed class Animal_ProductsColumnWorker : ThingDefSetColumnWorker<AbstractThing, ThingDef>
 {
     public Animal_ProductsColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
@@ -18,7 +18,7 @@ public sealed class Animal_ProductsColumnWorker : ThingDefSetColumnWorker<ThingA
         //    return products.SelectMany(product => product.thingCategories).ToHashSet();
         //});
     }
-    protected override HashSet<ThingDef> GetValue(ThingAlike thing)
+    protected override HashSet<ThingDef> GetValue(AbstractThing thing)
     {
         var products = new HashSet<ThingDef>();
 

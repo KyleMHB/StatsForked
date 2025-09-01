@@ -28,11 +28,11 @@ thing1 == thing2;// true
 
 */
 
-public readonly record struct ThingAlike
+public readonly record struct AbstractThing
 {
     public ThingDef Def { get; }
     public ThingDef? StuffDef { get; }
-    public ThingAlike(ThingDef def, ThingDef? stuffDef = null)
+    public AbstractThing(ThingDef def, ThingDef? stuffDef = null)
     {
         Def = def;
         StuffDef = stuffDef;

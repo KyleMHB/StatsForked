@@ -3,12 +3,12 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Animal_MilkAmountColumnWorker : ThingDefCountColumnWorker<ThingAlike>
+public sealed class Animal_MilkAmountColumnWorker : ThingDefCountColumnWorker<AbstractThing>
 {
     public Animal_MilkAmountColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(AbstractThing thing)
     {
         var milkableCompProps = thing.Def.GetCompProperties<CompProperties_Milkable>();
 

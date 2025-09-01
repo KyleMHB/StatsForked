@@ -1,11 +1,11 @@
 ﻿namespace Stats;
 
-public sealed class Animal_NuzzleIntervalColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Animal_NuzzleIntervalColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Animal_NuzzleIntervalColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0 h")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var raceProps = thing.Def.race;
 

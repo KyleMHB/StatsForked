@@ -6,23 +6,23 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Building_SizeColumnWorker : ColumnWorker<ThingAlike>
+public sealed class Building_SizeColumnWorker : ColumnWorker<AbstractThing>
 {
     public Building_SizeColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.Number, TODO)
     {
     }
-    public override ObjectTable.Cell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(AbstractThing thing)
     {
         return new Cell(thing, this);
     }
-    private IntVec2 GetSize(ThingAlike thing)
+    private IntVec2 GetSize(AbstractThing thing)
     {
         var size = thing.Def.size;
 
         // Because 4x5=5x4.
         return new IntVec2(Math.Max(size.x, size.z), Math.Min(size.x, size.z));
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> contextObjects)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<AbstractThing> contextObjects)
     {
         var filterOptions = contextObjects
             .Select(GetSize)
@@ -39,7 +39,7 @@ public sealed class Building_SizeColumnWorker : ColumnWorker<ThingAlike>
         public override event Action? OnChange;
         public IntVec2 BuildingSize { get; }
         public int BuildingArea { get; }
-        public Cell(ThingAlike thing, Building_SizeColumnWorker column)
+        public Cell(AbstractThing thing, Building_SizeColumnWorker column)
         {
             var size = column.GetSize(thing);
 

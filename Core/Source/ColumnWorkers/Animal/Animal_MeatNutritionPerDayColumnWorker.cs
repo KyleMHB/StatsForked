@@ -2,12 +2,12 @@
 
 namespace Stats;
 
-public sealed class Animal_MeatNutritionPerDayColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Animal_MeatNutritionPerDayColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Animal_MeatNutritionPerDayColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.00/d")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var raceProps = thing.Def.race;
 

@@ -3,12 +3,12 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Animal_WoolAmountColumnWorker : ThingDefCountColumnWorker<ThingAlike>
+public sealed class Animal_WoolAmountColumnWorker : ThingDefCountColumnWorker<AbstractThing>
 {
     public Animal_WoolAmountColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(AbstractThing thing)
     {
         var shearableCompProps = thing.Def.GetCompProperties<CompProperties_Shearable>();
 

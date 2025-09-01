@@ -3,12 +3,12 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Pawn_LeatherAmountColumnWorker : ThingDefCountColumnWorker<ThingAlike>
+public sealed class Pawn_LeatherAmountColumnWorker : ThingDefCountColumnWorker<AbstractThing>
 {
     public Pawn_LeatherAmountColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
-    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(AbstractThing thing)
     {
         var leatherDef = thing.Def.race?.leatherDef;
 

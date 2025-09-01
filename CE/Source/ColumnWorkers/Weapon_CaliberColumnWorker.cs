@@ -7,12 +7,12 @@ using Verse;
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike>
+public sealed class Weapon_CaliberColumnWorker : ColumnWorker<AbstractThing>
 {
     public Weapon_CaliberColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
-    public override ObjectTable.Cell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(AbstractThing thing)
     {
         return new Cell(thing, this);
     }
@@ -30,14 +30,14 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike>
 
         return null;
     }
-    private string? GetCaliberName(ThingAlike thing)
+    private string? GetCaliberName(AbstractThing thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
         var statRequest = StatRequest.For(thingDef, null);
 
         return GetCaliberName(statRequest);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> contextObjects)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<AbstractThing> contextObjects)
     {
         var options = contextObjects
             .Select(GetCaliberName)
@@ -55,7 +55,7 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<ThingAlike>
         protected override Widget? Widget { get; set; }
         public override event Action? OnChange;
         public string? Value { get; }
-        public Cell(ThingAlike thing, Weapon_CaliberColumnWorker column)
+        public Cell(AbstractThing thing, Weapon_CaliberColumnWorker column)
         {
             var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
             var statRequest = StatRequest.For(thingDef, null);

@@ -2,12 +2,12 @@
 
 namespace Stats;
 
-public sealed class Turret_BurstsPerRearmColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Turret_BurstsPerRearmColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Turret_BurstsPerRearmColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var turretGunDef = thing.Def.building?.turretGunDef;
 

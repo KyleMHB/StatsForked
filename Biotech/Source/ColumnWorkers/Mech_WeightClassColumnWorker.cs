@@ -2,12 +2,12 @@
 
 namespace Stats.Compat.Biotech;
 
-public sealed class Mech_WeightClassColumnWorker : DefColumnWorker<ThingAlike, MechWeightClassDef>
+public sealed class Mech_WeightClassColumnWorker : DefColumnWorker<AbstractThing, MechWeightClassDef>
 {
     public Mech_WeightClassColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
-    protected override MechWeightClassDef GetValue(ThingAlike thing)
+    protected override MechWeightClassDef GetValue(AbstractThing thing)
     {
         return thing.Def.race.mechWeightClass;
     }

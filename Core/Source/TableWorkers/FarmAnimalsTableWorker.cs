@@ -3,7 +3,7 @@ using Verse;
 
 namespace Stats;
 
-public sealed class FarmAnimalsTableWorker : ThingTableWorker
+public sealed class FarmAnimalsTableWorker : AbstractThingTableWorker
 {
     public FarmAnimalsTableWorker(TableDef tableDef) : base(tableDef)
     {

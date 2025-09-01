@@ -5,12 +5,12 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Apparel_OccupiedLayersColumnWorker : DefSetColumnWorker<ThingAlike, ApparelLayerDef>
+public sealed class Apparel_OccupiedLayersColumnWorker : DefSetColumnWorker<AbstractThing, ApparelLayerDef>
 {
     public Apparel_OccupiedLayersColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
-    protected override HashSet<ApparelLayerDef> GetValue(ThingAlike thing)
+    protected override HashSet<ApparelLayerDef> GetValue(AbstractThing thing)
     {
         return GetApparelLayerDefSet(thing.Def);
     }

@@ -2,12 +2,12 @@
 
 namespace Stats;
 
-public sealed class Animal_GestationTimeColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Animal_GestationTimeColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Animal_GestationTimeColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0 d")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var raceProps = thing.Def.race;
 

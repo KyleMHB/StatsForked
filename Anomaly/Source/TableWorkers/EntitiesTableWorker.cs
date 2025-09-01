@@ -2,7 +2,7 @@
 
 namespace Stats.Compat.Anomaly;
 
-public sealed class EntitiesTableWorker : ThingTableWorker
+public sealed class EntitiesTableWorker : AbstractThingTableWorker
 {
     public EntitiesTableWorker(TableDef tableDef) : base(tableDef)
     {

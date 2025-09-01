@@ -2,12 +2,12 @@
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_MagazineCapacityColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Weapon_MagazineCapacityColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Weapon_MagazineCapacityColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
 

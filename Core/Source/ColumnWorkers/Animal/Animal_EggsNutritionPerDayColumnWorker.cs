@@ -2,12 +2,12 @@
 
 namespace Stats;
 
-public sealed class Animal_EggsNutritionPerDayColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Animal_EggsNutritionPerDayColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Animal_EggsNutritionPerDayColumnWorker(ColumnDef columnDef) : base(columnDef, formatString: "0.00/d")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var eggLayerCompProps = thing.Def.GetCompProperties<CompProperties_EggLayer>();
 

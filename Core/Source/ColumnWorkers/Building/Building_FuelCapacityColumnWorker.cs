@@ -2,12 +2,12 @@
 
 namespace Stats;
 
-public sealed class Building_FuelCapacityColumnWorker : ThingDefCountColumnWorker<ThingAlike>
+public sealed class Building_FuelCapacityColumnWorker : ThingDefCountColumnWorker<AbstractThing>
 {
     public Building_FuelCapacityColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(AbstractThing thing)
     {
         var refuelableCompProps = thing.Def.GetRefuelableCompProperties();
 

@@ -4,12 +4,12 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Turret_RearmCostColumnWorker : ThingDefCountColumnWorker<ThingAlike>
+public sealed class Turret_RearmCostColumnWorker : ThingDefCountColumnWorker<AbstractThing>
 {
     public Turret_RearmCostColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
-    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(AbstractThing thing)
     {
         var refuelableCompProps = thing.Def.GetCompProperties<CompProperties_Refuelable>();
 

@@ -2,12 +2,12 @@
 
 namespace Stats;
 
-public sealed class Animal_WoolPerDayColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Animal_WoolPerDayColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Animal_WoolPerDayColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0/d")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var shearableCompProps = thing.Def.GetCompProperties<CompProperties_Shearable>();
 

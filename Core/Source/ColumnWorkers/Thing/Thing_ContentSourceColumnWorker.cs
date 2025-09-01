@@ -2,12 +2,12 @@
 
 namespace Stats;
 
-public sealed class Thing_ContentSourceColumnWorker : ContentSourceColumnWorker<ThingAlike>
+public sealed class Thing_ContentSourceColumnWorker : ContentSourceColumnWorker<AbstractThing>
 {
     public Thing_ContentSourceColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
-    protected override ModContentPack? GetModContentPack(ThingAlike thing)
+    protected override ModContentPack? GetModContentPack(AbstractThing thing)
     {
         return thing.Def.modContentPack;
     }

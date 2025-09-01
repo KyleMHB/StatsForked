@@ -8,7 +8,7 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
+public sealed class Animal_BiomesColumnWorker : ColumnWorker<AbstractThing>
 {
     public Animal_BiomesColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
@@ -39,13 +39,13 @@ public sealed class Animal_BiomesColumnWorker : ColumnWorker<ThingAlike>
 
         return biomeRecords;
     });
-    public override ObjectTable.Cell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(AbstractThing thing)
     {
         var biomeRecords = GetBiomeRecords(thing.Def);
 
         return new Cell(biomeRecords);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> contextObjects)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<AbstractThing> contextObjects)
     {
         var options = contextObjects
             .SelectMany(thing => GetBiomeRecords(thing.Def).Select(biomeRecord => biomeRecord.BiomeDef).ToHashSet())

@@ -2,7 +2,7 @@
 
 namespace Stats;
 
-public sealed class MechanoidsTableWorker : ThingTableWorker
+public sealed class MechanoidsTableWorker : AbstractThingTableWorker
 {
     public MechanoidsTableWorker(TableDef tableDef) : base(tableDef)
     {

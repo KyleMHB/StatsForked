@@ -1,11 +1,11 @@
 ﻿namespace Stats;
 
-public sealed class Plant_LightRequirementColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Plant_LightRequirementColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Plant_LightRequirementColumnWorker(ColumnDef columDef) : base(columDef, formatString: "0\\%")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var plantProps = thing.Def.plant;
 

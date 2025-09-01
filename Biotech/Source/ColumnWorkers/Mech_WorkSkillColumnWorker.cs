@@ -1,11 +1,11 @@
 ﻿namespace Stats.Compat.Biotech;
 
-public sealed class Mech_WorkSkillColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Mech_WorkSkillColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Mech_WorkSkillColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var raceProps = thing.Def.race;
 

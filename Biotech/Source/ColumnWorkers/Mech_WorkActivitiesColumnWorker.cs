@@ -4,12 +4,12 @@ using Verse;
 
 namespace Stats.Compat.Biotech;
 
-public sealed class Mech_WorkActivitiesColumnWorker : DefSetColumnWorker<ThingAlike, WorkTypeDef>
+public sealed class Mech_WorkActivitiesColumnWorker : DefSetColumnWorker<AbstractThing, WorkTypeDef>
 {
     public Mech_WorkActivitiesColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
-    protected override HashSet<WorkTypeDef> GetValue(ThingAlike thing)
+    protected override HashSet<WorkTypeDef> GetValue(AbstractThing thing)
     {
         return thing.Def.race?.mechEnabledWorkTypes.ToHashSet() ?? [];
     }

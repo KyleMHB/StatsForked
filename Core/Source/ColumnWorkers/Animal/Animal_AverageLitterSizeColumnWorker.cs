@@ -2,12 +2,12 @@
 
 namespace Stats;
 
-public sealed class Animal_AverageLitterSizeColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Animal_AverageLitterSizeColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Animal_AverageLitterSizeColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         if (thing.Def.race != null)
         {

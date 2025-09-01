@@ -3,12 +3,12 @@ using Verse;
 
 namespace Stats;
 
-public sealed class Animal_EggsAmountColumnWorker : ThingDefCountColumnWorker<ThingAlike>
+public sealed class Animal_EggsAmountColumnWorker : ThingDefCountColumnWorker<AbstractThing>
 {
     public Animal_EggsAmountColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override (ThingDef? Def, decimal Count) GetValue(ThingAlike thing)
+    protected override (ThingDef? Def, decimal Count) GetValue(AbstractThing thing)
     {
         var eggLayerCompProps = thing.Def.GetCompProperties<CompProperties_EggLayer>();
 

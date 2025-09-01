@@ -7,7 +7,7 @@ using Verse;
 
 namespace Stats.Compat.Biotech;
 
-public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike>
+public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<AbstractThing>
 {
     public Apparel_ValidLifeStageColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
@@ -36,13 +36,13 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<ThingAlike
     {
         return lifeStage.ToString().Translate().CapitalizeFirst().RawText;
     });
-    public override ObjectTable.Cell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(AbstractThing thing)
     {
         var lifeStages = GetValidLifeStages(thing.Def);
 
         return new Cell(lifeStages);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> contextObjects)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<AbstractThing> contextObjects)
     {
         var filterOptions = contextObjects
             .SelectMany(thing => GetValidLifeStages(thing.Def))

@@ -1,11 +1,11 @@
 ﻿namespace Stats;
 
-public sealed class Building_DaysPerRefuelColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Building_DaysPerRefuelColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Building_DaysPerRefuelColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0 d")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var refuelableCompProps = thing.Def.GetRefuelableCompProperties();
 

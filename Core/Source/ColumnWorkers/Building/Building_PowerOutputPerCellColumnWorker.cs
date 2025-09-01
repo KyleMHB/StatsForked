@@ -1,11 +1,11 @@
 ﻿namespace Stats;
 
-public sealed class Building_PowerOutputPerCellColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Building_PowerOutputPerCellColumnWorker : NumberColumnWorker<AbstractThing>
 {
     public Building_PowerOutputPerCellColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0 W/c")
     {
     }
-    protected override decimal GetValue(ThingAlike thing)
+    protected override decimal GetValue(AbstractThing thing)
     {
         var powerCompProps = thing.Def.GetPowerCompProperties();
 

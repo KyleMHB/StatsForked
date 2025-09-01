@@ -7,7 +7,7 @@ public sealed class Thing_GunStatColumnWorker : Thing_StatColumnWorker
     public Thing_GunStatColumnWorker(StatColumnDef columnDef) : base(columnDef)
     {
     }
-    public override ObjectTable.Cell GetCell(ThingAlike thing)
+    public override ObjectTable.Cell GetCell(AbstractThing thing)
     {
         var turretGunDef = thing.Def.building?.turretGunDef;
 

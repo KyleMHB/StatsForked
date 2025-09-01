@@ -2,7 +2,7 @@
 
 namespace Stats;
 
-public sealed class ArtBuildingsTableWorker : ThingTableWorker
+public sealed class ArtBuildingsTableWorker : AbstractThingTableWorker
 {
     public ArtBuildingsTableWorker(TableDef tableDef) : base(tableDef)
     {

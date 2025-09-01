@@ -123,7 +123,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     private readonly Stack<Column> ColumnsToRefresh;
     public ObjectTable(TableWorker<TObject> worker)
     {
-        if (worker is TableWorker<TObject>.IStreaming streamingWorker)
+        if (worker is TableWorker.IStreaming<TObject> streamingWorker)
         {
             streamingWorker.OnObjectAdded += AddObject;
             streamingWorker.OnObjectRemoved += RemoveObject;
@@ -136,6 +136,10 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
             if (columnDef.Worker is IColumnWorker<TObject> columnWorker)
             {
                 columns.Add(new(columnWorker, this));
+            }
+            else
+            {
+                Log.Warning($"Column \"${columnDef.defName}\" is not compatible with table \"${worker.TableDef.defName}\".");
             }
         }
 
