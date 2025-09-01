@@ -17,6 +17,7 @@ public class ColumnDef : Def
     public Widget Title => title?.ToWidget() ?? new Label(LabelCap);
 #pragma warning disable CS8618
     public Type workerClass;
+    public IColumnWorker Worker { get; private set; }
 #pragma warning restore CS8618
     public override void ResolveReferences()
     {
@@ -31,6 +32,11 @@ public class ColumnDef : Def
         {
             description = descriptionKey.Translate();
         }
+
+        LongEventHandler.ExecuteWhenFinished(() =>
+        {
+            Worker = (ColumnWorker)Activator.CreateInstance(workerClass, this);
+        });
     }
 }
 

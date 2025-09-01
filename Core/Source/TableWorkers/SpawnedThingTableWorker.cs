@@ -6,7 +6,7 @@ namespace Stats;
 
 public abstract class SpawnedThingTableWorker : TableWorker<ThingAlike>
 {
-    protected sealed override IEnumerable<ThingAlike> Records
+    protected sealed override IEnumerable<ThingAlike> InitialRecords
     {
         get
         {

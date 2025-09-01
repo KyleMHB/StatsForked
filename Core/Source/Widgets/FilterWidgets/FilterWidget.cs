@@ -6,7 +6,7 @@ namespace Stats.Widgets;
 public abstract class FilterWidget : Widget
 {
     public abstract bool IsActive { get; }
-    public abstract event Action<FilterWidget>? OnChange;
+    public abstract event Action? OnChange;
     public abstract bool Eval(ObjectTable.Cell cell);
     public abstract void Reset();
     public abstract void NotifyChanged();

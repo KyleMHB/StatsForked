@@ -5,7 +5,7 @@ using static Stats.IColumnWorker;
 
 namespace Stats.Widgets;
 
-public sealed partial class ObjectTable<TObject>
+internal sealed partial class ObjectTable<TObject>
 {
     private void UpdateCachedColumns()
     {
@@ -32,15 +32,6 @@ public sealed partial class ObjectTable<TObject>
 
         DoUpdateCachedColumns = false;
     }
-    //private void RefreshColumns()
-    //{
-    //    foreach (var column in Columns)
-    //    {
-    //        column.RefreshCells();
-    //    }
-
-    //    DoRefreshColumns = false;
-    //}
 
     private sealed class Column
     {
@@ -60,7 +51,17 @@ public sealed partial class ObjectTable<TObject>
             Parent = parent;
             Tooltip = $"<i>{Def.LabelCap}</i>\n\n{Def.Description}";
         }
-        public Cell GetCell(TObject @object) => Worker.GetCell(@object);
+        public Cell GetCell(TObject @object)
+        {
+            var cell = Worker.GetCell(@object);
+
+            if (cell is Cell.IRefreshable refreshableCell)
+            {
+                CellsToRefresh.Add(refreshableCell);
+            }
+
+            return cell;
+        }
         public Widget GetHeaderCell()
         {
             var columnTitle = Def.Title;
@@ -118,6 +119,10 @@ public sealed partial class ObjectTable<TObject>
             .Tooltip(Tooltip);
 
             return cellWidget;
+        }
+        public IEnumerable<ObjectProp> GetObjectProps(TableWorker<TObject> tableWorker)
+        {
+            return Worker.GetObjectProps(tableWorker);
         }
         public void ToggleVisibility()
         {

@@ -16,24 +16,16 @@ public abstract class TableWorker
 
 public abstract class TableWorker<TObject> : TableWorker
 {
-    private ObjectTable? _TableWidget;
     // We don't want to create every table widget on the start of the game.
-    internal sealed override ObjectTable TableWidget => _TableWidget ??= MakeTableWidget();
-    protected abstract IEnumerable<TObject> Records { get; }
+    internal sealed override ObjectTable TableWidget => field ??= new ObjectTable<TObject>(this);
+    public abstract IEnumerable<TObject> InitialRecords { get; }
     protected TableWorker(TableDef tableDef) : base(tableDef)
     {
     }
-    protected virtual ObjectTable<TObject> MakeTableWidget()
+
+    public interface IStreaming
     {
-        var columnWorkers = new List<ColumnWorker<TObject>>(TableDef.columns.Count);
-
-        foreach (var columnDef in TableDef.columns)
-        {
-            var columnWorker = (ColumnWorker<TObject>)Activator.CreateInstance(columnDef.workerClass, columnDef, this);
-
-            columnWorkers.Add(columnWorker);
-        }
-
-        return new ObjectTable<TObject>(columnWorkers, Records, Records);
+        public event Action<TObject> OnObjectAdded;
+        public event Action<TObject> OnObjectRemoved;
     }
 }

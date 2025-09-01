@@ -19,7 +19,7 @@ public sealed class StringFilter : FilterWidgetWithInputField<string, string>
 
             _Value = value;
             Resize();
-            OnChange?.Invoke(this);
+            OnChange?.Invoke();
         }
     }
     private RelOperator<string, string> _Operator = Operators.Default;
@@ -35,11 +35,11 @@ public sealed class StringFilter : FilterWidgetWithInputField<string, string>
 
             _Operator = value;
             Resize();
-            OnChange?.Invoke(this);
+            OnChange?.Invoke();
         }
     }
     protected override string InputFieldText => Value;
-    public override event Action<FilterWidget>? OnChange;
+    public override event Action? OnChange;
     private readonly Func<ObjectTable.Cell, string> CellValueFunc;
     public StringFilter(Func<ObjectTable.Cell, string> cellValueFunc, string? placeholder = null) : base([
         Operators.Contains.Instance,
@@ -65,11 +65,11 @@ public sealed class StringFilter : FilterWidgetWithInputField<string, string>
     {
         _Value = "";
         Resize();
-        OnChange?.Invoke(this);
+        OnChange?.Invoke();
     }
     public override void NotifyChanged()
     {
-        OnChange?.Invoke(this);
+        OnChange?.Invoke();
     }
 
     private static class Operators

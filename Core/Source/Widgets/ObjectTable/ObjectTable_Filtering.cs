@@ -4,9 +4,9 @@ using Verse;
 
 namespace Stats.Widgets;
 
-public sealed partial class ObjectTable<TObject>
+internal sealed partial class ObjectTable<TObject>
 {
-    private void HandleFilterChange(FilterWidget filter)
+    private void HandleFilterChange(Filter filter)
     {
         if (filter.IsActive)
         {
@@ -66,7 +66,11 @@ public sealed partial class ObjectTable<TObject>
         };
     }
 
-    private readonly record struct Filter(Column Column, FilterWidget Widget);
+    private readonly record struct Filter(Column Column, FilterWidget Widget)
+    {
+        public bool IsActive => Widget.IsActive;
+        public void Reset() => Widget.Reset();
+    }
 
     private delegate bool RowCellsMatcher(Dictionary<Column, Cell> cells, HashSet<Filter> filters);
 }

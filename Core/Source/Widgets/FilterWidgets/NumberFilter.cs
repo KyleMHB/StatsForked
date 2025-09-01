@@ -20,7 +20,7 @@ public sealed class NumberFilter : FilterWidgetWithInputField<decimal, decimal>
             // - It is already checked in TextFieldText.
 
             _Value = value;
-            OnChange?.Invoke(this);
+            OnChange?.Invoke();
         }
     }
     private RelOperator<decimal, decimal> _Operator = Operators.Default;
@@ -36,10 +36,10 @@ public sealed class NumberFilter : FilterWidgetWithInputField<decimal, decimal>
 
             _Operator = value;
             Resize();
-            OnChange?.Invoke(this);
+            OnChange?.Invoke();
         }
     }
-    public override event Action<FilterWidget>? OnChange;
+    public override event Action? OnChange;
     private readonly Func<ObjectTable.Cell, decimal> CellValueFunc;
     private bool InputIsValid = true;
     private string _TextFieldText = "";
@@ -69,7 +69,7 @@ public sealed class NumberFilter : FilterWidgetWithInputField<decimal, decimal>
                 }
                 else
                 {
-                    OnChange?.Invoke(this);
+                    OnChange?.Invoke();
                 }
             }
 
@@ -113,11 +113,11 @@ public sealed class NumberFilter : FilterWidgetWithInputField<decimal, decimal>
         InputIsValid = true;
         _Value = 0m;
         Resize();
-        OnChange?.Invoke(this);
+        OnChange?.Invoke();
     }
     public override void NotifyChanged()
     {
-        OnChange?.Invoke(this);
+        OnChange?.Invoke();
     }
 
     private static class Operators

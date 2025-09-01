@@ -4,7 +4,7 @@ using Verse;
 
 namespace Stats.Widgets;
 
-public sealed partial class ObjectTable<TObject>
+internal sealed partial class ObjectTable<TObject>
 {
     public override void Draw(Rect rect, bool showSettingsMenu)
     {

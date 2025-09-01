@@ -7,7 +7,7 @@ namespace Stats.Widgets;
 public sealed class BooleanFilter : FilterWidget
 {
     public override bool IsActive => Value != null;
-    public override event Action<FilterWidget>? OnChange;
+    public override event Action? OnChange;
     private bool? Value
     {
         get => field;
@@ -19,7 +19,7 @@ public sealed class BooleanFilter : FilterWidget
             }
 
             field = value;
-            OnChange?.Invoke(this);
+            OnChange?.Invoke();
         }
     } = null;
     private readonly Func<ObjectTable.Cell, bool> CellValueFunc;
@@ -69,6 +69,6 @@ public sealed class BooleanFilter : FilterWidget
     }
     public override void NotifyChanged()
     {
-        OnChange?.Invoke(this);
+        OnChange?.Invoke();
     }
 }

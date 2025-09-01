@@ -63,11 +63,11 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
             _Operator = value;
             _Info = null;
             Resize();
-            OnChange?.Invoke(this);
+            OnChange?.Invoke();
         }
     }
     private readonly RelOperator<TLhs, HashSet<TRhs>> DefaultOperator;
-    public override event Action<FilterWidget>? OnChange;
+    public override event Action? OnChange;
     private readonly Func<ObjectTable.Cell, TLhs> CellValueFunc;
     protected NTMFilter(
         Func<ObjectTable.Cell, TLhs> cellValueFunc,
@@ -125,7 +125,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
         SelectedOptions.Clear();
         _Info = null;
         Resize();
-        OnChange?.Invoke(this);
+        OnChange?.Invoke();
     }
     private void HandleOptionClick(TRhs option)
     {
@@ -145,11 +145,11 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 
         _Info = null;
         Resize();
-        OnChange?.Invoke(this);
+        OnChange?.Invoke();
     }
     public override void NotifyChanged()
     {
-        OnChange?.Invoke(this);
+        OnChange?.Invoke();
     }
 
     private sealed class OptionsWindowWidget : Window

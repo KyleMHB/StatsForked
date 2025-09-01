@@ -49,7 +49,7 @@ public abstract class ObjectTable
     public readonly record struct ObjectProp(Widget Label, FilterWidget FilterWidget);
 }
 
-public sealed partial class ObjectTable<TObject> : ObjectTable
+internal sealed partial class ObjectTable<TObject> : ObjectTable
 {
     private Column SortColumn;
     private int SortDirection = SortDirectionAscending;
@@ -110,12 +110,28 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
     private bool DoResize = true;
     private bool DoUpdateCachedColumns = true;
     private readonly Stack<Column> ColumnsToRefresh;
-    public ObjectTable(List<ColumnWorker<TObject>> columns, IEnumerable<TObject> initialObjects, IEnumerable<TObject> contextObjects)
+    public ObjectTable(TableWorker<TObject> worker)
     {
+        if (worker is TableWorker<TObject>.IStreaming streamingWorker)
+        {
+            streamingWorker.OnObjectAdded += AddObject;
+            streamingWorker.OnObjectRemoved += RemoveObject;
+        }
+
+        var columns = new List<Column>();
+
+        foreach (var columnDef in worker.TableDef.columns)
+        {
+            if (columnDef.Worker is IColumnWorker<TObject> columnWorker)
+            {
+                columns.Add(new(columnWorker, this));
+            }
+        }
+
         columns[0].IsPinned = true;
 
-        // TODO: Maybe the constructor should accept list from the beginning.
-        var initialObjectsArray = initialObjects.ToArray();
+        // TODO: Maybe this should be a list from the beginning.
+        var initialObjectsArray = worker.InitialRecords.ToArray();
 
         // Rows
         var rows = new List<ObjectRow>(initialObjectsArray.Length);
@@ -132,7 +148,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
         var columnLabelWidthMax = new StrongBox<float>(0f);
         var filters = new List<Filter>(columns.Count);
 
-        Widget MakeColumnTitleRow(Widget columnTitle, Widget filterOrToggle, ColumnWorker column)
+        Widget MakeColumnTitleRow(Widget columnTitle, Widget filterOrToggle, Column column)
         {
             return new HorizontalContainer([
                 // TODO: This is a hack to prevent icons from stretching out.
@@ -163,7 +179,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
         for (int i = 0; i < columns.Count; i++)
         {
             var column = columns[i];
-            var objectProps = column.GetObjectProps().ToList();
+            var objectProps = column.GetObjectProps(worker).ToList();
 
             if (objectProps.Count == 0) continue;
 
@@ -181,8 +197,9 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
                 )
                 .HoverBackground(TexUI.HighlightTex);
 
-                filters.Add(new(column, objectProp.FilterWidget));
-                objectProp.FilterWidget.OnChange += HandleFilterChange;
+                var filter = new Filter(column, objectProp.FilterWidget);
+                filters.Add(filter);
+                objectProp.FilterWidget.OnChange += () => HandleFilterChange(filter);
             }
             else
             {
@@ -217,8 +234,9 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
                             .WidthRel(1f)
                             .HoverBackground(TexUI.HighlightTex);
 
-                            filters.Add(new(column, filterWidget));
-                            filterWidget.OnChange += HandleFilterChange;
+                            var filter = new Filter(column, filterWidget);
+                            filters.Add(filter);
+                            filterWidget.OnChange += () => HandleFilterChange(filter);
 
                             return row;
                         }).ToList<Widget>()
@@ -253,7 +271,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
     // because they can be called multiple times in a row.
     //
     // TODO: Do not add/remove rows if the table is not shown on the screen.
-    public void AddObject(TObject @object)
+    private void AddObject(TObject @object)
     {
         UnpinnedRows.Add(new ObjectRow(Columns, @object));
         //DoSort = true;
@@ -264,7 +282,7 @@ public sealed partial class ObjectTable<TObject> : ObjectTable
         }
         DoResize = true;
     }
-    public void RemoveObject(TObject @object)
+    private void RemoveObject(TObject @object)
     {
         PinnedRows.RemoveWhere(row => DisposeOfRowIfMatch(row, @object));
         UnpinnedRows.RemoveWhere(row => DisposeOfRowIfMatch(row, @object));
