@@ -4,7 +4,7 @@ using Verse;
 
 namespace Stats;
 
-public abstract class ThingTableWorker<TThing> : TableWorker<TThing>, TableWorker.IStreaming<TThing> where TThing : Thing
+public abstract class ThingsTableWorker<TThing> : TableWorker<TThing>, TableWorker<TThing>.IStreaming where TThing : Thing
 {
     public event Action<TThing>? OnObjectAdded;
     public event Action<TThing>? OnObjectRemoved;
@@ -24,7 +24,7 @@ public abstract class ThingTableWorker<TThing> : TableWorker<TThing>, TableWorke
             }
         }
     }
-    public ThingTableWorker(TableDef tableDef) : base(tableDef)
+    public ThingsTableWorker(TableDef tableDef) : base(tableDef)
     {
         Globals.Events.ThingSpawned += thing =>
         {

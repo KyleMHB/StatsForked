@@ -2,7 +2,7 @@
 
 namespace Stats;
 
-public sealed class ApparelTableWorker : ThingTableWorker<Thing>
+public sealed class ApparelTableWorker : ThingsTableWorker<Thing>
 {
     public ApparelTableWorker(TableDef tableDef) : base(tableDef)
     {

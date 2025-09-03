@@ -11,18 +11,27 @@ namespace Stats;
 // modded stuffs may have the same color as vanilla ones or other modded stuffs.
 // Replacing label with icon won't do, because ex. all of the leathers have the same
 // icon but of different color.
-public sealed class Thing_LabelColumnWorker : ColumnWorker<AbstractThing>
+public sealed class Thing_LabelColumnWorker : ColumnWorker, IColumnWorker<AbstractThing>, IColumnWorker<Thing>
 {
-    public Thing_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
+    public Thing_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, IColumnWorker.CellStyleType.String)
     {
     }
-    public override ObjectTable.Cell GetCell(AbstractThing thing)
+    public ObjectTable.Cell GetCell(AbstractThing thing)
     {
         return new Cell(thing);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<AbstractThing> contextObjects)
+    public ObjectTable.Cell GetCell(Thing thing)
     {
-        yield return new(new Label("Label"), new StringFilter<Cell>(cell => cell.Text, this));
+        throw new NotImplementedException();
+    }
+
+    IEnumerable<ObjectTable.ObjectProp> IColumnWorker<Thing>.GetObjectProps()
+    {
+        throw new NotImplementedException();
+    }
+    IEnumerable<ObjectTable.ObjectProp> IColumnWorker<AbstractThing>.GetObjectProps()
+    {
+        yield return new(new Label("Label"), new StringFilter(cell => ((Cell)cell).Text));
 
         var typeFilterOptions = contextObjects
             .Select(@object => @object.Def)
@@ -31,11 +40,10 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<AbstractThing>
             .Select<ThingDef, NTMFilterOption<ThingDef>>(
                 thingDef => new(thingDef, thingDef.LabelCap, new ThingDefIcon(thingDef))
             );
-        yield return new(new Label("Type"), new OTMFilter<Cell, ThingDef>(cell => cell.Def, typeFilterOptions, this));
+        yield return new(new Label("Type"), new OTMFilter<ThingDef>(cell => ((Cell)cell).Def, typeFilterOptions));
 
-        var filterWidget_Researched = new BooleanFilter<Cell>(
-            thing => thing.Def.GetResearchProjectDef()?.All(researchProjectDef => researchProjectDef.IsFinished) is true or null,
-            this
+        var filterWidget_Researched = new BooleanFilter(
+            cell => ((Cell)cell).Def.GetResearchProjectDef()?.All(researchProjectDef => researchProjectDef.IsFinished) is true or null
         );
         Globals.Events.OnResearchCompleted += () =>
         {
@@ -48,7 +56,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<AbstractThing>
 
         if (contextObjects.Any(@object => @object.StuffDef != null))
         {
-            yield return new(new Label("Distinct"), new StuffedVariantsDisplayModeToggleButton(this));
+            yield return new(new Label("Distinct"), new StuffedVariantsDisplayModeToggleButton());
 
             var stuffFilterOptions = contextObjects
                 .Select(@object => @object.StuffDef)
@@ -59,7 +67,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<AbstractThing>
                         ? new()
                         : new(thingDef, thingDef.LabelCap, new ThingDefIcon(thingDef))
                 );
-            var stuffFilter = new OTMFilter<Cell, ThingDef?>(cell => cell.StuffDef, stuffFilterOptions, this);
+            var stuffFilter = new OTMFilter<ThingDef?>(cell => ((Cell)cell).StuffDef, stuffFilterOptions);
             yield return new(new Label("Material"), stuffFilter);
         }
     }
@@ -67,7 +75,6 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<AbstractThing>
     private sealed class Cell : ObjectTable.WidgetCell
     {
         protected override Widget? Widget { get; set; }
-        public override event Action? OnChange;
         public string Text { get; }
         public ThingDef Def { get; }
         public ThingDef? StuffDef { get; }
@@ -100,19 +107,31 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<AbstractThing>
         }
     }
 
+    /*
+    
+    This being a filter is a hack. It doesn't work in "OR" mode and is semantically incorrect.
+    
+    There are 2 ways of fixing this issue.
+
+    The easy way is to introduce some special/pre filters that would be displayed in window's toolbar 
+    and be applied separatedly.
+
+    The hard way is to allow for grouping table's rows by a column.
+    The issue that is being solved by this filter is "show me only values that do not depend on stuff".
+    Grouping can be implemented by implementing "Equals" on a cell.
+    
+    */
     private sealed class StuffedVariantsDisplayModeToggleButton : FilterWidget
     {
         private bool _IsActive = false;
         public override bool IsActive => _IsActive;
-        public override event Action<FilterWidget>? OnChange;
+        public override event Action? OnChange;
         private Texture2D Texture => _IsActive ? Verse.Widgets.CheckboxOnTex : Verse.Widgets.CheckboxOffTex;
         private static readonly TipSignal Manual =
             "Click to show only distinct item material variants.\n\n" +
             "Material for each distinct variant is chosen based on item's type definition.";
-        private readonly Thing_LabelColumnWorker Column;
-        public StuffedVariantsDisplayModeToggleButton(Thing_LabelColumnWorker column)
+        public StuffedVariantsDisplayModeToggleButton()
         {
-            Column = column;
         }
         protected override Vector2 CalcSize()
         {
@@ -133,7 +152,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<AbstractThing>
             {
                 _IsActive = !_IsActive;
 
-                OnChange?.Invoke(this);
+                OnChange?.Invoke();
             }
 
             Text.Anchor = origTextAnchor;
@@ -141,7 +160,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<AbstractThing>
 
             TooltipHandler.TipRegion(rect, Manual);
         }
-        public override bool Eval(Dictionary<ColumnWorker, ObjectTable.Cell> cells)
+        public override bool Eval(ObjectTable.Cell cell)
         {
             if (_IsActive)
             {
@@ -150,7 +169,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<AbstractThing>
                 // - There are cases where one may want to compare
                 //   things by stats unrelated to stuff. Ex. equipped
                 //   stat offsets.
-                return ((Cell)cells[Column]).IsMadeFromDefaultStuff;
+                return ((Cell)cell).IsMadeFromDefaultStuff;
             }
 
             return true;
@@ -160,7 +179,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker<AbstractThing>
         }
         public override void NotifyChanged()
         {
-            OnChange?.Invoke(this);
+            OnChange?.Invoke();
         }
     }
 }

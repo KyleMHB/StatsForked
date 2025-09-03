@@ -3,9 +3,9 @@ using Verse;
 
 namespace Stats;
 
-public sealed class RangedWeaponsTableWorker : AbstractThingTableWorker
+public sealed class RangedWeaponDefsTableWorker : ThingDefsTableWorker
 {
-    public RangedWeaponsTableWorker(TableDef tableDef) : base(tableDef)
+    public RangedWeaponDefsTableWorker(TableDef tableDef) : base(tableDef)
     {
     }
     protected override bool IsValidThingDef(ThingDef thingDef)

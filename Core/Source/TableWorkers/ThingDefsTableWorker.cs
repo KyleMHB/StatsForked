@@ -4,10 +4,10 @@ using Verse;
 
 namespace Stats;
 
-public abstract class AbstractThingTableWorker : TableWorker<AbstractThing>, TableWorker.IReferenceObjectsProvider<AbstractThing>
+public abstract class ThingDefsTableWorker : TableWorker<AbstractThing>
 {
     private static readonly Dictionary<StuffCategoryDef, HashSet<ThingDef>> StuffsByCategory = [];
-    static AbstractThingTableWorker()
+    static ThingDefsTableWorker()
     {
         foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
         {
@@ -74,8 +74,7 @@ public abstract class AbstractThingTableWorker : TableWorker<AbstractThing>, Tab
             }
         }
     }
-    public IEnumerable<AbstractThing> ReferenceObjects => InitialObjects;
-    protected AbstractThingTableWorker(TableDef tableDef) : base(tableDef)
+    protected ThingDefsTableWorker(TableDef tableDef) : base(tableDef)
     {
     }
     protected abstract bool IsValidThingDef(ThingDef thingDef);

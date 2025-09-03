@@ -5,7 +5,7 @@ namespace Stats;
 [DefOf]
 public static class TableDefOf
 {
-    public static TableDef RangedWeapons;
+    public static TableDef RangedWeaponDefs;
 #pragma warning disable CS8618
     static TableDefOf()
 #pragma warning restore CS8618

@@ -2,9 +2,9 @@
 
 namespace Stats;
 
-public sealed class AnimalsTableWorker : AbstractThingTableWorker
+public sealed class AnimalDefsTableWorker : ThingDefsTableWorker
 {
-    public AnimalsTableWorker(TableDef tableDef) : base(tableDef)
+    public AnimalDefsTableWorker(TableDef tableDef) : base(tableDef)
     {
     }
     protected override bool IsValidThingDef(ThingDef thingDef)

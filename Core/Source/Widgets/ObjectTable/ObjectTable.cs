@@ -123,7 +123,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     private readonly Stack<Column> ColumnsToRefresh;
     public ObjectTable(TableWorker<TObject> worker)
     {
-        if (worker is TableWorker.IStreaming<TObject> streamingWorker)
+        if (worker is TableWorker<TObject>.IStreaming streamingWorker)
         {
             streamingWorker.OnObjectAdded += AddObject;
             streamingWorker.OnObjectRemoved += RemoveObject;
@@ -191,7 +191,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         for (int i = 0; i < columns.Count; i++)
         {
             var column = columns[i];
-            var objectProps = column.GetObjectProps(worker).ToList();
+            var objectProps = column.GetObjectProps().ToList();
 
             if (objectProps.Count == 0) continue;
 

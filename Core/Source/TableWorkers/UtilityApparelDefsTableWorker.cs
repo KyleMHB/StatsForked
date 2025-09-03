@@ -2,11 +2,11 @@
 
 namespace Stats;
 
-public sealed class UtilityApparelTableWorker : AbstractThingTableWorker
+public sealed class UtilityApparelDefsTableWorker : ThingDefsTableWorker
 {
     private readonly ThingCategoryDef UtilityCatDef =
         DefDatabase<ThingCategoryDef>.GetNamed("ApparelUtility");
-    public UtilityApparelTableWorker(TableDef tableDef) : base(tableDef)
+    public UtilityApparelDefsTableWorker(TableDef tableDef) : base(tableDef)
     {
     }
     protected override bool IsValidThingDef(ThingDef thingDef)

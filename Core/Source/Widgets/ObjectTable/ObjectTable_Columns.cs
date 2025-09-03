@@ -120,9 +120,9 @@ internal sealed partial class ObjectTable<TObject>
 
             return cellWidget;
         }
-        public IEnumerable<ObjectProp> GetObjectProps(TableWorker<TObject> tableWorker)
+        public IEnumerable<ObjectProp> GetObjectProps()
         {
-            return Worker.GetObjectProps(tableWorker);
+            return Worker.GetObjectProps();
         }
         public void ToggleVisibility()
         {
@@ -144,7 +144,10 @@ internal sealed partial class ObjectTable<TObject>
         }
         public void DisposeOfCell(Cell cell)
         {
-            CellsToRefresh.Remove((Cell.IRefreshable)cell);
+            if (cell is Cell.IRefreshable refreshableCell)
+            {
+                CellsToRefresh.Remove(refreshableCell);
+            }
         }
     }
 }

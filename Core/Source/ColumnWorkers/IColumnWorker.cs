@@ -20,5 +20,5 @@ public interface IColumnWorker
 public interface IColumnWorker<TObject> : IColumnWorker
 {
     public ObjectTable.Cell GetCell(TObject @object);
-    public IEnumerable<ObjectTable.ObjectProp> GetObjectProps(TableWorker<TObject> tableWorker);
+    public IEnumerable<ObjectTable.ObjectProp> GetObjectProps();
 }

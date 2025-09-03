@@ -2,9 +2,9 @@
 
 namespace Stats.Compat.Biotech;
 
-public sealed class LaborMechanoidsTableWorker : AbstractThingTableWorker
+public sealed class LaborMechanoidDefsTableWorker : ThingDefsTableWorker
 {
-    public LaborMechanoidsTableWorker(TableDef tableDef) : base(tableDef)
+    public LaborMechanoidDefsTableWorker(TableDef tableDef) : base(tableDef)
     {
     }
     protected override bool IsValidThingDef(ThingDef thingDef)

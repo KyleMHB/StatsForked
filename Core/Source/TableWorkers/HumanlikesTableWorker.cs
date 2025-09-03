@@ -2,7 +2,7 @@
 
 namespace Stats;
 
-public sealed class HumanlikesTableWorker : ThingTableWorker<Pawn>
+public sealed class HumanlikesTableWorker : ThingsTableWorker<Pawn>
 {
     public HumanlikesTableWorker(TableDef tableDef) : base(tableDef)
     {

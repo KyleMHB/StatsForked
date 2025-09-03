@@ -2,9 +2,9 @@
 
 namespace Stats;
 
-public sealed class MechanoidsTableWorker : AbstractThingTableWorker
+public sealed class MechanoidDefsTableWorker : ThingDefsTableWorker
 {
-    public MechanoidsTableWorker(TableDef tableDef) : base(tableDef)
+    public MechanoidDefsTableWorker(TableDef tableDef) : base(tableDef)
     {
     }
     protected override bool IsValidThingDef(ThingDef thingDef)
