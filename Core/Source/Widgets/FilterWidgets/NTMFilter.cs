@@ -83,7 +83,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
         ButtonTextWhenInactive = label ?? "...";
         Operators = operators;
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         var size = Text.CalcSize(ButtonText);
         size.x += ButtonPadHor * 2f;

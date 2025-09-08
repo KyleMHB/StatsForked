@@ -35,7 +35,7 @@ public class ColumnDef : Def
 
         LongEventHandler.ExecuteWhenFinished(() =>
         {
-            Worker = (ColumnWorker)Activator.CreateInstance(workerClass, this);
+            Worker = (IColumnWorker)Activator.CreateInstance(workerClass, this);
         });
     }
 }

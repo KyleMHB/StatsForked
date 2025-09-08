@@ -8,7 +8,7 @@ public sealed class Icon : InlineTexture
     public Icon(Texture2D texture, float scale = 1) : base(texture, scale)
     {
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         return new Vector2(Text.LineHeight, Text.LineHeight);
     }

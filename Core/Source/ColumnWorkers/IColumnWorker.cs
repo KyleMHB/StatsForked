@@ -6,7 +6,7 @@ namespace Stats;
 
 public interface IColumnWorker
 {
-    public ColumnDef Def { get; }
+    //public ColumnDef Def { get; }
     public CellStyleType CellStyle { get; }
 
     public enum CellStyleType

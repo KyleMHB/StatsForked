@@ -2,15 +2,15 @@
 
 namespace Stats;
 
-public sealed class ArtBuildingDefsTableWorker : ThingDefsTableWorker
+public sealed class BedDefTableWorker : ThingDefTableWorker
 {
-    public ArtBuildingDefsTableWorker(TableDef tableDef) : base(tableDef)
+    public BedDefTableWorker(TableDef tableDef) : base(tableDef)
     {
     }
     protected override bool IsValidThingDef(ThingDef thingDef)
     {
         return thingDef.building != null
             && thingDef.IsBuildingObtainableByPlayer()
-            && thingDef.IsArt;
+            && thingDef.IsBed;
     }
 }

@@ -10,11 +10,11 @@ public sealed class SizeAbsWidgetExtension : WidgetExtension
         Size.x = width;
         Size.y = height;
     }
-    protected override Vector2 CalcSize(Vector2 _)
+    public override Vector2 GetSize(Vector2 _)
     {
         return Size;
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         return Size;
     }

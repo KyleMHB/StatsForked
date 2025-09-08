@@ -5,9 +5,9 @@ using Verse;
 namespace Stats.Widgets;
 
 [StaticConstructorOnStartup]
-internal sealed class MainTabWindowTitleBar : WidgetWrapper
+internal sealed class MainTabWindowTitleBar : Widget
 {
-    protected override Widget Widget { get; }
+    private readonly Widget Widget;
     private static readonly Texture2D ExpandWindowTex;
     private static readonly Texture2D TableSettingsTex;
     private static readonly Texture2D FilterTex;
@@ -89,6 +89,18 @@ internal sealed class MainTabWindowTitleBar : WidgetWrapper
         .Background(Verse.Widgets.LightHighlight)
         .BorderBottom(1f, MainTabWindow.BorderLineColor);
         Widget.Parent = this;
+    }
+    public override Vector2 GetSize(Vector2 containerSize)
+    {
+        return Widget.GetSize(containerSize);
+    }
+    public override Vector2 GetSize()
+    {
+        return Widget.GetSize();
+    }
+    public override void Draw(Rect rect, Vector2 containerSize)
+    {
+        Widget.Draw(rect, containerSize);
     }
     private static Widget ToToolbarButtonIcon(
         Widget widget,

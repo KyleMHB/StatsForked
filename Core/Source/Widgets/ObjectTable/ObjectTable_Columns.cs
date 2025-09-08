@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Verse;
-using static Stats.IColumnWorker;
 
 namespace Stats.Widgets;
 
@@ -38,18 +37,20 @@ internal sealed partial class ObjectTable<TObject>
         public bool IsPinned { get; set; }
         public float Width { get; set; }
         public bool IsVisible { get; private set; } = true;
-        public ColumnDef Def => Worker.Def;
+        public Widget Title => Def.Title;
+        private readonly ColumnDef Def;
         private readonly IColumnWorker<TObject> Worker;
         private readonly ObjectTable<TObject> Parent;
         public TextAnchor CellTextAnchor => (TextAnchor)Worker.CellStyle;
         public TipSignal Tooltip { get; }
         private readonly List<Cell.IRefreshable> CellsToRefresh = new(InitialRowCapacity);
         public bool NeedsRefresh => CellsToRefresh.Count > 0;
-        public Column(IColumnWorker<TObject> worker, ObjectTable<TObject> parent)
+        public Column(ColumnDef def, IColumnWorker<TObject> worker, ObjectTable<TObject> parent)
         {
+            Def = def;
             Worker = worker;
             Parent = parent;
-            Tooltip = $"<i>{Def.LabelCap}</i>\n\n{Def.Description}";
+            Tooltip = $"<i>{def.LabelCap}</i>\n\n{def.Description}";
         }
         public Cell GetCell(TObject @object)
         {
@@ -64,13 +65,13 @@ internal sealed partial class ObjectTable<TObject>
         }
         public Widget GetHeaderCell()
         {
-            var columnTitle = Def.Title;
+            var columnTitle = Title;
 
-            if (Worker.CellStyle == CellStyleType.Number)
+            if (Worker.CellStyle == IColumnWorker.CellStyleType.Number)
             {
                 columnTitle = new SingleElementContainer(columnTitle.PaddingRel(1f, 0f, 0f, 0f));
             }
-            else if (Worker.CellStyle == CellStyleType.Boolean)
+            else if (Worker.CellStyle == IColumnWorker.CellStyleType.Boolean)
             {
                 columnTitle = new SingleElementContainer(columnTitle.PaddingRel(0.5f, 0f));
             }

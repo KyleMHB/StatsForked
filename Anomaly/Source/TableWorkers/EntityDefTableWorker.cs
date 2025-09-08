@@ -2,9 +2,9 @@
 
 namespace Stats.Compat.Anomaly;
 
-public sealed class EntityDefsTableWorker : ThingDefsTableWorker
+public sealed class EntityDefTableWorker : ThingDefTableWorker
 {
-    public EntityDefsTableWorker(TableDef tableDef) : base(tableDef)
+    public EntityDefTableWorker(TableDef tableDef) : base(tableDef)
     {
     }
     protected override bool IsValidThingDef(ThingDef thingDef)

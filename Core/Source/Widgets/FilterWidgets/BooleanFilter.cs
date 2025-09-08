@@ -27,7 +27,7 @@ public sealed class BooleanFilter : FilterWidget
     {
         CellValueFunc = cellValueFunc;
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         return new Vector2(Text.LineHeight * 2f, Text.LineHeight);
     }

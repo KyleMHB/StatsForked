@@ -38,7 +38,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
         ClearButton = new Icon(TexButton.CloseXSmall, 0.5f)
         .HoverColor(Globals.GUI.TextColorSecondary);
     }
-    protected sealed override Vector2 CalcSize()
+    public sealed override Vector2 GetSize()
     {
         var size = OperatorButtonSize = CalcOperatorButtonSize();
         var inputFieldSize = CalcInputFieldSize();

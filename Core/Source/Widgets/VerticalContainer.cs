@@ -29,7 +29,7 @@ public sealed class VerticalContainer : Widget
             child.Parent = this;
         }
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         Vector2 size;
         size.x = 0f;

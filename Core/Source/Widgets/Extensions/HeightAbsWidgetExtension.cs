@@ -9,11 +9,11 @@ public sealed class HeightAbsWidgetExtension : WidgetExtension
     {
         Height = height;
     }
-    protected override Vector2 CalcSize(Vector2 containerSize)
+    public override Vector2 GetSize(Vector2 containerSize)
     {
         return Widget.GetSize(containerSize) with { y = Height };
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         return Widget.GetSize() with { y = Height };
     }

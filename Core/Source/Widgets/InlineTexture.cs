@@ -13,7 +13,7 @@ public class InlineTexture : Widget
         Texture = texture;
         Scale = scale;
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         var width = Text.LineHeight * (Texture.width / (float)Texture.height);
 

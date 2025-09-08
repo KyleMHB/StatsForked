@@ -10,11 +10,11 @@ internal sealed class ColumnWidgetExtension : WidgetExtension
     {
         Width = width;
     }
-    protected override Vector2 CalcSize(Vector2 containerSize)
+    public override Vector2 GetSize(Vector2 containerSize)
     {
         return Widget.GetSize(containerSize) with { x = Width.Value };
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         return Widget.GetSize() with { x = Width.Value };
     }

@@ -10,11 +10,11 @@ public abstract class WidgetExtension : Widget
         Widget = widget;
         widget.Parent = this;
     }
-    protected override Vector2 CalcSize(Vector2 containerSize)
+    public override Vector2 GetSize(Vector2 containerSize)
     {
         return Widget.GetSize(containerSize);
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         return Widget.GetSize();
     }

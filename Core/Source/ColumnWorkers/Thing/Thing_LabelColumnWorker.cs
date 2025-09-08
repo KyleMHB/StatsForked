@@ -133,7 +133,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker, IColumnWorker<Abstra
         public StuffedVariantsDisplayModeToggleButton()
         {
         }
-        protected override Vector2 CalcSize()
+        protected override Vector2 GetSize()
         {
             return new Vector2(Text.LineHeight, Text.LineHeight);
         }

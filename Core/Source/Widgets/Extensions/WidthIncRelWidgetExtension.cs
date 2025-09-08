@@ -12,7 +12,7 @@ public sealed class WidthIncRelWidgetExtension : WidgetExtension
     {
         ParentWidthMultiplier = parentWidthMultiplier;
     }
-    protected override Vector2 CalcSize(Vector2 containerSize)
+    public override Vector2 GetSize(Vector2 containerSize)
     {
         var size = Widget.GetSize(containerSize);
 

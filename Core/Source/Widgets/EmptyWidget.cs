@@ -7,7 +7,7 @@ public sealed class EmptyWidget : Widget
     public EmptyWidget()
     {
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         return Vector2.zero;
     }

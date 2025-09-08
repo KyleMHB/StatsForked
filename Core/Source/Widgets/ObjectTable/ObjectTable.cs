@@ -33,18 +33,12 @@ public abstract class ObjectTable
         }
     }
 
-    // No need to set "Parent" on child widget since
-    // we are bypassing size caching.
     public abstract class WidgetCell : Cell
     {
         protected abstract Widget? Widget { get; set; }
-        protected override Vector2 CalcSize()
-        {
-            return Widget?.GetSize() ?? Vector2.zero;
-        }
         public override Vector2 GetSize()
         {
-            return CalcSize();
+            return Widget?.GetSize() ?? Vector2.zero;
         }
         public override Vector2 GetSize(Vector2 containerSize)
         {
@@ -135,7 +129,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         {
             if (columnDef.Worker is IColumnWorker<TObject> columnWorker)
             {
-                columns.Add(new(columnWorker, this));
+                columns.Add(new(columnDef, columnWorker, this));
             }
             else
             {
@@ -219,7 +213,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
                 var toggle = new Observable<bool>(true);
                 row = new VerticalContainer([
                     MakeColumnTitleRow(
-                        column.Def.Title,
+                        column.Title,
                         new Label(toggle.Map(state => state
                             ? $"<i>Hide ({objectProps.Count}) filters</i>"
                             : $"<i>Show ({objectProps.Count}) filters</i>"

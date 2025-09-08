@@ -2,9 +2,9 @@
 
 namespace Stats;
 
-public sealed class PowerGeneratorDefsTableWorker : ThingDefsTableWorker
+public sealed class PowerGeneratorDefTableWorker : ThingDefTableWorker
 {
-    public PowerGeneratorDefsTableWorker(TableDef tableDef) : base(tableDef)
+    public PowerGeneratorDefTableWorker(TableDef tableDef) : base(tableDef)
     {
     }
     protected override bool IsValidThingDef(ThingDef thingDef)

@@ -11,16 +11,16 @@ public sealed class BorderTopWidgetExtension : WidgetExtension
         Thickness = thickness;
         Color = color;
     }
-    protected override Vector2 CalcSize(Vector2 containerSize)
+    public override Vector2 GetSize(Vector2 containerSize)
     {
-        var size = base.CalcSize(containerSize);
+        var size = base.GetSize(containerSize);
         size.y += Thickness;
 
         return size;
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
-        var size = base.CalcSize();
+        var size = base.GetSize();
         size.y += Thickness;
 
         return size;

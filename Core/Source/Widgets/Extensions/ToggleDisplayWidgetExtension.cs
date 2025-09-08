@@ -10,7 +10,7 @@ internal class ToggleDisplayWidgetExtension : WidgetExtension
         State = state;
         state.OnNext += value => Resize();
     }
-    protected override Vector2 CalcSize(Vector2 containerSize)
+    public override Vector2 GetSize(Vector2 containerSize)
     {
         if (State.Value)
         {
@@ -19,7 +19,7 @@ internal class ToggleDisplayWidgetExtension : WidgetExtension
 
         return Vector2.zero;
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         if (State.Value)
         {

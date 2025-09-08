@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Verse;
-
-namespace Stats.Widgets;
+﻿namespace Stats.Widgets;
 
 public static class Make
 {
-    // TODO: Add common table cell widget factories.
+    public static Widget TextTableCellInnerWidget(string text)
+    {
+        return new Label(text).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+    }
+    public static ConstTableCell<decimal> ConstNumberTableCell(decimal value, string formatString)
+    {
+        return new(value, TextTableCellInnerWidget(value.ToString(formatString)));
+    }
 }

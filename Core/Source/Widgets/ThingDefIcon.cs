@@ -46,7 +46,7 @@ public sealed class ThingDefIcon : Widget
             Proportions = new Vector2(Texture.width, Texture.height);
         }
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         return new Vector2(Text.LineHeight, Text.LineHeight);
     }

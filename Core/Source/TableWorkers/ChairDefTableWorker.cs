@@ -2,9 +2,9 @@
 
 namespace Stats;
 
-public sealed class ChairDefsTableWorker : ThingDefsTableWorker
+public sealed class ChairDefTableWorker : ThingDefTableWorker
 {
-    public ChairDefsTableWorker(TableDef tableDef) : base(tableDef)
+    public ChairDefTableWorker(TableDef tableDef) : base(tableDef)
     {
     }
     protected override bool IsValidThingDef(ThingDef thingDef)

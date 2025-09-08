@@ -2,13 +2,13 @@
 
 namespace Stats.Widgets;
 
+// TODO: (re)Implement size caching either as an extension
+// or directly, where it is required.
 public abstract class Widget
 {
-    public Widget? Parent { protected get; set; }
-    private Vector2 RelSizeCache;
-    private Vector2 ContainerSizeCache = Vector2.positiveInfinity;
-    private Vector2 AbsSizeCache;
-    private bool AbsSizeCacheIsValid = false;
+    // TODO: Parent is only used to propagate "resize" event.
+    // So maybe use events instead?
+    public Widget? Parent { private get; set; }
     /*
     
     This method is used to calculate widget's size relative to its container size.
@@ -23,46 +23,16 @@ public abstract class Widget
     widget.GetSize(containerSize);// (50, 25)
 
     */
-    protected virtual Vector2 CalcSize(Vector2 containerSize)
+    public virtual Vector2 GetSize(Vector2 containerSize)
     {
         return GetSize();
     }
-    public virtual Vector2 GetSize(Vector2 containerSize)
-    {
-        // I don't think we have to use Mathf.Approximately() here. Once everything settles down and
-        // GUI becomes static, the same math should give the same results.
-        if (ContainerSizeCache.x == containerSize.x && ContainerSizeCache.y == containerSize.y)
-        {
-            return RelSizeCache;
-        }
-        else
-        {
-            ContainerSizeCache = containerSize;
-
-            return RelSizeCache = CalcSize(containerSize);
-        }
-    }
     // This method is used to calculate the "absolute" size of a widget,
     // ie. without any relative-size-related extensions.
-    protected abstract Vector2 CalcSize();
-    public virtual Vector2 GetSize()
-    {
-        if (AbsSizeCacheIsValid)
-        {
-            return AbsSizeCache;
-        }
-
-        AbsSizeCacheIsValid = true;
-
-        return AbsSizeCache = CalcSize();
-    }
+    public abstract Vector2 GetSize();
     public abstract void Draw(Rect rect, Vector2 containerSize);
-    public void Resize()
+    public virtual void Resize()
     {
-        ContainerSizeCache = Vector2.positiveInfinity;
-        AbsSizeCache = CalcSize();
-        AbsSizeCacheIsValid = true;// Just in case.
-
         Parent?.Resize();
     }
 }

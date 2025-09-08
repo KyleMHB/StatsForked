@@ -195,24 +195,6 @@ public static class VerseThingDefExtensions
     {
         return GetDefaultStuffCached(thingDef);
     }
-    private static readonly Func<ThingDef, CompProperties_Power?> GetPowerCompPropertiesCached =
-    FunctionExtensions.Memoized((ThingDef thingDef) =>
-    {
-        return thingDef.GetCompProperties<CompProperties_Power>();
-    });
-    public static CompProperties_Power? GetPowerCompProperties(this ThingDef thingDef)
-    {
-        return GetPowerCompPropertiesCached(thingDef);
-    }
-    private static readonly Func<ThingDef, CompProperties_Refuelable?> GetRefuelableCompPropertiesCached =
-    FunctionExtensions.Memoized((ThingDef thingDef) =>
-    {
-        return thingDef.GetCompProperties<CompProperties_Refuelable>();
-    });
-    public static CompProperties_Refuelable? GetRefuelableCompProperties(this ThingDef thingDef)
-    {
-        return GetRefuelableCompPropertiesCached(thingDef);
-    }
     public static bool IsBuildingObtainableByPlayer(this ThingDef thingDef)
     {
         return thingDef.BuildableByPlayer || thingDef.Minifiable;
@@ -275,6 +257,22 @@ public static class VerseThingDefExtensions
         ResearchProjects.TryGetValue(thingDef, out var researchProjectDef);
 
         return researchProjectDef;
+    }
+    public static HashSet<ThingDef>? GetAllowedStuffs(this ThingDef thingDef)
+    {
+        if (thingDef.stuffCategories?.Count > 0)
+        {
+            var result = new HashSet<ThingDef>(20);
+
+            foreach (var stuffCategoryDef in thingDef.stuffCategories)
+            {
+                result.AddRange(stuffCategoryDef.GetStuffDefs());
+            }
+
+            return result;
+        }
+
+        return null;
     }
 }
 
@@ -342,5 +340,49 @@ public static class RimWorldPlantPropertiesExtensions
     {
         // Source: wiki
         return plantProperties.growDays / 0.5417f;
+    }
+}
+
+public static class VerseMapListExtensions
+{
+    public static IEnumerable<Thing> GetSpawnedThings(this List<Map> maps)
+    {
+        foreach (var map in Find.Maps)
+        {
+            foreach (var thing in map.spawnedThings)
+            {
+                yield return thing;
+            }
+        }
+    }
+}
+
+public static class RimWorldStuffCategoryDef
+{
+    private static readonly Dictionary<StuffCategoryDef, HashSet<ThingDef>> StuffsByCategory = [];
+    static RimWorldStuffCategoryDef()
+    {
+        foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
+        {
+            if (thingDef.stuffProps == null) continue;
+
+            foreach (var stuffCategoryDef in thingDef.stuffProps.categories)
+            {
+                var exists = StuffsByCategory.TryGetValue(stuffCategoryDef, out var categoryStuffs);
+
+                if (exists)
+                {
+                    categoryStuffs.Add(thingDef);
+                }
+                else
+                {
+                    StuffsByCategory[stuffCategoryDef] = [thingDef];
+                }
+            }
+        }
+    }
+    public static HashSet<ThingDef> GetStuffDefs(this StuffCategoryDef stuffCategoryDef)
+    {
+        return StuffsByCategory[stuffCategoryDef];
     }
 }

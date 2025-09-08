@@ -9,11 +9,11 @@ public sealed class WidthAbsWidgetExtension : WidgetExtension
     {
         Width = width;
     }
-    protected override Vector2 CalcSize(Vector2 containerSize)
+    public override Vector2 GetSize(Vector2 containerSize)
     {
         return Widget.GetSize(containerSize) with { x = Width };
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         return Widget.GetSize() with { x = Width };
     }

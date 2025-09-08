@@ -2,9 +2,9 @@
 
 namespace Stats;
 
-public sealed class TurretDefsTableWorker : ThingDefsTableWorker
+public sealed class TurretDefTableWorker : ThingDefTableWorker
 {
-    public TurretDefsTableWorker(TableDef tableDef) : base(tableDef)
+    public TurretDefTableWorker(TableDef tableDef) : base(tableDef)
     {
     }
     protected override bool IsValidThingDef(ThingDef thingDef)

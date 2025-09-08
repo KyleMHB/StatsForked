@@ -5,35 +5,28 @@ using UnityEngine;
 
 namespace Stats;
 
-public abstract class NumberColumnWorker<TObject> : ColumnWorker<TObject>
+public abstract class NumberColumnWorker : ColumnWorker
 {
     private readonly Texture2D? Icon = null;
-    private readonly string FormatString;
     protected NumberColumnWorker(
         ColumnDef columndef,
-        Texture2D? icon = null,
-        string formatString = ""
-    ) : base(columndef, CellStyleType.Number, TODO)
+        Texture2D? icon = null
+    ) : base(columndef, IColumnWorker.CellStyleType.Number)
     {
         Icon = icon;
-        FormatString = formatString;
     }
-    protected abstract decimal GetValue(TObject @object);
-    public sealed override ObjectTable.Cell GetCell(TObject @object)
+    protected ObjectTable.Cell GetCell(decimal value, string formatString)
     {
-        var value = GetValue(@object);
-
-        return new Cell(value, FormatString, Icon);
+        return new Cell(value, formatString, Icon);
     }
-    public sealed override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<TObject> _)
+    protected IEnumerable<ObjectTable.ObjectProp> GetObjectProps()
     {
-        yield return new(Def.Title, new NumberFilter<Cell>(cell => cell.Value, this));
+        yield return new(Def.Title, new NumberFilter(cell => ((Cell)cell).Value));
     }
 
     private sealed class Cell : ObjectTable.WidgetCell
     {
         protected override Widget? Widget { get; set; }
-        public override event Action? OnChange;
         public decimal Value { get; }
         public Cell(decimal value, string formatString, Texture2D? icon)
         {

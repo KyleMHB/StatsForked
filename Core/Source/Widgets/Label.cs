@@ -29,7 +29,7 @@ public sealed class Label : Widget
         _Text = observable.Value;
         observable.OnNext += value => Text = value;
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         return Verse.Text.CalcSize(Text);
     }

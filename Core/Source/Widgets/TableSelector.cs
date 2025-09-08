@@ -6,9 +6,9 @@ using Verse;
 
 namespace Stats.Widgets;
 
-internal sealed class TableSelector : WidgetWrapper
+internal sealed class TableSelector : Widget
 {
-    protected override Widget Widget { get; }
+    private readonly Widget Widget;
     public TableDef TableDef
     {
         set
@@ -57,6 +57,18 @@ internal sealed class TableSelector : WidgetWrapper
             .OrderBy(menuOption => menuOption.Label)
             .ToList();
         Menu = new(menuOptions);
+    }
+    public override Vector2 GetSize(Vector2 containerSize)
+    {
+        return Widget.GetSize(containerSize);
+    }
+    public override Vector2 GetSize()
+    {
+        return Widget.GetSize();
+    }
+    public override void Draw(Rect rect, Vector2 containerSize)
+    {
+        Widget.Draw(rect, containerSize);
     }
     private void ShowMenu()
     {

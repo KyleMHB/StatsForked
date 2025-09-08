@@ -10,7 +10,7 @@ public sealed class ThingIcon : Widget
     {
         Thing = thing;
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         return new Vector2(Text.LineHeight, Text.LineHeight);
     }

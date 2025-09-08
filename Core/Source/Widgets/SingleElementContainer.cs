@@ -17,7 +17,7 @@ public sealed class SingleElementContainer : Widget
         OccupiedWidth = widgetSize.x;
         OccupiedHeight = widgetSize.y;
     }
-    protected override Vector2 CalcSize()
+    public override Vector2 GetSize()
     {
         return Widget.GetSize();
     }
