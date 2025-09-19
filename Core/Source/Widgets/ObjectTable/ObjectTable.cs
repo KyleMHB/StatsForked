@@ -33,23 +33,6 @@ public abstract class ObjectTable
         }
     }
 
-    public abstract class WidgetCell : Cell
-    {
-        protected abstract Widget? Widget { get; set; }
-        public override Vector2 GetSize()
-        {
-            return Widget?.GetSize() ?? Vector2.zero;
-        }
-        public override Vector2 GetSize(Vector2 containerSize)
-        {
-            return Widget?.GetSize(containerSize) ?? Vector2.zero;
-        }
-        public override void Draw(Rect rect, Vector2 containerSize)
-        {
-            Widget?.Draw(rect, containerSize);
-        }
-    }
-
     public readonly record struct ObjectProp(Widget Label, FilterWidget FilterWidget);
 }
 

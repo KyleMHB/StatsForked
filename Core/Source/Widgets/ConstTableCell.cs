@@ -3,14 +3,12 @@ using UnityEngine;
 
 namespace Stats.Widgets;
 
-public abstract class ConstTableCell<T> : ObjectTable.Cell where T : IComparable<T>
+public abstract class AbstractConstTableCell<T> : ObjectTable.Cell where T : IComparable<T>
 {
     private readonly T Value;
-    //private readonly Widget? Widget;
-    public ConstTableCell(T value)
+    public AbstractConstTableCell(T value)
     {
         Value = value;
-        //Widget = widget;
     }
     public override int CompareTo(ObjectTable.Cell cell)
     {
@@ -18,11 +16,32 @@ public abstract class ConstTableCell<T> : ObjectTable.Cell where T : IComparable
     }
     public static T GetValue(ObjectTable.Cell cell)
     {
-        return ((ConstTableCell<T>)cell).Value;
+        return ((AbstractConstTableCell<T>)cell).Value;
     }
 }
 
-public sealed class EmptyConstTableCell<T> : ConstTableCell<T> where T : IComparable<T>
+public sealed class ConstTableCell<T> : AbstractConstTableCell<T> where T : IComparable<T>
+{
+    private readonly Widget Widget;
+    public ConstTableCell(T value, Widget widget) : base(value)
+    {
+        Widget = widget;
+    }
+    public override Vector2 GetSize()
+    {
+        return Widget.GetSize();
+    }
+    public override Vector2 GetSize(Vector2 containerSize)
+    {
+        return Widget.GetSize(containerSize);
+    }
+    public override void Draw(Rect rect, Vector2 containerSize)
+    {
+        Widget.Draw(rect, containerSize);
+    }
+}
+
+public sealed class EmptyConstTableCell<T> : AbstractConstTableCell<T> where T : IComparable<T>
 {
     public EmptyConstTableCell(T value) : base(value)
     {
