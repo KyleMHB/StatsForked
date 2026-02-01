@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
+using Stats.Objects.ThingDef;
 using Stats.Widgets;
 using Verse;
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_CaliberColumnWorker : ColumnWorker<AbstractThing>
+public sealed class Weapon_CaliberColumnWorker : ColumnWorker<VirtualThing>
 {
     public Weapon_CaliberColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
-    public override ObjectTable.Cell GetCell(AbstractThing thing)
+    public override ObjectTableWidget.Cell GetCell(VirtualThing thing)
     {
         return new Cell(thing, this);
     }
@@ -30,14 +31,14 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<AbstractThing>
 
         return null;
     }
-    private string? GetCaliberName(AbstractThing thing)
+    private string? GetCaliberName(VirtualThing thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
         var statRequest = StatRequest.For(thingDef, null);
 
         return GetCaliberName(statRequest);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<AbstractThing> contextObjects)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<VirtualThing> contextObjects)
     {
         var options = contextObjects
             .Select(GetCaliberName)
@@ -50,12 +51,12 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<AbstractThing>
         yield return new(Def.Title, new OTMFilter<Cell, string?>(cell => cell.Value, options, this));
     }
 
-    private sealed class Cell : ObjectTable.WidgetCell
+    private sealed class Cell : ObjectTableWidget.WidgetCell
     {
         protected override Widget? Widget { get; set; }
         public override event Action? OnChange;
         public string? Value { get; }
-        public Cell(AbstractThing thing, Weapon_CaliberColumnWorker column)
+        public Cell(VirtualThing thing, Weapon_CaliberColumnWorker column)
         {
             var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
             var statRequest = StatRequest.For(thingDef, null);
@@ -63,7 +64,7 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<AbstractThing>
 
             if (caliberName?.Length > 0)
             {
-                Widget widget = new Label(caliberName).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
+                Widget widget = new Label(caliberName).PaddingAbs(ObjectTableWidget.CellPadHor, ObjectTableWidget.CellPadVer);
                 var tooltip = StatDefOf.Caliber.Worker.GetExplanationFull(
                     statRequest,
                     ToStringNumberSense.Absolute,
@@ -79,7 +80,7 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<AbstractThing>
                 Value = caliberName;
             }
         }
-        public override int CompareTo(ObjectTable.Cell cell)
+        public override int CompareTo(ObjectTableWidget.Cell cell)
         {
             return Comparer<string?>.Default.Compare(Value, ((Cell)cell).Value);
         }

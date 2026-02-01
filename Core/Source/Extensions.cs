@@ -7,7 +7,7 @@ using Verse;
 
 namespace Stats;
 
-public static class UnityEngineRectExtensions
+public static class UnityEngine_Rect_Extensions
 {
     internal static Rect CutByX(ref this Rect rect, float amount)
     {
@@ -27,7 +27,7 @@ public static class UnityEngineRectExtensions
     }
 }
 
-public static class VerseVerbPropertiesListExtensions
+public static class Verse_VerbProperties_List_Extensions
 {
     public static VerbProperties? Primary(this List<VerbProperties> verbs)
     {
@@ -35,7 +35,7 @@ public static class VerseVerbPropertiesListExtensions
     }
 }
 
-public static class StringExtensions
+public static class System_String_Extensions
 {
     internal static Color ToUniqueColorRGB(this string str)
     {
@@ -53,7 +53,7 @@ public static class StringExtensions
     }
 }
 
-public static class UnityEngineColorExtensions
+public static class UnityEngine_Color_Extensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color AdjustedForGUIOpacity(this Color color)
@@ -64,7 +64,7 @@ public static class UnityEngineColorExtensions
     }
 }
 
-public static class FunctionExtensions
+public static class System_Function_Extensions
 {
     // Memoize every function call.
     public static Func<TArg, TRes> Memoized<TArg, TRes>(this Func<TArg, TRes> function)
@@ -85,7 +85,7 @@ public static class FunctionExtensions
     }
 }
 
-public static class SystemSingleExtensions
+public static class System_Single_Extensions
 {
     public static decimal ToDecimal(this float value, int digits)
     {
@@ -93,18 +93,18 @@ public static class SystemSingleExtensions
         // to decimal representation and rounded to the nearest number after
         // the 28th decimal place if necessary."
         //
-        // Key word is "if".
+        // Keyword is "if".
         return (decimal)Math.Round(value, digits);
     }
 }
 
-public static class VerseThingDefExtensions
+public static class Verse_ThingDef_Extensions
 {
     private static readonly Dictionary<ThingDef, HashSet<RecipeDef>> ThingDefRecipes = [];
     private static readonly Dictionary<ThingDef, HashSet<PawnKindDef>> PawnKinds = [];
     private static readonly Dictionary<string, HashSet<ThingDef>> WeaponsByTag = [];
     private static readonly Dictionary<ThingDef, HashSet<ResearchProjectDef>> ResearchProjects = [];
-    static VerseThingDefExtensions()
+    static Verse_ThingDef_Extensions()
     {
         foreach (var recipeDef in DefDatabase<RecipeDef>.AllDefsListForReading)
         {
@@ -186,7 +186,7 @@ public static class VerseThingDefExtensions
     }
     // GenStuff.DefaultStuffFor() is a bit too heavy for some tasks.
     private static readonly Func<ThingDef, ThingDef?> GetDefaultStuffCached =
-    FunctionExtensions.Memoized((ThingDef thingDef) =>
+    System_Function_Extensions.Memoized((ThingDef thingDef) =>
     {
         return GenStuff.DefaultStuffFor(thingDef);
     });
@@ -276,10 +276,10 @@ public static class VerseThingDefExtensions
     }
 }
 
-public static class VerseRecipeDefExtensions
+public static class Verse_RecipeDef_Extensions
 {
     private static readonly Dictionary<RecipeDef, HashSet<ThingDef>> RecipeUsers = [];
-    static VerseRecipeDefExtensions()
+    static Verse_RecipeDef_Extensions()
     {
         foreach (var recipeDef in DefDatabase<RecipeDef>.AllDefsListForReading)
         {
@@ -326,7 +326,7 @@ public static class VerseRecipeDefExtensions
     }
 }
 
-public static class RimWorldCompProperties_EggLayerExtensions
+public static class RimWorld_CompProperties_EggLayer_Extensions
 {
     public static ThingDef GetAnyEggDef(this CompProperties_EggLayer compProps)
     {
@@ -334,7 +334,7 @@ public static class RimWorldCompProperties_EggLayerExtensions
     }
 }
 
-public static class RimWorldPlantPropertiesExtensions
+public static class RimWorld_PlantProperties_Extensions
 {
     public static float GetGrowDaysActual(this PlantProperties plantProperties)
     {
@@ -343,7 +343,7 @@ public static class RimWorldPlantPropertiesExtensions
     }
 }
 
-public static class VerseMapListExtensions
+public static class Verse_Map_List_Extensions
 {
     public static IEnumerable<Thing> GetSpawnedThings(this List<Map> maps)
     {
@@ -357,10 +357,10 @@ public static class VerseMapListExtensions
     }
 }
 
-public static class RimWorldStuffCategoryDef
+public static class RimWorld_StuffCategoryDef_Extensions
 {
     private static readonly Dictionary<StuffCategoryDef, HashSet<ThingDef>> StuffsByCategory = [];
-    static RimWorldStuffCategoryDef()
+    static RimWorld_StuffCategoryDef_Extensions()
     {
         foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
         {

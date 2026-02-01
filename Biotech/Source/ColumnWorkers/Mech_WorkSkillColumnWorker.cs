@@ -1,11 +1,14 @@
-﻿namespace Stats.Compat.Biotech;
+﻿using Stats.Objects.ThingDef;
+using Stats.ObjectTable.ColumnWorkers;
 
-public sealed class Mech_WorkSkillColumnWorker : NumberColumnWorker<AbstractThing>
+namespace Stats.Compat.Biotech;
+
+public sealed class Mech_WorkSkillColumnWorker : NumberColumnWorker<VirtualThing>
 {
     public Mech_WorkSkillColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
-    protected override decimal GetValue(AbstractThing thing)
+    protected override decimal GetCellValueSource(VirtualThing thing)
     {
         var raceProps = thing.Def.race;
 

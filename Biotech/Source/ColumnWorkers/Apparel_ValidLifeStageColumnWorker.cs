@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Stats.Objects.ThingDef;
 using Stats.Widgets;
 using Verse;
 
 namespace Stats.Compat.Biotech;
 
-public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<AbstractThing>
+public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<VirtualThing>
 {
     public Apparel_ValidLifeStageColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
@@ -36,13 +37,13 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<AbstractTh
     {
         return lifeStage.ToString().Translate().CapitalizeFirst().RawText;
     });
-    public override ObjectTable.Cell GetCell(AbstractThing thing)
+    public override ObjectTableWidget.Cell GetCell(VirtualThing thing)
     {
         var lifeStages = GetValidLifeStages(thing.Def);
 
         return new Cell(lifeStages);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<AbstractThing> contextObjects)
+    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<VirtualThing> contextObjects)
     {
         var filterOptions = contextObjects
             .SelectMany(thing => GetValidLifeStages(thing.Def))
@@ -53,7 +54,7 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<AbstractTh
         yield return new(Def.Title, new MTMFilter<Cell, DevelopmentalStage>(cell => cell.Value, filterOptions, this));
     }
 
-    private sealed class Cell : ObjectTable.WidgetCell
+    private sealed class Cell : ObjectTableWidget.WidgetCell
     {
         protected override Widget? Widget { get; set; }
         public override event Action? OnChange;
@@ -78,7 +79,7 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<AbstractTh
                 Text = text;
             }
         }
-        public override int CompareTo(ObjectTable.Cell cell)
+        public override int CompareTo(ObjectTableWidget.Cell cell)
         {
             return Comparer<string?>.Default.Compare(Text, ((Cell)cell).Text);
         }

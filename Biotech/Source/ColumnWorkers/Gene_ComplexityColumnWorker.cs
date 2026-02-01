@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Stats.ObjectTable.ColumnWorkers;
+using UnityEngine;
 using Verse;
 
 namespace Stats.Compat.Biotech;
@@ -14,7 +15,7 @@ public sealed class Gene_ComplexityColumnWorker : NumberColumnWorker<GeneDef>
     public Gene_ComplexityColumnWorker(ColumnDef columnDef) : base(columnDef, ComplexityIcon)
     {
     }
-    protected override decimal GetValue(GeneDef geneDef)
+    protected override decimal GetCellValueSource(GeneDef geneDef)
     {
         return geneDef.biostatCpx;
     }

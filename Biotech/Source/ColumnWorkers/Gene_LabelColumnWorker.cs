@@ -10,7 +10,7 @@ public sealed class Gene_LabelColumnWorker : ColumnWorker<GeneDef>
     public Gene_LabelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
-    public override ObjectTable.Cell GetCell(GeneDef geneDef)
+    public override ObjectTableWidget.Cell GetCell(GeneDef geneDef)
     {
         return new Cell(geneDef);
     }
@@ -19,7 +19,7 @@ public sealed class Gene_LabelColumnWorker : ColumnWorker<GeneDef>
         yield return new(Def.Title, new StringFilter<Cell>(cell => cell.Text, this));
     }
 
-    private sealed class Cell : ObjectTable.WidgetCell
+    private sealed class Cell : ObjectTableWidget.WidgetCell
     {
         protected override Widget? Widget { get; set; }
         public override event Action? OnChange;
@@ -31,10 +31,10 @@ public sealed class Gene_LabelColumnWorker : ColumnWorker<GeneDef>
                 new Icon(geneDef.Icon).ToButtonGhostly(() => Widgets.Draw.DefInfoDialog(geneDef)),
                 new Label(geneDef.LabelCap),
             ], Globals.GUI.Pad)
-            .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)
+            .PaddingAbs(ObjectTableWidget.CellPadHor, ObjectTableWidget.CellPadVer)
             .Tooltip(geneDef.description);
         }
-        public override int CompareTo(ObjectTable.Cell cell)
+        public override int CompareTo(ObjectTableWidget.Cell cell)
         {
             return Text.CompareTo(((Cell)cell).Text);
         }

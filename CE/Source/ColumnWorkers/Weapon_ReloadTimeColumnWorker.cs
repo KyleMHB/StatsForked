@@ -1,15 +1,17 @@
 ﻿using CombatExtended;
 using RimWorld;
+using Stats.Objects.ThingDef;
+using Stats.ObjectTable.ColumnWorkers;
 using Verse;
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_ReloadTimeColumnWorker : NumberColumnWorker<AbstractThing>
+public sealed class Weapon_ReloadTimeColumnWorker : NumberColumnWorker<VirtualThing>
 {
     public Weapon_ReloadTimeColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.00 " + "LetterSecond".Translate())
     {
     }
-    protected override decimal GetValue(AbstractThing thing)
+    protected override decimal GetCellValueSource(VirtualThing thing)
     {
         var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
         var statRequest = StatRequest.For(thingDef, null);

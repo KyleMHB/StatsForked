@@ -15,4 +15,5 @@ public sealed class EmptyWidget : Widget
     {
         GUIDebugger.DebugRect(this, rect);
     }
+    //public static readonly EmptyWidget Instance = new();
 }

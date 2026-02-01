@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Stats.Objects.ThingDef;
 using Verse;
 
 namespace Stats.Compat.Biotech;
 
-public sealed class Mech_WorkActivitiesColumnWorker : DefSetColumnWorker<AbstractThing, WorkTypeDef>
+public sealed class Mech_WorkActivitiesColumnWorker : DefSetColumnWorker<VirtualThing, WorkTypeDef>
 {
     public Mech_WorkActivitiesColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
-    protected override HashSet<WorkTypeDef> GetValue(AbstractThing thing)
+    protected override HashSet<WorkTypeDef> GetValue(VirtualThing thing)
     {
         return thing.Def.race?.mechEnabledWorkTypes.ToHashSet() ?? [];
     }

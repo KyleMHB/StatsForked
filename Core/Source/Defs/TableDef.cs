@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Stats.ObjectTable.TableWorkers;
 using UnityEngine;
 using Verse;
 
