@@ -1,4 +1,5 @@
-﻿using Stats.Objects.ThingDef;
+﻿using Stats.ColumnWorkers_Legacy;
+using Stats.Objects.ThingDef;
 using UnityEngine;
 using Verse;
 

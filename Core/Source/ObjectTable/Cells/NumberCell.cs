@@ -12,17 +12,12 @@ public sealed class NumberCell : Cell
     private readonly string FormatString;
     private string Text = "";
     private Vector2 Size;
-    public NumberCell(CellValueSource<decimal> valueSource, string formatString)
+    public NumberCell(decimal value, string formatString = "") : this(() => value, formatString) { }
+    public NumberCell(CellValueSource<decimal> valueSource, string formatString = "")
     {
         ValueSource = valueSource;
         FormatString = formatString;
     }
-    //public NumberCell(decimal value) : this(() => value, "")
-    //{
-    //}
-    //public NumberCell() : this(0m)
-    //{
-    //}
     public override void Draw(Rect rect, Vector2 containerSize)
     {
         throw new NotImplementedException();
@@ -52,6 +47,7 @@ public sealed class NumberCell : Cell
     {
         return GetValue(cell1).CompareTo(GetValue(cell2));
     }
+    static public CellDescriptor GetDescriptor(ColumnDef columnDef) => GetDescriptor(columnDef.Title);
     static public CellDescriptor GetDescriptor(Widget valueFieldLabel)
     {
         FilterWidget valueFieldFilter = new NumberFilter(GetValue);
@@ -59,4 +55,5 @@ public sealed class NumberCell : Cell
 
         return new CellDescriptor(CellStyleType.Number, [valueField]);
     }
+    public static readonly NumberCell Empty = new(0m);
 }

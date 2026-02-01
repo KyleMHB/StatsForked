@@ -1,18 +1,18 @@
 ﻿using RimWorld;
+using Stats.ObjectTable;
 using Stats.ObjectTable.Cells;
-using Stats.ObjectTable.ColumnWorkers;
 using Verse;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Turret;
 
 public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) :
-    NumberColumnWorker<Verse.ThingDef>(columnDef),
+    IColumnWorker<Verse.ThingDef>,
     IColumnWorker<VirtualThing>,
     IColumnWorker<Verse.Thing>
 {
-    public Cell GetCell(VirtualThing thing) => GetCell(thing.Def);
     public Cell GetCell(Verse.Thing thing) => GetCell(thing.def);
-    protected override CellValueSource<decimal> GetCellValueSource(Verse.ThingDef thingDef)
+    public Cell GetCell(VirtualThing thing) => GetCell(thing.Def);
+    public Cell GetCell(Verse.ThingDef thingDef)
     {
         CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();
 
@@ -34,11 +34,12 @@ public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) :
                 {
                     decimal cellValue = (refuelableCompProps.fuelCapacity / fuelPerBurst).ToDecimal(0);
 
-                    return () => cellValue;
+                    return new NumberCell(cellValue);
                 }
             }
         }
 
-        return () => 0m;
+        return NumberCell.Empty;
     }
+    public CellDescriptor GetCellDescriptor() => NumberCell.GetDescriptor(columnDef);
 }

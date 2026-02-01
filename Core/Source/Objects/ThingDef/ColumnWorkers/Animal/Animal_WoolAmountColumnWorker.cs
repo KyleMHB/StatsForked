@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using Stats.ColumnWorkers_Legacy;
 using Stats.Objects.ThingDef;
 using Verse;
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Stats.Objects.ThingDef;
-using Stats.ObjectTable.ColumnWorkers;
+using Stats.ObjectTable;
 using Stats.Widgets;
 using UnityEngine;
 using Verse;

@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Stats.Objects.ThingDef;
 using Stats.Widgets;
 using Verse;
 
-namespace Stats.Objects.ThingDef.ColumnWorkers.Building;
+namespace Stats.Objects.ThingDef.ColumnWorkers;
 
-public sealed class Building_SizeColumnWorker : ColumnWorker<VirtualThing>
+public sealed class DimensionsColumnWorker : ColumnWorker<VirtualThing>
 {
-    public Building_SizeColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.Number, TODO)
+    public DimensionsColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.Number, TODO)
     {
     }
     public override ObjectTableWidget.Cell GetCell(VirtualThing thing)
@@ -40,7 +39,7 @@ public sealed class Building_SizeColumnWorker : ColumnWorker<VirtualThing>
         public override event Action? OnChange;
         public IntVec2 BuildingSize { get; }
         public int BuildingArea { get; }
-        public Cell(VirtualThing thing, Building_SizeColumnWorker column)
+        public Cell(VirtualThing thing, DimensionsColumnWorker column)
         {
             var size = column.GetSize(thing);
 

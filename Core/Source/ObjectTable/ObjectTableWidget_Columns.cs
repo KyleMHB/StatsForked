@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Stats.ObjectTable.Cells;
-using Stats.ObjectTable.ColumnWorkers;
 using Stats.Widgets;
 using UnityEngine;
 using Verse;

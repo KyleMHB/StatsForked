@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Stats.ObjectTable.TableWorkers;
+using Stats.ObjectTable;
 using Verse;
 
 namespace Stats.Compat.Biotech;

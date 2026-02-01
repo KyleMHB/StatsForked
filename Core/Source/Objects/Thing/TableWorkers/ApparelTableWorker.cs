@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Stats.ObjectTable.TableWorkers;
+using Stats.ObjectTable;
 using Verse;
 
 namespace Stats.Objects.Thing.TableWorkers;

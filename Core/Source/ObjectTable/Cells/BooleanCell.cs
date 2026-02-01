@@ -8,6 +8,7 @@ namespace Stats.ObjectTable.Cells;
 public sealed class BooleanCell : Cell
 {
     private readonly bool Value;
+    public BooleanCell(bool value) : this(() => value) { }
     public BooleanCell(CellValueSource<bool> valueSource)
     {
     }
@@ -30,6 +31,7 @@ public sealed class BooleanCell : Cell
     {
         return GetValue(cell1).CompareTo(GetValue(cell2));
     }
+    static public CellDescriptor GetDescriptor(ColumnDef columnDef) => GetDescriptor(columnDef.Title);
     static public CellDescriptor GetDescriptor(Widget valueFieldLabel)
     {
         FilterWidget valueFieldFilter = new BooleanFilter(GetValue);
@@ -37,4 +39,5 @@ public sealed class BooleanCell : Cell
 
         return new CellDescriptor(CellStyleType.Boolean, [valueField]);
     }
+    public static readonly BooleanCell Empty = new(false);
 }

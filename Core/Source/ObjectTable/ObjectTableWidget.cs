@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Stats.ObjectTable.ColumnWorkers;
-using Stats.ObjectTable.TableWorkers;
 using Stats.Widgets;
 using UnityEngine;
 using Verse;

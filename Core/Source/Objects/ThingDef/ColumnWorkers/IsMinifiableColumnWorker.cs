@@ -2,8 +2,8 @@
 using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers;
-// Turret.IsMannedColumnWorker
-public sealed class HasInteractionCellColumnWorker(ColumnDef columnDef) :
+
+public sealed class IsMinifiableColumnWorker(ColumnDef columnDef) :
     IColumnWorker<Verse.ThingDef>,
     IColumnWorker<VirtualThing>,
     IColumnWorker<Verse.Thing>
@@ -12,7 +12,7 @@ public sealed class HasInteractionCellColumnWorker(ColumnDef columnDef) :
     public Cell GetCell(VirtualThing thing) => GetCell(thing.Def);
     public Cell GetCell(Verse.ThingDef thingDef)
     {
-        bool cellValue = thingDef.hasInteractionCell;
+        bool cellValue = thingDef.Minifiable;
 
         return new BooleanCell(cellValue);
     }

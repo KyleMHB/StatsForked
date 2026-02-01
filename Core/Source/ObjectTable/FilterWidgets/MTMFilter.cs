@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Stats.ObjectTable.Cells;
 using Verse;
 
 namespace Stats.ObjectTable.FilterWidgets;

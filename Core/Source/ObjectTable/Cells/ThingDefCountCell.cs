@@ -12,13 +12,11 @@ public class ThingDefCountCell : Cell
 {
     private readonly ThingDef? ThingDef;
     private readonly decimal Count;
-    public ThingDefCountCell(ThingDef? thingDef, decimal count)
+    public ThingDefCountCell(ThingDefCount value) : this(() => value) { }
+    public ThingDefCountCell(CellValueSource<ThingDefCount> valueSource)
     {
-        ThingDef = thingDef;
-        Count = count;
-    }
-    public ThingDefCountCell() : this(null, 0m)
-    {
+        //ThingDef = thingDef;
+        //Count = count;
     }
     public override void Draw(Rect rect, Vector2 containerSize)
     {
@@ -47,6 +45,7 @@ public class ThingDefCountCell : Cell
     {
         return Comparer<string?>.Default.Compare(GetThingDef(cell1)?.label, GetThingDef(cell2)?.label);
     }
+    static public CellDescriptor GetDescriptor(ThingDefCountColumnDef columnDef) => GetDescriptor(columnDef.getThingDefs());
     static public CellDescriptor GetDescriptor(IEnumerable<ThingDef?> thingDefs)
     {
         Widget countFieldLabel = new Label("Amount");
@@ -66,4 +65,10 @@ public class ThingDefCountCell : Cell
 
         return new CellDescriptor(CellStyleType.Number, [countField, thingDefField]);
     }
+    public static readonly ThingDefCountCell Empty = new(ThingDefCount.Empty);
+}
+
+public readonly record struct ThingDefCount(ThingDef? ThingDef, decimal Count)
+{
+    public static readonly ThingDefCount Empty = new();
 }

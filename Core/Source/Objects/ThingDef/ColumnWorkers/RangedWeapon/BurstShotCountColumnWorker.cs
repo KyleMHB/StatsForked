@@ -1,8 +1,9 @@
 ﻿using Stats;
 using Stats.Objects.Thing.TableWorkers;
 using Stats.Objects.Turret;
+using Stats.ObjectTable;
 using Stats.ObjectTable.Cells;
-using Stats.ObjectTable.ColumnWorkers;
+using Stats.ObjectTable.TableWorkers;
 using Verse;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.RangedWeapon;

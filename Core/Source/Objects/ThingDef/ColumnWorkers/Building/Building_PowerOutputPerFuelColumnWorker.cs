@@ -1,4 +1,5 @@
-﻿using Stats;
+﻿using RimWorld;
+using Stats;
 using Stats.Objects.ThingDef;
 using Stats.ObjectTable.ColumnWorkers;
 
@@ -11,22 +12,17 @@ public sealed class Building_PowerOutputPerFuelColumnWorker : NumberColumnWorker
     }
     protected override decimal GetCellValueSource(VirtualThing thing)
     {
-        var powerCompProps = thing.Def.GetPowerCompProperties();
-        var refuelableCompProps = thing.Def.GetRefuelableCompProperties();
+        CompProperties_Power? powerCompProps = thing.Def.GetCompProperties<CompProperties_Power>();
+        CompProperties_Refuelable? refuelableCompProps = thing.Def.GetCompProperties<CompProperties_Refuelable>();
 
-        if
-        (
-            powerCompProps == null
-            || refuelableCompProps == null
-            || refuelableCompProps.fuelConsumptionRate == 0f
-        )
+        if (powerCompProps != null && refuelableCompProps is { fuelConsumptionRate: not 0f })
         {
-            return 0m;
+            var powerOutput = powerCompProps.PowerConsumption * -1f;
+            var fuelConsumptionRate = refuelableCompProps.fuelConsumptionRate;
+
+            return (powerOutput / fuelConsumptionRate).ToDecimal(0);
         }
 
-        var powerOutput = powerCompProps.PowerConsumption * -1f;
-        var fuelConsumptionRate = refuelableCompProps.fuelConsumptionRate;
-
-        return (powerOutput / fuelConsumptionRate).ToDecimal(0);
+        return 0m;
     }
 }

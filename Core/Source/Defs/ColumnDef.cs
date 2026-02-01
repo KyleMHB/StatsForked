@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using RimWorld;
-using Stats.ObjectTable.ColumnWorkers;
 using Stats.Widgets;
 using Verse;
 

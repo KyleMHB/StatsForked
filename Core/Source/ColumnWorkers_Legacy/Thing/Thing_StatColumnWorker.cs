@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using RimWorld;
 using Stats.Objects.ThingDef;
-using Stats.ObjectTable.ColumnWorkers;
-using Stats.ObjectTable.TableWorkers;
+using Stats.ObjectTable;
 using Stats.Widgets;
 using Verse;
 
