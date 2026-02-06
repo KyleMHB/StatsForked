@@ -1,23 +1,33 @@
-﻿using RimWorld;
-using Stats.ColumnWorkers_Legacy;
-using Verse;
+﻿using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
+using Stats.Objects.ThingDef.TableWorkers;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Milkable;
 
-public sealed class MilkAmountColumnWorker : ThingDefCountColumnWorker<VirtualThing>
+public sealed class MilkAmountColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public MilkAmountColumnWorker(ColumnDef columndef) : base(columndef)
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
-    }
-    protected override (ThingDef? Def, decimal Count) GetValue(VirtualThing thing)
-    {
-        var milkableCompProps = thing.Def.GetCompProperties<CompProperties_Milkable>();
+        var milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
 
         if (milkableCompProps != null)
         {
-            return new(milkableCompProps.milkDef, milkableCompProps.milkAmount);
+            ThingDefCount cellValue = new(milkableCompProps.milkDef, milkableCompProps.milkAmount);
+
+            return new ThingDefCountCell(cellValue);
         }
 
-        return new();
+        return ThingDefCountCell.Empty;
+    }
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    {
+        IEnumerable<Verse.ThingDef?> milkDefs = ((IRefRecordsProvider)tableWorker).Records
+            .Select(thingDef => thingDef.GetCompProperties<CompProperties_Milkable>()?.milkDef)
+            .Distinct();
+
+        return ThingDefCountCell.GetDescriptor(milkDefs);
     }
 }

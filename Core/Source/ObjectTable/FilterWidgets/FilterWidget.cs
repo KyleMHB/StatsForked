@@ -1,7 +1,8 @@
 ﻿using System;
+using Stats.ObjectTable.Cells;
 using Stats.Widgets;
 
-namespace Stats.ObjectTable;
+namespace Stats.ObjectTable.FilterWidgets;
 
 public abstract class FilterWidget : Widget
 {

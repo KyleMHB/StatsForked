@@ -1,26 +1,26 @@
 ﻿using RimWorld;
-using Stats.ObjectTable.ColumnWorkers;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.EggLayer;
 
-public sealed class EggsNutritionPerDayColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class EggsNutritionPerDayColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public EggsNutritionPerDayColumnWorker(ColumnDef columnDef) : base(columnDef, formatString: "0.00/d")
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
-    }
-    protected override decimal GetCellValueSource(VirtualThing thing)
-    {
-        var eggLayerCompProps = thing.Def.GetCompProperties<CompProperties_EggLayer>();
+        CompProperties_EggLayer? eggLayerCompProps = thingDef.GetCompProperties<CompProperties_EggLayer>();
 
         if (eggLayerCompProps is { eggLayIntervalDays: > 0f })
         {
-            var eggDef = eggLayerCompProps.GetAnyEggDef();
-            var eggNutrition = eggDef.GetStatValuePerceived(StatDefOf.Nutrition);
-            var eggsPerDay = eggLayerCompProps.eggCountRange.Average / eggLayerCompProps.eggLayIntervalDays;
+            Verse.ThingDef eggDef = eggLayerCompProps.GetAnyEggDef();
+            float eggNutrition = eggDef.GetStatValuePerceived(StatDefOf.Nutrition);
+            float eggsPerDay = eggLayerCompProps.eggCountRange.Average / eggLayerCompProps.eggLayIntervalDays;
+            decimal cellValue = (eggsPerDay * eggNutrition).ToDecimal(2);
 
-            return (eggsPerDay * eggNutrition).ToDecimal(2);
+            return new NumberCell(cellValue, "0.00/d");
         }
 
-        return 0m;
+        return NumberCell.Empty;
     }
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
 }

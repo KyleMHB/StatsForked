@@ -19,5 +19,5 @@ public sealed class ProjectileStoppingPowerColumnWorker(ColumnDef columnDef) : T
 
         return NumberCell.Empty;
     }
-    public override CellDescriptor GetCellDescriptor() => NumberCell.GetDescriptor(columnDef);
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
 }

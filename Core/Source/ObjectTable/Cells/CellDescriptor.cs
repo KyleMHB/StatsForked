@@ -1,8 +1,9 @@
 ﻿using System;
+using Stats.ObjectTable.FilterWidgets;
 using Stats.Widgets;
 using UnityEngine;
 
-namespace Stats.ObjectTable;
+namespace Stats.ObjectTable.Cells;
 
 public readonly record struct CellDescriptor(CellStyleType Style, CellFieldDescriptor[] Fields);
 

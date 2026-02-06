@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Stats.ObjectTable.Cells;
 using Stats.Widgets;
 using UnityEngine;
 using Verse;

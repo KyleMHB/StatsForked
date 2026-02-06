@@ -11,5 +11,5 @@ public sealed class HasInteractionCellColumnWorker(ColumnDef columnDef) : ThingD
 
         return new BooleanCell(cellValue);
     }
-    public override CellDescriptor GetCellDescriptor() => BooleanCell.GetDescriptor(columnDef);
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanCell.GetDescriptor(columnDef);
 }

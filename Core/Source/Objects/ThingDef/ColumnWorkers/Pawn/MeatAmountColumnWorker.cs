@@ -1,29 +1,39 @@
-﻿using RimWorld;
-using Stats.ColumnWorkers_Legacy;
-using Stats.Objects.ThingDef;
-using Verse;
+﻿using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
+using Stats.Objects.ThingDef.TableWorkers;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Pawn;
 
-public sealed class MeatAmountColumnWorker : ThingDefCountColumnWorker<VirtualThing>
+public sealed class MeatAmountColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public MeatAmountColumnWorker(ColumnDef columnDef) : base(columnDef)
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
-    }
-    protected override (ThingDef? Def, decimal Count) GetValue(VirtualThing thing)
-    {
-        var meatDef = thing.Def.race?.meatDef;
+        Verse.ThingDef? meatDef = thingDef.race?.meatDef;
 
         if (meatDef != null)
         {
-            var meatAmount = thing.Def.GetStatValuePerceived(StatDefOf.MeatAmount);
+            float meatAmount = thingDef.GetStatValuePerceived(StatDefOf.MeatAmount);
 
             if (meatAmount > 0f)
             {
-                return new(meatDef, meatAmount.ToDecimal(0));
+                ThingDefCount cellValue = new(meatDef, meatAmount.ToDecimal(0));
+
+                return new ThingDefCountCell(cellValue);
             }
         }
 
-        return new();
+        return ThingDefCountCell.Empty;
+    }
+
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    {
+        IEnumerable<Verse.ThingDef?> meatDefs = ((IRefRecordsProvider)tableWorker).Records
+            .Select(thingDef => thingDef.race?.meatDef)
+            .Distinct();
+
+        return ThingDefCountCell.GetDescriptor(meatDefs);
     }
 }

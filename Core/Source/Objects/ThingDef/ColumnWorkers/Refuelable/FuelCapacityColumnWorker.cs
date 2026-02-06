@@ -1,10 +1,13 @@
-﻿using RimWorld;
+﻿using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
+using Stats.Objects.ThingDef.TableWorkers;
 using Stats.ObjectTable;
 using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Refuelable;
 
-public sealed class FuelCapacityColumnWorker(ThingDefCountColumnDef columnDef) : ThingDefColumnWorker
+public sealed class FuelCapacityColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
     public override Cell GetCell(Verse.ThingDef thingDef)
     {
@@ -25,5 +28,12 @@ public sealed class FuelCapacityColumnWorker(ThingDefCountColumnDef columnDef) :
 
         return ThingDefCountCell.Empty;
     }
-    public override CellDescriptor GetCellDescriptor() => ThingDefCountCell.GetDescriptor(columnDef);
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    {
+        IEnumerable<Verse.ThingDef?> fuelDefs = ((IRefRecordsProvider)tableWorker).Records
+            .Select(thingDef => thingDef.GetCompProperties<CompProperties_Refuelable>()?.fuelFilter?.AnyAllowedDef)
+            .Distinct();
+
+        return ThingDefCountCell.GetDescriptor(fuelDefs);
+    }
 }

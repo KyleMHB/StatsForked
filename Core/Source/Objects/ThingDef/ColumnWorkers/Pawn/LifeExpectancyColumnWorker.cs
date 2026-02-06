@@ -1,15 +1,21 @@
-﻿using Stats.Objects.ThingDef;
-using Stats.ObjectTable.ColumnWorkers;
+﻿using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
+using Verse;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Pawn;
 
-public sealed class LifeExpectancyColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class LifeExpectancyColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public LifeExpectancyColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0 y")
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
+        RaceProperties? raceProps = thingDef.race;
+
+        if (raceProps != null)
+        {
+            return new NumberCell(raceProps.lifeExpectancy.ToDecimal(0), "0 y");
+        }
+
+        return NumberCell.Empty;
     }
-    protected override decimal GetCellValueSource(VirtualThing thing)
-    {
-        return thing.Def.race?.lifeExpectancy.ToDecimal(0) ?? 0m;
-    }
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
 }

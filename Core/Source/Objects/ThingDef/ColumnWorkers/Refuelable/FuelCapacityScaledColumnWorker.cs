@@ -1,11 +1,14 @@
-﻿using RimWorld;
+﻿using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
+using Stats.Objects.ThingDef.TableWorkers;
 using Stats.ObjectTable;
 using Stats.ObjectTable.Cells;
 using UnityEngine;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Refuelable;
 // Turret rearm cost
-public sealed class FuelCapacityScaledColumnWorker(ThingDefCountColumnDef columnDef) : ThingDefColumnWorker
+public sealed class FuelCapacityScaledColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
     public override Cell GetCell(Verse.ThingDef thingDef)
     {
@@ -13,7 +16,7 @@ public sealed class FuelCapacityScaledColumnWorker(ThingDefCountColumnDef column
 
         if (refuelableCompProps != null)
         {
-            Verse.ThingDef fuelType = refuelableCompProps.fuelFilter.AnyAllowedDef;
+            Verse.ThingDef? fuelType = refuelableCompProps.fuelFilter?.AnyAllowedDef;
 
             if (fuelType != null)
             {
@@ -31,5 +34,12 @@ public sealed class FuelCapacityScaledColumnWorker(ThingDefCountColumnDef column
 
         return ThingDefCountCell.Empty;
     }
-    public override CellDescriptor GetCellDescriptor() => ThingDefCountCell.GetDescriptor(columnDef);
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    {
+        IEnumerable<Verse.ThingDef?> fuelDefs = ((IRefRecordsProvider)tableWorker).Records
+            .Select(thingDef => thingDef.GetCompProperties<CompProperties_Refuelable>()?.fuelFilter?.AnyAllowedDef)
+            .Distinct();
+
+        return ThingDefCountCell.GetDescriptor(fuelDefs);
+    }
 }

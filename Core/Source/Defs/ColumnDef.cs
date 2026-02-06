@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using RimWorld;
+using Stats.ObjectTable;
 using Stats.Widgets;
 using Verse;
 

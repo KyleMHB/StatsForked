@@ -1,22 +1,21 @@
 ﻿using RimWorld;
-using Stats.ObjectTable.ColumnWorkers;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Milkable;
 
-public sealed class MilkingIntervalColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class MilkingIntervalColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public MilkingIntervalColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0 d")
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
-    }
-    protected override decimal GetCellValueSource(VirtualThing thing)
-    {
-        var milkableCompProps = thing.Def.GetCompProperties<CompProperties_Milkable>();
+        CompProperties_Milkable? milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
 
         if (milkableCompProps != null)
         {
-            return milkableCompProps.milkIntervalDays;
+            return new NumberCell(milkableCompProps.milkIntervalDays, "0 d");
         }
 
-        return 0m;
+        return NumberCell.Empty;
     }
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
 }

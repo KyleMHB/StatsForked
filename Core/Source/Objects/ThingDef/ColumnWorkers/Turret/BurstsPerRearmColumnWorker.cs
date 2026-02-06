@@ -36,5 +36,5 @@ public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : ThingDefCo
 
         return NumberCell.Empty;
     }
-    public override CellDescriptor GetCellDescriptor() => NumberCell.GetDescriptor(columnDef);
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
 }

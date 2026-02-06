@@ -1,26 +1,35 @@
-﻿using RimWorld;
-using Stats.ColumnWorkers_Legacy;
-using Verse;
+﻿using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
+using Stats.Objects.ThingDef.TableWorkers;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.EggLayer;
 
-public sealed class EggsAmountColumnWorker : ThingDefCountColumnWorker<VirtualThing>
+public sealed class EggsAmountColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public EggsAmountColumnWorker(ColumnDef columndef) : base(columndef)
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
-    }
-    protected override (ThingDef? Def, decimal Count) GetValue(VirtualThing thing)
-    {
-        var eggLayerCompProps = thing.Def.GetCompProperties<CompProperties_EggLayer>();
+        CompProperties_EggLayer? eggLayerCompProps = thingDef.GetCompProperties<CompProperties_EggLayer>();
 
         if (eggLayerCompProps != null)
         {
-            var eggDef = eggLayerCompProps.GetAnyEggDef();
-            var count = eggLayerCompProps.eggCountRange.Average.ToDecimal(0);
+            Verse.ThingDef eggDef = eggLayerCompProps.GetAnyEggDef();
+            decimal count = eggLayerCompProps.eggCountRange.Average.ToDecimal(0);
+            ThingDefCount cellValue = new(eggDef, count);
 
-            return new(eggDef, count);
+            return new ThingDefCountCell(cellValue);
         }
 
-        return new();
+        return ThingDefCountCell.Empty;
+    }
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    {
+        IEnumerable<Verse.ThingDef?> eggDefs = ((IRefRecordsProvider)tableWorker).Records
+            .Select(thingDef => thingDef.GetCompProperties<CompProperties_EggLayer>()?.GetAnyEggDef())
+            .Distinct();
+
+        return ThingDefCountCell.GetDescriptor(eggDefs);
     }
 }

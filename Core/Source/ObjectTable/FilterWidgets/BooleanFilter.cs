@@ -1,4 +1,5 @@
 ﻿using System;
+using Stats.ObjectTable.Cells;
 using UnityEngine;
 using Verse;
 

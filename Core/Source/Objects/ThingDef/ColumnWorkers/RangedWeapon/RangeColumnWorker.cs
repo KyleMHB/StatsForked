@@ -19,5 +19,5 @@ public sealed class RangeColumnWorker(ColumnDef columnDef) : ThingDefColumnWorke
 
         return NumberCell.Empty;
     }
-    public override CellDescriptor GetCellDescriptor() => NumberCell.GetDescriptor(columnDef);
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
 }

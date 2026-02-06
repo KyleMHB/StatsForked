@@ -1,8 +1,10 @@
-﻿namespace Stats.ObjectTable;
+﻿using Stats.ObjectTable.Cells;
+
+namespace Stats.ObjectTable;
 
 public interface IColumnWorker
 {
-    public CellDescriptor GetCellDescriptor();
+    public CellDescriptor GetCellDescriptor(TableWorker tableWorker);
 }
 
 public interface IColumnWorker<TObject> : IColumnWorker

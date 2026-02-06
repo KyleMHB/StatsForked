@@ -1,6 +1,6 @@
 ﻿using Stats.Widgets;
 
-namespace Stats.ObjectTable;
+namespace Stats.ObjectTable.Cells;
 
 public abstract class Cell : Widget
 {

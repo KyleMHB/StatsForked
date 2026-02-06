@@ -45,7 +45,6 @@ public class ThingDefCountCell : Cell
     {
         return Comparer<string?>.Default.Compare(GetThingDef(cell1)?.label, GetThingDef(cell2)?.label);
     }
-    static public CellDescriptor GetDescriptor(ThingDefCountColumnDef columnDef) => GetDescriptor(columnDef.getThingDefs());
     static public CellDescriptor GetDescriptor(IEnumerable<ThingDef?> thingDefs)
     {
         Widget countFieldLabel = new Label("Amount");

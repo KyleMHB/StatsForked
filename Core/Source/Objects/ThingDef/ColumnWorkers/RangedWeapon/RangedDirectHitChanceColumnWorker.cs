@@ -21,5 +21,5 @@ public sealed class RangedDirectHitChanceColumnWorker(ColumnDef columnDef) : Thi
 
         return NumberCell.Empty;
     }
-    public override CellDescriptor GetCellDescriptor() => NumberCell.GetDescriptor(columnDef);
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
 }

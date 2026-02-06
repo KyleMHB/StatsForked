@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Stats.Objects.ThingDef;
 using Stats.ObjectTable;
+using Stats.ObjectTable.FilterWidgets;
 using Stats.Widgets;
 using UnityEngine;
 using Verse;

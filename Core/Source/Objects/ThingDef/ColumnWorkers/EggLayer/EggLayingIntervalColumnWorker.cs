@@ -1,22 +1,23 @@
 ﻿using RimWorld;
-using Stats.ObjectTable.ColumnWorkers;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.EggLayer;
 
-public sealed class EggLayingIntervalColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class EggLayingIntervalColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public EggLayingIntervalColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0 d")
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
-    }
-    protected override decimal GetCellValueSource(VirtualThing thing)
-    {
-        var eggLayerCompProps = thing.Def.GetCompProperties<CompProperties_EggLayer>();
+        CompProperties_EggLayer? eggLayerCompProps = thingDef.GetCompProperties<CompProperties_EggLayer>();
 
         if (eggLayerCompProps != null)
         {
-            return eggLayerCompProps.eggLayIntervalDays.ToDecimal(1);
+            decimal cellValue = eggLayerCompProps.eggLayIntervalDays.ToDecimal(1);
+
+            return new NumberCell(cellValue, "0.0 d");
         }
 
-        return 0m;
+        return NumberCell.Empty;
     }
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
 }

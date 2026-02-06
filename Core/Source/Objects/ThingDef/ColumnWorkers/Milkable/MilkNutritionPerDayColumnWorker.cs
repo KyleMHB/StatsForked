@@ -1,25 +1,25 @@
 ﻿using RimWorld;
-using Stats.ObjectTable.ColumnWorkers;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Milkable;
 
-public sealed class MilkNutritionPerDayColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class MilkNutritionPerDayColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public MilkNutritionPerDayColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.00/d")
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
-    }
-    protected override decimal GetCellValueSource(VirtualThing thing)
-    {
-        var milkableCompProps = thing.Def.GetCompProperties<CompProperties_Milkable>();
+        CompProperties_Milkable? milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
 
         if (milkableCompProps is { milkDef: not null, milkIntervalDays: > 0 })
         {
-            var milkNutrition = milkableCompProps.milkDef.GetStatValuePerceived(StatDefOf.Nutrition);
-            var milkPerDay = (float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays;
+            float milkNutrition = milkableCompProps.milkDef.GetStatValuePerceived(StatDefOf.Nutrition);
+            float milkPerDay = (float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays;
+            decimal cellValue = (milkPerDay * milkNutrition).ToDecimal(2);
 
-            return (milkPerDay * milkNutrition).ToDecimal(2);
+            return new NumberCell(cellValue, "0.00/d");
         }
 
-        return 0m;
+        return NumberCell.Empty;
     }
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
 }

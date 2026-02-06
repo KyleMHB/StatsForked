@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Stats.ObjectTable.Cells;
 using Stats.Widgets;
 using UnityEngine;
 using Verse;
@@ -124,7 +125,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         }
         public IEnumerable<ColumnPart> GetParts()
         {
-            return Worker.GetCellDescriptor();
+            return Worker.GetCellDescriptor(TODO);
         }
         public void ToggleVisibility()
         {

@@ -8,9 +8,9 @@ using Verse;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers;
 
-public sealed class Thing_TechLevelColumnWorker : ColumnWorker<VirtualThing>
+public sealed class TechLevelColumnWorker : ColumnWorker<VirtualThing>
 {
-    public Thing_TechLevelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
+    public TechLevelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     public override ObjectTableWidget.Cell GetCell(VirtualThing thing)

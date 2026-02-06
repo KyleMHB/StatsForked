@@ -11,5 +11,5 @@ public sealed class IsMinifiableColumnWorker(ColumnDef columnDef) : ThingDefColu
 
         return new BooleanCell(cellValue);
     }
-    public override CellDescriptor GetCellDescriptor() => BooleanCell.GetDescriptor(columnDef);
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanCell.GetDescriptor(columnDef);
 }
