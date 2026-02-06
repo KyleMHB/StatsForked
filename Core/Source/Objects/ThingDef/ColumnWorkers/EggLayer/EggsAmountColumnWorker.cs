@@ -1,13 +1,12 @@
 ﻿using RimWorld;
 using Stats.ColumnWorkers_Legacy;
-using Stats.Objects.ThingDef;
 using Verse;
 
-namespace Stats.Objects.ThingDef.ColumnWorkers.Animal;
+namespace Stats.Objects.ThingDef.ColumnWorkers.EggLayer;
 
-public sealed class Animal_EggsAmountColumnWorker : ThingDefCountColumnWorker<VirtualThing>
+public sealed class EggsAmountColumnWorker : ThingDefCountColumnWorker<VirtualThing>
 {
-    public Animal_EggsAmountColumnWorker(ColumnDef columndef) : base(columndef)
+    public EggsAmountColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
     protected override (ThingDef? Def, decimal Count) GetValue(VirtualThing thing)

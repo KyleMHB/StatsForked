@@ -6,9 +6,9 @@ using Verse;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Pawn;
 
-public sealed class Pawn_NameColumnWorker : ColumnWorker<VirtualThing>
+public sealed class NameColumnWorker : ColumnWorker<VirtualThing>
 {
-    public Pawn_NameColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
+    public NameColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
     public override ObjectTableWidget.Cell GetCell(VirtualThing thing)

@@ -6,7 +6,7 @@ using Stats.Objects.ThingDef;
 using Stats.Widgets;
 using Verse;
 
-namespace Stats;
+namespace Stats.Objects.ThingDef.ColumnWorkers;
 
 public sealed class Thing_TechLevelColumnWorker : ColumnWorker<VirtualThing>
 {

@@ -3,7 +3,7 @@ using Stats.Widgets;
 
 namespace Stats;
 
-public sealed class Thing_GunStatColumnWorker : Thing_StatColumnWorker
+public sealed class Thing_GunStatColumnWorker : StatColumnWorker
 {
     public Thing_GunStatColumnWorker(StatColumnDef columnDef) : base(columnDef)
     {

@@ -1,13 +1,12 @@
 ﻿using RimWorld;
 using Stats.ColumnWorkers_Legacy;
-using Stats.Objects.ThingDef;
 using Verse;
 
-namespace Stats.Objects.ThingDef.ColumnWorkers.Animal;
+namespace Stats.Objects.ThingDef.ColumnWorkers.Milkable;
 
-public sealed class Animal_MilkAmountColumnWorker : ThingDefCountColumnWorker<VirtualThing>
+public sealed class MilkAmountColumnWorker : ThingDefCountColumnWorker<VirtualThing>
 {
-    public Animal_MilkAmountColumnWorker(ColumnDef columndef) : base(columndef)
+    public MilkAmountColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }
     protected override (ThingDef? Def, decimal Count) GetValue(VirtualThing thing)

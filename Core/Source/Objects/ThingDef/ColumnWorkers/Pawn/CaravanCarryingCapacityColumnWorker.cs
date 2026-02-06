@@ -4,9 +4,9 @@ using Stats.ObjectTable.ColumnWorkers;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Pawn;
 
-public sealed class Pawn_CaravanCarryingCapacityColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class CaravanCarryingCapacityColumnWorker : NumberColumnWorker<VirtualThing>
 {
-    public Pawn_CaravanCarryingCapacityColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0 kg")
+    public CaravanCarryingCapacityColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0 kg")
     {
     }
     protected override decimal GetCellValueSource(VirtualThing thing)

@@ -4,7 +4,7 @@ using Verse;
 
 namespace Stats.Compat.CE;
 
-public abstract class Thing_BinaryStatColumnWorker : Thing_StatColumnWorker
+public abstract class Thing_BinaryStatColumnWorker : StatColumnWorker
 {
     protected readonly char Separator;
     protected Thing_BinaryStatColumnWorker(BinaryStatColumnDef columnDef) : base(columnDef)

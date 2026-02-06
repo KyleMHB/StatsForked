@@ -274,6 +274,10 @@ public static class Verse_ThingDef_Extensions
 
         return null;
     }
+    public static ThingDef TurretGunDefOrSelf(this ThingDef thingDef)
+    {
+        return thingDef.building?.turretGunDef ?? thingDef;
+    }
 }
 
 public static class Verse_RecipeDef_Extensions

@@ -9,12 +9,12 @@ using Verse;
 
 namespace Stats;
 
-public class Thing_StatColumnWorker : ColumnWorker, IColumnWorker<VirtualThing>, IColumnWorker<Thing>
+public class StatColumnWorker : ColumnWorker, IColumnWorker<VirtualThing>, IColumnWorker<Thing>
 {
     public static readonly Regex NumberRegex = new(@"(-?[0-9]+\.?[0-9]*).*", RegexOptions.Compiled);
     private const ToStringNumberSense _ToStringNumberSense = ToStringNumberSense.Absolute;
     protected StatDef Stat { get; }
-    public Thing_StatColumnWorker(StatColumnDef columnDef) : base(columnDef, IColumnWorker.CellStyleType.Number)
+    public StatColumnWorker(StatColumnDef columnDef) : base(columnDef, IColumnWorker.CellStyleType.Number)
     {
         Stat = columnDef.stat;
     }
@@ -45,11 +45,11 @@ public class Thing_StatColumnWorker : ColumnWorker, IColumnWorker<VirtualThing>,
         public float ValueRaw { get; private set; }
         public decimal ValueDisplayed { get; private set; }
         private readonly bool IsValidForThing;
-        private readonly Thing_StatColumnWorker Column;
+        private readonly StatColumnWorker Column;
         private readonly StatDef Stat;
         private readonly StatWorker StatWorker;
         private readonly VirtualThing Thing;
-        public Cell(VirtualThing thing, Thing_StatColumnWorker column)
+        public Cell(VirtualThing thing, StatColumnWorker column)
         {
             Thing = thing;
             Column = column;

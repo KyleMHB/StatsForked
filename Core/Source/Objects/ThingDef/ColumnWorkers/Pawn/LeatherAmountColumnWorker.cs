@@ -5,9 +5,9 @@ using Verse;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Pawn;
 
-public sealed class Pawn_LeatherAmountColumnWorker : ThingDefCountColumnWorker<VirtualThing>
+public sealed class LeatherAmountColumnWorker : ThingDefCountColumnWorker<VirtualThing>
 {
-    public Pawn_LeatherAmountColumnWorker(ColumnDef columnDef) : base(columnDef)
+    public LeatherAmountColumnWorker(ColumnDef columnDef) : base(columnDef)
     {
     }
     protected override (ThingDef? Def, decimal Count) GetValue(VirtualThing thing)

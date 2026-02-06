@@ -1,12 +1,11 @@
 ﻿using RimWorld;
-using Stats.Objects.ThingDef;
 using Stats.ObjectTable.ColumnWorkers;
 
-namespace Stats.Objects.ThingDef.ColumnWorkers.Animal;
+namespace Stats.Objects.ThingDef.ColumnWorkers.Milkable;
 
-public sealed class Animal_MilkingIntervalColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class MilkingIntervalColumnWorker : NumberColumnWorker<VirtualThing>
 {
-    public Animal_MilkingIntervalColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0 d")
+    public MilkingIntervalColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0 d")
     {
     }
     protected override decimal GetCellValueSource(VirtualThing thing)

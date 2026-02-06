@@ -1,12 +1,11 @@
 ﻿using RimWorld;
-using Stats.Objects.ThingDef;
 using Stats.ObjectTable.ColumnWorkers;
 
-namespace Stats.Objects.ThingDef.ColumnWorkers.Animal;
+namespace Stats.Objects.ThingDef.ColumnWorkers.EggLayer;
 
-public sealed class Animal_EggsNutritionPerDayColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class EggsNutritionPerDayColumnWorker : NumberColumnWorker<VirtualThing>
 {
-    public Animal_EggsNutritionPerDayColumnWorker(ColumnDef columnDef) : base(columnDef, formatString: "0.00/d")
+    public EggsNutritionPerDayColumnWorker(ColumnDef columnDef) : base(columnDef, formatString: "0.00/d")
     {
     }
     protected override decimal GetCellValueSource(VirtualThing thing)

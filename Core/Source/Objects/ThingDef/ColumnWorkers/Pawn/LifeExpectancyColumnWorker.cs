@@ -3,9 +3,9 @@ using Stats.ObjectTable.ColumnWorkers;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Pawn;
 
-public sealed class Pawn_LifeExpectancyColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class LifeExpectancyColumnWorker : NumberColumnWorker<VirtualThing>
 {
-    public Pawn_LifeExpectancyColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0 y")
+    public LifeExpectancyColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0 y")
     {
     }
     protected override decimal GetCellValueSource(VirtualThing thing)

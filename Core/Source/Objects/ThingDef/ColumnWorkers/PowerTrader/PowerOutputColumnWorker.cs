@@ -4,14 +4,9 @@ using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.PowerTrader;
 
-public sealed class PowerOutputColumnWorker(ColumnDef columnDef) :
-    IColumnWorker<Verse.ThingDef>,
-    IColumnWorker<VirtualThing>,
-    IColumnWorker<Verse.Thing>
+public sealed class PowerOutputColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public Cell GetCell(Verse.Thing thing) => GetCell(thing.def);
-    public Cell GetCell(VirtualThing thing) => GetCell(thing.Def);
-    public Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
         CompProperties_Power? powerCompProps = thingDef.GetCompProperties<CompProperties_Power>();
 
@@ -24,5 +19,5 @@ public sealed class PowerOutputColumnWorker(ColumnDef columnDef) :
 
         return NumberCell.Empty;
     }
-    public CellDescriptor GetCellDescriptor() => NumberCell.GetDescriptor(columnDef);
+    public override CellDescriptor GetCellDescriptor() => NumberCell.GetDescriptor(columnDef);
 }
