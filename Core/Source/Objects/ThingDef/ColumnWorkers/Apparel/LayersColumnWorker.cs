@@ -1,23 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Stats.Objects.ThingDef;
+using RimWorld;
+using Stats.Objects.ThingDef.TableWorkers;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 using Verse;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Apparel;
 
-public sealed class LayersColumnWorker : DefSetColumnWorker<VirtualThing, ApparelLayerDef>
+public sealed class LayersColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public LayersColumnWorker(ColumnDef columnDef) : base(columnDef)
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
+        ApparelProperties? apparelProps = thingDef.apparel;
+
+        if (apparelProps != null)
+        {
+            return new DefSetCell(apparelProps.layers);
+        }
+
+        return DefSetCell.Empty;
     }
-    protected override HashSet<ApparelLayerDef> GetValue(VirtualThing thing)
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker)
     {
-        return GetApparelLayerDefSet(thing.Def);
+        IEnumerable<ApparelLayerDef> layerDefs = ((IRefRecordsProvider)tableWorker).Records
+            .SelectMany(thingDef => thingDef.apparel?.layers)
+            .Distinct();
+
+        return DefSetCell.GetDescriptor(columnDef, layerDefs);
     }
-    private static readonly Func<ThingDef, HashSet<ApparelLayerDef>> GetApparelLayerDefSet =
-    FunctionExtensions.Memoized((ThingDef thingDef) =>
-    {
-        return thingDef.apparel?.layers.ToHashSet() ?? [];
-    });
 }

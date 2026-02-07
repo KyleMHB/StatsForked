@@ -1,15 +1,31 @@
-﻿using RimWorld;
-using Stats.Objects.ThingDef;
+﻿using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
+using Stats.Objects.ThingDef.TableWorkers;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Building;
 
-public sealed class RecreationTypeColumnWorker : DefColumnWorker<VirtualThing, JoyKindDef?>
+public sealed class RecreationTypeColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public RecreationTypeColumnWorker(ColumnDef columnDef) : base(columnDef)
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
+        JoyKindDef? joyKind = thingDef.building?.joyKind;
+
+        if (joyKind != null)
+        {
+            return new DefCell(joyKind);
+        }
+
+        return DefCell.Empty;
     }
-    protected override JoyKindDef? GetValue(VirtualThing thing)
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker)
     {
-        return thing.Def.building?.joyKind;
+        IEnumerable<JoyKindDef?> joyKindDefs = ((IRefRecordsProvider)tableWorker).Records
+            .Select(thingDef => thingDef.building?.joyKind)
+            .Distinct();
+
+        return DefCell.GetDescriptor(columnDef, joyKindDefs);
     }
 }

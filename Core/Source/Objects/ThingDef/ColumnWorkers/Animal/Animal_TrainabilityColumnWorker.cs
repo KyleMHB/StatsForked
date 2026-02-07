@@ -1,15 +1,31 @@
-﻿using Stats.Objects.ThingDef;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Stats.Objects.ThingDef.TableWorkers;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 using Verse;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Animal;
 
-public sealed class Animal_TrainabilityColumnWorker : DefColumnWorker<VirtualThing, TrainabilityDef?>
+public sealed class Animal_TrainabilityColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public Animal_TrainabilityColumnWorker(ColumnDef columnDef) : base(columnDef)
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
+        TrainabilityDef? trainability = thingDef.race?.trainability;
+
+        if (trainability != null)
+        {
+            return new DefCell(trainability);
+        }
+
+        return DefCell.Empty;
     }
-    protected override TrainabilityDef? GetValue(VirtualThing thing)
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker)
     {
-        return thing.Def.race?.trainability;
+        IEnumerable<TrainabilityDef?> trainabilityDefs = ((IRefRecordsProvider)tableWorker).Records
+            .Select(thingDef => thingDef.race?.trainability)
+            .Distinct();
+
+        return DefCell.GetDescriptor(columnDef, trainabilityDefs);
     }
 }

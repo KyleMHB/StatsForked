@@ -1,7 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Stats.Objects.ThingDef;
+using RimWorld;
+using Stats.Objects.ThingDef.TableWorkers;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 using Verse;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Apparel;
@@ -13,18 +15,25 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Apparel;
 // Luckily, it looks like in a definition it is allowed to only list the whole
 // groups of body parts. The resulting list is of course significantly smaller
 // and can be safely displayed in a single row/column.
-public sealed class BodyPartGroupsColumnWorker : DefSetColumnWorker<VirtualThing, BodyPartGroupDef>
+public sealed class BodyPartGroupsColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public BodyPartGroupsColumnWorker(ColumnDef columnDef) : base(columnDef)
+    public override Cell GetCell(Verse.ThingDef thingDef)
     {
+        ApparelProperties? apparelProps = thingDef.apparel;
+
+        if (apparelProps != null)
+        {
+            return new DefSetCell(apparelProps.bodyPartGroups);
+        }
+
+        return DefSetCell.Empty;
     }
-    protected override HashSet<BodyPartGroupDef> GetValue(VirtualThing thing)
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker)
     {
-        return GetBodyPartGroupDefSet(thing.Def);
+        IEnumerable<BodyPartGroupDef> bodyPartGroupDefs = ((IRefRecordsProvider)tableWorker).Records
+            .SelectMany(thingDef => thingDef.apparel?.bodyPartGroups)
+            .Distinct();
+
+        return DefSetCell.GetDescriptor(columnDef, bodyPartGroupDefs);
     }
-    private static readonly Func<ThingDef, HashSet<BodyPartGroupDef>> GetBodyPartGroupDefSet =
-    FunctionExtensions.Memoized((ThingDef thingDef) =>
-    {
-        return thingDef.apparel?.bodyPartGroups.ToHashSet() ?? [];
-    });
 }
