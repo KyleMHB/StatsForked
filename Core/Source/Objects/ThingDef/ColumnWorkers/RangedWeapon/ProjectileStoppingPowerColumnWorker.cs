@@ -6,7 +6,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.RangedWeapon;
 
 public sealed class ProjectileStoppingPowerColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         ProjectileProperties? defaultProjProps = thingDef.TurretGunDefOrSelf().Verbs.Primary()?.defaultProjectile?.projectile;
 

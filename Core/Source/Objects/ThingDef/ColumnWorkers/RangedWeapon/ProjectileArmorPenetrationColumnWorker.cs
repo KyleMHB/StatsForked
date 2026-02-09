@@ -6,7 +6,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.RangedWeapon;
 
 public sealed class ProjectileArmorPenetrationColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
         ProjectileProperties? defaultProjProps = verbProps?.defaultProjectile?.projectile;

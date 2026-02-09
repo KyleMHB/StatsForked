@@ -8,8 +8,8 @@ public abstract class ThingDefColumnWorker :
     IColumnWorker<VirtualThing>,
     IColumnWorker<Verse.Thing>
 {
-    public Cell GetCell(Verse.Thing thing) => GetCell(thing.def);
-    public Cell GetCell(VirtualThing thing) => GetCell(thing.Def);
-    public abstract Cell GetCell(Verse.ThingDef thingDef);
+    public Cell MakeCell(Verse.Thing thing) => MakeCell(thing.def);
+    public Cell MakeCell(VirtualThing thing) => MakeCell(thing.Def);
+    public abstract Cell MakeCell(Verse.ThingDef thingDef);
     public abstract CellDescriptor GetCellDescriptor(TableWorker tableWorker);
 }

@@ -6,7 +6,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Apparel;
 
 public sealed class CountsAsClothingForNudityColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         ApparelProperties? apparelProps = thingDef.apparel;
 

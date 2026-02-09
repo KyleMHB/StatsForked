@@ -7,7 +7,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Turret;
 
 public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();
 

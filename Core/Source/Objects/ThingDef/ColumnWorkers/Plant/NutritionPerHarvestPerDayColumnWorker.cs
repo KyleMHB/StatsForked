@@ -6,7 +6,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Plant;
 
 public sealed class NutritionPerHarvestPerDayColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         // TODO: This is mostly copy paste from NutritionPerHarvestColumnWorker.
         PlantProperties? plantProps = thingDef.plant;

@@ -6,7 +6,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.EggLayer;
 
 public sealed class EggLayingIntervalColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         CompProperties_EggLayer? eggLayerCompProps = thingDef.GetCompProperties<CompProperties_EggLayer>();
 

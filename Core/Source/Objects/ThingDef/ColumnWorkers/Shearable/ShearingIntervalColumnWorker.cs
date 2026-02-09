@@ -6,7 +6,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Shearable;
 
 public sealed class ShearingIntervalColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         CompProperties_Shearable? shearableCompProps = thingDef.GetCompProperties<CompProperties_Shearable>();
 

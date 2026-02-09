@@ -6,7 +6,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Milkable;
 
 public sealed class MilkNutritionPerDayColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         CompProperties_Milkable? milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
 

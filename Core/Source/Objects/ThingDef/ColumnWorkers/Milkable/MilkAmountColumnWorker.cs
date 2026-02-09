@@ -9,7 +9,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Milkable;
 
 public sealed class MilkAmountColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         var milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
 

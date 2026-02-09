@@ -13,7 +13,7 @@ public abstract class ObjectTableWidget
     public const float CellPadHor = 12f;
     public const float CellPadVer = 4f;
     public abstract TableFilterMode FilterMode { get; set; }
-    public abstract event Action<TableFilterMode> OnFilterModeChange;
+    //public abstract event Action<TableFilterMode> OnFilterModeChange;
     public abstract void Draw(Rect rect, bool showSettingsMenu);
     public abstract void ResetFilters();
     public abstract void ToggleFilterMode();
@@ -31,12 +31,7 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     private int SortDirection = SortDirectionAscending;
     private const int SortDirectionAscending = 1;
     private const int SortDirectionDescending = -1;
-    private static readonly Color SortIndicatorColor = Color.yellow.ToTransparent(0.3f);
-    private const float SortIndicatorHeight = 5f;
-    private readonly List<Column> Columns;
-    private readonly List<Column> ColumnsVisible;
-    private readonly List<Column> ColumnsVisiblePinned;
-    private readonly List<Column> ColumnsVisibleUnpinned;
+    private readonly ColumnCollection Columns;
     private readonly Widget ColumnsTabWidget;
     private readonly List<Filter> Filters;
     private readonly HashSet<Filter> ActiveFilters;
@@ -59,18 +54,18 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
             DoFilter = true;
         }
     } = TableFilterMode.AND;
-    public override event Action<TableFilterMode>? OnFilterModeChange;
-    private RowCellsMatcher MatchRowCells = MatchRowCells_AND;
-    private static readonly RowCellsMatcher MatchRowCells_AND =
-    (cells, filters) =>
-    {
-        return filters.All(filter => filter.Widget.Eval(cells[filter.Column]));
-    };
-    private static readonly RowCellsMatcher MatchRowCells_OR =
-    (cells, filters) =>
-    {
-        return filters.Any(filter => filter.Widget.Eval(cells[filter.Column]));
-    };
+    //public override event Action<TableFilterMode>? OnFilterModeChange;
+    //private RowCellsMatcher MatchRowCells = MatchRowCells_AND;
+    //private static readonly RowCellsMatcher MatchRowCells_AND =
+    //(cells, filters) =>
+    //{
+    //    return filters.All(filter => filter.Widget.Eval(cells[filter.Column]));
+    //};
+    //private static readonly RowCellsMatcher MatchRowCells_OR =
+    //(cells, filters) =>
+    //{
+    //    return filters.Any(filter => filter.Widget.Eval(cells[filter.Column]));
+    //};
     private const int InitialRowCapacity = 250;
     private readonly List<Row> HeaderRows;
     private float HeaderRowsHeight;
@@ -82,18 +77,14 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     private static readonly Color ColumnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
     private static readonly Color PinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
     private Vector2 ColumnsTabScrollPosition;
-    private bool DoFilter;
-    private bool DoSort = true;
-    private bool DoResize = true;
-    private bool DoUpdateCachedColumns = true;
-    private readonly Stack<Column> ColumnsToRefresh;
+    //private bool DoFilter;
+    //private bool DoSort = true;
+    //private bool DoResize = true;
+    //private bool DoUpdateCachedColumns = true;
     public ObjectTableWidget(TableWorker<TObject> worker)
     {
-        if (worker is TableWorker<TObject>.IStreaming streamingWorker)
-        {
-            streamingWorker.OnObjectAdded += AddObject;
-            streamingWorker.OnObjectRemoved += RemoveObject;
-        }
+        worker.OnObjectAdded += AddObject;
+        worker.OnObjectRemoved += RemoveObject;
 
         var columns = new List<Column>();
 
@@ -254,18 +245,18 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         UnpinnedRows.Add(new ObjectRow(Columns, @object));
         //DoSort = true;
         SortRows(UnpinnedRows);
-        if (ActiveFilters.Count > 0)
-        {
-            DoFilter = true;
-        }
-        DoResize = true;
+        //if (ActiveFilters.Count > 0)
+        //{
+        //    DoFilter = true;
+        //}
+        //DoResize = true;
     }
     private void RemoveObject(TObject @object)
     {
         PinnedRows.RemoveWhere(row => DisposeOfRowIfMatch(row, @object));
         UnpinnedRows.RemoveWhere(row => DisposeOfRowIfMatch(row, @object));
 
-        DoResize = true;
+        //DoResize = true;
     }
     private static bool DisposeOfRowIfMatch(ObjectRow row, TObject @object)
     {

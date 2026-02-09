@@ -1,35 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using Stats.Objects.ThingDef;
-using Stats.Widgets;
-using Verse;
+using Stats.Objects.ThingDef.TableWorkers;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Animal;
 
-public sealed class Animal_ProductsColumnWorker : ThingDefSetColumnWorker<VirtualThing, ThingDef>
+public sealed class Animal_ProductsColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public Animal_ProductsColumnWorker(ColumnDef columnDef) : base(columnDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
-        //GetProductCategories = FunctionExtensions.Memoized((ThingAlike thing) =>
-        //{
-        //    var products = GetCachedValue(thing);
+        HashSet<Verse.ThingDef> products = GetProducts(thingDef);
 
-        //    return products.SelectMany(product => product.thingCategories).ToHashSet();
-        //});
+        if (products.Count > 0)
+        {
+            return new ThingDefSetCell(products);
+        }
+
+        return ThingDefSetCell.Empty;
     }
-    protected override HashSet<ThingDef> GetValue(VirtualThing thing)
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker)
     {
-        var products = new HashSet<ThingDef>();
+        IEnumerable<Verse.ThingDef> products = ((IRefRecordsProvider)tableWorker).Records
+            .SelectMany(GetProducts)
+            .Distinct();
 
-        var milkableCompProps = thing.Def.GetCompProperties<CompProperties_Milkable>();
+        return ThingDefSetCell.GetDescriptor(columnDef, products);
+    }
+    private static HashSet<Verse.ThingDef> GetProducts(Verse.ThingDef thingDef)
+    {
+        HashSet<Verse.ThingDef> products = new(3);
+
+        var milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
         if (milkableCompProps != null)
         {
             products.Add(milkableCompProps.milkDef);
         }
 
-        var eggLayerCompProps = thing.Def.GetCompProperties<CompProperties_EggLayer>();
+        var eggLayerCompProps = thingDef.GetCompProperties<CompProperties_EggLayer>();
         if (eggLayerCompProps != null)
         {
             var eggDef = eggLayerCompProps.GetAnyEggDef();
@@ -37,7 +46,7 @@ public sealed class Animal_ProductsColumnWorker : ThingDefSetColumnWorker<Virtua
             products.Add(eggDef);
         }
 
-        var shearableCompProps = thing.Def.GetCompProperties<CompProperties_Shearable>();
+        var shearableCompProps = thingDef.GetCompProperties<CompProperties_Shearable>();
         if (shearableCompProps != null)
         {
             products.Add(shearableCompProps.woolDef);
@@ -45,11 +54,4 @@ public sealed class Animal_ProductsColumnWorker : ThingDefSetColumnWorker<Virtua
 
         return products;
     }
-    //private readonly Func<ThingAlike, HashSet<ThingCategoryDef>> GetProductCategories;
-    //public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
-    //{
-    //    yield return new(new Label("Type"), Make.MTMThingDefFilter(GetCachedValue, tableRecords));
-    //    // TODO: Implement proper category filter (like the one stockpile uses).
-    //    yield return new(new Label("Category"), Make.MTMDefFilter(GetProductCategories, tableRecords));
-    //}
 }

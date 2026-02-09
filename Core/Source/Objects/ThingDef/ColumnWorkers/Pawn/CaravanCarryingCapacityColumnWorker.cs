@@ -7,7 +7,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Pawn;
 
 public sealed class CaravanCarryingCapacityColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         RaceProperties? raceProps = thingDef.race;
 

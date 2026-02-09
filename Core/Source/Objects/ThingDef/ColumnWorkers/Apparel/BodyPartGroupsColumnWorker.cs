@@ -17,7 +17,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Apparel;
 // and can be safely displayed in a single row/column.
 public sealed class BodyPartGroupsColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         ApparelProperties? apparelProps = thingDef.apparel;
 

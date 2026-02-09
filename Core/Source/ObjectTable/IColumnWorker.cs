@@ -9,5 +9,5 @@ public interface IColumnWorker
 
 public interface IColumnWorker<TObject> : IColumnWorker
 {
-    public Cell GetCell(TObject @object);
+    public Cell MakeCell(TObject @object);
 }

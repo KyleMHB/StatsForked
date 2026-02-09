@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Stats.ObjectTable.Cells;
 using Stats.Widgets;
 using UnityEngine;
@@ -8,148 +9,149 @@ namespace Stats.ObjectTable;
 
 internal sealed partial class ObjectTableWidget<TObject>
 {
-    private void UpdateCachedColumns()
-    {
-        ColumnsVisible.Clear();
-        ColumnsVisiblePinned.Clear();
-        ColumnsVisibleUnpinned.Clear();
-
-        foreach (var column in Columns)
-        {
-            if (column.IsVisible)
-            {
-                ColumnsVisible.Add(column);
-
-                if (column.IsPinned)
-                {
-                    ColumnsVisiblePinned.Add(column);
-                }
-                else
-                {
-                    ColumnsVisibleUnpinned.Add(column);
-                }
-            }
-        }
-
-        DoUpdateCachedColumns = false;
-    }
-
     private sealed class Column
     {
-        public bool IsPinned { get; set; }
-        public float Width { get; set; }
-        public bool IsVisible { get; private set; } = true;
-        public Widget Title => Def.Title;
         private readonly ColumnDef Def;
         private readonly IColumnWorker<TObject> Worker;
-        private readonly ObjectTableWidget<TObject> Parent;
-        public TextAnchor CellTextAnchor => (TextAnchor)Worker.CellStyle;
+        private readonly CellStyleType CellStyle;
+        public float Width { get; set; }
+        public Widget Title => Def.Title;
         public TipSignal Tooltip { get; }
-        private readonly List<IRefreshableCell> CellsToRefresh = new(InitialRowCapacity);
-        public bool NeedsRefresh => CellsToRefresh.Count > 0;
-        public Column(ColumnDef def, IColumnWorker<TObject> worker, ObjectTableWidget<TObject> parent)
+        public bool IsVisible
         {
+            get;
+            private set
+            {
+                field = value;
+
+                OnChange?.Invoke();
+            }
+        } = true;
+        public bool IsPinned
+        {
+            get;
+            private set
+            {
+                field = value;
+
+                OnChange?.Invoke();
+            }
+        }
+        public bool IsHot => throw new NotImplementedException();
+        public bool HasActiveFilters => throw new NotImplementedException();
+        public event Action? OnChange;
+        public Column(ColumnDef def, IColumnWorker<TObject> worker, TableWorker tableWorker, bool isPinned)
+        {
+            CellDescriptor cellDescriptor = worker.GetCellDescriptor(tableWorker);
+
             Def = def;
             Worker = worker;
-            Parent = parent;
             Tooltip = $"<i>{def.LabelCap}</i>\n\n{def.Description}";
+            IsPinned = isPinned;
         }
-        public Cell GetCell(TObject @object)
-        {
-            var cell = Worker.GetCell(@object);
-
-            if (cell is IRefreshableCell refreshableCell)
-            {
-                CellsToRefresh.Add(refreshableCell);
-            }
-
-            return cell;
-        }
+        public Cell MakeCell(TObject @object) => Worker.MakeCell(@object);
         public Widget GetHeaderCell()
         {
-            var columnTitle = Title;
+            Widget columnTitle = Title;
 
-            if (Worker.CellStyle == IColumnWorker.CellStyleType.Number)
+            if (CellStyle == CellStyleType.Number)
             {
                 columnTitle = new SingleElementContainer(columnTitle.PaddingRel(1f, 0f, 0f, 0f));
             }
-            else if (Worker.CellStyle == IColumnWorker.CellStyleType.Boolean)
+            else if (CellStyle == CellStyleType.Boolean)
             {
                 columnTitle = new SingleElementContainer(columnTitle.PaddingRel(0.5f, 0f));
             }
 
-            var cellWidget = columnTitle
-            .PaddingAbs(CellPadHor, CellPadVer)
-            .Background(rect =>
-            {
-                if (Parent.SortColumn != this)
-                    return;
-
-                if (Parent.SortDirection == SortDirectionAscending)
+            return columnTitle
+                .TextAnchor((TextAnchor)CellStyle)
+                .PaddingAbs(CellPadHor, CellPadVer)
+                .ToButtonGhostly(() =>
                 {
-                    rect.y = rect.yMax - SortIndicatorHeight;
-                    rect.height = SortIndicatorHeight;
-                }
-                else
-                {
-                    rect.height = SortIndicatorHeight;
-                }
-
-                Verse.Widgets.DrawBoxSolid(rect, SortIndicatorColor);
-            })
-            .ToButtonGhostly(() =>
-            {
-                if (Event.current.control)
-                {
-                    IsPinned = !IsPinned;
-
-                    Parent.DoUpdateCachedColumns = true;
-                }
-                else
-                {
-                    if (Parent.SortColumn == this)
+                    if (Event.current.control)
                     {
-                        Parent.SortDirection *= -1;
+                        IsPinned = !IsPinned;
                     }
-                    else
-                    {
-                        Parent.SortColumn = this;
-                    }
-
-                    Parent.DoSort = true;
-                }
-            })
-            .Tooltip(Tooltip);
-
-            return cellWidget;
+                })
+                .Tooltip(Tooltip);
         }
-        public IEnumerable<ColumnPart> GetParts()
-        {
-            return Worker.GetCellDescriptor(TODO);
-        }
+        //public IEnumerable<ColumnPart> GetParts()
+        //{
+        //    return Worker.GetCellDescriptor(TODO);
+        //}
         public void ToggleVisibility()
         {
             IsVisible = !IsVisible;
-
-            Parent.DoResize = true;
-            Parent.DoUpdateCachedColumns = true;
         }
-        public bool RefreshCells()
-        {
-            var wasUpdated = false;
+    }
 
-            foreach (var cell in CellsToRefresh)
+    private sealed class ColumnCollection(int capacity)
+    {
+        private readonly List<Column> All = new(capacity);
+        private readonly List<Column> _Pinned_Visible = new(capacity);
+        public IReadOnlyCollection<Column> Pinned_Visible => _Pinned_Visible;
+        private readonly List<Column> _Unpinned_Visible = new(capacity);
+        public IReadOnlyCollection<Column> Unpinned_Visible => _Unpinned_Visible;
+        private readonly List<Column> _Hot_HasActiveFilters = new(capacity);
+        public IReadOnlyCollection<Column> Hot_HasActiveFilters => _Hot_HasActiveFilters;
+        private readonly List<Column> _Hot_DoesntHaveActiveFilters_Visible = new(capacity);
+        public IReadOnlyCollection<Column> Hot_DoesntHaveActiveFilters_Visible => _Hot_DoesntHaveActiveFilters_Visible;
+        private bool IsStale = true;
+        public void Add(Column column)
+        {
+            column.OnChange += () => IsStale = true;
+
+            All.Add(column);
+        }
+        public void Update()
+        {
+            if (IsStale)
             {
-                wasUpdated |= cell.Refresh();
+                UpdatePinnedColumns();
+
+                IsStale = false;
             }
 
-            return wasUpdated;
-        }
-        public void DisposeOfCell(Cell cell)
-        {
-            if (cell is IRefreshableCell refreshableCell)
+            if (Event.current.type == EventType.Layout)
             {
-                CellsToRefresh.Remove(refreshableCell);
+                UpdateHotColumns();
+            }
+        }
+        private void UpdatePinnedColumns()
+        {
+            _Pinned_Visible.Clear();
+            _Unpinned_Visible.Clear();
+
+            foreach (Column column in All)
+            {
+                if (column.IsVisible)
+                {
+                    if (column.IsPinned)
+                    {
+                        _Pinned_Visible.Add(column);
+                    }
+                    else
+                    {
+                        _Unpinned_Visible.Add(column);
+                    }
+                }
+            }
+        }
+        private void UpdateHotColumns()
+        {
+            _Hot_HasActiveFilters.Clear();
+            _Hot_DoesntHaveActiveFilters_Visible.Clear();
+
+            foreach (Column column in All)
+            {
+                if (column.HasActiveFilters)
+                {
+                    _Hot_HasActiveFilters.Add(column);
+                }
+                else if (column is { IsHot: true, IsVisible: true })
+                {
+                    _Hot_DoesntHaveActiveFilters_Visible.Add(column);
+                }
             }
         }
     }

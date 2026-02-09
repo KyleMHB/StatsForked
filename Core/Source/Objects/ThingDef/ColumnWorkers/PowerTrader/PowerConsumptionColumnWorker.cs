@@ -6,7 +6,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.PowerTrader;
 
 public sealed class PowerConsumptionColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         CompProperties_Power? powerCompProps = thingDef.GetCompProperties<CompProperties_Power>();
 

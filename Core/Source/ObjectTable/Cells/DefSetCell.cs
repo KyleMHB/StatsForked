@@ -48,5 +48,5 @@ public class DefSetCell : Cell
 
         return new CellDescriptor(CellStyleType.String, [valueField]);
     }
-    public static readonly DefSetCell Empty = new([]);
+    public static readonly DefSetCell Empty = new(new HashSet<Def?>());
 }

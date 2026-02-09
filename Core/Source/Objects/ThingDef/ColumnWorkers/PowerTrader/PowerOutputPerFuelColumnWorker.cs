@@ -6,7 +6,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.PowerTrader;
 
 public sealed class PowerOutputPerFuelColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         CompProperties_Power? powerCompProps = thingDef.GetCompProperties<CompProperties_Power>();
         CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();

@@ -9,7 +9,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Building;
 
 public sealed class RecreationTypeColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         JoyKindDef? joyKind = thingDef.building?.joyKind;
 

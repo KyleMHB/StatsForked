@@ -7,7 +7,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.RangedWeapon;
 public sealed class RangedAimingTimeColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
     private readonly string FormatString = "0.00 " + "LetterSecond".Translate();
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
 

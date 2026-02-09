@@ -6,7 +6,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Bed;
 
 public sealed class FitsSmallAnimalsColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         BuildingProperties? buildingProps = thingDef.building;
 

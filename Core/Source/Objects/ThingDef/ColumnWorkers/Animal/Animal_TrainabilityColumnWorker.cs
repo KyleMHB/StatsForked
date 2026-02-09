@@ -9,7 +9,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Animal;
 
 public sealed class Animal_TrainabilityColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         TrainabilityDef? trainability = thingDef.race?.trainability;
 

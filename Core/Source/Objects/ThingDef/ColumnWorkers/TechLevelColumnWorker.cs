@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Stats.Objects.ThingDef;
+using Stats.ObjectTable;
+using Stats.ObjectTable.Cells;
 using Stats.Widgets;
+using UnityEngine;
 using Verse;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers;
 
-public sealed class TechLevelColumnWorker : ColumnWorker<VirtualThing>
+public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public TechLevelColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
-    {
-    }
+    //public TechLevelColumnWorker : base(columnDef, CellStyleType.String, TODO)
+    //{
+    //}
     public override ObjectTableWidget.Cell GetCell(VirtualThing thing)
     {
         return new Cell(thing.Def.techLevel);
@@ -29,27 +32,50 @@ public sealed class TechLevelColumnWorker : ColumnWorker<VirtualThing>
 
         yield return new(Def.Title, new OTMFilter<Cell, TechLevel>(cell => cell.Value, options, this));
     }
-
-    private sealed class Cell : ObjectTableWidget.WidgetCell
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
-        protected override Widget? Widget { get; set; }
-        public override event Action? OnChange;
-        public TechLevel Value { get; }
-        public Cell(TechLevel value)
+        TechLevel techLevel = thingDef.techLevel;
+
+        if (techLevel != TechLevel.Undefined)
         {
-            Value = value;
 
-            if (value != TechLevel.Undefined)
-            {
-                var text = value.ToStringHuman().CapitalizeFirst();
-                var widget = new Label(text).PaddingAbs(ObjectTableWidget.CellPadHor, ObjectTableWidget.CellPadVer);
-
-                Widget = widget;
-            }
         }
-        public override int CompareTo(ObjectTableWidget.Cell cell)
+
+        throw new NotImplementedException();
+    }
+    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    {
+        throw new NotImplementedException();
+    }
+
+    private sealed class TechLevelCell : Cell
+    {
+        private readonly TechLevel Value;
+        private readonly string Text;
+        private readonly Vector2 Size;
+        public TechLevelCell(TechLevel techLevel)
         {
-            return Value.CompareTo(((Cell)cell).Value);
+            Value = techLevel;
+            Text = techLevel.ToStringHuman().CapitalizeFirst();
+        }
+        public override void Draw(Rect rect, Vector2 containerSize)
+        {
+            throw new NotImplementedException();
+        }
+        public override Vector2 GetSize()
+        {
+            throw new NotImplementedException();
+        }
+        public override void Refresh()
+        {
+        }
+        static private TechLevel GetValue(Cell cell)
+        {
+            return ((TechLevelCell)cell).Value;
+        }
+        static private int Compare(Cell cell1, Cell cell2)
+        {
+            return GetValue(cell1).CompareTo(GetValue(cell2));
         }
     }
 }

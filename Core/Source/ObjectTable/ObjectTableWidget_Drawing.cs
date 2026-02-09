@@ -17,10 +17,6 @@ internal sealed partial class ObjectTableWidget<TObject>
 
         if (Event.current.type == EventType.Layout)
         {
-            DoTasks();
-
-            // Skip the event? This coould save us around 2ms/frame, but is it safe to do?
-            // Maybe skip only if some tasks are scheduled.
         }
 
         // Probably could cache these.
@@ -242,81 +238,5 @@ internal sealed partial class ObjectTableWidget<TObject>
 
             // Why no "Event.current.Use();"? Because the thing locks itself on mouse-up.
         }
-    }
-    private void DoTasks()
-    {
-        if (DoUpdateCachedColumns)
-        {
-            UpdateCachedColumns();
-        }
-
-        if (ColumnsToRefresh.Count > 0)
-        {
-            // TODO: 
-            var column = ColumnsToRefresh.Pop();
-            var columnWasUpdated = column.RefreshCells();
-
-            if (columnWasUpdated)
-            {
-                if (ActiveFilters.Count > 0)
-                {
-                    DoFilter = true;
-                }
-
-                if (SortColumn == column)
-                {
-                    DoSort = true;
-                }
-
-                DoResize = true;
-            }
-        }
-        else if (DoFilter)
-        {
-            ApplyFilters();
-        }
-        else if (DoSort)
-        {
-            SortRows();
-        }
-        else if (DoResize)
-        {
-            Resize();
-        }
-        else
-        {
-            foreach (var column in Columns)
-            {
-                if (column.NeedsRefresh)
-                {
-                    ColumnsToRefresh.Push(column);
-                }
-            }
-        }
-    }
-    private void Resize()
-    {
-        HeaderRowsHeight = 0f;
-        foreach (var row in HeaderRows)
-        {
-            HeaderRowsHeight += row.Resize(ColumnsVisible);
-        }
-
-        PinnedRowsHeight = 0f;
-        foreach (var row in PinnedRows)
-        {
-            PinnedRowsHeight += row.Resize(ColumnsVisible);
-        }
-
-        UnpinnedRowsHeight = 0f;
-        foreach (var row in UnpinnedRows)
-        {
-            if (row.IsVisible)
-            {
-                UnpinnedRowsHeight += row.Resize(ColumnsVisible);
-            }
-        }
-
-        DoResize = false;
     }
 }

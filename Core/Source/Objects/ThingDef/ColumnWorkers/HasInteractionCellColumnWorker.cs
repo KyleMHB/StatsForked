@@ -5,7 +5,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers;
 // Turret.IsMannedColumnWorker
 public sealed class HasInteractionCellColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         bool cellValue = thingDef.hasInteractionCell;
 

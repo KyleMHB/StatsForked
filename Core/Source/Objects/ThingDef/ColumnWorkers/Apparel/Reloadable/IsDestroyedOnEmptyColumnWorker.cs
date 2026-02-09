@@ -6,7 +6,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Apparel.Reloadable;
 
 public sealed class IsDestroyedOnEmptyColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         CompProperties_ApparelReloadable? reloadableCompProperties = thingDef.GetCompProperties<CompProperties_ApparelReloadable>();
 

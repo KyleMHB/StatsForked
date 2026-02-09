@@ -10,7 +10,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Plant;
 
 public sealed class HarvestYieldColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         PlantProperties? plantProps = thingDef.plant;
 

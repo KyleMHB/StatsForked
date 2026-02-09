@@ -66,17 +66,12 @@ internal sealed partial class ObjectTableWidget<TObject>
                     {
                         var cell = Cells[column];
 
-                        var origTextAnchor = Text.Anchor;
-                        Text.Anchor = column.CellTextAnchor;
-
                         // Basically, relative size extensions are not allowed on table cell widgets.
                         // Saves us some CPU cycles and is pointless to do anyway.
                         var cellSize = cell.GetSize();
                         rect.height = cellSize.y;
 
                         cell.Draw(rect, cellSize);
-
-                        Text.Anchor = origTextAnchor;
                     }
                     catch
                     {
@@ -149,7 +144,7 @@ internal sealed partial class ObjectTableWidget<TObject>
 
             foreach (var column in columns)
             {
-                cells[column] = column.GetCell(@object);
+                cells[column] = column.MakeCell(@object);
             }
 
             Cells = cells;
@@ -228,26 +223,16 @@ internal sealed partial class ObjectTableWidget<TObject>
 
             return Height;
         }
-        public int CompareToByColumn(ObjectRow row, Column column)
-        {
-            // Idea: Upon sorting, if SortColumn != column, move the sort columns cell to a row,
-            // so when the data updates we won't have to go through the Cells dictionary to find the cell.
-            // Although, this will only optimize resorting on cell updates, not the sorting itself.
-            var result = Cells[column].CompareTo(row.Cells[column]);
+        //public int CompareToByColumn(ObjectRow row, Column column)
+        //{
+        //    var result = Cells[column].CompareTo(row.Cells[column]);
 
-            if (result == 0)
-            {
-                result = GetHashCode().CompareTo(row.GetHashCode());
-            }
+        //    if (result == 0)
+        //    {
+        //        result = GetHashCode().CompareTo(row.GetHashCode());
+        //    }
 
-            return result;
-        }
-        public void Dispose()
-        {
-            foreach (var (column, cell) in Cells)
-            {
-                column.DisposeOfCell(cell);
-            }
-        }
+        //    return result;
+        //}
     }
 }

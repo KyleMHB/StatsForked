@@ -9,7 +9,7 @@ namespace Stats.Objects.ThingDef.ColumnWorkers.Pawn;
 
 public sealed class LeatherAmountColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
 {
-    public override Cell GetCell(Verse.ThingDef thingDef)
+    public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         Verse.ThingDef? leatherDef = thingDef.race?.leatherDef;
 
