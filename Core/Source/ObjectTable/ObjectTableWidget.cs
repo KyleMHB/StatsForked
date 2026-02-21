@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Stats.ObjectTable.Cells;
+using Stats.ObjectTable.FilterWidgets;
 using Stats.Widgets;
 using UnityEngine;
 using Verse;
@@ -12,49 +14,50 @@ public abstract class ObjectTableWidget
 {
     public const float CellPadHor = 12f;
     public const float CellPadVer = 4f;
-    public abstract TableFilterMode FilterMode { get; set; }
+    //public abstract TableFilterMode FilterMode { get; set; }
     //public abstract event Action<TableFilterMode> OnFilterModeChange;
     public abstract void Draw(Rect rect, bool showSettingsMenu);
-    public abstract void ResetFilters();
-    public abstract void ToggleFilterMode();
+    //public abstract void ResetFilters();
+    //public abstract void ToggleFilterMode();
 
-    public enum TableFilterMode
-    {
-        AND = 0,
-        OR = 1,
-    }
+    //public enum TableFilterMode
+    //{
+    //    AND = 0,
+    //    OR = 1,
+    //}
 }
 
 internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
 {
-    private Column SortColumn;
-    private int SortDirection = SortDirectionAscending;
-    private const int SortDirectionAscending = 1;
-    private const int SortDirectionDescending = -1;
-    private readonly ColumnCollection Columns;
-    private readonly Widget ColumnsTabWidget;
-    private readonly List<Filter> Filters;
-    private readonly HashSet<Filter> ActiveFilters;
-    public override TableFilterMode FilterMode
-    {
-        get => field;
-        set
-        {
-            if (value == field) return;
+    //public override TableFilterMode FilterMode
+    //{
+    //    get => field;
+    //    set
+    //    {
+    //        if (value == field) return;
 
-            field = value;
-            MatchRowCells = value switch
-            {
-                TableFilterMode.AND => MatchRowCells_AND,
-                TableFilterMode.OR => MatchRowCells_OR,
-                _ => throw new NotSupportedException("Unsupported table filtering mode.")
-            };
+    //        field = value;
+    //        MatchRowCells = value switch
+    //        {
+    //            TableFilterMode.AND => MatchRowCells_AND,
+    //            TableFilterMode.OR => MatchRowCells_OR,
+    //            _ => throw new NotSupportedException("Unsupported table filtering mode.")
+    //        };
 
-            OnFilterModeChange?.Invoke(value);
-            DoFilter = true;
-        }
-    } = TableFilterMode.AND;
+    //        OnFilterModeChange?.Invoke(value);
+    //        DoFilter = true;
+    //    }
+    //} = TableFilterMode.AND;
     //public override event Action<TableFilterMode>? OnFilterModeChange;
+
+    //private Column SortColumn;
+    //private int SortDirection = SortDirectionAscending;
+    //private const int SortDirectionAscending = 1;
+    //private const int SortDirectionDescending = -1;
+    private readonly List<Column> _columns;
+    //private readonly Widget ColumnsTabWidget;
+    //private readonly List<Filter> Filters;
+    //private readonly HashSet<Filter> ActiveFilters;
     //private RowCellsMatcher MatchRowCells = MatchRowCells_AND;
     //private static readonly RowCellsMatcher MatchRowCells_AND =
     //(cells, filters) =>
@@ -67,206 +70,162 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     //    return filters.Any(filter => filter.Widget.Eval(cells[filter.Column]));
     //};
     private const int InitialRowCapacity = 250;
-    private readonly List<Row> HeaderRows;
-    private float HeaderRowsHeight;
-    private readonly List<ObjectRow> PinnedRows = new(10);
-    private float PinnedRowsHeight;
-    private readonly List<ObjectRow> UnpinnedRows;
-    private float UnpinnedRowsHeight;
-    private Vector2 ScrollPosition;
+    //private readonly List<Row> HeaderRows;
+    private readonly float _headerRowHeight;
+    private readonly List<Row> _pinnedRows = new(10);
+    private float _pinnedRowsHeight;
+    private readonly List<Row> _unpinnedRows;
+    private readonly List<Row> _filteredUnpinnedRows;
+    private float _filteredUnpinnedRowsHeight;
+    private Row? _rowToPinOrUnpin;
+    private Vector2 _scrollPosition;
     private static readonly Color ColumnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
     private static readonly Color PinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
-    private Vector2 ColumnsTabScrollPosition;
-    //private bool DoFilter;
-    //private bool DoSort = true;
-    //private bool DoResize = true;
-    //private bool DoUpdateCachedColumns = true;
-    public ObjectTableWidget(TableWorker<TObject> worker)
+    //private Vector2 ColumnsTabScrollPosition;
+
+    public ObjectTableWidget(TableWorker<TObject> tableWorker)
     {
-        worker.OnObjectAdded += AddObject;
-        worker.OnObjectRemoved += RemoveObject;
+        //tableWorker.OnObjectAdded += AddObject;
+        //tableWorker.OnObjectRemoved += RemoveObject;
 
-        var columns = new List<Column>();
+        // Columns
+        List<Column> columns = new(tableWorker.TableDef.columns.Count);
 
-        foreach (var columnDef in worker.TableDef.columns)
+        for (int i = 0; i < tableWorker.TableDef.columns.Count; i++)
         {
+            ColumnDef columnDef = tableWorker.TableDef.columns[i];
             if (columnDef.Worker is IColumnWorker<TObject> columnWorker)
             {
-                columns.Add(new(columnDef, columnWorker, this));
+                int cellIndex = columns.Count;
+                Column column = new(cellIndex, columnDef, columnWorker, tableWorker, cellIndex == 0);
+
+                columns.Add(column);
             }
             else
             {
-                Log.Warning($"Column \"${columnDef.defName}\" is not compatible with table \"${worker.TableDef.defName}\".");
+                Log.Warning($"Column \"${columnDef.defName}\" is not compatible with table \"${tableWorker.TableDef.defName}\", because it does not implement \"${typeof(IColumnWorker<TObject>).Name}\".");
             }
         }
 
-        columns[0].IsPinned = true;
-
         // Rows
-        var rows = new List<ObjectRow>(InitialRowCapacity);
+        List<Row> rows = new(InitialRowCapacity);
 
-        foreach (var @object in worker.InitialObjects)
+        foreach (TObject @object in tableWorker.InitialObjects)
         {
-            var row = new ObjectRow(columns, @object);
+            Row row = new(columns, @object, this);
 
             rows.Add(row);
         }
 
         // Settings tab
-        var columnSettingsTabRows = new List<Widget>(columns.Count);
-        var columnLabelWidthMax = new StrongBox<float>(0f);
-        var filters = new List<Filter>(columns.Count);
+        //List<Widget> columnSettingsTabRows = new(columns.Count);
+        //StrongBox<float> columnLabelWidthMax = new(0f);
+        //List<Filter> filters = new(columns.Count);
 
-        Widget MakeColumnTitleRow(Widget columnTitle, Widget filterOrToggle, Column column)
-        {
-            return new HorizontalContainer([
-                // TODO: This is a hack to prevent icons from stretching out.
-                (columnTitle.Get<InlineTexture>() == null
-                    ? columnTitle
-                    : new SingleElementContainer(columnTitle))
-                .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
-                .Column(columnLabelWidthMax)
-                .Foreground(rect =>
-                {
-                    if (Event.current.type != EventType.Repaint || column.IsVisible) return;
+        //Widget MakeColumnTitleRow(Widget columnTitle, Widget filterOrToggle, Column column)
+        //{
+        //    return new HorizontalContainer([
+        //        // TODO: This is a hack to prevent icons from stretching out.
+        //        (columnTitle.Get<InlineTexture>() == null
+        //            ? columnTitle
+        //            : new SingleElementContainer(columnTitle))
+        //        .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
+        //        .Column(columnLabelWidthMax)
+        //        .Tooltip(column.Tooltip),
 
-                    var origGUIColor = GUI.color;
-                    GUI.color = Globals.GUI.TextColorSecondary;
+        //        filterOrToggle,
+        //    ], 0f, true)
+        //    .WidthRel(1f);
+        //}
 
-                    Verse.Widgets.DrawLineHorizontal(rect.x, rect.y + rect.height / 2f, rect.width);
+        //for (int i = 0; i < columns.Count; i++)
+        //{
+        //    Column column = columns[i];
+        //    CellFieldDescriptor[] columnCellFields = column.CellDescriptor.Fields;
 
-                    GUI.color = origGUIColor;
-                })
-                .ToButtonGhostly(column.ToggleVisibility)
-                .Tooltip(column.Tooltip),
+        //    if (columnCellFields.Length == 0)
+        //        continue;
 
-                filterOrToggle,
-            ], 0f, true)
-            .WidthRel(1f);
-        }
+        //    Widget rowWidget;
 
-        for (int i = 0; i < columns.Count; i++)
-        {
-            var column = columns[i];
-            var objectProps = column.GetParts().ToList();
+        //    if (columnCellFields.Length == 1)
+        //    {
+        //        CellFieldDescriptor cellField = columnCellFields[0];
+        //        rowWidget = MakeColumnTitleRow(
+        //            cellField.Label,
+        //            cellField.FilterWidget
+        //                .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
+        //                .WidthIncRel(1f),
+        //            column
+        //        )
+        //            .HoverBackground(TexUI.HighlightTex);
 
-            if (objectProps.Count == 0) continue;
+        //        FilterWidget filterWidget = cellField.FilterWidget;
+        //        Filter filter = new(column, filterWidget);
+        //        filterWidget.OnChange += () => HandleFilterChange(filter);
+        //        filters.Add(filter);
+        //    }
+        //    else
+        //    {
+        //        StrongBox<float> cellFieldLabelWidthMax = new(0f);
+        //        Observable<bool> toggle = new(true);
+        //        rowWidget = new VerticalContainer([
+        //            MakeColumnTitleRow(
+        //                column.Title,
+        //                new Label(toggle.Map(state => state
+        //                    ? $"<i>Hide ({columnCellFields.Length}) filters</i>"
+        //                    : $"<i>Show ({columnCellFields.Length}) filters</i>"
+        //                ))
+        //                    .TextAnchor(TextAnchor.LowerRight)
+        //                    .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
+        //                    .WidthIncRel(1f)
+        //                    .ToButtonGhostly(() => toggle.Value = !toggle.Value),
+        //                column
+        //            ),
 
-            Widget row;
+        //            new VerticalContainer(
+        //                columnCellFields.Select(cellField => {
+        //                    var row = new HorizontalContainer([
+        //                        cellField.Label
+        //                            .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
+        //                            .Column(cellFieldLabelWidthMax),
 
-            if (objectProps.Count == 1)
-            {
-                var objectProp = objectProps[0];
-                row = MakeColumnTitleRow(
-                    objectProp.Label,
-                    objectProp.FilterWidget
-                    .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
-                    .WidthIncRel(1f),
-                    column
-                )
-                .HoverBackground(TexUI.HighlightTex);
+        //                        cellField.FilterWidget
+        //                            .Ref(out var filterWidget)
+        //                            .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
+        //                            .WidthIncRel(1f),
+        //                    ], 0f, true)
+        //                        .WidthRel(1f)
+        //                        .HoverBackground(TexUI.HighlightTex);
 
-                var filter = new Filter(column, objectProp.FilterWidget);
-                filters.Add(filter);
-                objectProp.FilterWidget.OnChange += () => HandleFilterChange(filter);
-            }
-            else
-            {
-                var objectPropLabelWidthMax = new StrongBox<float>(0f);
-                var toggle = new Observable<bool>(true);
-                row = new VerticalContainer([
-                    MakeColumnTitleRow(
-                        column.Title,
-                        new Label(toggle.Map(state => state
-                            ? $"<i>Hide ({objectProps.Count}) filters</i>"
-                            : $"<i>Show ({objectProps.Count}) filters</i>"
-                        ))
-                        .TextAnchor(TextAnchor.LowerRight)
-                        .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
-                        .WidthIncRel(1f)
-                        .ToButtonGhostly(() => toggle.Value = !toggle.Value),
-                        column
-                    ),
+        //                    Filter filter = new(column, filterWidget);
+        //                    filters.Add(filter);
+        //                    filterWidget.OnChange += () => HandleFilterChange(filter);
 
-                    new VerticalContainer(
-                        objectProps.Select(objectProp => {
-                            var row = new HorizontalContainer([
-                                objectProp.Label
-                                .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
-                                .Column(objectPropLabelWidthMax),
+        //                    return row;
+        //                }).ToList<Widget>()
+        //            )
+        //                .PaddingAbs(Globals.GUI.Pad * 1.5f, 0f, 0f, 0f)
+        //                .WidthRel(1f)
+        //                .ToggleDisplay(toggle)
+        //        ])
+        //            .WidthRel(1f)
+        //            .HoverBackground(TexUI.HighlightTex);
+        //    }
 
-                                objectProp.FilterWidget
-                                .Ref(out var filterWidget)
-                                .PaddingAbs(Globals.GUI.Pad, Globals.GUI.PadXs)
-                                .WidthIncRel(1f),
-                            ], 0f, true)
-                            .WidthRel(1f)
-                            .HoverBackground(TexUI.HighlightTex);
-
-                            var filter = new Filter(column, filterWidget);
-                            filters.Add(filter);
-                            filterWidget.OnChange += () => HandleFilterChange(filter);
-
-                            return row;
-                        }).ToList<Widget>()
-                    )
-                    .PaddingAbs(Globals.GUI.Pad * 1.5f, 0f, 0f, 0f)
-                    .WidthRel(1f)
-                    .ToggleDisplay(toggle)
-                ])
-                .WidthRel(1f)
-                .HoverBackground(TexUI.HighlightTex);
-            }
-
-            columnSettingsTabRows.Add(
-                row.Background(Verse.Widgets.LightHighlight, columnSettingsTabRows.Count % 2 == 0)
-            );
-        }
+        //    columnSettingsTabRows.Add(
+        //        rowWidget.Background(Verse.Widgets.LightHighlight, columnSettingsTabRows.Count % 2 == 0)
+        //    );
+        //}
 
         // Finalize
-        Columns = columns;
-        ColumnsVisible = new(columns.Count);
-        ColumnsVisiblePinned = new(columns.Count);
-        ColumnsVisibleUnpinned = new(columns.Count);
-        ColumnsToRefresh = new(columns.Count);
-        SortColumn = columns[0];
-        HeaderRows = [new ColumnTitlesRow(columns)];
-        UnpinnedRows = rows;
-        ColumnsTabWidget = new VerticalContainer(columnSettingsTabRows);
-        Filters = filters;
-        ActiveFilters = new HashSet<Filter>(columns.Count);
-    }
-    // Note: Add/Remove methods have to be as fast as possible
-    // because they can be called multiple times in a row.
-    //
-    // TODO: Do not add/remove rows if the table is not shown on the screen.
-    private void AddObject(TObject @object)
-    {
-        UnpinnedRows.Add(new ObjectRow(Columns, @object));
-        //DoSort = true;
-        SortRows(UnpinnedRows);
-        //if (ActiveFilters.Count > 0)
-        //{
-        //    DoFilter = true;
-        //}
-        //DoResize = true;
-    }
-    private void RemoveObject(TObject @object)
-    {
-        PinnedRows.RemoveWhere(row => DisposeOfRowIfMatch(row, @object));
-        UnpinnedRows.RemoveWhere(row => DisposeOfRowIfMatch(row, @object));
-
-        //DoResize = true;
-    }
-    private static bool DisposeOfRowIfMatch(ObjectRow row, TObject @object)
-    {
-        var isObj = row.Object.Equals(@object);
-
-        if (isObj)
-        {
-            row.Dispose();
-        }
-
-        return isObj;
+        _columns = columns;
+        //SortColumn = columns[0];
+        //HeaderRows = [new ColumnTitlesRow(columns)];
+        _unpinnedRows = rows;
+        _filteredUnpinnedRows = [.. rows];
+        //ColumnsTabWidget = new VerticalContainer(columnSettingsTabRows);
+        //Filters = filters;
+        //ActiveFilters = new HashSet<Filter>(columns.Count);
     }
 }

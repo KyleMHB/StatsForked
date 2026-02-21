@@ -10,37 +10,50 @@ internal sealed partial class ObjectTableWidget<TObject>
 {
     public override void Draw(Rect rect, bool showSettingsMenu)
     {
-        if (showSettingsMenu)
-        {
-            DrawColumnsTab(ref rect);
-        }
-
         if (Event.current.type == EventType.Layout)
         {
+            if (_rowToPinOrUnpin != null)
+            {
+                if (_rowToPinOrUnpin.IsPinned)
+                {
+                    _unpinnedRows.Remove(_rowToPinOrUnpin);
+                    _pinnedRows.Add(_rowToPinOrUnpin);
+                }
+                else
+                {
+                    _pinnedRows.Remove(_rowToPinOrUnpin);
+                    _unpinnedRows.Add(_rowToPinOrUnpin);
+                }
+            }
         }
 
+        //if (showSettingsMenu)
+        //{
+        //    DrawColumnsTab(ref rect);
+        //}
+
         // Probably could cache these.
-        var leftColumnsMinWidth = 0f;
+        float leftColumnsMinWidth = 0f;
         foreach (var column in ColumnsVisiblePinned)
         {
             leftColumnsMinWidth += column.Width;
         }
 
-        var rightColumnsMinWidth = 0f;
+        float rightColumnsMinWidth = 0f;
         foreach (var column in ColumnsVisibleUnpinned)
         {
             rightColumnsMinWidth += column.Width;
         }
 
-        var contentSizeMax = new Vector2(
+        Vector2 contentSizeMax = new(
             // Min. row width
             leftColumnsMinWidth + rightColumnsMinWidth,
             // Total rows height
-            HeaderRowsHeight + PinnedRowsHeight + UnpinnedRowsHeight
+            _headerRowHeight + _pinnedRowsHeight + _filteredUnpinnedRowsHeight
         );
-        var contentSizeVisible = new Vector2(
+        Vector2 contentSizeVisible = new(
             // Will scroll vertically
-            UnpinnedRowsHeight > 0f
+            _filteredUnpinnedRowsHeight > 0f
                 ? rect.width - GenUI.ScrollBarWidth
                 : rect.width,
             // Will scroll horizontally
@@ -48,23 +61,23 @@ internal sealed partial class ObjectTableWidget<TObject>
                 ? rect.height - GenUI.ScrollBarWidth
                 : rect.height
         );
-        var contentRectMax = new Rect(
+        Rect contentRectMax = new(
             Vector2.zero,
             Vector2.Max(contentSizeMax, contentSizeVisible)
         );
         // Adds empty space for more convenient vertical scrolling.
-        contentRectMax.height += Mathf.Min(contentSizeMax.y, contentSizeVisible.y) - HeaderRowsHeight - PinnedRowsHeight;
+        contentRectMax.height += Mathf.Min(contentSizeMax.y, contentSizeVisible.y) - _headerRowHeight - _pinnedRowsHeight;
 
-        Verse.Widgets.BeginScrollView(rect, ref ScrollPosition, contentRectMax, true);
+        Verse.Widgets.BeginScrollView(rect, ref _scrollPosition, contentRectMax, true);
 
-        var contentRectVisible = new Rect(ScrollPosition, contentSizeVisible);
+        Rect contentRectVisible = new(_scrollPosition, contentSizeVisible);
 
         // Left part
         if (leftColumnsMinWidth > 0f)
         {
-            var leftPartRect = contentRectVisible.CutByX(leftColumnsMinWidth);
+            Rect leftPartRect = contentRectVisible.CutByX(leftColumnsMinWidth);
 
-            DrawPart(leftPartRect, ColumnsVisiblePinned, ScrollPosition with { x = 0f }, 0f);
+            DrawPart(leftPartRect, _columns, _scrollPosition with { x = 0f }, false);
 
             // Separator line
             Widgets.Draw.VerticalLine(
@@ -76,47 +89,28 @@ internal sealed partial class ObjectTableWidget<TObject>
         }
 
         // Right part
-        var rightPartFreeSpace = contentRectVisible.width - rightColumnsMinWidth;
-        var cellExtraWidth = Mathf.Max(rightPartFreeSpace / ColumnsVisibleUnpinned.Count, 0f);
-
-        DrawPart(contentRectVisible, ColumnsVisibleUnpinned, ScrollPosition, cellExtraWidth);
+        if (rightColumnsMinWidth > 0f)
+        {
+            DrawPart(contentRectVisible, _columns, _scrollPosition, true);
+        }
 
         Verse.Widgets.EndScrollView();
     }
-    private void DrawPart(
-        Rect rect,
-        List<Column> columns,
-        Vector2 scrollPosition,
-        float cellExtraWidth
-    )
+
+    private void DrawPart(Rect rect, Range columnsRange, Vector2 scrollPosition, bool doHorScroll)
     {
-        if (columns.Count == 0)
-            return;
+        Rect headersRect = rect.CutByY(_headerRowHeight);
 
-        var origRect = rect;
-        var headersRect = rect.CutByY(HeaderRowsHeight);
-        var horScrollPosition = scrollPosition with { y = 0f };
+        DrawColumnSeparators(rect, columnsRange, scrollPosition.x);
 
-        DrawRows(headersRect, HeaderRows, columns, horScrollPosition, cellExtraWidth);
-        Verse.Widgets.DrawLineHorizontal(
-            headersRect.x,
-            headersRect.yMax - 1f,
-            rect.width,
-            MainTabWindowWidget.BorderLineColor
-        );
+        DrawHeaders(headersRect, columnsRange, scrollPosition.x);
 
-        if (columns == ColumnsVisibleUnpinned)
+        if (_pinnedRows.Count > 0)
         {
-            // Register mouse-drag only below headers row to not interfere with filter inputs.
-            DoHorScroll(rect, ref ScrollPosition);
-        }
-
-        if (PinnedRows.Count > 0)
-        {
-            var pinnedBodyRowsRect = rect.CutByY(PinnedRowsHeight);
+            Rect pinnedBodyRowsRect = rect.CutByY(_pinnedRowsHeight);
 
             Verse.Widgets.DrawStrongHighlight(pinnedBodyRowsRect, PinnedRowsBGColor);
-            DrawRows(pinnedBodyRowsRect, PinnedRows, columns, horScrollPosition, cellExtraWidth);
+            DrawRows(pinnedBodyRowsRect, _pinnedRows, columnsRange, scrollPosition with { y = 0f }, false);
             Verse.Widgets.DrawLineHorizontal(
                 pinnedBodyRowsRect.x,
                 pinnedBodyRowsRect.yMax - 1f,
@@ -125,80 +119,76 @@ internal sealed partial class ObjectTableWidget<TObject>
             );
         }
 
-        DrawRows(rect, UnpinnedRows, columns, scrollPosition, cellExtraWidth);
-
-        DrawColumnSeparators(origRect, columns, scrollPosition.x, cellExtraWidth);
+        DrawRows(rect, _filteredUnpinnedRows, columnsRange, scrollPosition, true);
     }
-    private void DrawRows(
-        Rect rect,
-        IReadOnlyCollection<Row> rows,
-        List<Column> columns,
-        Vector2 scrollPosition,
-        float cellExtraWidth
-    )
+
+    private void DrawHeaders(Rect rect, Range columnsRange, float offsetX)
     {
         GUI.BeginClip(rect);
 
-        var yMax = rect.height;
+        // TODO
+        Verse.Widgets.DrawLineHorizontal(rect.x, rect.yMax - 1f, rect.width, MainTabWindowWidget.BorderLineColor);
+
+        GUI.EndClip();
+    }
+
+    private void DrawRows(Rect rect, List<Row> rows, Range columnsRange, Vector2 scrollPosition, bool doHorScroll)
+    {
+        // Hor scrolling
+        // Register mouse-drag only below headers row to not interfere with them.
+        if (doHorScroll && Event.current.type == EventType.MouseDrag && Mouse.IsOver(rect))
+        {
+            _scrollPosition.x = Mathf.Max(_scrollPosition.x + Event.current.delta.x * -1f, 0f);
+        }
+
+        GUI.BeginClip(rect);
+
+        float yMax = rect.height;
         rect.x = 0f;
         rect.y = -scrollPosition.y;
-        var i = 0;
 
-        foreach (var row in rows)
+        for (int i = 0; i < rows.Count; i++)
         {
-            if (row.IsVisible == false)
-                continue;
+            Row row = rows[i];
 
             if (rect.y >= yMax)
+            {
                 break;
+            }
 
             rect.height = row.Height;
 
             if (rect.yMax > 0f)
             {
-                var rowWasClicked = row.Draw(rect, columns, scrollPosition.x, cellExtraWidth, i);
-
-                if (rowWasClicked && row is ObjectRow objectRow)
-                {
-                    if (PinnedRows.Contains(objectRow))
-                    {
-                        UnpinRow(objectRow);
-                    }
-                    else
-                    {
-                        PinRow(objectRow);
-                    }
-
-                    return;
-                }
+                row.Draw(rect, _columns, columnsRange, scrollPosition.x, i);
             }
 
             rect.y = rect.yMax;
-            i++;
         }
 
         GUI.EndClip();
     }
+
     // The performance impact of instead drawing a vertical border for each
     // individual column's cell is huge. So we have to keep this.
-    private static void DrawColumnSeparators(
-        Rect rect,
-        List<Column> columns,
-        float offsetX,
-        float cellExtraWidth
-    )
+    private void DrawColumnSeparators(Rect rect, Range columnsRange, float offsetX)
     {
         if (Event.current.type != EventType.Repaint)
-            return;
-
-        var x = -offsetX;
-
-        foreach (var column in columns)
         {
-            x += column.Width + cellExtraWidth;
+            return;
+        }
+
+        float x = -offsetX;
+
+        for (int i = columnsRange.Start; i < columnsRange.End; i++)
+        {
+            Column column = _columns[i];
+            x += column.Width;
 
             if (x >= rect.width)
+            {
                 break;
+            }
 
             if (x > 0f)
             {
@@ -211,32 +201,24 @@ internal sealed partial class ObjectTableWidget<TObject>
             }
         }
     }
-    private void DrawColumnsTab(ref Rect rect)
-    {
-        var columnsTabWidgetSize = ColumnsTabWidget.GetSize(rect.size);
-        var columnsTabRect = rect.CutByX(columnsTabWidgetSize.x + GenUI.ScrollBarWidth);
-        var columnsTabRectMax = new Rect(Vector2.zero, columnsTabWidgetSize);
-        // Adds empty space for more convenient vertical scrolling.
-        columnsTabRectMax.height += columnsTabRect.height;
 
-        Verse.Widgets.BeginScrollView(columnsTabRect, ref ColumnsTabScrollPosition, columnsTabRectMax, true);
-        ColumnsTabWidget.DrawIn(columnsTabRectMax);
-        Verse.Widgets.EndScrollView();
-        Widgets.Draw.VerticalLine(
-            columnsTabRect.xMax,
-            rect.y,
-            rect.height,
-            MainTabWindowWidget.BorderLineColor
-        );
-        rect.xMin += 1f;
-    }
-    private static void DoHorScroll(Rect rect, ref Vector2 scrollPosition)
-    {
-        if (Event.current.type == EventType.MouseDrag && Mouse.IsOver(rect))
-        {
-            scrollPosition.x = Mathf.Max(scrollPosition.x + Event.current.delta.x * -1f, 0f);
+    //private void DrawColumnsTab(ref Rect rect)
+    //{
+    //    var columnsTabWidgetSize = ColumnsTabWidget.GetSize(rect.size);
+    //    var columnsTabRect = rect.CutByX(columnsTabWidgetSize.x + GenUI.ScrollBarWidth);
+    //    var columnsTabRectMax = new Rect(Vector2.zero, columnsTabWidgetSize);
+    //    // Adds empty space for more convenient vertical scrolling.
+    //    columnsTabRectMax.height += columnsTabRect.height;
 
-            // Why no "Event.current.Use();"? Because the thing locks itself on mouse-up.
-        }
-    }
+    //    Verse.Widgets.BeginScrollView(columnsTabRect, ref ColumnsTabScrollPosition, columnsTabRectMax, true);
+    //    ColumnsTabWidget.DrawIn(columnsTabRectMax);
+    //    Verse.Widgets.EndScrollView();
+    //    Widgets.Draw.VerticalLine(
+    //        columnsTabRect.xMax,
+    //        rect.y,
+    //        rect.height,
+    //        MainTabWindowWidget.BorderLineColor
+    //    );
+    //    rect.xMin += 1f;
+    //}
 }

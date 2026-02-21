@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using RimWorld;
 using Stats.ObjectTable.Cells;
 using Stats.Widgets;
 using UnityEngine;
@@ -11,60 +11,45 @@ internal sealed partial class ObjectTableWidget<TObject>
 {
     private sealed class Column
     {
-        private readonly ColumnDef Def;
-        private readonly IColumnWorker<TObject> Worker;
-        private readonly CellStyleType CellStyle;
-        public float Width { get; set; }
-        public Widget Title => Def.Title;
-        public TipSignal Tooltip { get; }
-        public bool IsVisible
-        {
-            get;
-            private set
-            {
-                field = value;
+        public int CellIndex;
+        public float Width;
+        public Widget Title => _def.Title;
+        public readonly TipSignal Tooltip;
+        public bool IsPinned;
+        //public readonly CellDescriptor CellDescriptor;
+        //public bool HasActiveFilters => CellDescriptor.Fields.Any(@field => @field.FilterWidget.IsActive);
 
-                OnChange?.Invoke();
-            }
-        } = true;
-        public bool IsPinned
-        {
-            get;
-            private set
-            {
-                field = value;
+        private readonly ColumnDef _def;
+        private readonly IColumnWorker<TObject> _worker;
+        //private readonly CellStyleType _cellStyle;
 
-                OnChange?.Invoke();
-            }
-        }
-        public bool IsHot => throw new NotImplementedException();
-        public bool HasActiveFilters => throw new NotImplementedException();
-        public event Action? OnChange;
-        public Column(ColumnDef def, IColumnWorker<TObject> worker, TableWorker tableWorker, bool isPinned)
+        public Column(int index, ColumnDef def, IColumnWorker<TObject> worker, TableWorker tableWorker, bool isPinned)
         {
-            CellDescriptor cellDescriptor = worker.GetCellDescriptor(tableWorker);
-
-            Def = def;
-            Worker = worker;
+            _def = def;
+            _worker = worker;
             Tooltip = $"<i>{def.LabelCap}</i>\n\n{def.Description}";
             IsPinned = isPinned;
+            //CellDescriptor cellDescriptor = worker.GetCellDescriptor(tableWorker);
+            CellIndex = index;
         }
-        public Cell MakeCell(TObject @object) => Worker.MakeCell(@object);
-        public Widget GetHeaderCell()
+
+        public Cell MakeCell(TObject @object) => _worker.MakeCell(@object);
+
+        public Widget MakeHeaderCell()
         {
             Widget columnTitle = Title;
 
-            if (CellStyle == CellStyleType.Number)
+            if (_cellStyle == CellStyleType.Number)
             {
                 columnTitle = new SingleElementContainer(columnTitle.PaddingRel(1f, 0f, 0f, 0f));
             }
-            else if (CellStyle == CellStyleType.Boolean)
+            else if (_cellStyle == CellStyleType.Boolean)
             {
                 columnTitle = new SingleElementContainer(columnTitle.PaddingRel(0.5f, 0f));
             }
 
             return columnTitle
-                .TextAnchor((TextAnchor)CellStyle)
+                .TextAnchor((TextAnchor)_cellStyle)
                 .PaddingAbs(CellPadHor, CellPadVer)
                 .ToButtonGhostly(() =>
                 {
@@ -75,84 +60,24 @@ internal sealed partial class ObjectTableWidget<TObject>
                 })
                 .Tooltip(Tooltip);
         }
-        //public IEnumerable<ColumnPart> GetParts()
-        //{
-        //    return Worker.GetCellDescriptor(TODO);
-        //}
-        public void ToggleVisibility()
-        {
-            IsVisible = !IsVisible;
-        }
-    }
 
-    private sealed class ColumnCollection(int capacity)
-    {
-        private readonly List<Column> All = new(capacity);
-        private readonly List<Column> _Pinned_Visible = new(capacity);
-        public IReadOnlyCollection<Column> Pinned_Visible => _Pinned_Visible;
-        private readonly List<Column> _Unpinned_Visible = new(capacity);
-        public IReadOnlyCollection<Column> Unpinned_Visible => _Unpinned_Visible;
-        private readonly List<Column> _Hot_HasActiveFilters = new(capacity);
-        public IReadOnlyCollection<Column> Hot_HasActiveFilters => _Hot_HasActiveFilters;
-        private readonly List<Column> _Hot_DoesntHaveActiveFilters_Visible = new(capacity);
-        public IReadOnlyCollection<Column> Hot_DoesntHaveActiveFilters_Visible => _Hot_DoesntHaveActiveFilters_Visible;
-        private bool IsStale = true;
-        public void Add(Column column)
+        public void ResizeTo(List<Row> rows)
         {
-            column.OnChange += () => IsStale = true;
+            int cellIndex = CellIndex;
+            float width = 0f;
 
-            All.Add(column);
-        }
-        public void Update()
-        {
-            if (IsStale)
+            foreach (Row row in rows)
             {
-                UpdatePinnedColumns();
+                Cell cell = row.Cells[cellIndex];
+                float cellWidth = cell.Size.x;
 
-                IsStale = false;
-            }
-
-            if (Event.current.type == EventType.Layout)
-            {
-                UpdateHotColumns();
-            }
-        }
-        private void UpdatePinnedColumns()
-        {
-            _Pinned_Visible.Clear();
-            _Unpinned_Visible.Clear();
-
-            foreach (Column column in All)
-            {
-                if (column.IsVisible)
+                if (width < cellWidth)
                 {
-                    if (column.IsPinned)
-                    {
-                        _Pinned_Visible.Add(column);
-                    }
-                    else
-                    {
-                        _Unpinned_Visible.Add(column);
-                    }
+                    width = cellWidth;
                 }
             }
-        }
-        private void UpdateHotColumns()
-        {
-            _Hot_HasActiveFilters.Clear();
-            _Hot_DoesntHaveActiveFilters_Visible.Clear();
 
-            foreach (Column column in All)
-            {
-                if (column.HasActiveFilters)
-                {
-                    _Hot_HasActiveFilters.Add(column);
-                }
-                else if (column is { IsHot: true, IsVisible: true })
-                {
-                    _Hot_DoesntHaveActiveFilters_Visible.Add(column);
-                }
-            }
+            Width = width;
         }
     }
 }
