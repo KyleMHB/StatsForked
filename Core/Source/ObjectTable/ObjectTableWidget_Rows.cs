@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Stats.ObjectTable.Cells;
 using UnityEngine;
 using Verse;
@@ -7,11 +8,28 @@ namespace Stats.ObjectTable;
 
 internal sealed partial class ObjectTableWidget<TObject>
 {
+    // TODO: If the order of rows does not matter (because we'll sort them afterwards anyway)
+    // we can remove the row without moving adjacent rows by replacing it with last row (and removing it).
+    private void PinRow(int index)
+    {
+        List<Row> unpinnedRows = _unpinnedRows;
+
+        _pinnedRows.Add(unpinnedRows[index]);
+        unpinnedRows.RemoveAt(index);
+    }
+
+    private void UnpinRow(int index)
+    {
+        List<Row> pinnedRows = _pinnedRows;
+
+        _unpinnedRows.Add(pinnedRows[index]);
+        pinnedRows.RemoveAt(index);
+    }
+
     private sealed class Row
     {
         public float Height;
         public readonly List<Cell> Cells;
-        public bool IsPinned;
         //public readonly TObject Object;
 
         private bool _isHovered = false;
@@ -34,7 +52,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             //Object = @object;
         }
 
-        public void Draw(Rect rect, List<Column> columns, Range columnsRange, float offsetX, int index)
+        public void Draw(Rect rect, List<Column> columns, float offsetX, int index)
         {
             bool mouseIsOverRect = Mouse.IsOver(rect);
 
@@ -61,7 +79,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             float xMax = rect.width;
             rect.x = -offsetX;
 
-            for (int i = columnsRange.Start; i < columnsRange.End; i++)
+            for (int i = 0; i < columns.Count; i++)
             {
                 if (rect.x >= xMax)
                 {
@@ -92,18 +110,32 @@ internal sealed partial class ObjectTableWidget<TObject>
             // This must go after cells to not interfere with their GUI events.
             if (mouseIsOverRect && Event.current is { control: true, type: EventType.MouseDown })
             {
-                IsPinned = !IsPinned;
-                _parent._rowToPinOrUnpin = this;
+                HandlePinning(index);
+            }
+        }
+
+        private void HandlePinning(int index)
+        {
+            List<Row> pinnedRows = _parent._pinnedRows;
+
+            if (index > pinnedRows.Count - 1 || pinnedRows[index] != this)
+            {
+                _parent._guiAction = () => _parent.PinRow(index);
+            }
+            else
+            {
+                _parent._guiAction = () => _parent.UnpinRow(index);
             }
         }
 
         public void Resize()
         {
             float height = 0f;
+            List<Cell> cells = Cells;
 
-            for (int i = 0; i < Cells.Count; i++)
+            for (int i = 0; i < cells.Count; i++)
             {
-                Cell cell = Cells[i];
+                Cell cell = cells[i];
                 float cellHeight = cell.Size.y;
 
                 if (height < cellHeight)
@@ -114,23 +146,6 @@ internal sealed partial class ObjectTableWidget<TObject>
 
             Height = height;
         }
-    }
-
-    /// <summary>
-    /// A simple int range.
-    /// </summary>
-    /// <param name="start">Inclusive</param>
-    /// <param name="end">Exclusive</param>
-    private readonly struct Range(int start, int end)
-    {
-        /// <summary>
-        /// Inclusive
-        /// </summary>
-        public readonly int Start = start;
-        /// <summary>
-        /// Exclusive
-        /// </summary>
-        public readonly int End = end;
     }
 
     //private sealed class ColumnTitlesRow : Row<Widget>

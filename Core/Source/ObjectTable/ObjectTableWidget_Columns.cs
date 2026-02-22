@@ -9,13 +9,28 @@ namespace Stats.ObjectTable;
 
 internal sealed partial class ObjectTableWidget<TObject>
 {
+    private void PinColumn(int index)
+    {
+        List<Column> unpinnedColumns = _unpinnedColumns;
+
+        _pinnedColumns.Add(unpinnedColumns[index]);
+        unpinnedColumns.RemoveAt(index);
+    }
+
+    private void UnpinColumn(int index)
+    {
+        List<Column> pinnedColumns = _pinnedColumns;
+
+        _unpinnedColumns.Insert(0, pinnedColumns[index]);
+        pinnedColumns.RemoveAt(index);
+    }
+
     private sealed class Column
     {
         public int CellIndex;
         public float Width;
-        public Widget Title => _def.Title;
-        public readonly TipSignal Tooltip;
-        public bool IsPinned;
+        //public Widget Title => _def.Title;
+        //public readonly TipSignal Tooltip;
         //public readonly CellDescriptor CellDescriptor;
         //public bool HasActiveFilters => CellDescriptor.Fields.Any(@field => @field.FilterWidget.IsActive);
 
@@ -23,12 +38,11 @@ internal sealed partial class ObjectTableWidget<TObject>
         private readonly IColumnWorker<TObject> _worker;
         //private readonly CellStyleType _cellStyle;
 
-        public Column(int index, ColumnDef def, IColumnWorker<TObject> worker, TableWorker tableWorker, bool isPinned)
+        public Column(int index, ColumnDef def, IColumnWorker<TObject> worker/*, TableWorker tableWorker*/)
         {
             _def = def;
             _worker = worker;
             Tooltip = $"<i>{def.LabelCap}</i>\n\n{def.Description}";
-            IsPinned = isPinned;
             //CellDescriptor cellDescriptor = worker.GetCellDescriptor(tableWorker);
             CellIndex = index;
         }
@@ -64,6 +78,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         public void ResizeTo(List<Row> rows)
         {
             int cellIndex = CellIndex;
+            // TODO: We actually need to start with header cell width.
             float width = 0f;
 
             foreach (Row row in rows)

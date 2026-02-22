@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Stats.MainTabWindow;
 using Stats.Widgets;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Verse;
 
 namespace Stats.ObjectTable;
@@ -12,19 +14,7 @@ internal sealed partial class ObjectTableWidget<TObject>
     {
         if (Event.current.type == EventType.Layout)
         {
-            if (_rowToPinOrUnpin != null)
-            {
-                if (_rowToPinOrUnpin.IsPinned)
-                {
-                    _unpinnedRows.Remove(_rowToPinOrUnpin);
-                    _pinnedRows.Add(_rowToPinOrUnpin);
-                }
-                else
-                {
-                    _pinnedRows.Remove(_rowToPinOrUnpin);
-                    _unpinnedRows.Add(_rowToPinOrUnpin);
-                }
-            }
+            _guiAction?.Invoke();
         }
 
         //if (showSettingsMenu)
@@ -33,96 +23,78 @@ internal sealed partial class ObjectTableWidget<TObject>
         //}
 
         // Probably could cache these.
-        float leftColumnsMinWidth = 0f;
-        foreach (var column in ColumnsVisiblePinned)
+        float pinnedColumnsWidth = 0f;
+        foreach (var column in _pinnedColumns)
         {
-            leftColumnsMinWidth += column.Width;
+            pinnedColumnsWidth += column.Width;
         }
 
-        float rightColumnsMinWidth = 0f;
-        foreach (var column in ColumnsVisibleUnpinned)
+        float unpinnedColumnsWidth = 0f;
+        foreach (var column in _unpinnedColumns)
         {
-            rightColumnsMinWidth += column.Width;
+            unpinnedColumnsWidth += column.Width;
         }
 
-        Vector2 contentSizeMax = new(
-            // Min. row width
-            leftColumnsMinWidth + rightColumnsMinWidth,
-            // Total rows height
-            _headerRowHeight + _pinnedRowsHeight + _filteredUnpinnedRowsHeight
-        );
-        Vector2 contentSizeVisible = new(
-            // Will scroll vertically
-            _filteredUnpinnedRowsHeight > 0f
-                ? rect.width - GenUI.ScrollBarWidth
-                : rect.width,
-            // Will scroll horizontally
-            contentSizeMax.x > rect.width
-                ? rect.height - GenUI.ScrollBarWidth
-                : rect.height
-        );
-        Rect contentRectMax = new(
-            Vector2.zero,
-            Vector2.Max(contentSizeMax, contentSizeVisible)
-        );
-        // Adds empty space for more convenient vertical scrolling.
-        contentRectMax.height += Mathf.Min(contentSizeMax.y, contentSizeVisible.y) - _headerRowHeight - _pinnedRowsHeight;
+        float contentWidth = pinnedColumnsWidth + unpinnedColumnsWidth;
+        float contentHeight = _headerRowHeight + _pinnedRowsHeight + _unpinnedRowsHeight;
+        Vector2 contentSize = new(contentWidth, contentHeight);
+        float viewportWidth = _unpinnedRowsHeight > 0f
+                ? rect.width - GenUI.ScrollBarWidth// Will scroll vertically
+                : rect.width;
+        float viewportHeight = contentWidth > rect.width
+                ? rect.height - GenUI.ScrollBarWidth// Will scroll horizontally
+                : rect.height;
+        Vector2 viewportSize = new(viewportWidth, viewportHeight);
+        Rect contentRect = new(Vector2.zero, Vector2.Max(contentSize, viewportSize));
+        // Add empty space for more convenient vertical scrolling.
+        contentRect.height += Mathf.Min(contentHeight, viewportHeight) - _headerRowHeight - _pinnedRowsHeight;
 
-        Verse.Widgets.BeginScrollView(rect, ref _scrollPosition, contentRectMax, true);
+        Verse.Widgets.BeginScrollView(rect, ref _scrollPosition, contentRect, true);
 
-        Rect contentRectVisible = new(_scrollPosition, contentSizeVisible);
+        Rect viewportRect = new(_scrollPosition, viewportSize);
 
         // Left part
-        if (leftColumnsMinWidth > 0f)
+        if (pinnedColumnsWidth > 0f)
         {
-            Rect leftPartRect = contentRectVisible.CutByX(leftColumnsMinWidth);
+            Rect leftPartRect = viewportRect.CutByX(pinnedColumnsWidth);
 
-            DrawPart(leftPartRect, _columns, _scrollPosition with { x = 0f }, false);
+            DrawPart(leftPartRect, _pinnedColumns, _scrollPosition with { x = 0f }, false);
 
             // Separator line
-            Widgets.Draw.VerticalLine(
-                leftPartRect.xMax - 1f,
-                leftPartRect.y,
-                rect.height,
-                MainTabWindowWidget.BorderLineColor
-            );
+            Widgets.Draw.VerticalLine(leftPartRect.xMax - 1f, leftPartRect.y, rect.height, MainTabWindowWidget.BorderLineColor);
         }
 
         // Right part
-        if (rightColumnsMinWidth > 0f)
+        if (unpinnedColumnsWidth > 0f)
         {
-            DrawPart(contentRectVisible, _columns, _scrollPosition, true);
+            DrawPart(viewportRect, _unpinnedColumns, _scrollPosition, true);
         }
 
         Verse.Widgets.EndScrollView();
     }
 
-    private void DrawPart(Rect rect, Range columnsRange, Vector2 scrollPosition, bool doHorScroll)
+    private void DrawPart(Rect rect, List<Column> columns, Vector2 scrollPosition, bool doHorScroll)
     {
         Rect headersRect = rect.CutByY(_headerRowHeight);
 
-        DrawColumnSeparators(rect, columnsRange, scrollPosition.x);
+        if (Event.current.type == EventType.Repaint)
+        {
+            DrawColumnSeparators(rect, columns, scrollPosition.x);
+        }
 
-        DrawHeaders(headersRect, columnsRange, scrollPosition.x);
+        DrawHeaders(headersRect, columns, scrollPosition.x);
 
         if (_pinnedRows.Count > 0)
         {
-            Rect pinnedBodyRowsRect = rect.CutByY(_pinnedRowsHeight);
+            Rect pinnedRowsRect = rect.CutByY(_pinnedRowsHeight);
 
-            Verse.Widgets.DrawStrongHighlight(pinnedBodyRowsRect, PinnedRowsBGColor);
-            DrawRows(pinnedBodyRowsRect, _pinnedRows, columnsRange, scrollPosition with { y = 0f }, false);
-            Verse.Widgets.DrawLineHorizontal(
-                pinnedBodyRowsRect.x,
-                pinnedBodyRowsRect.yMax - 1f,
-                rect.width,
-                MainTabWindowWidget.BorderLineColor
-            );
+            DrawPinnedRows(pinnedRowsRect, columns, scrollPosition);
         }
 
-        DrawRows(rect, _filteredUnpinnedRows, columnsRange, scrollPosition, true);
+        DrawRows(rect, _unpinnedRows, columns, scrollPosition, true);
     }
 
-    private void DrawHeaders(Rect rect, Range columnsRange, float offsetX)
+    private void DrawHeaders(Rect rect, List<Column> columns, float offsetX)
     {
         GUI.BeginClip(rect);
 
@@ -132,10 +104,17 @@ internal sealed partial class ObjectTableWidget<TObject>
         GUI.EndClip();
     }
 
-    private void DrawRows(Rect rect, List<Row> rows, Range columnsRange, Vector2 scrollPosition, bool doHorScroll)
+    private void DrawPinnedRows(Rect rect, List<Column> columns, Vector2 scrollPosition)
+    {
+        Verse.Widgets.DrawStrongHighlight(rect, _pinnedRowsBGColor);
+        DrawRows(rect, _pinnedRows, columns, scrollPosition with { y = 0f }, false);
+        Verse.Widgets.DrawLineHorizontal(rect.x, rect.yMax - 1f, rect.width, MainTabWindowWidget.BorderLineColor);
+    }
+
+    private void DrawRows(Rect rect, List<Row> rows, List<Column> columns, Vector2 scrollPosition, bool doHorScroll)
     {
         // Hor scrolling
-        // Register mouse-drag only below headers row to not interfere with them.
+        // Register mouse-drag only below headers to not interfere with them.
         if (doHorScroll && Event.current.type == EventType.MouseDrag && Mouse.IsOver(rect))
         {
             _scrollPosition.x = Mathf.Max(_scrollPosition.x + Event.current.delta.x * -1f, 0f);
@@ -160,7 +139,7 @@ internal sealed partial class ObjectTableWidget<TObject>
 
             if (rect.yMax > 0f)
             {
-                row.Draw(rect, _columns, columnsRange, scrollPosition.x, i);
+                row.Draw(rect, columns, scrollPosition.x, i);
             }
 
             rect.y = rect.yMax;
@@ -171,18 +150,13 @@ internal sealed partial class ObjectTableWidget<TObject>
 
     // The performance impact of instead drawing a vertical border for each
     // individual column's cell is huge. So we have to keep this.
-    private void DrawColumnSeparators(Rect rect, Range columnsRange, float offsetX)
+    private void DrawColumnSeparators(Rect rect, List<Column> columns, float offsetX)
     {
-        if (Event.current.type != EventType.Repaint)
-        {
-            return;
-        }
-
         float x = -offsetX;
 
-        for (int i = columnsRange.Start; i < columnsRange.End; i++)
+        for (int i = 0; i < columns.Count; i++)
         {
-            Column column = _columns[i];
+            Column column = columns[i];
             x += column.Width;
 
             if (x >= rect.width)
@@ -192,12 +166,7 @@ internal sealed partial class ObjectTableWidget<TObject>
 
             if (x > 0f)
             {
-                Widgets.Draw.VerticalLine(
-                    x + rect.x - 1f,
-                    rect.y,
-                    rect.height,
-                    ColumnSeparatorLineColor
-                );
+                Widgets.Draw.VerticalLine(x + rect.x - 1f, rect.y, rect.height, _columnSeparatorLineColor);
             }
         }
     }

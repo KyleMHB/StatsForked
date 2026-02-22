@@ -54,7 +54,8 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     //private int SortDirection = SortDirectionAscending;
     //private const int SortDirectionAscending = 1;
     //private const int SortDirectionDescending = -1;
-    private readonly List<Column> _columns;
+    private readonly List<Column> _pinnedColumns;
+    private readonly List<Column> _unpinnedColumns;
     //private readonly Widget ColumnsTabWidget;
     //private readonly List<Filter> Filters;
     //private readonly HashSet<Filter> ActiveFilters;
@@ -69,19 +70,17 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     //{
     //    return filters.Any(filter => filter.Widget.Eval(cells[filter.Column]));
     //};
-    private const int InitialRowCapacity = 250;
-    //private readonly List<Row> HeaderRows;
+    private const int _InitialRowCapacity = 250;
     private readonly float _headerRowHeight;
-    private readonly List<Row> _pinnedRows = new(10);
+    private readonly List<Row> _pinnedRows;
     private float _pinnedRowsHeight;
     private readonly List<Row> _unpinnedRows;
-    private readonly List<Row> _filteredUnpinnedRows;
-    private float _filteredUnpinnedRowsHeight;
-    private Row? _rowToPinOrUnpin;
+    private float _unpinnedRowsHeight;
     private Vector2 _scrollPosition;
-    private static readonly Color ColumnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
-    private static readonly Color PinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
+    private static readonly Color _columnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
+    private static readonly Color _pinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
     //private Vector2 ColumnsTabScrollPosition;
+    private Action? _guiAction;
 
     public ObjectTableWidget(TableWorker<TObject> tableWorker)
     {
@@ -97,7 +96,7 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
             if (columnDef.Worker is IColumnWorker<TObject> columnWorker)
             {
                 int cellIndex = columns.Count;
-                Column column = new(cellIndex, columnDef, columnWorker, tableWorker, cellIndex == 0);
+                Column column = new(cellIndex, columnDef, columnWorker/*, tableWorker*/);
 
                 columns.Add(column);
             }
@@ -108,7 +107,7 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         }
 
         // Rows
-        List<Row> rows = new(InitialRowCapacity);
+        List<Row> rows = new(_InitialRowCapacity);
 
         foreach (TObject @object in tableWorker.InitialObjects)
         {
@@ -219,11 +218,16 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         //}
 
         // Finalize
-        _columns = columns;
+        _pinnedColumns = new(10);
+        _unpinnedColumns = columns;
+        if (columns.Count > 0)
+        {
+            _columnIndexToPin = 0;
+        }
         //SortColumn = columns[0];
         //HeaderRows = [new ColumnTitlesRow(columns)];
+        _pinnedRows = new(10);
         _unpinnedRows = rows;
-        _filteredUnpinnedRows = [.. rows];
         //ColumnsTabWidget = new VerticalContainer(columnSettingsTabRows);
         //Filters = filters;
         //ActiveFilters = new HashSet<Filter>(columns.Count);
