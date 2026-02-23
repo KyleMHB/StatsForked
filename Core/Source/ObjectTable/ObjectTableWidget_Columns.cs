@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using RimWorld;
 using Stats.ObjectTable.Cells;
 using Stats.Widgets;
@@ -94,6 +95,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private void HandlePinning(int index)
         {
             List<Column> pinnedColumns = _parent._pinnedColumns;
@@ -113,8 +115,9 @@ internal sealed partial class ObjectTableWidget<TObject>
             int cellIndex = CellIndex;
             float width = HeaderCellSize.x;
 
-            foreach (Row row in rows)
+            for (int i = 0; i < rows.Count; i++)
             {
+                Row row = rows[i];
                 Cell cell = row.Cells[cellIndex];
                 float cellWidth = cell.Size.x;
 

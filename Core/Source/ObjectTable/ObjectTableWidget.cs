@@ -70,6 +70,7 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     //    return filters.Any(filter => filter.Widget.Eval(cells[filter.Column]));
     //};
     //private Vector2 ColumnsTabScrollPosition;
+    private readonly List<Column> _columns;// We need the thing for when we'll be adding rows later.
     private readonly List<Column> _pinnedColumns;
     private readonly List<Column> _unpinnedColumns;
     private readonly float _headerRowHeight;
@@ -97,6 +98,7 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         for (int i = 0; i < columnDefsCount; i++)
         {
             ColumnDef columnDef = columnDefs[i];
+
             if (columnDef.Worker is IColumnWorker<TObject> columnWorker)
             {
                 int cellIndex = columns.Count;
@@ -112,7 +114,7 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
             }
             else
             {
-                Log.Warning($"Column \"${columnDef.defName}\" is not compatible with table \"${tableWorker.TableDef.defName}\", because it does not implement \"${typeof(IColumnWorker<TObject>).Name}\".");
+                WarnIncompatibleColumn(columnDef.defName, tableWorker.TableDef.defName);
             }
         }
 
@@ -228,11 +230,12 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         //}
 
         // Finalize
+        _columns = columns;
         _pinnedColumns = new(10);
-        _unpinnedColumns = columns;
+        _unpinnedColumns = [.. columns];
         if (columns.Count > 0)
         {
-            _columnIndexToPin = 0;
+            _guiAction = () => PinColumn(0);
         }
         _headerRowHeight = headerRowHeight;
         _pinnedRows = new(10);
@@ -241,5 +244,11 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         //ColumnsTabWidget = new VerticalContainer(columnSettingsTabRows);
         //Filters = filters;
         //ActiveFilters = new HashSet<Filter>(columns.Count);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void WarnIncompatibleColumn(string columnName, string tableName)
+    {
+        Log.Warning($"Column \"${columnName}\" is not compatible with table \"${tableName}\", because it does not implement \"${typeof(IColumnWorker<TObject>).Name}\".");
     }
 }

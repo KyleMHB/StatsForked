@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Stats.ObjectTable.Cells;
 using UnityEngine;
 using Verse;
@@ -29,26 +30,30 @@ internal sealed partial class ObjectTableWidget<TObject>
     private sealed class Row
     {
         public float Height;
-        public readonly List<Cell> Cells;
+        public readonly Cell[] Cells;
         //public readonly TObject Object;
 
+        private readonly int _cellsCount;
         private bool _isHovered = false;
         private readonly ObjectTableWidget<TObject> _parent;
 
         public Row(List<Column> columns, TObject @object, ObjectTableWidget<TObject> parent) : base()
         {
-            List<Cell> cells = new(columns.Count);
+            // TODO: We can find all columns that are compatible with the table and create cells array
+            // the size of count of these columns so we won't have to resize it when we will add columns later.
+            int columnsCount = columns.Count;
+            Cell[] cells = new Cell[columnsCount];
 
-            for (int i = 0; i < columns.Count; i++)
+            for (int i = 0; i < columnsCount; i++)
             {
                 Column column = columns[i];
                 Cell cell = column.MakeCell(@object);
 
-                // TODO: This won't work. Also need to use column.CellIndex.
-                cells[i] = cell;
+                cells[column.CellIndex] = cell;
             }
 
             Cells = cells;
+            _cellsCount = columnsCount;
             _parent = parent;
             //Object = @object;
         }
@@ -78,7 +83,10 @@ internal sealed partial class ObjectTableWidget<TObject>
             _isHovered = mouseIsOverRect;
 
             float viewportRightBoundary = rect.width;
+
             rect.x = -offsetX;
+
+            Cell[] cells = Cells;
 
             for (int i = 0; i < columns.Count; i++)
             {
@@ -90,7 +98,7 @@ internal sealed partial class ObjectTableWidget<TObject>
 
                 if (cellRightBoundary > 0f)
                 {
-                    Cell cell = Cells[column.CellIndex];
+                    Cell cell = cells[column.CellIndex];
 
                     try
                     {
@@ -117,6 +125,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private void HandlePinning(int index)
         {
             List<Row> pinnedRows = _parent._pinnedRows;
@@ -134,9 +143,10 @@ internal sealed partial class ObjectTableWidget<TObject>
         public void Resize()
         {
             float height = 0f;
-            List<Cell> cells = Cells;
+            Cell[] cells = Cells;
+            int cellsCount = _cellsCount;
 
-            for (int i = 0; i < cells.Count; i++)
+            for (int i = 0; i < cellsCount; i++)
             {
                 Cell cell = cells[i];
                 float cellHeight = cell.Size.y;
