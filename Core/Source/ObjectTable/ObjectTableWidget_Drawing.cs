@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Stats.MainTabWindow;
+using Stats.ObjectTable.Cells;
 using Stats.Widgets;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,9 +13,14 @@ internal sealed partial class ObjectTableWidget<TObject>
 {
     public override void Draw(Rect rect, bool showSettingsMenu)
     {
+        if (_guiAction != null)
+        {
+            _guiAction.Invoke();
+            _guiAction = null;
+        }
+
         if (Event.current.type == EventType.Layout)
         {
-            _guiAction?.Invoke();
         }
 
         //if (showSettingsMenu)
@@ -84,35 +90,6 @@ internal sealed partial class ObjectTableWidget<TObject>
 
         DrawHeaders(headersRect, columns, scrollPosition.x);
 
-        if (_pinnedRows.Count > 0)
-        {
-            Rect pinnedRowsRect = rect.CutByY(_pinnedRowsHeight);
-
-            DrawPinnedRows(pinnedRowsRect, columns, scrollPosition);
-        }
-
-        DrawRows(rect, _unpinnedRows, columns, scrollPosition, true);
-    }
-
-    private void DrawHeaders(Rect rect, List<Column> columns, float offsetX)
-    {
-        GUI.BeginClip(rect);
-
-        // TODO
-        Verse.Widgets.DrawLineHorizontal(rect.x, rect.yMax - 1f, rect.width, MainTabWindowWidget.BorderLineColor);
-
-        GUI.EndClip();
-    }
-
-    private void DrawPinnedRows(Rect rect, List<Column> columns, Vector2 scrollPosition)
-    {
-        Verse.Widgets.DrawStrongHighlight(rect, _pinnedRowsBGColor);
-        DrawRows(rect, _pinnedRows, columns, scrollPosition with { y = 0f }, false);
-        Verse.Widgets.DrawLineHorizontal(rect.x, rect.yMax - 1f, rect.width, MainTabWindowWidget.BorderLineColor);
-    }
-
-    private void DrawRows(Rect rect, List<Row> rows, List<Column> columns, Vector2 scrollPosition, bool doHorScroll)
-    {
         // Hor scrolling
         // Register mouse-drag only below headers to not interfere with them.
         if (doHorScroll && Event.current.type == EventType.MouseDrag && Mouse.IsOver(rect))
@@ -120,9 +97,62 @@ internal sealed partial class ObjectTableWidget<TObject>
             _scrollPosition.x = Mathf.Max(_scrollPosition.x + Event.current.delta.x * -1f, 0f);
         }
 
+        if (_pinnedRows.Count > 0)
+        {
+            Rect pinnedRowsRect = rect.CutByY(_pinnedRowsHeight);
+
+            DrawPinnedRows(pinnedRowsRect, columns, scrollPosition);
+        }
+
+        DrawRows(rect, _unpinnedRows, columns, scrollPosition);
+    }
+
+    private void DrawHeaders(Rect rect, List<Column> columns, float offsetX)
+    {
         GUI.BeginClip(rect);
 
-        float yMax = rect.height;
+        Verse.Widgets.DrawHighlight(rect);
+        Verse.Widgets.DrawLineHorizontal(rect.x, rect.yMax - 1f, rect.width, MainTabWindowWidget.BorderLineColor);
+
+        float viewportRightBoundary = rect.width;
+        rect.x = -offsetX;
+
+        for (int i = 0; i < columns.Count; i++)
+        {
+            Column column = columns[i];
+
+            rect.width = column.Width;
+
+            float cellRightBoundary = rect.xMax;
+
+            if (cellRightBoundary > 0f)
+            {
+                column.DrawHeaderCell(rect, i);
+            }
+
+            if (cellRightBoundary >= viewportRightBoundary)
+            {
+                break;
+            }
+
+            rect.x = cellRightBoundary;
+        }
+
+        GUI.EndClip();
+    }
+
+    private void DrawPinnedRows(Rect rect, List<Column> columns, Vector2 scrollPosition)
+    {
+        Verse.Widgets.DrawStrongHighlight(rect, _pinnedRowsBGColor);
+        Verse.Widgets.DrawLineHorizontal(rect.x, rect.yMax - 1f, rect.width, MainTabWindowWidget.BorderLineColor);
+        DrawRows(rect, _pinnedRows, columns, scrollPosition with { y = 0f });
+    }
+
+    private void DrawRows(Rect rect, List<Row> rows, List<Column> columns, Vector2 scrollPosition)
+    {
+        GUI.BeginClip(rect);
+
+        float viewportBottomBoundary = rect.height;
         rect.x = 0f;
         rect.y = -scrollPosition.y;
 
@@ -130,19 +160,21 @@ internal sealed partial class ObjectTableWidget<TObject>
         {
             Row row = rows[i];
 
-            if (rect.y >= yMax)
-            {
-                break;
-            }
-
             rect.height = row.Height;
 
-            if (rect.yMax > 0f)
+            float rowBottomBoundary = rect.yMax;
+
+            if (rowBottomBoundary > 0f)
             {
                 row.Draw(rect, columns, scrollPosition.x, i);
             }
 
-            rect.y = rect.yMax;
+            if (rowBottomBoundary >= viewportBottomBoundary)
+            {
+                break;
+            }
+
+            rect.y = rowBottomBoundary;
         }
 
         GUI.EndClip();

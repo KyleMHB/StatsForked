@@ -44,6 +44,7 @@ internal sealed partial class ObjectTableWidget<TObject>
                 Column column = columns[i];
                 Cell cell = column.MakeCell(@object);
 
+                // TODO: This won't work. Also need to use column.CellIndex.
                 cells[i] = cell;
             }
 
@@ -63,7 +64,7 @@ internal sealed partial class ObjectTableWidget<TObject>
 
             if (Event.current.type == EventType.Repaint)
             {
-                // IsHovered may be true even if mouse is not over rect.
+                // _isHovered may be true even if mouse is not over rect.
                 if (_isHovered)
                 {
                     Verse.Widgets.DrawHighlight(rect);
@@ -76,21 +77,18 @@ internal sealed partial class ObjectTableWidget<TObject>
 
             _isHovered = mouseIsOverRect;
 
-            float xMax = rect.width;
+            float viewportRightBoundary = rect.width;
             rect.x = -offsetX;
 
             for (int i = 0; i < columns.Count; i++)
             {
-                if (rect.x >= xMax)
-                {
-                    break;
-                }
-
                 Column column = columns[i];
 
                 rect.width = column.Width;
 
-                if (rect.xMax > 0f)
+                float cellRightBoundary = rect.xMax;
+
+                if (cellRightBoundary > 0f)
                 {
                     Cell cell = Cells[column.CellIndex];
 
@@ -104,7 +102,12 @@ internal sealed partial class ObjectTableWidget<TObject>
                     }
                 }
 
-                rect.x = rect.xMax;
+                if (cellRightBoundary >= viewportRightBoundary)
+                {
+                    break;
+                }
+
+                rect.x = cellRightBoundary;
             }
 
             // This must go after cells to not interfere with their GUI events.
@@ -147,41 +150,4 @@ internal sealed partial class ObjectTableWidget<TObject>
             Height = height;
         }
     }
-
-    //private sealed class ColumnTitlesRow : Row<Widget>
-    //{
-    //    public ColumnTitlesRow(List<Column> columns) : base()
-    //    {
-    //        Dictionary<Column, Widget> cells = new(columns.Count);
-    //        float height = 0f;
-
-    //        foreach (Column column in columns)
-    //        {
-    //            Widget cell = column.MakeHeaderCell();
-    //            float cellHeight = cell.GetSize().y;
-
-    //            if (height < cellHeight)
-    //            {
-    //                height = cellHeight;
-    //            }
-
-    //            cells[column] = cell;
-    //        }
-
-    //        this.cells = cells;
-    //        this.height = height;
-    //    }
-    //    public override void Draw(
-    //        Rect rect,
-    //        List<Column> columns,
-    //        float offsetX,
-    //        float cellExtraWidth,
-    //        int index
-    //    )
-    //    {
-    //        Verse.Widgets.DrawHighlight(rect);
-
-    //        base.Draw(rect, columns, offsetX, cellExtraWidth, index);
-    //    }
-    //}
 }

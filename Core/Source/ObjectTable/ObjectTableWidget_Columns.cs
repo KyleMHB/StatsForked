@@ -4,6 +4,7 @@ using Stats.ObjectTable.Cells;
 using Stats.Widgets;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 
 namespace Stats.ObjectTable;
 
@@ -29,57 +30,88 @@ internal sealed partial class ObjectTableWidget<TObject>
     {
         public int CellIndex;
         public float Width;
-        //public Widget Title => _def.Title;
-        //public readonly TipSignal Tooltip;
-        //public readonly CellDescriptor CellDescriptor;
-        //public bool HasActiveFilters => CellDescriptor.Fields.Any(@field => @field.FilterWidget.IsActive);
+        public readonly Vector2 HeaderCellSize;
 
-        private readonly ColumnDef _def;
         private readonly IColumnWorker<TObject> _worker;
-        //private readonly CellStyleType _cellStyle;
+        private readonly Widget _titleWidget;
+        private readonly float _titleWidgetWidth;
+        private readonly TipSignal _tooltip;
+        private readonly CellStyleType _cellStyle;
+        private readonly ObjectTableWidget<TObject> _parent;
 
-        public Column(int index, ColumnDef def, IColumnWorker<TObject> worker/*, TableWorker tableWorker*/)
+        public Column(int cellIndex, IColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTableWidget<TObject> parent)
         {
-            _def = def;
+            ColumnDef def = worker.Def;
+            Widget titleWidget = def.Title;
+            Vector2 titleWidgetSize = titleWidget.GetSize();
+            CellDescriptor cellDescriptor = worker.GetCellDescriptor(tableWorker);
+
             _worker = worker;
-            Tooltip = $"<i>{def.LabelCap}</i>\n\n{def.Description}";
-            //CellDescriptor cellDescriptor = worker.GetCellDescriptor(tableWorker);
-            CellIndex = index;
+            CellIndex = cellIndex;
+            _titleWidget = titleWidget;
+            _titleWidgetWidth = titleWidgetSize.x;
+            HeaderCellSize = titleWidgetSize + new Vector2(CellPadHor * 2f, CellPadVer * 2f);
+            _tooltip = $"<i>{def.LabelCap}</i>\n\n{def.Description}";
+            _cellStyle = cellDescriptor.Style;
+            _parent = parent;
         }
 
         public Cell MakeCell(TObject @object) => _worker.MakeCell(@object);
 
-        public Widget MakeHeaderCell()
+        public void DrawHeaderCell(Rect rect, int index)
         {
-            Widget columnTitle = Title;
+            Rect titleRect = rect.ContractedBy(CellPadHor, CellPadVer);
+            float titleWidgetWidth = _titleWidgetWidth;
+            float widthDiff = titleRect.width - titleWidgetWidth;
+            CellStyleType cellStyle = _cellStyle;
 
-            if (_cellStyle == CellStyleType.Number)
+            titleRect.width = titleWidgetWidth;
+
+            if (cellStyle == CellStyleType.Number)
             {
-                columnTitle = new SingleElementContainer(columnTitle.PaddingRel(1f, 0f, 0f, 0f));
+                titleRect.x += widthDiff;
             }
-            else if (_cellStyle == CellStyleType.Boolean)
+            else if (cellStyle == CellStyleType.Boolean)
             {
-                columnTitle = new SingleElementContainer(columnTitle.PaddingRel(0.5f, 0f));
+                titleRect.x += widthDiff / 2f;
             }
 
-            return columnTitle
-                .TextAnchor((TextAnchor)_cellStyle)
-                .PaddingAbs(CellPadHor, CellPadVer)
-                .ToButtonGhostly(() =>
-                {
-                    if (Event.current.control)
-                    {
-                        IsPinned = !IsPinned;
-                    }
-                })
-                .Tooltip(Tooltip);
+            _titleWidget.DrawIn(titleRect);
+
+            Event currentEvent = Event.current;
+
+            if (currentEvent.type == EventType.Repaint && Mouse.IsOver(rect))
+            {
+                GUI.DrawTexture(rect, TexUI.HighlightTex, ScaleMode.StretchToFill, true, 0f, Color.white, 0f, 0f);
+            }
+
+            TooltipHandler.TipRegion(rect, _tooltip);
+
+            MouseoverSounds.DoRegion(rect);
+            if (currentEvent.control && GUI.Button(rect, "", Verse.Widgets.EmptyStyle))
+            {
+                HandlePinning(index);
+            }
+        }
+
+        private void HandlePinning(int index)
+        {
+            List<Column> pinnedColumns = _parent._pinnedColumns;
+
+            if (index > pinnedColumns.Count - 1 || pinnedColumns[index] != this)
+            {
+                _parent._guiAction = () => _parent.PinColumn(index);
+            }
+            else
+            {
+                _parent._guiAction = () => _parent.UnpinColumn(index);
+            }
         }
 
         public void ResizeTo(List<Row> rows)
         {
             int cellIndex = CellIndex;
-            // TODO: We actually need to start with header cell width.
-            float width = 0f;
+            float width = HeaderCellSize.x;
 
             foreach (Row row in rows)
             {

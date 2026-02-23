@@ -4,10 +4,11 @@ namespace Stats.ObjectTable;
 
 public interface IColumnWorker
 {
-    public CellDescriptor GetCellDescriptor(TableWorker tableWorker);
+    public ColumnDef Def { get; }
 }
 
 public interface IColumnWorker<TObject> : IColumnWorker
 {
     public Cell MakeCell(TObject @object);
+    public CellDescriptor GetCellDescriptor(TableWorker tableWorker);
 }

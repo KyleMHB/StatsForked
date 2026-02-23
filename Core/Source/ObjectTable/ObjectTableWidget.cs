@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using RimWorld;
 using Stats.ObjectTable.Cells;
 using Stats.ObjectTable.FilterWidgets;
 using Stats.Widgets;
@@ -54,8 +55,6 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     //private int SortDirection = SortDirectionAscending;
     //private const int SortDirectionAscending = 1;
     //private const int SortDirectionDescending = -1;
-    private readonly List<Column> _pinnedColumns;
-    private readonly List<Column> _unpinnedColumns;
     //private readonly Widget ColumnsTabWidget;
     //private readonly List<Filter> Filters;
     //private readonly HashSet<Filter> ActiveFilters;
@@ -70,16 +69,18 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     //{
     //    return filters.Any(filter => filter.Widget.Eval(cells[filter.Column]));
     //};
-    private const int _InitialRowCapacity = 250;
+    //private Vector2 ColumnsTabScrollPosition;
+    private readonly List<Column> _pinnedColumns;
+    private readonly List<Column> _unpinnedColumns;
     private readonly float _headerRowHeight;
+    private const int _InitialRowCapacity = 250;
     private readonly List<Row> _pinnedRows;
     private float _pinnedRowsHeight;
     private readonly List<Row> _unpinnedRows;
     private float _unpinnedRowsHeight;
-    private Vector2 _scrollPosition;
     private static readonly Color _columnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
     private static readonly Color _pinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
-    //private Vector2 ColumnsTabScrollPosition;
+    private Vector2 _scrollPosition;
     private Action? _guiAction;
 
     public ObjectTableWidget(TableWorker<TObject> tableWorker)
@@ -88,15 +89,24 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         //tableWorker.OnObjectRemoved += RemoveObject;
 
         // Columns
-        List<Column> columns = new(tableWorker.TableDef.columns.Count);
+        List<ColumnDef> columnDefs = tableWorker.TableDef.columns;
+        int columnDefsCount = columnDefs.Count;
+        List<Column> columns = new(columnDefsCount);
+        float headerRowHeight = 0f;
 
-        for (int i = 0; i < tableWorker.TableDef.columns.Count; i++)
+        for (int i = 0; i < columnDefsCount; i++)
         {
-            ColumnDef columnDef = tableWorker.TableDef.columns[i];
+            ColumnDef columnDef = columnDefs[i];
             if (columnDef.Worker is IColumnWorker<TObject> columnWorker)
             {
                 int cellIndex = columns.Count;
-                Column column = new(cellIndex, columnDef, columnWorker/*, tableWorker*/);
+                Column column = new(cellIndex, columnWorker, tableWorker, this);
+                float headerCellHeight = column.HeaderCellSize.y;
+
+                if (headerRowHeight < headerCellHeight)
+                {
+                    headerRowHeight = headerCellHeight;
+                }
 
                 columns.Add(column);
             }
@@ -224,10 +234,10 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         {
             _columnIndexToPin = 0;
         }
-        //SortColumn = columns[0];
-        //HeaderRows = [new ColumnTitlesRow(columns)];
+        _headerRowHeight = headerRowHeight;
         _pinnedRows = new(10);
         _unpinnedRows = rows;
+        //SortColumn = columns[0];
         //ColumnsTabWidget = new VerticalContainer(columnSettingsTabRows);
         //Filters = filters;
         //ActiveFilters = new HashSet<Filter>(columns.Count);
