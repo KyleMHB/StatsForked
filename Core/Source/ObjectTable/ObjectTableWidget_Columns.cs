@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using RimWorld;
+using Stats.MainTabWindow;
 using Stats.ObjectTable.Cells;
 using Stats.Widgets;
 using UnityEngine;
@@ -13,17 +15,15 @@ internal sealed partial class ObjectTableWidget<TObject>
 {
     private void PinColumn(int index)
     {
-        List<Column> unpinnedColumns = _unpinnedColumns;
-
-        _pinnedColumns.Add(unpinnedColumns[index]);
+        List<Column> unpinnedColumns = _unpinnedColumns.Columns;
+        _pinnedColumns.Columns.Add(unpinnedColumns[index]);
         unpinnedColumns.RemoveAt(index);
     }
 
     private void UnpinColumn(int index)
     {
-        List<Column> pinnedColumns = _pinnedColumns;
-
-        _unpinnedColumns.Insert(0, pinnedColumns[index]);
+        List<Column> pinnedColumns = _pinnedColumns.Columns;
+        _unpinnedColumns.Columns.Insert(0, pinnedColumns[index]);
         pinnedColumns.RemoveAt(index);
     }
 
@@ -64,10 +64,8 @@ internal sealed partial class ObjectTableWidget<TObject>
             Rect titleRect = rect.ContractedBy(CellPadHor, CellPadVer);
             float titleWidgetWidth = _titleWidgetWidth;
             float widthDiff = titleRect.width - titleWidgetWidth;
-            CellStyleType cellStyle = _cellStyle;
-
             titleRect.width = titleWidgetWidth;
-
+            CellStyleType cellStyle = _cellStyle;
             if (cellStyle == CellStyleType.Number)
             {
                 titleRect.x += widthDiff;
@@ -98,8 +96,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void HandlePinning(int index)
         {
-            List<Column> pinnedColumns = _parent._pinnedColumns;
-
+            List<Column> pinnedColumns = _parent._pinnedColumns.Columns;
             if (index > pinnedColumns.Count - 1 || pinnedColumns[index] != this)
             {
                 _parent._guiAction = () => _parent.PinColumn(index);
@@ -114,19 +111,16 @@ internal sealed partial class ObjectTableWidget<TObject>
         {
             int cellIndex = CellIndex;
             float width = HeaderCellSize.x;
-
             for (int i = 0; i < rows.Count; i++)
             {
                 Row row = rows[i];
                 Cell cell = row.Cells[cellIndex];
                 float cellWidth = cell.Size.x;
-
                 if (width < cellWidth)
                 {
                     width = cellWidth;
                 }
             }
-
             Width = width;
         }
     }
