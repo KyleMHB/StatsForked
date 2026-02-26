@@ -1,5 +1,4 @@
-﻿using RimWorld;
-using Stats.ObjectTable;
+﻿using Stats.ObjectTable;
 using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Bed;
@@ -8,14 +7,13 @@ public sealed class FitsSmallAnimalsColumnWorker(ColumnDef columnDef) : ThingDef
 {
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
-        BuildingProperties? buildingProps = thingDef.building;
-
-        if (buildingProps != null)
+        if (thingDef.building?.bed_humanlike == false)
         {
-            return new BooleanCell(buildingProps.bed_humanlike == false);
+            return BooleanCell.True;
         }
 
-        return BooleanCell.Empty;
+        return BooleanCell.False;
     }
+
     public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanCell.GetDescriptor(columnDef);
 }

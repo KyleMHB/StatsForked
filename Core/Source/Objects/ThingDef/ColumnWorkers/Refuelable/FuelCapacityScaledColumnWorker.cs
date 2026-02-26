@@ -25,7 +25,7 @@ public sealed class FuelCapacityScaledColumnWorker(ColumnDef columnDef) : ThingD
                     // TODO: FuelMultiplierCurrentDifficulty might be 0
                     decimal fuelCapacity = Mathf.CeilToInt(refuelableCompProps.fuelCapacity / refuelableCompProps.FuelMultiplierCurrentDifficulty);
 
-                    return new(fuelType, fuelCapacity);
+                    return new ThingDefCount(fuelType, fuelCapacity);
                 }
 
                 return new ThingDefCountCell(cellValueSource);

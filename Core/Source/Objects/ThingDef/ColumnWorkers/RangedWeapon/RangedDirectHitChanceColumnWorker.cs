@@ -16,7 +16,7 @@ public sealed class RangedDirectHitChanceColumnWorker(ColumnDef columnDef) : Thi
                 ? (100f / GenRadial.NumCellsInRadius(verbProps.ForcedMissRadius)).ToDecimal(1)
                 : 100m;
 
-            return new NumberCell(cellValue, "0.0\\%");
+            return new NumberCell.Constant(cellValue, "0.0\\%");
         }
 
         return NumberCell.Empty;

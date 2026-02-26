@@ -1,5 +1,4 @@
-﻿using RimWorld;
-using Stats.ObjectTable;
+﻿using Stats.ObjectTable;
 using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Plant;
@@ -8,14 +7,13 @@ public sealed class IsBlightableColumnWorker(ColumnDef columnDef) : ThingDefColu
 {
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
-        PlantProperties? plantProps = thingDef.plant;
-
-        if (plantProps != null)
+        if (thingDef.plant?.Blightable == true)
         {
-            return new BooleanCell(plantProps.Blightable);
+            return BooleanCell.True;
         }
 
-        return BooleanCell.Empty;
+        return BooleanCell.False;
     }
+
     public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanCell.GetDescriptor(columnDef);
 }

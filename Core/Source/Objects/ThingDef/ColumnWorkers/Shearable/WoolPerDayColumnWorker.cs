@@ -14,7 +14,7 @@ public sealed class WoolPerDayColumnWorker(ColumnDef columnDef) : ThingDefColumn
         {
             decimal cellValue = ((float)shearableCompProps.woolAmount / shearableCompProps.shearIntervalDays).ToDecimal(1);
 
-            return new NumberCell(cellValue, "0.0/d");
+            return new NumberCell.Constant(cellValue, "0.0/d");
         }
 
         return NumberCell.Empty;

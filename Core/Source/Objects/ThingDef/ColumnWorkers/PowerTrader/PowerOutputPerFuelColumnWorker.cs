@@ -17,7 +17,7 @@ public sealed class PowerOutputPerFuelColumnWorker(ColumnDef columnDef) : ThingD
             float fuelConsumptionRate = refuelableCompProps.fuelConsumptionRate;
             decimal cellValue = (powerOutput / fuelConsumptionRate).ToDecimal(0);
 
-            return new NumberCell(cellValue, "0 W/u");
+            return new NumberCell.Constant(cellValue, "0 W/u");
         }
 
         return NumberCell.Empty;

@@ -12,7 +12,7 @@ public sealed class MilkingIntervalColumnWorker(ColumnDef columnDef) : ThingDefC
 
         if (milkableCompProps != null)
         {
-            return new NumberCell(milkableCompProps.milkIntervalDays, "0 d");
+            return new NumberCell.Constant(milkableCompProps.milkIntervalDays, "0 d");
         }
 
         return NumberCell.Empty;

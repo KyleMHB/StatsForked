@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using RimWorld;
-using Stats.MainTabWindow;
 using Stats.ObjectTable.Cells;
 using Stats.Widgets;
 using UnityEngine;
@@ -15,16 +12,20 @@ internal sealed partial class ObjectTableWidget<TObject>
 {
     private void PinColumn(int index)
     {
-        List<Column> unpinnedColumns = _unpinnedColumns.Columns;
-        _pinnedColumns.Columns.Add(unpinnedColumns[index]);
-        unpinnedColumns.RemoveAt(index);
+        List<Column> columns = _columns;
+        Column column = columns[index];
+        columns.RemoveAt(index);
+        columns.Insert(_pinnedColumnsCount, column);
+        _pinnedColumnsCount++;
     }
 
     private void UnpinColumn(int index)
     {
-        List<Column> pinnedColumns = _pinnedColumns.Columns;
-        _unpinnedColumns.Columns.Insert(0, pinnedColumns[index]);
-        pinnedColumns.RemoveAt(index);
+        List<Column> columns = _columns;
+        Column column = columns[index];
+        columns.RemoveAt(index);
+        _pinnedColumnsCount--;
+        columns.Insert(_pinnedColumnsCount, column);
     }
 
     private sealed class Column
@@ -96,8 +97,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void HandlePinning(int index)
         {
-            List<Column> pinnedColumns = _parent._pinnedColumns.Columns;
-            if (index > pinnedColumns.Count - 1 || pinnedColumns[index] != this)
+            if (index > _parent._pinnedColumnsCount - 1)
             {
                 _parent._guiAction = () => _parent.PinColumn(index);
             }
@@ -105,23 +105,6 @@ internal sealed partial class ObjectTableWidget<TObject>
             {
                 _parent._guiAction = () => _parent.UnpinColumn(index);
             }
-        }
-
-        public void ResizeTo(List<Row> rows)
-        {
-            int cellIndex = CellIndex;
-            float width = HeaderCellSize.x;
-            for (int i = 0; i < rows.Count; i++)
-            {
-                Row row = rows[i];
-                Cell cell = row.Cells[cellIndex];
-                float cellWidth = cell.Size.x;
-                if (width < cellWidth)
-                {
-                    width = cellWidth;
-                }
-            }
-            Width = width;
         }
     }
 }

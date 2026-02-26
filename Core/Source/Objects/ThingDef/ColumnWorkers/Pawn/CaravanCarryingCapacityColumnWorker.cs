@@ -15,7 +15,7 @@ public sealed class CaravanCarryingCapacityColumnWorker(ColumnDef columnDef) : T
         {
             decimal cellValue = (raceProps.baseBodySize * MassUtility.MassCapacityPerBodySize).ToDecimal(0);
 
-            return new NumberCell(cellValue, "0 kg");
+            return new NumberCell.Constant(cellValue, "0 kg");
         }
 
         return NumberCell.Empty;

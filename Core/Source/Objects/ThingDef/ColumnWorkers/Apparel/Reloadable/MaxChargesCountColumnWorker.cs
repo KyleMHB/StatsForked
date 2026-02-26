@@ -12,7 +12,7 @@ public sealed class MaxChargesCountColumnWorker(ColumnDef columnDef) : ThingDefC
 
         if (reloadableCompProperties != null)
         {
-            return new NumberCell(reloadableCompProperties.maxCharges);
+            return new NumberCell.Constant(reloadableCompProperties.maxCharges);
         }
 
         return NumberCell.Empty;

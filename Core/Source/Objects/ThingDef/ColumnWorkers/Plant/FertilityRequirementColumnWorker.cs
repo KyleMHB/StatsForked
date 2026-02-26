@@ -14,7 +14,7 @@ public sealed class FertilityRequirementColumnWorker(ColumnDef columnDef) : Thin
         {
             decimal cellValue = (100F * plantProps.fertilityMin).ToDecimal(1);
 
-            return new NumberCell(cellValue, "0\\%");
+            return new NumberCell.Constant(cellValue, "0\\%");
         }
 
         return NumberCell.Empty;

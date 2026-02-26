@@ -15,7 +15,7 @@ public sealed class NutritionPerHarvestColumnWorker(ColumnDef columnDef) : Thing
             float productNutrition = plantProps.harvestedThingDef.GetStatValuePerceived(StatDefOf.Nutrition);
             float nutritionPerHarvest = plantProps.harvestYield * productNutrition;
 
-            return new NumberCell(nutritionPerHarvest.ToDecimal(2), "0.00");
+            return new NumberCell.Constant(nutritionPerHarvest.ToDecimal(2), "0.00");
         }
 
         return NumberCell.Empty;

@@ -15,7 +15,7 @@ public sealed class FuelConsumptionRateColumnWorker(ColumnDef columnDef) : Thing
             // TODO: Difficulty scaling.
             decimal cellValue = refuelableCompProps.fuelConsumptionRate.ToDecimal(1);
 
-            return new NumberCell(cellValue, "0.0/d");
+            return new NumberCell.Constant(cellValue, "0.0/d");
         }
 
         return NumberCell.Empty;

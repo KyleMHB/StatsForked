@@ -12,7 +12,7 @@ public sealed class ShearingIntervalColumnWorker(ColumnDef columnDef) : ThingDef
 
         if (shearableCompProps != null)
         {
-            return new NumberCell(shearableCompProps.shearIntervalDays, "0 d");
+            return new NumberCell.Constant(shearableCompProps.shearIntervalDays, "0 d");
         }
 
         return NumberCell.Empty;

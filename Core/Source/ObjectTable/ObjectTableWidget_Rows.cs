@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Stats.MainTabWindow;
 using Stats.ObjectTable.Cells;
 using UnityEngine;
 using Verse;
@@ -10,20 +8,26 @@ namespace Stats.ObjectTable;
 
 internal sealed partial class ObjectTableWidget<TObject>
 {
-    // TODO: If the order of rows does not matter (because we'll sort them afterwards anyway)
-    // we can remove the row without moving adjacent rows by replacing it with last row (and removing it).
     private void PinRow(int index)
     {
-        List<Row> unpinnedRows = _unpinnedRows.Rows;
-        _pinnedRows.Rows.Add(unpinnedRows[index]);
-        unpinnedRows.RemoveAt(index);
+        List<Row> rows = _rows;
+        Row row = rows[index];
+        int firstUnpinnedRowIndex = _pinnedRowsCount;
+        Row firstUnpinnedRow = rows[firstUnpinnedRowIndex];
+        rows[firstUnpinnedRowIndex] = row;
+        rows[index] = firstUnpinnedRow;
+        _pinnedRowsCount++;
     }
 
     private void UnpinRow(int index)
     {
-        List<Row> pinnedRows = _pinnedRows.Rows;
-        _unpinnedRows.Rows.Add(pinnedRows[index]);
-        pinnedRows.RemoveAt(index);
+        List<Row> rows = _rows;
+        Row row = rows[index];
+        int lastPinnedRowIndex = _pinnedRowsCount - 1;
+        Row lastPinnedRow = rows[lastPinnedRowIndex];
+        rows[lastPinnedRowIndex] = row;
+        rows[index] = lastPinnedRow;
+        _pinnedRowsCount--;
     }
 
     private sealed class Row
@@ -60,7 +64,6 @@ internal sealed partial class ObjectTableWidget<TObject>
             bool mouseIsOverRect = Mouse.IsOver(rect);
             DrawBackground(rect, mouseIsOverRect, index);
 
-            float viewportRightBoundary = rect.width;
             rect.x = -offsetX;
 
             Cell[] cells = Cells;
@@ -68,10 +71,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             for (int i = 0; i < columnsCount; i++)
             {
                 Column column = columns[i];
-
                 rect.width = column.Width;
-                float cellRightBoundary = rect.xMax;
-
                 Cell cell = cells[column.CellIndex];
                 try
                 {
@@ -82,7 +82,7 @@ internal sealed partial class ObjectTableWidget<TObject>
                     // TODO: ?
                 }
 
-                rect.x = cellRightBoundary;
+                rect.x = rect.xMax;
             }
 
             // This must go after cells to not interfere with their GUI events.
@@ -119,8 +119,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void HandlePinning(int index)
         {
-            List<Row> pinnedRows = _parent._pinnedRows.Rows;
-            if (index > pinnedRows.Count - 1 || pinnedRows[index] != this)
+            if (index > _parent._pinnedRowsCount - 1)
             {
                 _parent._guiAction = () => _parent.PinRow(index);
             }

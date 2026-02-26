@@ -10,12 +10,13 @@ public sealed class IsDestroyedOnEmptyColumnWorker(ColumnDef columnDef) : ThingD
     {
         CompProperties_ApparelReloadable? reloadableCompProperties = thingDef.GetCompProperties<CompProperties_ApparelReloadable>();
 
-        if (reloadableCompProperties != null)
+        if (reloadableCompProperties?.destroyOnEmpty == true)
         {
-            return new BooleanCell(reloadableCompProperties.destroyOnEmpty);
+            return BooleanCell.True;
         }
 
-        return BooleanCell.Empty;
+        return BooleanCell.False;
     }
+
     public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanCell.GetDescriptor(columnDef);
 }

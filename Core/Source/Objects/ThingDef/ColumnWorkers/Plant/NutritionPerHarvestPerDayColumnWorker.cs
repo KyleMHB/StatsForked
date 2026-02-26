@@ -17,7 +17,7 @@ public sealed class NutritionPerHarvestPerDayColumnWorker(ColumnDef columnDef) :
             float nutritionPerHarvest = plantProps.harvestYield * productNutrition;
             decimal cellValue = (nutritionPerHarvest / plantProps.GetGrowDaysActual()).ToDecimal(3);
 
-            return new NumberCell(cellValue, "0.000/d");
+            return new NumberCell.Constant(cellValue, "0.000/d");
         }
 
         return NumberCell.Empty;

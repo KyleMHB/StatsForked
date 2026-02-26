@@ -14,7 +14,7 @@ public sealed class LightRequirementColumnWorker(ColumnDef columDef) : ThingDefC
         {
             decimal cellValue = (100f * plantProps.growMinGlow).ToDecimal(0);
 
-            return new NumberCell(cellValue, "0\\%");
+            return new NumberCell.Constant(cellValue, "0\\%");
         }
 
         return NumberCell.Empty;

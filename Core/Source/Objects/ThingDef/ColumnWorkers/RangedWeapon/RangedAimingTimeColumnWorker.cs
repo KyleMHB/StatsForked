@@ -15,7 +15,7 @@ public sealed class RangedAimingTimeColumnWorker(ColumnDef columnDef) : ThingDef
         {
             decimal cellValue = verbProps.warmupTime.ToDecimal(2);
 
-            return new NumberCell(cellValue, FormatString);
+            return new NumberCell.Constant(cellValue, FormatString);
         }
 
         return NumberCell.Empty;

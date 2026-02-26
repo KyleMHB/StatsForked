@@ -14,7 +14,7 @@ public sealed class BurstShotCountColumnWorker(ColumnDef columnDef) : ThingDefCo
         {
             decimal cellValue = verbProps.burstShotCount;
 
-            return new NumberCell(cellValue);
+            return new NumberCell.Constant(cellValue);
         }
 
         return NumberCell.Empty;

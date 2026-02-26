@@ -29,7 +29,7 @@ public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : ThingDefCo
                 {
                     decimal cellValue = (refuelableCompProps.fuelCapacity / fuelPerBurst).ToDecimal(0);
 
-                    return new NumberCell(cellValue);
+                    return new NumberCell.Constant(cellValue);
                 }
             }
         }

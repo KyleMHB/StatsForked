@@ -14,7 +14,7 @@ public sealed class ProductPerDayColumnWorker(ColumnDef columnDef) : ThingDefCol
         {
             decimal cellValue = (plantProps.harvestYield / plantProps.GetGrowDaysActual()).ToDecimal(2);
 
-            return new NumberCell(cellValue, "0.00/d");
+            return new NumberCell.Constant(cellValue, "0.00/d");
         }
 
         return NumberCell.Empty;

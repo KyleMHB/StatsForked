@@ -108,11 +108,4 @@
         <workerClass>Stats.Pawn_WeaponsColumnWorker</workerClass>
     </Stats.ColumnDef>
 
-    <Stats.ColumnDef>
-        <defName>Pawn_Name</defName>
-        <label>pawn</label>
-        <description>pawn</description>
-        <workerClass>Stats.Pawn_NameColumnWorker</workerClass>
-    </Stats.ColumnDef>
-
 </Defs>

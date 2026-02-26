@@ -14,7 +14,7 @@ public sealed class RangedMissRadiusColumnWorker(ColumnDef columnDef) : ThingDef
         {
             decimal cellValue = verbProps.ForcedMissRadius.ToDecimal(1);
 
-            return new NumberCell(cellValue, "0.0");
+            return new NumberCell.Constant(cellValue, "0.0");
         }
 
         return NumberCell.Empty;

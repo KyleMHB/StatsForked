@@ -15,7 +15,7 @@ public sealed class RPMColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
             // Reminder: This is not IRL RPM.
             decimal cellValue = (60f / verbProps.ticksBetweenBurstShots.TicksToSeconds()).ToDecimal(0);
 
-            return new NumberCell(cellValue, "0 rpm");
+            return new NumberCell.Constant(cellValue, "0 rpm");
         }
 
         return NumberCell.Empty;

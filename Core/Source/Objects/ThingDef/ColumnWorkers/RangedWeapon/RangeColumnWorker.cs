@@ -14,7 +14,7 @@ public sealed class RangeColumnWorker(ColumnDef columnDef) : ThingDefColumnWorke
         {
             decimal cellValue = verbProps.range.ToDecimal(0);
 
-            return new NumberCell(cellValue);
+            return new NumberCell.Constant(cellValue);
         }
 
         return NumberCell.Empty;

@@ -1,5 +1,4 @@
-﻿using RimWorld;
-using Stats.ObjectTable;
+﻿using Stats.ObjectTable;
 using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Apparel;
@@ -8,14 +7,13 @@ public sealed class CountsAsClothingForNudityColumnWorker(ColumnDef columnDef) :
 {
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
-        ApparelProperties? apparelProps = thingDef.apparel;
-
-        if (apparelProps != null)
+        if (thingDef.apparel?.countsAsClothingForNudity == true)
         {
-            return new BooleanCell(apparelProps.countsAsClothingForNudity);
+            return BooleanCell.True;
         }
 
-        return BooleanCell.Empty;
+        return BooleanCell.False;
     }
+
     public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanCell.GetDescriptor(columnDef);
 }

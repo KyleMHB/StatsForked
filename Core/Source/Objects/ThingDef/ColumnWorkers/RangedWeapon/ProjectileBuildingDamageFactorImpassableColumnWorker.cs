@@ -14,7 +14,7 @@ public sealed class ProjectileBuildingDamageFactorImpassableColumnWorker(ColumnD
         {
             decimal cellValue = (100f * defaultProjDamageDef.buildingDamageFactorImpassable).ToDecimal(0);
 
-            return new NumberCell(cellValue, "0\\%");
+            return new NumberCell.Constant(cellValue, "0\\%");
         }
 
         return NumberCell.Empty;

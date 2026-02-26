@@ -15,7 +15,7 @@ public sealed class RawNutritionPerDayColumnWorker(ColumnDef columnDef) : ThingD
             float nutrition = thingDef.GetStatValuePerceived(StatDefOf.Nutrition);
             decimal cellValue = (nutrition / plantProps.GetGrowDaysActual()).ToDecimal(3);
 
-            return new NumberCell(cellValue, "0.000/d");
+            return new NumberCell.Constant(cellValue, "0.000/d");
         }
 
         return NumberCell.Empty;

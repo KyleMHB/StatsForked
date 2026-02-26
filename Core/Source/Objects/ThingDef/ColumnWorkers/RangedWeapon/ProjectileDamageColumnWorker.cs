@@ -14,7 +14,7 @@ public sealed class ProjectileDamageColumnWorker(ColumnDef columnDef) : ThingDef
         {
             decimal cellValue = defaultProjProps.GetDamageAmount(thingDef, null);
 
-            return new NumberCell(cellValue);
+            return new NumberCell.Constant(cellValue);
         }
 
         return NumberCell.Empty;

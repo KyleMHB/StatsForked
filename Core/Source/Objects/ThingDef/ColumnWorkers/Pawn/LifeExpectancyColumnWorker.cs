@@ -12,7 +12,7 @@ public sealed class LifeExpectancyColumnWorker(ColumnDef columnDef) : ThingDefCo
 
         if (raceProps != null)
         {
-            return new NumberCell(raceProps.lifeExpectancy.ToDecimal(0), "0 y");
+            return new NumberCell.Constant(raceProps.lifeExpectancy.ToDecimal(0), "0 y");
         }
 
         return NumberCell.Empty;

@@ -14,7 +14,7 @@ public sealed class PowerOutputColumnWorker(ColumnDef columnDef) : ThingDefColum
         {
             decimal cellValue = powerCompProps.PowerConsumption.ToDecimal(0) * -1m;
 
-            return new NumberCell(cellValue, "0 W");
+            return new NumberCell.Constant(cellValue, "0 W");
         }
 
         return NumberCell.Empty;

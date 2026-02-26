@@ -1,53 +1,87 @@
-﻿using System;
-using Stats.ObjectTable.FilterWidgets;
+﻿using Stats.ObjectTable.FilterWidgets;
 using Stats.Widgets;
 using UnityEngine;
+using Verse;
 
 namespace Stats.ObjectTable.Cells;
 
-public sealed class NumberCell : Cell
+public static class NumberCell
 {
-    private readonly CellValueSource<decimal> ValueSource;
-    private decimal Value;
-    private readonly string FormatString;
-    private string Text = "";
-    private Vector2 Size;
-    public NumberCell(decimal value, string formatString = "") : this(() => value, formatString) { }
-    public NumberCell(CellValueSource<decimal> valueSource, string formatString = "")
+    public class Constant : Cell
     {
-        ValueSource = valueSource;
-        FormatString = formatString;
-    }
-    public override void Draw(Rect rect, Vector2 containerSize)
-    {
-        throw new NotImplementedException();
-    }
-    public override Vector2 GetSize()
-    {
-        throw new NotImplementedException();
-    }
-    public override void Refresh()
-    {
-        decimal newValue = ValueSource();
+        public decimal Value;
 
-        if (newValue != Value)
+        protected string _text = "";
+
+        public Constant(decimal value, string formatString = "")
         {
-            Value = newValue;
-            // It may be a good idea to defer deriving view-related props
-            // because we may not need them because the row may not pass the filters.
-            Text = newValue.ToString(FormatString);
-            // etc...
+            Value = value;
+            _text = value.ToString(formatString);
+            Size = Text.CalcSize(_text) + ObjectTableWidget.CellPad;
+        }
+
+        public Constant()
+        {
+        }
+
+        public override void Draw(Rect rect)
+        {
+            if (Value != 0m && Event.current.type == EventType.Repaint)
+            {
+                rect = rect.ContractedBy(ObjectTableWidget.CellPadHor, ObjectTableWidget.CellPadVer);
+
+                TextAnchor textAnchor = Text.Anchor;
+                Text.Anchor = (TextAnchor)CellStyleType.Number;
+
+                Verse.Widgets.Label(rect, _text);
+
+                Text.Anchor = textAnchor;
+            }
+        }
+
+        public override void Refresh()
+        {
         }
     }
+
+    public sealed class Variable : Constant
+    {
+        private readonly CellValueSource<decimal> _valueSource;
+        private readonly string _formatString;
+
+        public Variable(CellValueSource<decimal> valueSource, string formatString = "")
+        {
+            _valueSource = valueSource;
+            _formatString = formatString;
+        }
+
+        public override void Refresh()
+        {
+            decimal newValue = _valueSource();
+
+            if (newValue != Value)
+            {
+                Value = newValue;
+                // It may be a good idea to defer deriving view-related props
+                // because we may not need them because the row may not pass the filters.
+                _text = newValue.ToString(_formatString);
+                Size = Text.CalcSize(_text) + ObjectTableWidget.CellPad;
+            }
+        }
+    }
+
     static private decimal GetValue(Cell cell)
     {
-        return ((NumberCell)cell).Value;
+        return ((Constant)cell).Value;
     }
+
     static private int Compare(Cell cell1, Cell cell2)
     {
         return GetValue(cell1).CompareTo(GetValue(cell2));
     }
+
     static public CellDescriptor GetDescriptor(ColumnDef columnDef) => GetDescriptor(columnDef.Title);
+
     static public CellDescriptor GetDescriptor(Widget valueFieldLabel)
     {
         FilterWidget valueFieldFilter = new NumberFilter(GetValue);
@@ -55,5 +89,6 @@ public sealed class NumberCell : Cell
 
         return new CellDescriptor(CellStyleType.Number, [valueField]);
     }
-    public static readonly NumberCell Empty = new(0m);
+
+    public static readonly Constant Empty = new();
 }

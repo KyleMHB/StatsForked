@@ -1,5 +1,4 @@
-﻿using RimWorld;
-using Stats.ObjectTable;
+﻿using Stats.ObjectTable;
 using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers.Plant;
@@ -8,14 +7,13 @@ public sealed class IsTreeColumnWorker(ColumnDef columnDef) : ThingDefColumnWork
 {
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
-        PlantProperties? plantProps = thingDef.plant;
-
-        if (plantProps != null)
+        if (thingDef.plant?.IsTree == true)
         {
-            return new BooleanCell(plantProps.IsTree);
+            return BooleanCell.True;
         }
 
-        return BooleanCell.Empty;
+        return BooleanCell.False;
     }
+
     public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanCell.GetDescriptor(columnDef);
 }

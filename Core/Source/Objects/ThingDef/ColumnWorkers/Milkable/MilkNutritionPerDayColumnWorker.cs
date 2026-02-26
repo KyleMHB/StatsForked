@@ -16,7 +16,7 @@ public sealed class MilkNutritionPerDayColumnWorker(ColumnDef columnDef) : Thing
             float milkPerDay = (float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays;
             decimal cellValue = (milkPerDay * milkNutrition).ToDecimal(2);
 
-            return new NumberCell(cellValue, "0.00/d");
+            return new NumberCell.Constant(cellValue, "0.00/d");
         }
 
         return NumberCell.Empty;

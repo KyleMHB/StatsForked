@@ -312,96 +312,6 @@
     </Stats.TableDef>
 
     <Stats.TableDef>
-        <defName>FarmAnimals</defName>
-        <label>Creatures / Animals / Farm</label>
-        <iconPath>Things/Pawn/Animal/Cow/Cow_east</iconPath>
-        <iconColor>(170,170,170)</iconColor>
-        <workerClass>Stats.FarmAnimalsTableWorker</workerClass>
-        <columns>
-            <li>Thing_Label</li>
-            <li>Animal_Biomes</li>
-            <!-- Yield -->
-            <li>Animal_Products</li>
-            <li>Pawn_MeatAmount</li>
-            <li>Pawn_LeatherAmount</li>
-            <li>Animal_WoolAmount</li>
-            <li>Animal_MilkAmount</li>
-            <li>Animal_EggsAmount</li>
-            <!-- Yield/d -->
-            <li>Animal_LeatherPerDay</li>
-            <li>Animal_WoolPerDay</li>
-            <li>Animal_MilkPerDay</li>
-            <li>Animal_EggsPerDay</li>
-            <!-- Yield nutrition/d -->
-            <li>Animal_MeatNutritionPerDay</li>
-            <li>Animal_MilkNutritionPerDay</li>
-            <li>Animal_EggsNutritionPerDay</li>
-            <li>Animal_ProductsNutritionPerDay</li>
-            <!-- Nutrition consumption -->
-            <li>Pawn_MaxNutrition</li>
-            <!-- TODO: Diet column -->
-            <!-- Yield interval -->
-            <li>Animal_WoolShearingInterval</li>
-            <li>Animal_MilkingInterval</li>
-            <li>Animal_EggLayingInterval</li>
-            <!-- Handling -->
-            <li>Animal_MinimumHandlingSkill</li>
-            <li>Animal_Trainability</li>
-            <li>Animal_Wildness</li>
-            <li>Animal_IsBlockedByFences</li>
-            <!-- Reproduction -->
-            <li>Animal_AverageLitterSize</li>
-            <li>Animal_GestationTime</li>
-            <li>Animal_GrowthTime</li>
-            <li>Pawn_LifeExpectancy</li>
-            <!-- Physique -->
-            <li>Pawn_ComfyTemperatureMin</li>
-            <li>Pawn_ComfyTemperatureMax</li>
-            <li>Pawn_ToxicResistance</li>
-            <li>Pawn_ToxicEnvironmentResistance</li>
-            <!-- Misc -->
-            <li>Thing_MarketValue</li>
-            <li>Thing_ContentSource</li>
-        </columns>
-    </Stats.TableDef>
-
-    <Stats.TableDef>
-        <defName>PackAnimals</defName>
-        <label>Creatures / Animals / Pack</label>
-        <iconPath>Things/Pawn/Animal/Donkey/Donkey_east</iconPath>
-        <workerClass>Stats.PackAnimalsTableWorker</workerClass>
-        <columns>
-            <li>Thing_Label</li>
-            <li>Animal_Biomes</li>
-            <!-- Caravan -->
-            <li>Animal_CaravanRidingSpeedFactor</li>
-            <li>Pawn_CaravanCarryingCapacity</li>
-            <!-- Nutrition consumption -->
-            <li>Pawn_MaxNutrition</li>
-            <!-- TODO: Diet column -->
-            <!-- Handling -->
-            <li>Animal_MinimumHandlingSkill</li>
-            <li>Animal_Trainability</li>
-            <li>Animal_Wildness</li>
-            <li>Animal_IsBlockedByFences</li>
-            <!-- Reproduction -->
-            <li>Animal_AverageLitterSize</li>
-            <li>Animal_GestationTime</li>
-            <li>Animal_GrowthTime</li>
-            <li>Pawn_LifeExpectancy</li>
-            <!-- Physique -->
-            <li>Pawn_ComfyTemperatureMin</li>
-            <li>Pawn_ComfyTemperatureMax</li>
-            <li>Pawn_ToxicResistance</li>
-            <li>Pawn_ToxicEnvironmentResistance</li>
-            <li>Pawn_MoveSpeed</li>
-            <!-- Misc -->
-            <li>Thing_MarketValue</li>
-            <li>Thing_ContentSource</li>
-        </columns>
-    </Stats.TableDef>
-
-    <Stats.TableDef>
         <defName>Mechanoids</defName>
         <label>Creatures / Mechanoids</label>
         <iconPath>Things/Pawn/Mechanoid/Centipede_east</iconPath>
@@ -486,24 +396,6 @@
             <li>Building_IsReinstallable</li>
             <li>Thing_MarketValue</li>
             <li>Thing_ContentSource</li>
-        </columns>
-    </Stats.TableDef>
-
-    <Stats.TableDef>
-        <defName>Pawns</defName>
-        <label>Pawns</label>
-        <iconPath>StatsMod/UI/Icons/PawnHumanlike</iconPath>
-        <workerClass>Stats.PawnsTableWorker</workerClass>
-        <columns>
-            <li>Pawn_Name</li>
-            <li>Thing_ArmorRatingSharp</li>
-            <li>Thing_ArmorRatingBlunt</li>
-            <li>Thing_ArmorRatingHeat</li>
-            <li>Pawn_ComfyTemperatureMin</li>
-            <li>Pawn_ComfyTemperatureMax</li>
-            <li>Thing_Flammability</li>
-            <li>Thing_Mass</li>
-            <li>Thing_MarketValue</li>
         </columns>
     </Stats.TableDef>
 

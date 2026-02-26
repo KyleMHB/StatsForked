@@ -12,7 +12,7 @@ public sealed class MinGrowingSkillToSowColumnWorker(ColumnDef columnDef) : Thin
 
         if (plantProps != null)
         {
-            return new NumberCell(plantProps.sowMinSkill);
+            return new NumberCell.Constant(plantProps.sowMinSkill);
         }
 
         return NumberCell.Empty;

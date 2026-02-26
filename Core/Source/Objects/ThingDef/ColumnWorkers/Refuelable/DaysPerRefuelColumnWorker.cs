@@ -14,7 +14,7 @@ public sealed class DaysPerRefuelColumnWorker(ColumnDef columnDef) : ThingDefCol
         {
             decimal cellValue = (refuelableCompProps.fuelCapacity / refuelableCompProps.fuelConsumptionRate).ToDecimal(1);
 
-            return new NumberCell(cellValue, "0.0 d");
+            return new NumberCell.Constant(cellValue, "0.0 d");
         }
 
         return NumberCell.Empty;

@@ -16,13 +16,13 @@ public sealed class ProjectileArmorPenetrationColumnWorker(ColumnDef columnDef) 
         {
             decimal cellValue = (defaultProjProps.GetArmorPenetration(null) * 100f).ToDecimal(0);
 
-            return new NumberCell(cellValue, formatString);
+            return new NumberCell.Constant(cellValue, formatString);
         }
         else if (defaultProjProps == null && verbProps?.beamDamageDef != null)
         {
             decimal cellValue = (verbProps.beamDamageDef.defaultArmorPenetration * 100f).ToDecimal(0);
 
-            return new NumberCell(cellValue, formatString);
+            return new NumberCell.Constant(cellValue, formatString);
         }
 
         return NumberCell.Empty;

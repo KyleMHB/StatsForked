@@ -9,7 +9,13 @@ public sealed class IsMinifiableColumnWorker(ColumnDef columnDef) : ThingDefColu
     {
         bool cellValue = thingDef.Minifiable;
 
-        return new BooleanCell(cellValue);
+        if (thingDef.Minifiable)
+        {
+            return BooleanCell.True;
+        }
+
+        return BooleanCell.False;
     }
+
     public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanCell.GetDescriptor(columnDef);
 }

@@ -14,7 +14,7 @@ public sealed class GrowingTimeActualColumnWorker(ColumnDef columnDef) : ThingDe
         {
             decimal cellValue = plantProps.GetGrowDaysActual().ToDecimal(1);
 
-            return new NumberCell(cellValue, "0.0 d");
+            return new NumberCell.Constant(cellValue, "0.0 d");
         }
 
         return NumberCell.Empty;

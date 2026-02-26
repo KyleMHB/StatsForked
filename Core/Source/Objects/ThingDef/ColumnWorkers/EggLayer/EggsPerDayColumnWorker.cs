@@ -14,7 +14,7 @@ public sealed class EggsPerDayColumnWorker(ColumnDef columnDef) : ThingDefColumn
         {
             decimal cellValue = (eggLayerCompProps.eggCountRange.Average / eggLayerCompProps.eggLayIntervalDays).ToDecimal(1);
 
-            return new NumberCell(cellValue, "0.0/d");
+            return new NumberCell.Constant(cellValue, "0.0/d");
         }
 
         return NumberCell.Empty;

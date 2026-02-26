@@ -7,9 +7,13 @@ public sealed class HasInteractionCellColumnWorker(ColumnDef columnDef) : ThingD
 {
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
-        bool cellValue = thingDef.hasInteractionCell;
+        if (thingDef.hasInteractionCell)
+        {
+            return BooleanCell.True;
+        }
 
-        return new BooleanCell(cellValue);
+        return BooleanCell.False;
     }
+
     public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanCell.GetDescriptor(columnDef);
 }

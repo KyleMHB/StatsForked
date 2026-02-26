@@ -14,7 +14,7 @@ public sealed class FertilitySensitivityColumnWorker(ColumnDef columnDef) : Thin
         {
             decimal cellValue = (100f * plantProps.fertilitySensitivity).ToDecimal(0);
 
-            return new NumberCell(cellValue, "0\\%");
+            return new NumberCell.Constant(cellValue, "0\\%");
         }
 
         return NumberCell.Empty;

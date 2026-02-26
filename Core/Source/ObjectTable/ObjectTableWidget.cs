@@ -15,6 +15,7 @@ public abstract class ObjectTableWidget
 {
     public const float CellPadHor = 12f;
     public const float CellPadVer = 4f;
+    public static readonly Vector2 CellPad = new(CellPadHor * 2f, CellPadVer * 2f);
     //public abstract TableFilterMode FilterMode { get; set; }
     //public abstract event Action<TableFilterMode> OnFilterModeChange;
     public abstract void Draw(Rect rect, bool showSettingsMenu);
@@ -122,7 +123,6 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         foreach (TObject @object in tableWorker.InitialObjects)
         {
             Row row = new(columns, @object, this);
-
             rows.Add(row);
         }
 
