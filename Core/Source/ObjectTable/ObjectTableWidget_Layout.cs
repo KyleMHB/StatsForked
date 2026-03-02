@@ -26,14 +26,14 @@ internal sealed partial class ObjectTableWidget<TObject>
             }
         }
 
-        List<Row> rows = _rows;
+        List<Row<TObject>> rows = _rows;
         int rowsCount = rows.Count;
         int pinnedRowsCount = _pinnedRowsCount;
         float pinnedRowsHeight = 0f;
         float unpinnedRowsHeight = 0f;
         for (int i = 0; i < rowsCount; i++)
         {
-            Row row = rows[i];
+            Row<TObject> row = rows[i];
             float rowHeight = 0f;
             Cell[] cells = row.Cells;
             int cellsCount = cells.Length;

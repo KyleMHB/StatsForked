@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using RimWorld;
+using Stats.ObjectTable;
 using UnityEngine;
 using Verse;
 
@@ -9,26 +10,36 @@ namespace Stats;
 
 public static class UnityEngine_Rect_Extensions
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Rect CutByX(ref this Rect rect, float amount)
     {
-        var result = rect with { width = amount };
+        Rect result = rect with { width = amount };
         // Changing "xMin" also auto corrects width. Changing "x" doesn't.
         rect.xMin += amount;
 
         return result;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Rect CutByY(ref this Rect rect, float amount)
     {
-        var result = rect with { height = amount };
+        Rect result = rect with { height = amount };
         // Changing "yMin" also auto corrects height. Changing "y" doesn't.
         rect.yMin += amount;
 
         return result;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Rect ContractedByObjectTableCellPadding(this Rect rect)
+    {
+        return rect.ContractedBy(ObjectTableWidget.CellPadHor, ObjectTableWidget.CellPadVer);
+    }
 }
 
 public static class Verse_VerbProperties_List_Extensions
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static VerbProperties? Primary(this List<VerbProperties> verbs)
     {
         return verbs.FirstOrFallback(static verb => verb?.isPrimary == true);
@@ -40,13 +51,14 @@ public static class System_String_Extensions
     internal static Color ToUniqueColorRGB(this string str)
     {
         // I don't think that this hash is very reliable.
-        var hash = (uint)str.GetHashCode();
-        var r = ((hash & 0xFF000000) >> 24) / 255f;
-        var g = ((hash & 0x00FF0000) >> 16) / 255f;
-        var b = ((hash & 0x0000FF00) >> 8) / 255f;
+        uint hash = (uint)str.GetHashCode();
+        float r = ((hash & 0xFF000000) >> 24) / 255f;
+        float g = ((hash & 0x00FF0000) >> 16) / 255f;
+        float b = ((hash & 0x0000FF00) >> 8) / 255f;
 
         return new Color(r, g, b);
     }
+
     internal static bool Contains(this string str, string substr, StringComparison comp)
     {
         return str.IndexOf(substr, comp) >= 0;
@@ -69,11 +81,11 @@ public static class System_Function_Extensions
     // Memoize every function call.
     public static Func<TArg, TRes> Memoized<TArg, TRes>(this Func<TArg, TRes> function)
     {
-        var cache = new Dictionary<TArg, TRes>();
+        Dictionary<TArg, TRes> cache = [];
 
         return (TArg arg) =>
         {
-            var resultIsCached = cache.TryGetValue(arg, out var result);
+            bool resultIsCached = cache.TryGetValue(arg, out TRes? result);
 
             if (resultIsCached)
             {
@@ -87,6 +99,7 @@ public static class System_Function_Extensions
 
 public static class System_Single_Extensions
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static decimal ToDecimal(this float value, int digits)
     {
         // "When you convert float or double to decimal, the source value is converted
@@ -100,19 +113,20 @@ public static class System_Single_Extensions
 
 public static class Verse_ThingDef_Extensions
 {
-    private static readonly Dictionary<ThingDef, HashSet<RecipeDef>> ThingDefRecipes = [];
-    private static readonly Dictionary<ThingDef, HashSet<PawnKindDef>> PawnKinds = [];
-    private static readonly Dictionary<string, HashSet<ThingDef>> WeaponsByTag = [];
-    private static readonly Dictionary<ThingDef, HashSet<ResearchProjectDef>> ResearchProjects = [];
+    private static readonly Dictionary<ThingDef, HashSet<RecipeDef>> _thingDefRecipes = [];
+    private static readonly Dictionary<ThingDef, HashSet<PawnKindDef>> _pawnKinds = [];
+    private static readonly Dictionary<string, HashSet<ThingDef>> _weaponsByTag = [];
+    private static readonly Dictionary<ThingDef, HashSet<ResearchProjectDef>> _researchProjects = [];
+
     static Verse_ThingDef_Extensions()
     {
-        foreach (var recipeDef in DefDatabase<RecipeDef>.AllDefsListForReading)
+        foreach (RecipeDef recipeDef in DefDatabase<RecipeDef>.AllDefsListForReading)
         {
-            var producedThingDef = recipeDef.ProducedThingDef;
+            ThingDef producedThingDef = recipeDef.ProducedThingDef;
 
             if (producedThingDef != null)
             {
-                var recipesEntryExists = ThingDefRecipes.TryGetValue(producedThingDef, out var recipeDefs);
+                bool recipesEntryExists = _thingDefRecipes.TryGetValue(producedThingDef, out HashSet<RecipeDef>? recipeDefs);
 
                 if (recipesEntryExists)
                 {
@@ -120,19 +134,19 @@ public static class Verse_ThingDef_Extensions
                 }
                 else
                 {
-                    ThingDefRecipes[producedThingDef] = [recipeDef];
+                    _thingDefRecipes[producedThingDef] = [recipeDef];
                 }
             }
         }
 
-        foreach (var pawnKindDef in DefDatabase<PawnKindDef>.AllDefsListForReading)
+        foreach (PawnKindDef pawnKindDef in DefDatabase<PawnKindDef>.AllDefsListForReading)
         {
             if (pawnKindDef.race == null)
             {
                 continue;
             }
 
-            PawnKinds.TryGetValue(pawnKindDef.race, out var pawnKindDefs);
+            _pawnKinds.TryGetValue(pawnKindDef.race, out HashSet<PawnKindDef>? pawnKindDefs);
 
             if (pawnKindDefs != null)
             {
@@ -140,17 +154,17 @@ public static class Verse_ThingDef_Extensions
             }
             else
             {
-                PawnKinds[pawnKindDef.race] = [pawnKindDef];
+                _pawnKinds[pawnKindDef.race] = [pawnKindDef];
             }
         }
 
-        foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
+        foreach (ThingDef thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
         {
             if (thingDef.IsWeapon && thingDef.weaponTags?.Count > 0)
             {
-                foreach (var tag in thingDef.weaponTags)
+                foreach (string tag in thingDef.weaponTags)
                 {
-                    WeaponsByTag.TryGetValue(tag, out var weapons);
+                    _weaponsByTag.TryGetValue(tag, out HashSet<ThingDef>? weapons);
 
                     if (weapons != null)
                     {
@@ -158,19 +172,19 @@ public static class Verse_ThingDef_Extensions
                     }
                     else
                     {
-                        WeaponsByTag[tag] = [thingDef];
+                        _weaponsByTag[tag] = [thingDef];
                     }
                 }
             }
         }
 
-        foreach (var researchProjectDef in DefDatabase<ResearchProjectDef>.AllDefsListForReading)
+        foreach (ResearchProjectDef researchProjectDef in DefDatabase<ResearchProjectDef>.AllDefsListForReading)
         {
-            foreach (var def in researchProjectDef.UnlockedDefs)
+            foreach (Def def in researchProjectDef.UnlockedDefs)
             {
                 if (def is ThingDef thingDef)
                 {
-                    ResearchProjects.TryGetValue(thingDef, out var researchProjects);
+                    _researchProjects.TryGetValue(thingDef, out HashSet<ResearchProjectDef>? researchProjects);
 
                     if (researchProjects != null)
                     {
@@ -178,36 +192,41 @@ public static class Verse_ThingDef_Extensions
                     }
                     else
                     {
-                        ResearchProjects[thingDef] = [researchProjectDef];
+                        _researchProjects[thingDef] = [researchProjectDef];
                     }
                 }
             }
         }
     }
+
     // GenStuff.DefaultStuffFor() is a bit too heavy for some tasks.
     private static readonly Func<ThingDef, ThingDef?> GetDefaultStuffCached =
     System_Function_Extensions.Memoized((ThingDef thingDef) =>
     {
         return GenStuff.DefaultStuffFor(thingDef);
     });
+
     // Verse.ThingDef.defaultStuff isn't actually what is advertised.
     public static ThingDef? GetDefaultStuff(this ThingDef thingDef)
     {
         return GetDefaultStuffCached(thingDef);
     }
+
     public static bool IsBuildingObtainableByPlayer(this ThingDef thingDef)
     {
         return thingDef.BuildableByPlayer || thingDef.Minifiable;
     }
+
     public static HashSet<RecipeDef>? GetRecipeDefs(this ThingDef thingDef)
     {
-        ThingDefRecipes.TryGetValue(thingDef, out var recipeDefs);
+        _thingDefRecipes.TryGetValue(thingDef, out HashSet<RecipeDef>? recipeDefs);
 
         return recipeDefs;
     }
+
     public static float GetStatValuePerceived(this ThingDef thingDef, StatDef statDef, ThingDef? stuffDef = null)
     {
-        var statRequest = StatRequest.For(thingDef, stuffDef);
+        StatRequest statRequest = StatRequest.For(thingDef, stuffDef);
 
         if (statDef.Worker.ShouldShowFor(statRequest))
         {
@@ -216,28 +235,30 @@ public static class Verse_ThingDef_Extensions
 
         return 0f;
     }
+
     public static HashSet<PawnKindDef>? GetPawnKindDefs(this ThingDef thingDef)
     {
-        PawnKinds.TryGetValue(thingDef, out var pawnKindDefs);
+        _pawnKinds.TryGetValue(thingDef, out HashSet<PawnKindDef>? pawnKindDefs);
 
         return pawnKindDefs;
     }
+
     // TODO: Cache this too?
     public static HashSet<ThingDef>? GetPossibleWeapons(this ThingDef thingDef)
     {
-        var pawnKindDefs = thingDef.GetPawnKindDefs();
+        HashSet<PawnKindDef>? pawnKindDefs = thingDef.GetPawnKindDefs();
 
         if (pawnKindDefs?.Count > 0)
         {
-            var result = new HashSet<ThingDef>();
+            HashSet<ThingDef> result = [];
 
-            foreach (var pawnKindDef in pawnKindDefs)
+            foreach (PawnKindDef pawnKindDef in pawnKindDefs)
             {
                 if (pawnKindDef.weaponTags != null)
                 {
-                    foreach (var tag in pawnKindDef.weaponTags)
+                    foreach (string tag in pawnKindDef.weaponTags)
                     {
-                        WeaponsByTag.TryGetValue(tag, out var weapons);
+                        _weaponsByTag.TryGetValue(tag, out HashSet<ThingDef>? weapons);
 
                         if (weapons != null)
                         {
@@ -252,19 +273,21 @@ public static class Verse_ThingDef_Extensions
 
         return null;
     }
+
     public static HashSet<ResearchProjectDef>? GetResearchProjectDef(this ThingDef thingDef)
     {
-        ResearchProjects.TryGetValue(thingDef, out var researchProjectDef);
+        _researchProjects.TryGetValue(thingDef, out HashSet<ResearchProjectDef>? researchProjectDef);
 
         return researchProjectDef;
     }
+
     public static HashSet<ThingDef>? GetAllowedStuffs(this ThingDef thingDef)
     {
         if (thingDef.stuffCategories?.Count > 0)
         {
-            var result = new HashSet<ThingDef>(20);
+            HashSet<ThingDef> result = new(20);
 
-            foreach (var stuffCategoryDef in thingDef.stuffCategories)
+            foreach (StuffCategoryDef stuffCategoryDef in thingDef.stuffCategories)
             {
                 result.AddRange(stuffCategoryDef.GetStuffDefs());
             }
@@ -274,6 +297,7 @@ public static class Verse_ThingDef_Extensions
 
         return null;
     }
+
     public static ThingDef TurretGunDefOrSelf(this ThingDef thingDef)
     {
         return thingDef.building?.turretGunDef ?? thingDef;
@@ -282,14 +306,15 @@ public static class Verse_ThingDef_Extensions
 
 public static class Verse_RecipeDef_Extensions
 {
-    private static readonly Dictionary<RecipeDef, HashSet<ThingDef>> RecipeUsers = [];
+    private static readonly Dictionary<RecipeDef, HashSet<ThingDef>> _recipeUsers = [];
+
     static Verse_RecipeDef_Extensions()
     {
-        foreach (var recipeDef in DefDatabase<RecipeDef>.AllDefsListForReading)
+        foreach (RecipeDef recipeDef in DefDatabase<RecipeDef>.AllDefsListForReading)
         {
             if (recipeDef.recipeUsers?.Count > 0)
             {
-                var recipeUsersEntryExists = RecipeUsers.TryGetValue(recipeDef, out var recipeUsers);
+                bool recipeUsersEntryExists = _recipeUsers.TryGetValue(recipeDef, out HashSet<ThingDef>? recipeUsers);
 
                 if (recipeUsersEntryExists)
                 {
@@ -297,18 +322,18 @@ public static class Verse_RecipeDef_Extensions
                 }
                 else
                 {
-                    RecipeUsers[recipeDef] = [.. recipeDef.recipeUsers];
+                    _recipeUsers[recipeDef] = [.. recipeDef.recipeUsers];
                 }
             }
         }
 
-        foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
+        foreach (ThingDef thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
         {
             if (thingDef.recipes?.Count > 0)
             {
-                foreach (var recipeDef in thingDef.recipes)
+                foreach (RecipeDef? recipeDef in thingDef.recipes)
                 {
-                    var recipeUsersEntryExists = RecipeUsers.TryGetValue(recipeDef, out var recipeUsers);
+                    bool recipeUsersEntryExists = _recipeUsers.TryGetValue(recipeDef, out HashSet<ThingDef>? recipeUsers);
 
                     if (recipeUsersEntryExists)
                     {
@@ -316,15 +341,16 @@ public static class Verse_RecipeDef_Extensions
                     }
                     else
                     {
-                        RecipeUsers[recipeDef] = [thingDef];
+                        _recipeUsers[recipeDef] = [thingDef];
                     }
                 }
             }
         }
     }
+
     public static HashSet<ThingDef>? GetAllRecipeUsers(this RecipeDef recipeDef)
     {
-        RecipeUsers.TryGetValue(recipeDef, out var recipeUsers);
+        _recipeUsers.TryGetValue(recipeDef, out HashSet<ThingDef>? recipeUsers);
 
         return recipeUsers;
     }
@@ -342,7 +368,7 @@ public static class RimWorld_PlantProperties_Extensions
 {
     public static float GetGrowDaysActual(this PlantProperties plantProperties)
     {
-        // Source: wiki
+        // Source: Wiki
         return plantProperties.growDays / 0.5417f;
     }
 }
@@ -351,9 +377,9 @@ public static class Verse_Map_List_Extensions
 {
     public static IEnumerable<Thing> GetSpawnedThings(this List<Map> maps)
     {
-        foreach (var map in Find.Maps)
+        foreach (Map map in maps)
         {
-            foreach (var thing in map.spawnedThings)
+            foreach (Thing thing in map.spawnedThings)
             {
                 yield return thing;
             }
@@ -363,16 +389,17 @@ public static class Verse_Map_List_Extensions
 
 public static class RimWorld_StuffCategoryDef_Extensions
 {
-    private static readonly Dictionary<StuffCategoryDef, HashSet<ThingDef>> StuffsByCategory = [];
+    private static readonly Dictionary<StuffCategoryDef, HashSet<ThingDef>> _stuffsByCategory = [];
+
     static RimWorld_StuffCategoryDef_Extensions()
     {
-        foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
+        foreach (ThingDef thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
         {
             if (thingDef.stuffProps == null) continue;
 
-            foreach (var stuffCategoryDef in thingDef.stuffProps.categories)
+            foreach (StuffCategoryDef stuffCategoryDef in thingDef.stuffProps.categories)
             {
-                var exists = StuffsByCategory.TryGetValue(stuffCategoryDef, out var categoryStuffs);
+                bool exists = _stuffsByCategory.TryGetValue(stuffCategoryDef, out HashSet<ThingDef>? categoryStuffs);
 
                 if (exists)
                 {
@@ -380,13 +407,14 @@ public static class RimWorld_StuffCategoryDef_Extensions
                 }
                 else
                 {
-                    StuffsByCategory[stuffCategoryDef] = [thingDef];
+                    _stuffsByCategory[stuffCategoryDef] = [thingDef];
                 }
             }
         }
     }
+
     public static HashSet<ThingDef> GetStuffDefs(this StuffCategoryDef stuffCategoryDef)
     {
-        return StuffsByCategory[stuffCategoryDef];
+        return _stuffsByCategory[stuffCategoryDef];
     }
 }

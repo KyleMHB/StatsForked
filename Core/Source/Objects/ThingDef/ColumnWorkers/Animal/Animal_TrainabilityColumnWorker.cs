@@ -15,7 +15,7 @@ public sealed class Animal_TrainabilityColumnWorker(ColumnDef columnDef) : Thing
 
         if (trainability != null)
         {
-            return new DefCell(trainability);
+            return new DefCell.Constant(trainability);
         }
 
         return DefCell.Empty;

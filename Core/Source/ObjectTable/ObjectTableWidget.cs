@@ -13,13 +13,18 @@ namespace Stats.ObjectTable;
 
 public abstract class ObjectTableWidget
 {
-    public const float CellPadHor = 12f;
-    public const float CellPadVer = 4f;
-    public static readonly Vector2 CellPad = new(CellPadHor * 2f, CellPadVer * 2f);
+    internal const float CellPadHor = 12f;
+    internal const float CellPadVer = 4f;
+
+    public static readonly float CellContentSpacing = Globals.GUI.PadSm;
     //public abstract TableFilterMode FilterMode { get; set; }
+
     //public abstract event Action<TableFilterMode> OnFilterModeChange;
-    public abstract void Draw(Rect rect, bool showSettingsMenu);
+
+    internal abstract void Draw(Rect rect, bool showSettingsMenu);
+
     //public abstract void ResetFilters();
+
     //public abstract void ToggleFilterMode();
 
     //public enum TableFilterMode
@@ -29,7 +34,7 @@ public abstract class ObjectTableWidget
     //}
 }
 
-// Lack of abstraction/leaking abstractions is intentional here.
+// Lack of abstraction/leaking abstractions is (almost) intentional here.
 // Because abstractions are not free.
 internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
 {
@@ -81,11 +86,11 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     private float _unpinnedColumnsWidth;
     private float _headerRowHeight;
     private const int _InitialRowCapacity = 250;
-    private readonly List<Row> _rows;
-    private ReadOnlyListSegment<Row> _PinndeRows => new(_rows, 0, _pinnedRowsCount);
+    private readonly List<Row<TObject>> _rows;
+    private ReadOnlyListSegment<Row<TObject>> _PinndeRows => new(_rows, 0, _pinnedRowsCount);
     private int _pinnedRowsCount;
     private float _pinnedRowsHeight;
-    private ReadOnlyListSegment<Row> _UnpinndeRows => new(_rows, _pinnedRowsCount, _rows.Count - _pinnedRowsCount);
+    private ReadOnlyListSegment<Row<TObject>> _UnpinndeRows => new(_rows, _pinnedRowsCount, _rows.Count - _pinnedRowsCount);
     private float _unpinnedRowsHeight;
     private static readonly Color _columnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
     private static readonly Color _pinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
@@ -106,7 +111,7 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         {
             ColumnDef columnDef = columnDefs[i];
 
-            if (columnDef.Worker is IColumnWorker<TObject> columnWorker)
+            if (columnDef.Worker is ColumnWorker<TObject> columnWorker)
             {
                 int cellIndex = columns.Count;
                 Column column = new(cellIndex, columnWorker, tableWorker, this);
@@ -119,10 +124,10 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         }
 
         // Rows
-        List<Row> rows = new(_InitialRowCapacity);
+        List<Row<TObject>> rows = new(_InitialRowCapacity);
         foreach (TObject @object in tableWorker.InitialObjects)
         {
-            Row row = new(columns, @object, this);
+            Row<TObject> row = new(rows.Count, @object);
             rows.Add(row);
         }
 
@@ -243,7 +248,7 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WarnIncompatibleColumn(string columnName, string tableName)
     {
-        Log.Warning($"Column \"${columnName}\" is not compatible with table \"${tableName}\", because it does not implement \"${typeof(IColumnWorker<TObject>).Name}\".");
+        Log.Warning($"Column \"${columnName}\" is not compatible with table \"${tableName}\", because it does not implement \"${typeof(ColumnWorker<TObject>).Name}\".");
     }
 
     private readonly struct ReadOnlyListSegment<T>

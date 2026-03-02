@@ -16,7 +16,7 @@ public sealed class LayersColumnWorker(ColumnDef columnDef) : ThingDefColumnWork
 
         if (apparelProps != null)
         {
-            return new DefSetCell(apparelProps.layers);
+            return new DefSetCell.Constant(apparelProps.layers);
         }
 
         return DefSetCell.Empty;

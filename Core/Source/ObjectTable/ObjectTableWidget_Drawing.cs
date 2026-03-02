@@ -87,7 +87,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             _scrollPosition.x = Mathf.Max(_scrollPosition.x + currentEvent.delta.x * -1f, 0f);
         }
 
-        List<Row> rows = _rows;
+        List<Row<TObject>> rows = _rows;
         int rowsCount = rows.Count;
         if (rowsCount == 0)
         {
@@ -97,13 +97,13 @@ internal sealed partial class ObjectTableWidget<TObject>
         int pinnedRowsCount = _pinnedRowsCount;
         if (pinnedRowsCount > 0)
         {
-            ReadOnlyListSegment<Row> pinnedRows = _PinndeRows;
+            ReadOnlyListSegment<Row<TObject>> pinnedRows = _PinndeRows;
             float pinnedRowsHeight = _pinnedRowsHeight;
             Rect pinnedRowsRect = rect.CutByY(pinnedRowsHeight);
             DrawPinnedRows(pinnedRowsRect, pinnedRows, columns, scrollPosition);
         }
 
-        ReadOnlyListSegment<Row> unpinnedRows = _UnpinndeRows;
+        ReadOnlyListSegment<Row<TObject>> unpinnedRows = _UnpinndeRows;
         if (unpinnedRows.Length > 0)
         {
             DrawRows(rect, unpinnedRows, columns, scrollPosition);
@@ -152,14 +152,14 @@ internal sealed partial class ObjectTableWidget<TObject>
         return columns.Slice(skippedColumnsCount, drawnColumnsCount);
     }
 
-    private void DrawPinnedRows(Rect rect, ReadOnlyListSegment<Row> rows, ReadOnlyListSegment<Column> columns, Vector2 scrollPosition)
+    private void DrawPinnedRows(Rect rect, ReadOnlyListSegment<Row<TObject>> rows, ReadOnlyListSegment<Column> columns, Vector2 scrollPosition)
     {
         Verse.Widgets.DrawStrongHighlight(rect, _pinnedRowsBGColor);
         Verse.Widgets.DrawLineHorizontal(rect.x, rect.yMax - 1f, rect.width, MainTabWindowWidget.BorderLineColor);
         DrawRows(rect, rows, columns, scrollPosition);
     }
 
-    private void DrawRows(Rect rect, ReadOnlyListSegment<Row> rows, ReadOnlyListSegment<Column> columns, Vector2 scrollPosition)
+    private void DrawRows(Rect rect, ReadOnlyListSegment<Row<TObject>> rows, ReadOnlyListSegment<Column> columns, Vector2 scrollPosition)
     {
         GUI.BeginClip(rect);
 
@@ -170,7 +170,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         int rowsCount = rows.Length;
         for (int i = 0; i < rowsCount; i++)
         {
-            Row row = rows[i];
+            Row<TObject> row = rows[i];
             rect.height = row.Height;
             float rowBottomBoundary = rect.yMax;
 

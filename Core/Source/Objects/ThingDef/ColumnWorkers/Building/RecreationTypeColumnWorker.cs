@@ -15,7 +15,7 @@ public sealed class RecreationTypeColumnWorker(ColumnDef columnDef) : ThingDefCo
 
         if (joyKind != null)
         {
-            return new DefCell(joyKind);
+            return new DefCell.Constant(joyKind);
         }
 
         return DefCell.Empty;

@@ -23,7 +23,7 @@ public sealed class BodyPartGroupsColumnWorker(ColumnDef columnDef) : ThingDefCo
 
         if (apparelProps != null)
         {
-            return new DefSetCell(apparelProps.bodyPartGroups);
+            return new DefSetCell.Constant(apparelProps.bodyPartGroups);
         }
 
         return DefSetCell.Empty;

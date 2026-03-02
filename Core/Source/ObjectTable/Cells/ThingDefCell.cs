@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using RimWorld;
 using Stats.ObjectTable.FilterWidgets;
 using Stats.Widgets;
 using UnityEngine;
@@ -8,44 +9,62 @@ using Verse;
 
 namespace Stats.ObjectTable.Cells;
 
-public class ThingDefCell : Cell
+public readonly struct ThingDefCell : ICell
 {
-    private readonly ThingDef? Value;
-    public ThingDefCell(ThingDef value) : this(() => value) { }
-    public ThingDefCell(CellValueSource<ThingDef?> valueSource)
-    {
-    }
-    public override void Draw(Rect rect, Vector2 containerSize)
-    {
-        throw new NotImplementedException();
-    }
-    public override Vector2 GetSize()
-    {
-        throw new NotImplementedException();
-    }
-    public override void Refresh()
-    {
-    }
-    static private ThingDef? GetValue(Cell cell)
-    {
-        return ((ThingDefCell)cell).Value;
-    }
-    static private int CompareByDefLabel(Cell cell1, Cell cell2)
-    {
-        return Comparer<string?>.Default.Compare(GetValue(cell1)?.label, GetValue(cell2)?.label);
-    }
-    static public CellDescriptor GetDescriptor(ColumnDef columnDef, IEnumerable<ThingDef?> defs) => GetDescriptor(columnDef.Title, defs);
-    static public CellDescriptor GetDescriptor(Widget valueFieldLabel, IEnumerable<ThingDef?> defs)
-    {
-        IEnumerable<NTMFilterOption<ThingDef?>> valueFieldFilterOptions = defs
-            .OrderBy(def => def?.label)
-            .Select<ThingDef?, NTMFilterOption<ThingDef?>>(
-                def => def == null ? new() : new(def, def.LabelCap)
-            );
-        FilterWidget valueFieldFilter = new OTMFilter<ThingDef?>(GetValue, valueFieldFilterOptions);
-        CellFieldDescriptor valueField = new(valueFieldLabel, valueFieldFilter, CompareByDefLabel);
+    public float Width { get; }
+    public readonly ThingDef? Value;
+    public readonly string Text = "";
 
-        return new CellDescriptor(CellStyleType.String, [valueField]);
+    private readonly Widget? _icon;
+    private readonly float _iconWidth;
+
+    public ThingDefCell(ThingDef value)
+    {
+        Value = value;
+        Text = value.LabelCap;
+        _icon = new ThingDefIcon(value);
+        float textWidth = Verse.Text.CalcSize(Text).x;
+        float iconWidth = _icon.GetSize().x;
+        Width = iconWidth + ObjectTableWidget.CellContentSpacing + textWidth;
+        _iconWidth = iconWidth;
     }
-    public static readonly ThingDefCell Empty = new(() => null);
+
+    public void Draw(Rect rect)
+    {
+        if (Value != null && Event.current.type == EventType.Repaint)
+        {
+            rect = rect.ContractedByObjectTableCellPadding();
+
+            _icon!.DrawIn(rect.CutByX(_iconWidth));
+
+            rect.CutByX(ObjectTableWidget.CellContentSpacing);
+
+            TextAnchor textAnchor = Verse.Text.Anchor;
+            Verse.Text.Anchor = (TextAnchor)CellStyleType.String;
+
+            Verse.Widgets.Label(rect, Text);
+
+            Verse.Text.Anchor = textAnchor;
+        }
+    }
+
+    //static private int CompareByCellText(Cell cell1, Cell cell2)
+    //{
+    //    return GetText(cell1).CompareTo(GetText(cell2));
+    //}
+
+    //static public CellDescriptor GetDescriptor(ColumnDef columnDef, IEnumerable<ThingDef?> defs) => GetDescriptor(columnDef.Title, defs);
+
+    //static public CellDescriptor GetDescriptor(Widget valueFieldLabel, IEnumerable<ThingDef?> defs)
+    //{
+    //    IEnumerable<NTMFilterOption<ThingDef?>> valueFieldFilterOptions = defs
+    //        .OrderBy(def => def?.label)
+    //        .Select<ThingDef?, NTMFilterOption<ThingDef?>>(
+    //            def => def == null ? new() : new(def, def.LabelCap)
+    //        );
+    //    FilterWidget valueFieldFilter = new OTMFilter<ThingDef?>(GetValue, valueFieldFilterOptions);
+    //    CellFieldDescriptor valueField = new(valueFieldLabel, valueFieldFilter, CompareByCellText);
+
+    //    return new CellDescriptor(CellStyleType.String, [valueField]);
+    //}
 }

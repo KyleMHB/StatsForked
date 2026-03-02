@@ -34,14 +34,14 @@ internal sealed partial class ObjectTableWidget<TObject>
         public float Width;
         public readonly Vector2 HeaderCellSize;
 
-        private readonly IColumnWorker<TObject> _worker;
+        private readonly ColumnWorker<TObject> _worker;
         private readonly Widget _titleWidget;
         private readonly float _titleWidgetWidth;
         private readonly TipSignal _tooltip;
         private readonly CellStyleType _cellStyle;
         private readonly ObjectTableWidget<TObject> _parent;
 
-        public Column(int cellIndex, IColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTableWidget<TObject> parent)
+        public Column(int cellIndex, ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTableWidget<TObject> parent)
         {
             ColumnDef def = worker.Def;
             Widget titleWidget = def.Title;

@@ -1,94 +1,53 @@
-﻿using Stats.ObjectTable.FilterWidgets;
+﻿using System.Drawing;
+using RimWorld;
+using Stats.ObjectTable.FilterWidgets;
 using Stats.Widgets;
 using UnityEngine;
 using Verse;
 
 namespace Stats.ObjectTable.Cells;
 
-public static class NumberCell
+public readonly struct NumberCell : ICell
 {
-    public class Constant : Cell
+    public float Width { get; }
+    public readonly decimal Value;
+
+    private readonly string _text = "";
+
+    public NumberCell(decimal value, string formatString = "")
     {
-        public decimal Value;
+        Value = value;
+        _text = value.ToString(formatString);
+        Width = Text.CalcSize(_text).x;
+    }
 
-        protected string _text = "";
-
-        public Constant(decimal value, string formatString = "")
+    public void Draw(Rect rect)
+    {
+        if (Value != 0m && Event.current.type == EventType.Repaint)
         {
-            Value = value;
-            _text = value.ToString(formatString);
-            Size = Text.CalcSize(_text) + ObjectTableWidget.CellPad;
-        }
+            rect = rect.ContractedByObjectTableCellPadding();
 
-        public Constant()
-        {
-        }
+            TextAnchor textAnchor = Text.Anchor;
+            Text.Anchor = (TextAnchor)CellStyleType.Number;
 
-        public override void Draw(Rect rect)
-        {
-            if (Value != 0m && Event.current.type == EventType.Repaint)
-            {
-                rect = rect.ContractedBy(ObjectTableWidget.CellPadHor, ObjectTableWidget.CellPadVer);
+            Verse.Widgets.Label(rect, _text);
 
-                TextAnchor textAnchor = Text.Anchor;
-                Text.Anchor = (TextAnchor)CellStyleType.Number;
-
-                Verse.Widgets.Label(rect, _text);
-
-                Text.Anchor = textAnchor;
-            }
-        }
-
-        public override void Refresh()
-        {
+            Text.Anchor = textAnchor;
         }
     }
 
-    public sealed class Variable : Constant
-    {
-        private readonly CellValueSource<decimal> _valueSource;
-        private readonly string _formatString;
+    //static private int Compare(Cell cell1, Cell cell2)
+    //{
+    //    return GetValue(cell1).CompareTo(GetValue(cell2));
+    //}
 
-        public Variable(CellValueSource<decimal> valueSource, string formatString = "")
-        {
-            _valueSource = valueSource;
-            _formatString = formatString;
-        }
+    //static public CellDescriptor GetDescriptor(ColumnDef columnDef) => GetDescriptor(columnDef.Title);
 
-        public override void Refresh()
-        {
-            decimal newValue = _valueSource();
+    //static public CellDescriptor GetDescriptor(Widget valueFieldLabel)
+    //{
+    //    FilterWidget valueFieldFilter = new NumberFilter(GetValue);
+    //    CellFieldDescriptor valueField = new(valueFieldLabel, valueFieldFilter, Compare);
 
-            if (newValue != Value)
-            {
-                Value = newValue;
-                // It may be a good idea to defer deriving view-related props
-                // because we may not need them because the row may not pass the filters.
-                _text = newValue.ToString(_formatString);
-                Size = Text.CalcSize(_text) + ObjectTableWidget.CellPad;
-            }
-        }
-    }
-
-    static private decimal GetValue(Cell cell)
-    {
-        return ((Constant)cell).Value;
-    }
-
-    static private int Compare(Cell cell1, Cell cell2)
-    {
-        return GetValue(cell1).CompareTo(GetValue(cell2));
-    }
-
-    static public CellDescriptor GetDescriptor(ColumnDef columnDef) => GetDescriptor(columnDef.Title);
-
-    static public CellDescriptor GetDescriptor(Widget valueFieldLabel)
-    {
-        FilterWidget valueFieldFilter = new NumberFilter(GetValue);
-        CellFieldDescriptor valueField = new(valueFieldLabel, valueFieldFilter, Compare);
-
-        return new CellDescriptor(CellStyleType.Number, [valueField]);
-    }
-
-    public static readonly Constant Empty = new();
+    //    return new CellDescriptor(CellStyleType.Number, [valueField]);
+    //}
 }

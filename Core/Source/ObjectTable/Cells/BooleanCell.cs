@@ -1,77 +1,46 @@
-﻿using Stats.ObjectTable.FilterWidgets;
+﻿using RimWorld;
+using Stats.ObjectTable.FilterWidgets;
 using Stats.Widgets;
 using UnityEngine;
 using Verse;
 
 namespace Stats.ObjectTable.Cells;
 
-public class BooleanCell
+public readonly struct BooleanCell : ICell
 {
     private static readonly Texture2D _textureTrue = Verse.Widgets.CheckboxOnTex;
 
-    public class Constant : Cell
+    public float Width { get; }
+    public readonly bool Value;
+
+    public BooleanCell(bool value)
     {
-        public bool Value;
+        Value = value;
+        Width = Text.LineHeight;
+    }
 
-        public Constant(bool value)
+    public void Draw(Rect rect)
+    {
+        if (Value && Event.current.type == EventType.Repaint)
         {
-            Value = value;
-            Size = new Vector2(Text.LineHeight, Text.LineHeight) + ObjectTableWidget.CellPad;
-        }
-
-        public override void Draw(Rect rect)
-        {
-            if (Value && Event.current.type == EventType.Repaint)
-            {
-                // TODO: Make it not take full available space.
-                rect = rect.ContractedBy(ObjectTableWidget.CellPadHor, ObjectTableWidget.CellPadVer);
-                Verse.Widgets.DrawTextureFitted(rect, _textureTrue, 1f);
-            }
-        }
-
-        public override void Refresh()
-        {
+            // TODO: Make it not take full available space.
+            rect = rect.ContractedByObjectTableCellPadding();
+            Verse.Widgets.DrawTextureFitted(rect, _textureTrue, 1f);
         }
     }
 
-    public sealed class Variable : Constant
-    {
-        private readonly CellValueSource<bool> _valueSource;
+    //static private int Compare(Cell cell1, Cell cell2)
+    //{
+    //    return GetValue(cell1).CompareTo(GetValue(cell2));
+    //}
 
-        public Variable(CellValueSource<bool> valueSource) : base(false)
-        {
-            _valueSource = valueSource;
-        }
+    //static public CellDescriptor GetDescriptor(ColumnDef columnDef) => GetDescriptor(columnDef.Title);
 
-        public override void Refresh()
-        {
-            Value = _valueSource();
-        }
-    }
+    //static public CellDescriptor GetDescriptor(Widget valueFieldLabel)
+    //{
+    //    FilterWidget valueFieldFilter = new BooleanFilter(GetValue);
+    //    CellFieldDescriptor valueField = new(valueFieldLabel, valueFieldFilter, Compare);
 
-    static private bool GetValue(Cell cell)
-    {
-        return ((Constant)cell).Value;
-    }
-
-    static private int Compare(Cell cell1, Cell cell2)
-    {
-        return GetValue(cell1).CompareTo(GetValue(cell2));
-    }
-
-    static public CellDescriptor GetDescriptor(ColumnDef columnDef) => GetDescriptor(columnDef.Title);
-
-    static public CellDescriptor GetDescriptor(Widget valueFieldLabel)
-    {
-        FilterWidget valueFieldFilter = new BooleanFilter(GetValue);
-        CellFieldDescriptor valueField = new(valueFieldLabel, valueFieldFilter, Compare);
-
-        return new CellDescriptor(CellStyleType.Boolean, [valueField]);
-    }
-
-    public static readonly Constant True = new(true);
-
-    public static readonly Constant False = new(false);
-
-    public static readonly Constant Empty = False;
+    //    return new CellDescriptor(CellStyleType.Boolean, [valueField]);
+    //}
 }
