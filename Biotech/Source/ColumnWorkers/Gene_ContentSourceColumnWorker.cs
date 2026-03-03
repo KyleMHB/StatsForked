@@ -1,4 +1,5 @@
-﻿using Verse;
+﻿using Stats.ColumnWorkers.Def;
+using Verse;
 
 namespace Stats.Compat.Biotech;
 

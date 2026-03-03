@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Stats.ObjectTable;
+using Stats.TableWorkers;
 using UnityEngine;
 using Verse;
 

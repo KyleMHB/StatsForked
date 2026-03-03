@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using RimWorld;
+using Stats.ColumnWorkers.BuildableDef;
 using Verse;
 
 namespace Stats.Compat.CE;

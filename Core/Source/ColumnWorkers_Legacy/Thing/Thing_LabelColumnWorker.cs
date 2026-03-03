@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Stats.ColumnWorkers;
+using Stats.FilterWidgets;
 using Stats.Objects.ThingDef;
 using Stats.ObjectTable;
 using Stats.ObjectTable.FilterWidgets;
