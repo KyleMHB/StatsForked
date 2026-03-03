@@ -1,6 +1,6 @@
 ﻿namespace Stats.Objects.DefBased;
 
-public readonly struct DefBasedObject
+public readonly record struct DefBasedObject
 {
     public readonly Verse.Thing? Thing;
     public readonly Verse.Def Def;

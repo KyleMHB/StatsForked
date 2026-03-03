@@ -418,3 +418,13 @@ public static class RimWorld_StuffCategoryDef_Extensions
         return _stuffsByCategory[stuffCategoryDef];
     }
 }
+
+public static class System_Collections_Generic_List_Extensions
+{
+    public static void ReplaceWithLast<T>(this List<T> list, int index)
+    {
+        int lastItemlIndex = list.Count - 1;
+        list[index] = list[lastItemlIndex];
+        list.RemoveAt(lastItemlIndex);
+    }
+}

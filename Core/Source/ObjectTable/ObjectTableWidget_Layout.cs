@@ -26,7 +26,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             }
         }
 
-        List<Row<TObject>> rows = _rows;
+        List<Row<TObject>> rows = _filteredRows;
         int rowsCount = rows.Count;
         int pinnedRowsCount = _pinnedRowsCount;
         float pinnedRowsHeight = 0f;

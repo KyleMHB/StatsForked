@@ -87,7 +87,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             _scrollPosition.x = Mathf.Max(_scrollPosition.x + currentEvent.delta.x * -1f, 0f);
         }
 
-        List<Row<TObject>> rows = _rows;
+        List<Row<TObject>> rows = _filteredRows;
         int rowsCount = rows.Count;
         if (rowsCount == 0)
         {
