@@ -46,7 +46,7 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker, IColumnWorker<Virtua
         yield return new(new Label("Type"), new OTMFilter<ThingDef>(cell => ((Cell)cell).Def, typeFilterOptions));
 
         var filterWidget_Researched = new BooleanFilter(
-            cell => ((Cell)cell).Def.GetResearchProjectDef()?.All(researchProjectDef => researchProjectDef.IsFinished) is true or null
+            cell => ((Cell)cell).Def.GetResearchProjectDefs()?.All(researchProjectDef => researchProjectDef.IsFinished) is true or null
         );
         Globals.Events.OnResearchCompleted += () =>
         {

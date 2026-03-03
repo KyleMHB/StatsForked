@@ -13,9 +13,11 @@ public abstract class ColumnWorker<TObject> : ColumnWorker
 {
     public abstract void DrawCell(Rect rect, Row<TObject> row);
 
-    public abstract float GetCellWidth(Row<TObject> row);
+    public abstract float GetWidth(List<Row<TObject>> rows);
 
-    public abstract void NotifyRowAdded(Row<TObject> row);
+    public abstract void NotifyRowAdded(List<TObject> rows);
+
+    public abstract void NotifyRowAdded(TObject row);
 
     public abstract void NotifyRowRemoved(Row<TObject> row);
 
@@ -33,17 +35,38 @@ public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where
         _cells[row.Index].Draw(rect);
     }
 
-    public override float GetCellWidth(Row<TObject> row)
+    public override float GetWidth(List<Row<TObject>> rows)
     {
-        return _cells[row.Index].Width;
+        float width = 0f;
+        int rowsCount = rows.Count;
+        for (int i = 0; i < rowsCount; i++)
+        {
+            int rowIndex = rows[i].Index;
+            float cellWidth = _cells[rowIndex].Width;
+            if (width < cellWidth)
+            {
+                width = cellWidth;
+            }
+        }
+
+        return width;
     }
 
-    public override void NotifyRowAdded(Row<TObject> row)
+    public override void NotifyRowAdded(List<TObject> rows)
+    {
+        int rowsCount = rows.Count;
+        for (int i = 0; i < rowsCount; i++)
+        {
+            NotifyRowAdded(rows[i]);
+        }
+    }
+
+    public override void NotifyRowAdded(TObject row)
     {
         TCell cell;
         try
         {
-            cell = MakeCell(row.Object);
+            cell = MakeCell(row);
         }
         catch
         {

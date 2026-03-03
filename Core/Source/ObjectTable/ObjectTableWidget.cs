@@ -125,9 +125,10 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         for (int i = 0; i < columnDefsCount; i++)
         {
             ColumnDef columnDef = columnDefs[i];
-
-            if (columnDef.Worker is ColumnWorker<TObject> columnWorker)
+            Type workerClass = columnDef.workerClass;
+            if (workerClass.IsAssignableFrom(typeof(ColumnWorker<TObject>)))
             {
+                ColumnWorker<TObject> columnWorker = (ColumnWorker<TObject>)Activator.CreateInstance(workerClass, columnDef);
                 int cellIndex = columns.Count;
                 Column column = new(cellIndex, columnWorker, tableWorker, this);
                 columns.Add(column);

@@ -274,18 +274,18 @@ public static class Verse_ThingDef_Extensions
         return null;
     }
 
-    public static HashSet<ResearchProjectDef>? GetResearchProjectDef(this ThingDef thingDef)
+    public static HashSet<ResearchProjectDef>? GetResearchProjectDefs(this ThingDef thingDef)
     {
-        _researchProjects.TryGetValue(thingDef, out HashSet<ResearchProjectDef>? researchProjectDef);
+        _researchProjects.TryGetValue(thingDef, out HashSet<ResearchProjectDef>? researchProjectDefs);
 
-        return researchProjectDef;
+        return researchProjectDefs;
     }
 
     public static HashSet<ThingDef>? GetAllowedStuffs(this ThingDef thingDef)
     {
         if (thingDef.stuffCategories?.Count > 0)
         {
-            HashSet<ThingDef> result = new(20);
+            HashSet<ThingDef> result = new(30);
 
             foreach (StuffCategoryDef stuffCategoryDef in thingDef.stuffCategories)
             {

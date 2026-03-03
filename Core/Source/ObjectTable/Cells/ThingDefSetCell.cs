@@ -8,45 +8,45 @@ using Verse;
 
 namespace Stats.ObjectTable.Cells;
 
-public class ThingDefSetCell : Cell
+public readonly struct ThingDefSetCell : ICell
 {
-    private IReadOnlyCollection<ThingDef?> Value;
-    private string Text = "";
-    public ThingDefSetCell(IReadOnlyCollection<ThingDef?> value) : this(() => value) { }
-    public ThingDefSetCell(CellValueSource<IReadOnlyCollection<ThingDef?>> valueSource)
-    {
-    }
-    public override void Draw(Rect rect, Vector2 containerSize)
-    {
-        throw new NotImplementedException();
-    }
-    public override Vector2 GetSize()
-    {
-        throw new NotImplementedException();
-    }
-    public override void Refresh()
-    {
-    }
-    static private IReadOnlyCollection<ThingDef?> GetValue(Cell cell)
-    {
-        return ((ThingDefSetCell)cell).Value;
-    }
-    static private int CompareByCellText(Cell cell1, Cell cell2)
-    {
-        return ((ThingDefSetCell)cell1).Text.CompareTo(((ThingDefSetCell)cell2).Text);
-    }
-    static public CellDescriptor GetDescriptor(ColumnDef columnDef, IEnumerable<ThingDef?> defs) => GetDescriptor(columnDef.Title, defs);
-    static public CellDescriptor GetDescriptor(Widget valueFieldLabel, IEnumerable<ThingDef?> defs)
-    {
-        IEnumerable<NTMFilterOption<ThingDef?>> valueFieldFilterOptions = defs
-            .OrderBy(def => def?.label)
-            .Select<ThingDef?, NTMFilterOption<ThingDef?>>(
-                def => def == null ? new() : new(def, def.LabelCap, new ThingDefIcon(def))
-            );
-        FilterWidget valueFieldFilter = new MTMFilter<ThingDef?>(GetValue, valueFieldFilterOptions);
-        CellFieldDescriptor valueField = new(valueFieldLabel, valueFieldFilter, CompareByCellText);
+    public float Width { get; }
+    public readonly IReadOnlyCollection<ThingDef?> Value;
 
-        return new CellDescriptor(CellStyleType.String, [valueField]);
+    public ThingDefSetCell(IReadOnlyCollection<ThingDef?> value)
+    {
+        Value = value;
     }
-    public static readonly ThingDefSetCell Empty = new(new HashSet<ThingDef?>());
+
+    public void Draw(Rect rect)
+    {
+        if (Value.Count > 0 && Event.current.type == EventType.Repaint)
+        {
+            rect = rect.ContractedByObjectTableCellPadding();
+
+            Verse.Widgets.Label(rect, "TODO");
+        }
+    }
+
+    //static private IReadOnlyCollection<ThingDef?> GetValue(Cell cell)
+    //{
+    //    return ((ThingDefSetCell)cell).Value;
+    //}
+    //static private int CompareByCellText(Cell cell1, Cell cell2)
+    //{
+    //    return ((ThingDefSetCell)cell1).Text.CompareTo(((ThingDefSetCell)cell2).Text);
+    //}
+    //static public CellDescriptor GetDescriptor(ColumnDef columnDef, IEnumerable<ThingDef?> defs) => GetDescriptor(columnDef.Title, defs);
+    //static public CellDescriptor GetDescriptor(Widget valueFieldLabel, IEnumerable<ThingDef?> defs)
+    //{
+    //    IEnumerable<NTMFilterOption<ThingDef?>> valueFieldFilterOptions = defs
+    //        .OrderBy(def => def?.label)
+    //        .Select<ThingDef?, NTMFilterOption<ThingDef?>>(
+    //            def => def == null ? new() : new(def, def.LabelCap, new ThingDefIcon(def))
+    //        );
+    //    FilterWidget valueFieldFilter = new MTMFilter<ThingDef?>(GetValue, valueFieldFilterOptions);
+    //    CellFieldDescriptor valueField = new(valueFieldLabel, valueFieldFilter, CompareByCellText);
+
+    //    return new CellDescriptor(CellStyleType.String, [valueField]);
+    //}
 }

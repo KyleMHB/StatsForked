@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using RimWorld;
-using Stats.ObjectTable;
 using Stats.Widgets;
 using Verse;
 
@@ -18,7 +17,6 @@ public class ColumnDef : Def
     public Widget Title => title?.ToWidget() ?? new Label(LabelCap);
 #pragma warning disable CS8618
     public Type workerClass;
-    public ColumnWorker Worker { get; private set; }
 #pragma warning restore CS8618
     public override void ResolveReferences()
     {
@@ -33,11 +31,6 @@ public class ColumnDef : Def
         {
             description = descriptionKey.Translate();
         }
-
-        LongEventHandler.ExecuteWhenFinished(() =>
-        {
-            Worker = (ColumnWorker)Activator.CreateInstance(workerClass, this);
-        });
     }
 }
 

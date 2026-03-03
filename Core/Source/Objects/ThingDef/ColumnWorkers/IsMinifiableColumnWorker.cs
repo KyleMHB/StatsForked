@@ -3,19 +3,19 @@ using Stats.ObjectTable.Cells;
 
 namespace Stats.Objects.ThingDef.ColumnWorkers;
 
-public sealed class IsMinifiableColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class IsMinifiableColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, BooleanCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
-    {
-        bool cellValue = thingDef.Minifiable;
+    public override ColumnDef Def => columnDef;
 
-        if (thingDef.Minifiable)
+    protected override BooleanCell MakeCell(DefBasedObject @object)
+    {
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            return BooleanCell.True;
+            return new BooleanCell(thingDef.Minifiable);
         }
 
-        return BooleanCell.False;
+        return default;
     }
 
-    public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanCell.GetDescriptor(columnDef);
+    //public override CellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanCell.GetDescriptor(columnDef);
 }

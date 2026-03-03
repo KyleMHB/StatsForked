@@ -1,4 +1,4 @@
-﻿namespace Stats.Objects.DefBased;
+﻿namespace Stats;
 
 public readonly record struct DefBasedObject
 {

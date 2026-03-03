@@ -11,10 +11,10 @@ public static class Globals
     {
         internal const float EstimatedInputFieldInnerPadding = 2f;
         internal const float ButtonSubtleContentHoverOffset = 2f;
+        internal const float Pad = 10f;
+        internal const float PadSm = 5f;
+        internal const float PadXs = 3f;
 
-        public static readonly float Pad = 10f;
-        public static readonly float PadSm = 5f;
-        public static readonly float PadXs = 3f;
         public static readonly Color TextColorHighlight = new(1f, 0.98f, 0.62f);
         public static readonly Color TextColorSecondary = Color.grey;
         public static float Opacity { get; set; } = 1f;

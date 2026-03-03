@@ -17,8 +17,11 @@ public readonly struct NumberCell : ICell
     public NumberCell(decimal value, string formatString = "")
     {
         Value = value;
-        _text = value.ToString(formatString);
-        Width = Text.CalcSize(_text).x;
+        if (value != 0m)
+        {
+            _text = value.ToString(formatString);
+            Width = Text.CalcSize(_text).x;
+        }
     }
 
     public void Draw(Rect rect)
