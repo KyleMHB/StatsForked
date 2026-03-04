@@ -1,19 +1,20 @@
 ﻿using Stats.TableCells;
-using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef;
-// Turret.IsMannedColumnWorker
-public sealed class HasInteractionCellColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+
+public sealed class HasInteractionCellColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, BooleanTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override BooleanTableCell MakeCell(DefBasedObject @object)
     {
-        if (thingDef.hasInteractionCell)
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            return BooleanTableCell.True;
+            return new BooleanTableCell(thingDef.hasInteractionCell);
         }
 
-        return BooleanTableCell.False;
+        return default;
     }
 
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanTableCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanTableCell.GetDescriptor(columnDef);
 }

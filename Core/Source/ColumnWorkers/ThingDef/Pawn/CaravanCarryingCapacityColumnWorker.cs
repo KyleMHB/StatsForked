@@ -5,20 +5,25 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class CaravanCarryingCapacityColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class CaravanCarryingCapacityColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        RaceProperties? raceProps = thingDef.race;
-
-        if (raceProps != null)
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            decimal cellValue = (raceProps.baseBodySize * MassUtility.MassCapacityPerBodySize).ToDecimal(0);
+            RaceProperties? raceProps = thingDef.race;
 
-            return new NumberCell.Constant(cellValue, "0 kg");
+            if (raceProps != null)
+            {
+                decimal cellValue = (raceProps.baseBodySize * MassUtility.MassCapacityPerBodySize).ToDecimal(0);
+
+                return new NumberTableCell(cellValue, "0 kg");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

@@ -6,10 +6,15 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Refuelable;
 
-public sealed class FuelCapacityColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class FuelCapacityColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
+        if (@object.Def is Verse.ThingDef thingDef)
+        {
+        }
         CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();
 
         if (refuelableCompProps != null)

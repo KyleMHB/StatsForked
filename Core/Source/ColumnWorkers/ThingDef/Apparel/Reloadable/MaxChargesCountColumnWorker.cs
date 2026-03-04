@@ -4,18 +4,20 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Apparel.Reloadable;
 
-public sealed class MaxChargesCountColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class MaxChargesCountColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
         CompProperties_ApparelReloadable? reloadableCompProperties = thingDef.GetCompProperties<CompProperties_ApparelReloadable>();
 
         if (reloadableCompProperties != null)
         {
-            return new NumberCell.Constant(reloadableCompProperties.maxCharges);
+            return new NumberTableCell.Constant(reloadableCompProperties.maxCharges);
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

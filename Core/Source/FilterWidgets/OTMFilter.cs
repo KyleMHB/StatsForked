@@ -6,7 +6,7 @@ namespace Stats.FilterWidgets;
 public sealed class OTMFilter<TOption> : NTMFilter<TOption, TOption>
 {
     public OTMFilter(
-        Func<Cell, TOption> cellValueFunc,
+        Func<int, TOption> cellValueFunc,
         IEnumerable<NTMFilterOption<TOption>> options,
         string? label = null
     ) : base(

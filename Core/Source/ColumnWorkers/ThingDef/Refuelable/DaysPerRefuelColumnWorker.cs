@@ -4,20 +4,25 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Refuelable;
 
-public sealed class DaysPerRefuelColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class DaysPerRefuelColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();
-
-        if (refuelableCompProps is { fuelConsumptionRate: not 0f })
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            decimal cellValue = (refuelableCompProps.fuelCapacity / refuelableCompProps.fuelConsumptionRate).ToDecimal(1);
+            CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();
 
-            return new NumberCell.Constant(cellValue, "0.0 d");
+            if (refuelableCompProps is { fuelConsumptionRate: not 0f })
+            {
+                decimal cellValue = (refuelableCompProps.fuelCapacity / refuelableCompProps.fuelConsumptionRate).ToDecimal(1);
+
+                return new NumberTableCell(cellValue, "0.0 d");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

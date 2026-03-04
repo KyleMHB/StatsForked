@@ -4,22 +4,27 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Milkable;
 
-public sealed class MilkNutritionPerDayColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class MilkNutritionPerDayColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        CompProperties_Milkable? milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
-
-        if (milkableCompProps is { milkDef: not null, milkIntervalDays: > 0 })
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            float milkNutrition = milkableCompProps.milkDef.GetStatValuePerceived(StatDefOf.Nutrition);
-            float milkPerDay = (float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays;
-            decimal cellValue = (milkPerDay * milkNutrition).ToDecimal(2);
+            CompProperties_Milkable? milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
 
-            return new NumberCell.Constant(cellValue, "0.00/d");
+            if (milkableCompProps is { milkDef: not null, milkIntervalDays: > 0 })
+            {
+                float milkNutrition = milkableCompProps.milkDef.GetStatValuePerceived(StatDefOf.Nutrition);
+                float milkPerDay = (float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays;
+                decimal cellValue = (milkPerDay * milkNutrition).ToDecimal(2);
+
+                return new NumberTableCell(cellValue, "0.00/d");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

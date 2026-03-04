@@ -4,20 +4,25 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.EggLayer;
 
-public sealed class EggLayingIntervalColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class EggLayingIntervalColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        CompProperties_EggLayer? eggLayerCompProps = thingDef.GetCompProperties<CompProperties_EggLayer>();
-
-        if (eggLayerCompProps != null)
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            decimal cellValue = eggLayerCompProps.eggLayIntervalDays.ToDecimal(1);
+            CompProperties_EggLayer? eggLayerCompProps = thingDef.GetCompProperties<CompProperties_EggLayer>();
 
-            return new NumberCell.Constant(cellValue, "0.0 d");
+            if (eggLayerCompProps != null)
+            {
+                decimal cellValue = eggLayerCompProps.eggLayIntervalDays.ToDecimal(1);
+
+                return new NumberTableCell(cellValue, "0.0 d");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Stats.TableCells;
+using Stats.TableWorkers;
 using UnityEngine;
 
 namespace Stats.ColumnWorkers;
@@ -11,37 +12,41 @@ public abstract class ColumnWorker
 
 public abstract class ColumnWorker<TObject> : ColumnWorker
 {
-    public abstract void DrawCell(Rect rect, TableRow<TObject> row);
+    public abstract void DrawCell(Rect rect, int row);
 
-    public abstract float GetWidth(List<TableRow<TObject>> rows);
+    public abstract float GetWidth(List<int> rows);
 
     public abstract void NotifyRowAdded(List<TObject> rows);
 
     public abstract void NotifyRowAdded(TObject row);
 
-    public abstract void NotifyRowRemoved(TableRow<TObject> row);
+    public abstract void NotifyRowRemoved(int row);
 
     public abstract void RefreshCells();
+
+    public abstract TableCellDescriptor GetCellDescriptor(TableWorker tableWorker);
 }
 
 public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where TCell : struct, ITableCell
 {
     private readonly List<TCell> _cells = new(250);
 
+    protected TCell this[int index] => _cells[index];
+
     protected abstract TCell MakeCell(TObject @object);
 
-    public override void DrawCell(Rect rect, TableRow<TObject> row)
+    public override void DrawCell(Rect rect, int row)
     {
-        _cells[row.Index].Draw(rect);
+        _cells[row].Draw(rect);
     }
 
-    public override float GetWidth(List<TableRow<TObject>> rows)
+    public override float GetWidth(List<int> rows)
     {
         float width = 0f;
         int rowsCount = rows.Count;
         for (int i = 0; i < rowsCount; i++)
         {
-            int rowIndex = rows[i].Index;
+            int rowIndex = rows[i];
             float cellWidth = _cells[rowIndex].Width;
             if (width < cellWidth)
             {
@@ -76,9 +81,9 @@ public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where
         _cells.Add(cell);
     }
 
-    public override void NotifyRowRemoved(TableRow<TObject> row)
+    public override void NotifyRowRemoved(int row)
     {
-        _cells.ReplaceWithLast(row.Index);
+        _cells.ReplaceWithLast(row);
     }
 
     protected abstract TCell RefreshCell(TCell cell, out bool wasStale);

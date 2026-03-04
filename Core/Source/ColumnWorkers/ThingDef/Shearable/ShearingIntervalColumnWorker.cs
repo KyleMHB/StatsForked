@@ -4,18 +4,24 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Shearable;
 
-public sealed class ShearingIntervalColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class ShearingIntervalColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
-    {
-        CompProperties_Shearable? shearableCompProps = thingDef.GetCompProperties<CompProperties_Shearable>();
+    public override ColumnDef Def => columnDef;
 
-        if (shearableCompProps != null)
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    {
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            return new NumberCell.Constant(shearableCompProps.shearIntervalDays, "0 d");
+            CompProperties_Shearable? shearableCompProps = thingDef.GetCompProperties<CompProperties_Shearable>();
+
+            if (shearableCompProps != null)
+            {
+                return new NumberTableCell(shearableCompProps.shearIntervalDays, "0 d");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

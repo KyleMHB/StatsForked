@@ -3,8 +3,10 @@ using Stats.ObjectTable.ColumnWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class Animal_GestationTimeColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class Animal_GestationTimeColumnWorker : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public Animal_GestationTimeColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0 d")
     {
     }

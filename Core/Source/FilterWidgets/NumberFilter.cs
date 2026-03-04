@@ -40,7 +40,7 @@ public sealed class NumberFilter : FilterWidgetWithInputField<decimal, decimal>
         }
     }
     public override event Action? OnChange;
-    private readonly Func<Cell, decimal> CellValueFunc;
+    private readonly Func<int, decimal> CellValueFunc;
     private bool InputIsValid = true;
     private string _TextFieldText = "";
     private string TextFieldText
@@ -78,7 +78,7 @@ public sealed class NumberFilter : FilterWidgetWithInputField<decimal, decimal>
     }
     protected override string InputFieldText => _TextFieldText;
     private static readonly Color ErrorColor = Color.red.ToTransparent(0.5f);
-    public NumberFilter(Func<Cell, decimal> cellValueFunc, string? placeholder = null) : base([
+    public NumberFilter(Func<int, decimal> cellValueFunc, string? placeholder = null) : base([
         Operators.IsEqualTo.Instance,
         Operators.IsNotEqualTo.Instance,
         Operators.IsGreaterThan.Instance,
@@ -98,9 +98,9 @@ public sealed class NumberFilter : FilterWidgetWithInputField<decimal, decimal>
 
         TextFieldText = GUI.TextField(rect, _TextFieldText);
     }
-    public override bool Eval(Cell cell)
+    public override bool Eval(int row)
     {
-        return Operator.Eval(CellValueFunc(cell), Value);
+        return Operator.Eval(CellValueFunc(row), Value);
     }
     public override void Reset()
     {

@@ -22,8 +22,8 @@ public sealed class BooleanFilter : FilterWidget
             OnChange?.Invoke();
         }
     } = null;
-    private readonly Func<Cell, bool> CellValueFunc;
-    public BooleanFilter(Func<Cell, bool> cellValueFunc)
+    private readonly Func<int, bool> CellValueFunc;
+    public BooleanFilter(Func<int, bool> cellValueFunc)
     {
         CellValueFunc = cellValueFunc;
     }
@@ -59,9 +59,9 @@ public sealed class BooleanFilter : FilterWidget
 
         GUI.color = origGUIColor;
     }
-    public override bool Eval(Cell cell)
+    public override bool Eval(int row)
     {
-        return CellValueFunc(cell) == Value;
+        return CellValueFunc(row) == Value;
     }
     public override void Reset()
     {

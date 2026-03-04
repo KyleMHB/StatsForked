@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Stats.TableCells;
@@ -7,10 +8,15 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers.ThingDef.Refuelable;
 // Turret rearm cost
-public sealed class FuelCapacityScaledColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class FuelCapacityScaledColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
+        if (@object.Def is Verse.ThingDef thingDef)
+        {
+        }
         CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();
 
         if (refuelableCompProps != null)

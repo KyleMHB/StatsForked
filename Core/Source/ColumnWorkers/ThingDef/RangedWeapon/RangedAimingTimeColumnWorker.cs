@@ -4,21 +4,27 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class RangedAimingTimeColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class RangedAimingTimeColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    private readonly string FormatString = "0.00 " + "LetterSecond".Translate();
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    private static readonly string FormatString = "0.00 " + "LetterSecond".Translate();
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
-
-        if (verbProps != null)
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            decimal cellValue = verbProps.warmupTime.ToDecimal(2);
+            VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
 
-            return new NumberCell.Constant(cellValue, FormatString);
+            if (verbProps != null)
+            {
+                decimal cellValue = verbProps.warmupTime.ToDecimal(2);
+
+                return new NumberTableCell(cellValue, FormatString);
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

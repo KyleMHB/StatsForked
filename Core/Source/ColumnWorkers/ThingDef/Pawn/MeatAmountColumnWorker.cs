@@ -6,10 +6,15 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class MeatAmountColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class MeatAmountColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
+        if (@object.Def is Verse.ThingDef thingDef)
+        {
+        }
         Verse.ThingDef? meatDef = thingDef.race?.meatDef;
 
         if (meatDef != null)

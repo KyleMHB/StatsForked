@@ -7,8 +7,10 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Apparel;
 
-public sealed class LayersColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class LayersColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         ApparelProperties? apparelProps = thingDef.apparel;

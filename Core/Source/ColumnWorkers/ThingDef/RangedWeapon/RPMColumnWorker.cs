@@ -4,21 +4,26 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class RPMColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class RPMColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
-
-        if (verbProps is { Ranged: true, showBurstShotStats: true, burstShotCount: > 1 })
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            // Reminder: This is not IRL RPM.
-            decimal cellValue = (60f / verbProps.ticksBetweenBurstShots.TicksToSeconds()).ToDecimal(0);
+            VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
 
-            return new NumberCell.Constant(cellValue, "0 rpm");
+            if (verbProps is { Ranged: true, showBurstShotStats: true, burstShotCount: > 1 })
+            {
+                // Reminder: This is not IRL RPM.
+                decimal cellValue = (60f / verbProps.ticksBetweenBurstShots.TicksToSeconds()).ToDecimal(0);
+
+                return new NumberTableCell(cellValue, "0 rpm");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

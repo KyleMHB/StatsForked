@@ -1,5 +1,4 @@
-﻿using Stats.ColumnWorkers;
-using Stats.TableCells;
+﻿using Stats.TableCells;
 
 namespace Stats.ColumnWorkers.ThingDef;
 

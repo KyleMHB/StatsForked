@@ -6,8 +6,10 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class Animal_TrainabilityColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class Animal_TrainabilityColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         TrainabilityDef? trainability = thingDef.race?.trainability;

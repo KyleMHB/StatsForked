@@ -4,8 +4,10 @@ using Stats.ObjectTable.ColumnWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class Animal_LeatherPerDayColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class Animal_LeatherPerDayColumnWorker : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public Animal_LeatherPerDayColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.0/d")
     {
     }

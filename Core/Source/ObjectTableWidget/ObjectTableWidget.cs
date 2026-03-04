@@ -89,17 +89,17 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     private const int _InitialRowCapacity = 250;
     // Here's the idea:
     // - Iterate through List<TObject> filtering each row.
-    // - Put filtered rows as Row<TObject> in a list.
+    // - Put filtered rows indexes in a list.
     // - Sort the list. Use row's index for stable sort (when two rows have the same cell values)?
-    // - Pass Row<TObject>s from the list to column workers for drawing/resizing/etc.
+    // - Pass values from the list to column workers for drawing/resizing/etc.
     //
     // This will make it possible to have column workers with List-based cells cache.
     // Which in turn will give us O(1) on accessing column's cells.
     //
     // Objects from List<TObject> are removed by replacing removed object with the last one.
     // Although we still need to find it, so it'll be O(n).
-    // We clear the working set (List<Row<TObject>>) and rebuild it on next GUI event, so we don't have
-    // to remove Row<TObject> from it at the same time, which will be O(n)
+    // We clear the working set and rebuild it on next GUI event, so we don't have
+    // to remove rows from it at the same time, which will be O(n)
     // for every removed object (and the game can despawn many objects at once).
     private readonly List<TObject> _objects;
     private readonly List<TableRow<TObject>> _filteredRows;

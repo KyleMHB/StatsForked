@@ -6,10 +6,15 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Building;
 
-public sealed class RecreationTypeColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class RecreationTypeColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
+        if (@object.Def is Verse.ThingDef thingDef)
+        {
+        }
         JoyKindDef? joyKind = thingDef.building?.joyKind;
 
         if (joyKind != null)

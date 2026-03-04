@@ -6,10 +6,15 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Milkable;
 
-public sealed class MilkAmountColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class MilkAmountColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
+        if (@object.Def is Verse.ThingDef thingDef)
+        {
+        }
         var milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
 
         if (milkableCompProps != null)

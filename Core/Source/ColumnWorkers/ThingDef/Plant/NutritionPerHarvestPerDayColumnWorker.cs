@@ -4,23 +4,28 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Plant;
 
-public sealed class NutritionPerHarvestPerDayColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class NutritionPerHarvestPerDayColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        // TODO: This is mostly copy paste from NutritionPerHarvestColumnWorker.
-        PlantProperties? plantProps = thingDef.plant;
-
-        if (plantProps is { harvestedThingDef: not null, growDays: > 0f })
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            float productNutrition = plantProps.harvestedThingDef.GetStatValuePerceived(StatDefOf.Nutrition);
-            float nutritionPerHarvest = plantProps.harvestYield * productNutrition;
-            decimal cellValue = (nutritionPerHarvest / plantProps.GetGrowDaysActual()).ToDecimal(3);
+            // TODO: This is mostly copy paste from NutritionPerHarvestColumnWorker.
+            PlantProperties? plantProps = thingDef.plant;
 
-            return new NumberCell.Constant(cellValue, "0.000/d");
+            if (plantProps is { harvestedThingDef: not null, growDays: > 0f })
+            {
+                float productNutrition = plantProps.harvestedThingDef.GetStatValuePerceived(StatDefOf.Nutrition);
+                float nutritionPerHarvest = plantProps.harvestYield * productNutrition;
+                decimal cellValue = (nutritionPerHarvest / plantProps.GetGrowDaysActual()).ToDecimal(3);
+
+                return new NumberTableCell(cellValue, "0.000/d");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

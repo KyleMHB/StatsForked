@@ -5,36 +5,42 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Turret;
 
-public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();
-
-        if (refuelableCompProps is { fuelCapacity: > 0f })
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            VerbProperties? turretGunDefPrimaryVerbProps = thingDef.building?.turretGunDef?.Verbs.Primary();
+            CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();
 
-            if (turretGunDefPrimaryVerbProps != null)
+            if (refuelableCompProps is { fuelCapacity: > 0f })
             {
-                float fuelPerBurst = turretGunDefPrimaryVerbProps.consumeFuelPerBurst;
-                float fuelPerShot = turretGunDefPrimaryVerbProps.consumeFuelPerShot;
+                VerbProperties? turretGunDefPrimaryVerbProps = thingDef.building?.turretGunDef?.Verbs.Primary();
 
-                if (fuelPerShot > 0f)
+                if (turretGunDefPrimaryVerbProps != null)
                 {
-                    fuelPerBurst = fuelPerShot * turretGunDefPrimaryVerbProps.burstShotCount;
-                }
+                    float fuelPerBurst = turretGunDefPrimaryVerbProps.consumeFuelPerBurst;
+                    float fuelPerShot = turretGunDefPrimaryVerbProps.consumeFuelPerShot;
 
-                if (fuelPerBurst > 0f)
-                {
-                    decimal cellValue = (refuelableCompProps.fuelCapacity / fuelPerBurst).ToDecimal(0);
+                    if (fuelPerShot > 0f)
+                    {
+                        fuelPerBurst = fuelPerShot * turretGunDefPrimaryVerbProps.burstShotCount;
+                    }
 
-                    return new NumberCell.Constant(cellValue);
+                    if (fuelPerBurst > 0f)
+                    {
+                        decimal cellValue = (refuelableCompProps.fuelCapacity / fuelPerBurst).ToDecimal(0);
+
+                        return new NumberTableCell(cellValue);
+                    }
                 }
             }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

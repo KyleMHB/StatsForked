@@ -4,23 +4,28 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.PowerTrader;
 
-public sealed class PowerOutputPerFuelColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class PowerOutputPerFuelColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        CompProperties_Power? powerCompProps = thingDef.GetCompProperties<CompProperties_Power>();
-        CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();
-
-        if (powerCompProps != null && refuelableCompProps is { fuelConsumptionRate: not 0f })
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            float powerOutput = powerCompProps.PowerConsumption * -1f;
-            float fuelConsumptionRate = refuelableCompProps.fuelConsumptionRate;
-            decimal cellValue = (powerOutput / fuelConsumptionRate).ToDecimal(0);
+            CompProperties_Power? powerCompProps = thingDef.GetCompProperties<CompProperties_Power>();
+            CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();
 
-            return new NumberCell.Constant(cellValue, "0 W/u");
+            if (powerCompProps != null && refuelableCompProps is { fuelConsumptionRate: not 0f })
+            {
+                float powerOutput = powerCompProps.PowerConsumption * -1f;
+                float fuelConsumptionRate = refuelableCompProps.fuelConsumptionRate;
+                decimal cellValue = (powerOutput / fuelConsumptionRate).ToDecimal(0);
+
+                return new NumberTableCell(cellValue, "0 W/u");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

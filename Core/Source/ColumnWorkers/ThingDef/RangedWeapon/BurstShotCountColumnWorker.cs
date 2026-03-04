@@ -4,20 +4,25 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class BurstShotCountColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class BurstShotCountColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
-
-        if (verbProps is { Ranged: true, showBurstShotStats: true })
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            decimal cellValue = verbProps.burstShotCount;
+            VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
 
-            return new NumberCell.Constant(cellValue);
+            if (verbProps is { Ranged: true, showBurstShotStats: true })
+            {
+                decimal cellValue = verbProps.burstShotCount;
+
+                return new NumberTableCell(cellValue);
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

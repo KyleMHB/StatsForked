@@ -4,20 +4,25 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Plant;
 
-public sealed class LifeSpanColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class LifeSpanColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        PlantProperties? plantProps = thingDef.plant;
-
-        if (plantProps?.LifespanDays > 0f)
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            decimal cellValue = plantProps.LifespanDays.ToDecimal(1);
+            PlantProperties? plantProps = thingDef.plant;
 
-            return new NumberCell.Constant(cellValue, "0.0 d");
+            if (plantProps?.LifespanDays > 0f)
+            {
+                decimal cellValue = plantProps.LifespanDays.ToDecimal(1);
+
+                return new NumberTableCell(cellValue, "0.0 d");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

@@ -4,20 +4,25 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class ProjectileStoppingPowerColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class ProjectileStoppingPowerColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        ProjectileProperties? defaultProjProps = thingDef.TurretGunDefOrSelf().Verbs.Primary()?.defaultProjectile?.projectile;
-
-        if (defaultProjProps != null)
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            decimal cellValue = defaultProjProps.stoppingPower.ToDecimal(1);
+            ProjectileProperties? defaultProjProps = thingDef.TurretGunDefOrSelf().Verbs.Primary()?.defaultProjectile?.projectile;
 
-            return new NumberCell.Constant(cellValue, "0.0");
+            if (defaultProjProps != null)
+            {
+                decimal cellValue = defaultProjProps.stoppingPower.ToDecimal(1);
+
+                return new NumberTableCell(cellValue, "0.0");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

@@ -7,7 +7,7 @@ public abstract class FilterWidget : Widget
 {
     public abstract bool IsActive { get; }
     public abstract event Action? OnChange;
-    public abstract bool Eval(Cell cell);
+    public abstract bool Eval(int row);
     public abstract void Reset();
     public abstract void NotifyChanged();
 

@@ -14,8 +14,10 @@ namespace Stats.ColumnWorkers.ThingDef.Apparel;
 // Luckily, it looks like in a definition it is allowed to only list the whole
 // groups of body parts. The resulting list is of course significantly smaller
 // and can be safely displayed in a single row/column.
-public sealed class BodyPartGroupsColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class BodyPartGroupsColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         ApparelProperties? apparelProps = thingDef.apparel;

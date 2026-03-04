@@ -4,18 +4,23 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class LifeExpectancyColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class LifeExpectancyColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
-    {
-        RaceProperties? raceProps = thingDef.race;
+    public override ColumnDef Def => columnDef;
 
-        if (raceProps != null)
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    {
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            return new NumberCell.Constant(raceProps.lifeExpectancy.ToDecimal(0), "0 y");
+            RaceProperties? raceProps = thingDef.race;
+
+            if (raceProps != null)
+            {
+                return new NumberTableCell(raceProps.lifeExpectancy.ToDecimal(0), "0 y");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

@@ -4,28 +4,33 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class ProjectileArmorPenetrationColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class ProjectileArmorPenetrationColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
-        ProjectileProperties? defaultProjProps = verbProps?.defaultProjectile?.projectile;
-        const string formatString = "0\\%";
-
-        if (defaultProjProps?.damageDef is { harmsHealth: true, armorCategory: not null })
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            decimal cellValue = (defaultProjProps.GetArmorPenetration(null) * 100f).ToDecimal(0);
+            VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
+            ProjectileProperties? defaultProjProps = verbProps?.defaultProjectile?.projectile;
+            const string formatString = "0\\%";
 
-            return new NumberCell.Constant(cellValue, formatString);
+            if (defaultProjProps?.damageDef is { harmsHealth: true, armorCategory: not null })
+            {
+                decimal cellValue = (defaultProjProps.GetArmorPenetration(null) * 100f).ToDecimal(0);
+
+                return new NumberTableCell(cellValue, formatString);
+            }
+            else if (defaultProjProps == null && verbProps?.beamDamageDef != null)
+            {
+                decimal cellValue = (verbProps.beamDamageDef.defaultArmorPenetration * 100f).ToDecimal(0);
+
+                return new NumberTableCell(cellValue, formatString);
+            }
         }
-        else if (defaultProjProps == null && verbProps?.beamDamageDef != null)
-        {
-            decimal cellValue = (verbProps.beamDamageDef.defaultArmorPenetration * 100f).ToDecimal(0);
 
-            return new NumberCell.Constant(cellValue, formatString);
-        }
-
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

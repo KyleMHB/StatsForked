@@ -7,7 +7,7 @@ namespace Stats.TableCells;
 
 public readonly record struct TableCellDescriptor(TableCellStyleType Style, TableCellFieldDescriptor[] Fields);
 
-public readonly record struct TableCellFieldDescriptor(Widget Label, FilterWidget FilterWidget, Comparison<Cell> Compare);
+public readonly record struct TableCellFieldDescriptor(Widget Label, FilterWidget FilterWidget, Comparison<int> Compare);
 
 public enum TableCellStyleType
 {

@@ -6,10 +6,15 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class WeaponsColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class WeaponsColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
+        if (@object.Def is Verse.ThingDef thingDef)
+        {
+        }
         HashSet<Verse.ThingDef>? weapons = thingDef.GetPossibleWeapons();
 
         if (weapons != null)

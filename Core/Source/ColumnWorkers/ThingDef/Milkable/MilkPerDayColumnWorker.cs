@@ -4,20 +4,25 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Milkable;
 
-public sealed class MilkPerDayColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class MilkPerDayColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        CompProperties_Milkable? milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
-
-        if (milkableCompProps is { milkIntervalDays: > 0 })
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            decimal cellValue = ((float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays).ToDecimal(1);
+            CompProperties_Milkable? milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
 
-            return new NumberCell.Constant(cellValue, "0.0/d");
+            if (milkableCompProps is { milkIntervalDays: > 0 })
+            {
+                decimal cellValue = ((float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays).ToDecimal(1);
+
+                return new NumberTableCell(cellValue, "0.0/d");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

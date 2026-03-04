@@ -13,7 +13,7 @@ public sealed class MTMFilter<TOption> : NTMFilter<IEnumerable<TOption>, TOption
         || Operator == Operators.IsEqualTo.Instance
         || Operator == Operators.IsNotEqualTo.Instance;
     public MTMFilter(
-        Func<Cell, IEnumerable<TOption>> cellValueFunc,
+        Func<int, IEnumerable<TOption>> cellValueFunc,
         IEnumerable<NTMFilterOption<TOption>> options,
         string? label = null
     ) : base(

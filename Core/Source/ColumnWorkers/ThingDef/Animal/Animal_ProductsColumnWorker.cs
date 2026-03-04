@@ -6,8 +6,10 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class Animal_ProductsColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class Animal_ProductsColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         HashSet<Verse.ThingDef> products = GetProducts(thingDef);

@@ -40,8 +40,8 @@ public sealed class StringFilter : FilterWidgetWithInputField<string, string>
     }
     protected override string InputFieldText => Value;
     public override event Action? OnChange;
-    private readonly Func<Cell, string> CellValueFunc;
-    public StringFilter(Func<Cell, string> cellValueFunc, string? placeholder = null) : base([
+    private readonly Func<int, string> CellValueFunc;
+    public StringFilter(Func<int, string> cellValueFunc, string? placeholder = null) : base([
         Operators.Contains.Instance,
         Operators.NotContains.Instance,
     ], placeholder)
@@ -52,9 +52,9 @@ public sealed class StringFilter : FilterWidgetWithInputField<string, string>
     {
         Value = GUI.TextField(rect, Value);
     }
-    public override bool Eval(Cell cell)
+    public override bool Eval(int row)
     {
-        return Operator.Eval(CellValueFunc(cell), Value);
+        return Operator.Eval(CellValueFunc(row), Value);
     }
     public override void Reset()
     {

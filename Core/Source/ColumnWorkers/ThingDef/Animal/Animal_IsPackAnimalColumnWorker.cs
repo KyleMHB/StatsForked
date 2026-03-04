@@ -1,7 +1,9 @@
 ﻿namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class Animal_IsPackAnimalColumnWorker : BooleanColumnWorker<VirtualThing>
+public sealed class Animal_IsPackAnimalColumnWorker : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public Animal_IsPackAnimalColumnWorker(ColumnDef columndef) : base(columndef)
     {
     }

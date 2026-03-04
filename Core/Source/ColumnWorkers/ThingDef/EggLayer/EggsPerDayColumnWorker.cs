@@ -4,20 +4,25 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.EggLayer;
 
-public sealed class EggsPerDayColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class EggsPerDayColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        CompProperties_EggLayer? eggLayerCompProps = thingDef.GetCompProperties<CompProperties_EggLayer>();
-
-        if (eggLayerCompProps is { eggLayIntervalDays: > 0f })
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            decimal cellValue = (eggLayerCompProps.eggCountRange.Average / eggLayerCompProps.eggLayIntervalDays).ToDecimal(1);
+            CompProperties_EggLayer? eggLayerCompProps = thingDef.GetCompProperties<CompProperties_EggLayer>();
 
-            return new NumberCell.Constant(cellValue, "0.0/d");
+            if (eggLayerCompProps is { eggLayIntervalDays: > 0f })
+            {
+                decimal cellValue = (eggLayerCompProps.eggCountRange.Average / eggLayerCompProps.eggLayIntervalDays).ToDecimal(1);
+
+                return new NumberTableCell(cellValue, "0.0/d");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

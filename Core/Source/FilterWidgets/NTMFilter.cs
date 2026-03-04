@@ -69,9 +69,9 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
     }
     private readonly RelOperator<TLhs, HashSet<TRhs>> DefaultOperator;
     public override event Action? OnChange;
-    private readonly Func<Cell, TLhs> CellValueFunc;
+    private readonly Func<int, TLhs> CellValueFunc;
     protected NTMFilter(
-        Func<Cell, TLhs> cellValueFunc,
+        Func<int, TLhs> cellValueFunc,
         IEnumerable<NTMFilterOption<TRhs>> options,
         IEnumerable<RelOperator<TLhs, HashSet<TRhs>>> operators,
         RelOperator<TLhs, HashSet<TRhs>> defaultOperator,
@@ -112,9 +112,9 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 
         GUI.color = origGUIColor;
     }
-    public override bool Eval(Cell cell)
+    public override bool Eval(int row)
     {
-        return Operator.Eval(CellValueFunc(cell), SelectedOptions);
+        return Operator.Eval(CellValueFunc(row), SelectedOptions);
     }
     public sealed override void Reset()
     {

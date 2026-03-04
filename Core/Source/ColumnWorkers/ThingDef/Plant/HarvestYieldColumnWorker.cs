@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Stats.TableCells;
@@ -7,10 +8,15 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers.ThingDef.Plant;
 
-public sealed class HarvestYieldColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class HarvestYieldColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
+        if (@object.Def is Verse.ThingDef thingDef)
+        {
+        }
         PlantProperties? plantProps = thingDef.plant;
 
         if (plantProps is { harvestYield: > 0f, harvestedThingDef: not null })

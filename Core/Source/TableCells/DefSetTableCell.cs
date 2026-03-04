@@ -1,20 +1,24 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using Stats.FilterWidgets;
-using Stats.Widgets;
 using UnityEngine;
 using Verse;
 
 namespace Stats.TableCells;
 
-public readonly struct DefSetTableCell : ITableCell
+public interface IDefSetTableCell : ITableCell
+{
+    public IReadOnlyCollection<Def> Value { get; }
+    public string Text { get; }
+}
+
+// TODO: Since all rows are now of constant height, we need to refactor this cell.
+public readonly struct DefSetTableCell : IDefSetTableCell
 {
     private static readonly HashSet<Def> EmptyDefHashSet = [];
 
     public float Width { get; }
-    public readonly IReadOnlyCollection<Def> Value = EmptyDefHashSet;
-    public readonly string Text = "";
+    public IReadOnlyCollection<Def> Value { get; } = EmptyDefHashSet;
+    public string Text { get; } = "";
 
     public DefSetTableCell(IReadOnlyCollection<Def> value)
     {
@@ -40,24 +44,4 @@ public readonly struct DefSetTableCell : ITableCell
             Verse.Text.Anchor = textAnchor;
         }
     }
-
-    //static private int CompareByCellText(Cell cell1, Cell cell2)
-    //{
-    //    return ((Constant)cell1).Text.CompareTo(((Constant)cell2).Text);
-    //}
-
-    //static public CellDescriptor GetDescriptor(ColumnDef columnDef, IEnumerable<Def?> defs) => GetDescriptor(columnDef.Title, defs);
-
-    //static public CellDescriptor GetDescriptor(Widget valueFieldLabel, IEnumerable<Def?> defs)
-    //{
-    //    IEnumerable<NTMFilterOption<Def?>> valueFieldFilterOptions = defs
-    //        .OrderBy(def => def?.label)
-    //        .Select<Def?, NTMFilterOption<Def?>>(
-    //            def => def == null ? new() : new(def, def.LabelCap)
-    //        );
-    //    FilterWidget valueFieldFilter = new MTMFilter<Def?>(GetValue, valueFieldFilterOptions);
-    //    CellFieldDescriptor valueField = new(valueFieldLabel, valueFieldFilter, CompareByCellText);
-
-    //    return new CellDescriptor(CellStyleType.String, [valueField]);
-    //}
 }

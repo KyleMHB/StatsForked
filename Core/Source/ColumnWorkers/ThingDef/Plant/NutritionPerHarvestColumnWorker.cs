@@ -4,21 +4,26 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Plant;
 
-public sealed class NutritionPerHarvestColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class NutritionPerHarvestColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        PlantProperties? plantProps = thingDef.plant;
-
-        if (plantProps?.harvestedThingDef != null)
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            float productNutrition = plantProps.harvestedThingDef.GetStatValuePerceived(StatDefOf.Nutrition);
-            float nutritionPerHarvest = plantProps.harvestYield * productNutrition;
+            PlantProperties? plantProps = thingDef.plant;
 
-            return new NumberCell.Constant(nutritionPerHarvest.ToDecimal(2), "0.00");
+            if (plantProps?.harvestedThingDef != null)
+            {
+                float productNutrition = plantProps.harvestedThingDef.GetStatValuePerceived(StatDefOf.Nutrition);
+                float nutritionPerHarvest = plantProps.harvestYield * productNutrition;
+
+                return new NumberTableCell(nutritionPerHarvest.ToDecimal(2), "0.00");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

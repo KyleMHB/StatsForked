@@ -1,19 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using RimWorld;
-using Stats.FilterWidgets;
-using Stats.Widgets;
-using UnityEngine;
+﻿using UnityEngine;
 using Verse;
 
 namespace Stats.TableCells;
 
-public readonly struct DefTableCell : ITableCell
+public interface IDefTableCell : ITableCell
+{
+    public Def? Value { get; }
+    public string Text { get; }
+}
+
+public readonly struct DefTableCell : IDefTableCell
 {
     public float Width { get; }
-    public readonly Def? Value;
-    public readonly string Text = "";
+    public Def? Value { get; }
+    public string Text { get; } = "";
 
     public DefTableCell(Def value)
     {
@@ -36,24 +36,4 @@ public readonly struct DefTableCell : ITableCell
             Verse.Text.Anchor = textAnchor;
         }
     }
-
-    //static private int CompareByDefLabel(Cell cell1, Cell cell2)
-    //{
-    //    return GetCellText(cell1).CompareTo(GetCellText(cell2));
-    //}
-
-    //static public CellDescriptor GetDescriptor(ColumnDef columnDef, IEnumerable<Def?> defs) => GetDescriptor(columnDef.Title, defs);
-
-    //static public CellDescriptor GetDescriptor(Widget valueFieldLabel, IEnumerable<Def?> defs)
-    //{
-    //    IEnumerable<NTMFilterOption<Def?>> valueFieldFilterOptions = defs
-    //        .OrderBy(def => def?.label)
-    //        .Select<Def?, NTMFilterOption<Def?>>(
-    //            def => def == null ? new() : new(def, def.LabelCap)
-    //        );
-    //    FilterWidget valueFieldFilter = new OTMFilter<Def?>(GetValue, valueFieldFilterOptions);
-    //    CellFieldDescriptor valueField = new(valueFieldLabel, valueFieldFilter, CompareByDefLabel);
-
-    //    return new CellDescriptor(CellStyleType.String, [valueField]);
-    //}
 }

@@ -4,22 +4,27 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class RangedDirectHitChanceColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class RangedDirectHitChanceColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
-
-        if (verbProps != null)
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            decimal cellValue = verbProps.ForcedMissRadius > 0f
-                ? (100f / GenRadial.NumCellsInRadius(verbProps.ForcedMissRadius)).ToDecimal(1)
-                : 100m;
+            VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
 
-            return new NumberCell.Constant(cellValue, "0.0\\%");
+            if (verbProps != null)
+            {
+                decimal cellValue = verbProps.ForcedMissRadius > 0f
+                    ? (100f / GenRadial.NumCellsInRadius(verbProps.ForcedMissRadius)).ToDecimal(1)
+                    : 100m;
+
+                return new NumberTableCell(cellValue, "0.0\\%");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

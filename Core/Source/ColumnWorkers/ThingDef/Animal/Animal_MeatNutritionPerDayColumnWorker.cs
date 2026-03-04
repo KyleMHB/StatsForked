@@ -4,8 +4,10 @@ using Stats.ObjectTable.ColumnWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class Animal_MeatNutritionPerDayColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class Animal_MeatNutritionPerDayColumnWorker : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public Animal_MeatNutritionPerDayColumnWorker(ColumnDef columndef) : base(columndef, formatString: "0.00/d")
     {
     }

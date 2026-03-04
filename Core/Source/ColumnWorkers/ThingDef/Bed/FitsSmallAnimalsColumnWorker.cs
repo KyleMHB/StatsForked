@@ -3,10 +3,15 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Bed;
 
-public sealed class FitsSmallAnimalsColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class FitsSmallAnimalsColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
+        if (@object.Def is Verse.ThingDef thingDef)
+        {
+        }
         if (thingDef.building?.bed_humanlike == false)
         {
             return BooleanTableCell.True;

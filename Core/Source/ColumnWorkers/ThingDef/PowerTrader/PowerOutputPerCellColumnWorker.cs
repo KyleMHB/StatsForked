@@ -4,20 +4,25 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.PowerTrader;
 
-public sealed class PowerOutputPerCellColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class PowerOutputPerCellColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
 {
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
-        CompProperties_Power? powerCompProps = thingDef.GetCompProperties<CompProperties_Power>();
-
-        if (powerCompProps != null)
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            decimal cellValue = powerCompProps.PowerConsumption.ToDecimal(0) * -1m / thingDef.size.Area;
+            CompProperties_Power? powerCompProps = thingDef.GetCompProperties<CompProperties_Power>();
 
-            return new NumberCell.Constant(cellValue, "0 W/c");
+            if (powerCompProps != null)
+            {
+                decimal cellValue = powerCompProps.PowerConsumption.ToDecimal(0) * -1m / thingDef.size.Area;
+
+                return new NumberTableCell(cellValue, "0 W/c");
+            }
         }
 
-        return NumberCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberCell.GetDescriptor(columnDef);
+    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

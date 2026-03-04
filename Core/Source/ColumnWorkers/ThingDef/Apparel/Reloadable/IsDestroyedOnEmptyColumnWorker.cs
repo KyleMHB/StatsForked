@@ -4,8 +4,10 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Apparel.Reloadable;
 
-public sealed class IsDestroyedOnEmptyColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class IsDestroyedOnEmptyColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
         CompProperties_ApparelReloadable? reloadableCompProperties = thingDef.GetCompProperties<CompProperties_ApparelReloadable>();

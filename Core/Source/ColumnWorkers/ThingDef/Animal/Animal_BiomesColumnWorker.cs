@@ -9,120 +9,122 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class Animal_BiomesColumnWorker : ColumnWorker<VirtualThing>
-{
-    public Animal_BiomesColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
-    {
-    }
-    // This exists mainly for consistency, for when this column worker is used by several tables.
-    private static readonly Func<ThingDef, List<BiomeRecord>> GetBiomeRecords =
-    FunctionExtensions.Memoized((ThingDef thingDef) =>
-    {
-        var biomeRecords = new List<BiomeRecord>();
-        var raceProps = thingDef.race;
+//public sealed class Animal_BiomesColumnWorker : StaticColumnWorker<DefBasedObject,>
+//{
+//    public override ColumnDef Def => columnDef;
 
-        if (raceProps?.Animal == true)
-        {
-            foreach (var biomeDef in DefDatabase<BiomeDef>.AllDefsListForReading)
-            {
-                var animalCommonality = biomeDef.CommonalityOfAnimal(raceProps.AnyPawnKind);
+//    public Animal_BiomesColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
+//    {
+//    }
+//    // This exists mainly for consistency, for when this column worker is used by several tables.
+//    private static readonly Func<ThingDef, List<BiomeRecord>> GetBiomeRecords =
+//    FunctionExtensions.Memoized((ThingDef thingDef) =>
+//    {
+//        var biomeRecords = new List<BiomeRecord>();
+//        var raceProps = thingDef.race;
 
-                if (animalCommonality > 0f)
-                {
-                    var biomeRecord = new BiomeRecord(biomeDef, animalCommonality);
+//        if (raceProps?.Animal == true)
+//        {
+//            foreach (var biomeDef in DefDatabase<BiomeDef>.AllDefsListForReading)
+//            {
+//                var animalCommonality = biomeDef.CommonalityOfAnimal(raceProps.AnyPawnKind);
 
-                    biomeRecords.Add(biomeRecord);
-                }
-            }
-        }
+//                if (animalCommonality > 0f)
+//                {
+//                    var biomeRecord = new BiomeRecord(biomeDef, animalCommonality);
 
-        biomeRecords.SortByDescending(biomeRecord => biomeRecord.Commonality);
+//                    biomeRecords.Add(biomeRecord);
+//                }
+//            }
+//        }
 
-        return biomeRecords;
-    });
-    public override ObjectTableWidget.Cell GetCell(VirtualThing thing)
-    {
-        var biomeRecords = GetBiomeRecords(thing.Def);
+//        biomeRecords.SortByDescending(biomeRecord => biomeRecord.Commonality);
 
-        return new Cell(biomeRecords);
-    }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<VirtualThing> contextObjects)
-    {
-        var options = contextObjects
-            .SelectMany(thing => GetBiomeRecords(thing.Def).Select(biomeRecord => biomeRecord.BiomeDef).ToHashSet())
-            .Distinct()
-            .OrderBy(def => def.label)
-            .Select<BiomeDef, NTMFilterOption<BiomeDef>>(
-                def => def == null ? new() : new(def, def.LabelCap)
-            );
+//        return biomeRecords;
+//    });
+//    public override ObjectTableWidget.Cell GetCell(VirtualThing thing)
+//    {
+//        var biomeRecords = GetBiomeRecords(thing.Def);
 
-        yield return new(Def.Title, new MTMFilter<Cell, BiomeDef>(cell => cell.Biomes, options, this));
-    }
+//        return new Cell(biomeRecords);
+//    }
+//    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<VirtualThing> contextObjects)
+//    {
+//        var options = contextObjects
+//            .SelectMany(thing => GetBiomeRecords(thing.Def).Select(biomeRecord => biomeRecord.BiomeDef).ToHashSet())
+//            .Distinct()
+//            .OrderBy(def => def.label)
+//            .Select<BiomeDef, NTMFilterOption<BiomeDef>>(
+//                def => def == null ? new() : new(def, def.LabelCap)
+//            );
 
-    private sealed class Cell : ObjectTableWidget.WidgetCell
-    {
-        protected override Widget? Widget { get; set; }
-        public override event Action? OnChange;
-        public HashSet<BiomeDef> Biomes { get; }
-        public float AverageCommonality { get; }
-        public Cell(List<BiomeRecord> biomeRecords)
-        {
-            if (biomeRecords.Count > 0)
-            {
-                var text = biomeRecords[0].ToString();
-                string? tooltip = null;
+//        yield return new(Def.Title, new MTMFilter<Cell, BiomeDef>(cell => cell.Biomes, options, this));
+//    }
 
-                if (biomeRecords.Count > 1)
-                {
-                    text += $" ({biomeRecords.Count})".Colorize(Globals.GUI.TextColorSecondary);
+//    private sealed class Cell : ObjectTableWidget.WidgetCell
+//    {
+//        protected override Widget? Widget { get; set; }
+//        public override event Action? OnChange;
+//        public HashSet<BiomeDef> Biomes { get; }
+//        public float AverageCommonality { get; }
+//        public Cell(List<BiomeRecord> biomeRecords)
+//        {
+//            if (biomeRecords.Count > 0)
+//            {
+//                var text = biomeRecords[0].ToString();
+//                string? tooltip = null;
 
-                    var stringBuilder = new StringBuilder();
+//                if (biomeRecords.Count > 1)
+//                {
+//                    text += $" ({biomeRecords.Count})".Colorize(Globals.GUI.TextColorSecondary);
 
-                    foreach (var biomeRecord in biomeRecords)
-                    {
-                        stringBuilder.AppendLine(biomeRecord.ToString());
-                    }
+//                    var stringBuilder = new StringBuilder();
 
-                    tooltip = stringBuilder.ToString();
-                }
+//                    foreach (var biomeRecord in biomeRecords)
+//                    {
+//                        stringBuilder.AppendLine(biomeRecord.ToString());
+//                    }
 
-                var animalCommonalitySum = 0f;
+//                    tooltip = stringBuilder.ToString();
+//                }
 
-                foreach (var biomeRecord in biomeRecords)
-                {
-                    animalCommonalitySum += biomeRecord.Commonality;
-                }
+//                var animalCommonalitySum = 0f;
 
-                var averageCommonality = animalCommonalitySum / biomeRecords.Count;
+//                foreach (var biomeRecord in biomeRecords)
+//                {
+//                    animalCommonalitySum += biomeRecord.Commonality;
+//                }
 
-                var biomeDefs = biomeRecords.Select(biomeRecord => biomeRecord.BiomeDef).ToHashSet();
+//                var averageCommonality = animalCommonalitySum / biomeRecords.Count;
 
-                Widget widget = new Label(text).PaddingAbs(ObjectTableWidget.CellPadHor, ObjectTableWidget.CellPadVer);
+//                var biomeDefs = biomeRecords.Select(biomeRecord => biomeRecord.BiomeDef).ToHashSet();
 
-                if (tooltip != null)
-                {
-                    widget = widget.Tooltip(tooltip);
-                }
+//                Widget widget = new Label(text).PaddingAbs(ObjectTableWidget.CellPadHor, ObjectTableWidget.CellPadVer);
 
-                Widget = widget;
-                Biomes = biomeDefs;
-            }
-            else
-            {
-                Biomes = [];
-            }
-        }
-        public override int CompareTo(ObjectTableWidget.Cell cell)
-        {
-            return AverageCommonality.CompareTo(((Cell)cell).AverageCommonality);
-        }
-    }
+//                if (tooltip != null)
+//                {
+//                    widget = widget.Tooltip(tooltip);
+//                }
 
-    private readonly record struct BiomeRecord(BiomeDef BiomeDef, float Commonality)
-    {
-        public override string ToString()
-        {
-            return $"{BiomeDef.LabelCap}: {Commonality.ToString("0.###").Colorize(Globals.GUI.TextColorHighlight)}";
-        }
-    }
-}
+//                Widget = widget;
+//                Biomes = biomeDefs;
+//            }
+//            else
+//            {
+//                Biomes = [];
+//            }
+//        }
+//        public override int CompareTo(ObjectTableWidget.Cell cell)
+//        {
+//            return AverageCommonality.CompareTo(((Cell)cell).AverageCommonality);
+//        }
+//    }
+
+//    private readonly record struct BiomeRecord(BiomeDef BiomeDef, float Commonality)
+//    {
+//        public override string ToString()
+//        {
+//            return $"{BiomeDef.LabelCap}: {Commonality.ToString("0.###").Colorize(Globals.GUI.TextColorHighlight)}";
+//        }
+//    }
+//}

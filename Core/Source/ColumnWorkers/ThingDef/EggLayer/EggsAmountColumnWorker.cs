@@ -7,10 +7,15 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.EggLayer;
 
-public sealed class EggsAmountColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class EggsAmountColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
 {
+    public override ColumnDef Def => columnDef;
+
     public override Cell MakeCell(Verse.ThingDef thingDef)
     {
+        if (@object.Def is Verse.ThingDef thingDef)
+        {
+        }
         CompProperties_EggLayer? eggLayerCompProps = thingDef.GetCompProperties<CompProperties_EggLayer>();
 
         if (eggLayerCompProps != null)
