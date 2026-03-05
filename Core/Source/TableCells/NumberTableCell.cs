@@ -11,6 +11,7 @@ public interface INumberTableCell : ITableCell
 public readonly struct NumberTableCell : INumberTableCell
 {
     public float Width { get; }
+    public bool IsRefreshable => false;
     public decimal Value { get; }
 
     private readonly string _text = "";

@@ -12,6 +12,7 @@ public interface IThingDefSetTableCell : ITableCell
 public readonly struct ThingDefSetTableCell : IThingDefSetTableCell
 {
     public float Width { get; }
+    public bool IsRefreshable => false;
     public IReadOnlyCollection<ThingDef?> Value { get; }
 
     public ThingDefSetTableCell(IReadOnlyCollection<ThingDef?> value)

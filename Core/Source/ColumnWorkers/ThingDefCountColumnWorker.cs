@@ -33,14 +33,3 @@ public abstract class ThingDefCountColumnWorker<TObject, TCell> : ColumnWorker<T
         return new TableCellDescriptor(TableCellStyleType.Number, [countField, thingDefField]);
     }
 }
-
-public abstract class ThingDefCountColumnWorker<TObject> : ThingDefCountColumnWorker<TObject, ThingDefCountTableCell>
-{
-    protected override ThingDefCountTableCell RefreshCell(ThingDefCountTableCell cell, out bool wasStale)
-    {
-        wasStale = false;
-        return cell;
-    }
-
-    public override void RefreshCells() { }
-}

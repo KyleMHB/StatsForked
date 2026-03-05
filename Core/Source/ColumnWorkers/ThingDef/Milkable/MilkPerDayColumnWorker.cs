@@ -3,7 +3,7 @@ using Stats.TableCells;
 
 namespace Stats.ColumnWorkers.ThingDef.Milkable;
 
-public sealed class MilkPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
+public sealed class MilkPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 

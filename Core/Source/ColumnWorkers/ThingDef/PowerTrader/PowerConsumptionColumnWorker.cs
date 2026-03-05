@@ -3,7 +3,7 @@ using Stats.TableCells;
 
 namespace Stats.ColumnWorkers.ThingDef.PowerTrader;
 
-public sealed class PowerConsumptionColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
+public sealed class PowerConsumptionColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 

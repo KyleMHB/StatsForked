@@ -3,7 +3,7 @@ using Stats.TableCells;
 
 namespace Stats.ColumnWorkers.ThingDef.Plant;
 
-public sealed class ProductPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
+public sealed class ProductPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 

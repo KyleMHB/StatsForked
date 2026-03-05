@@ -3,7 +3,7 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class RangeColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
+public sealed class RangeColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 

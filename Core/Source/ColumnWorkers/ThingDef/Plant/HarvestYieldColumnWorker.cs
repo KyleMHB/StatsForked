@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers.ThingDef.Plant;
 
-public sealed class HarvestYieldColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject>
+public sealed class HarvestYieldColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountTableCell>
 {
     public override ColumnDef Def => columnDef;
 

@@ -24,14 +24,3 @@ public abstract class ThingDefColumnWorker<TObject, TCell> : ColumnWorker<TObjec
         return new TableCellDescriptor(TableCellStyleType.String, [valueField]);
     }
 }
-
-public abstract class ThingDefColumnWorker<TObject> : ThingDefColumnWorker<TObject, ThingDefTableCell>
-{
-    protected override ThingDefTableCell RefreshCell(ThingDefTableCell cell, out bool wasStale)
-    {
-        wasStale = false;
-        return cell;
-    }
-
-    public override void RefreshCells() { }
-}

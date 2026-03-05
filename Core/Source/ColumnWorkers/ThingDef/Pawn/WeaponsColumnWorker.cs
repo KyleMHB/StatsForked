@@ -5,7 +5,7 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class WeaponsColumnWorker(ColumnDef columnDef) : ThingDefSetColumnWorker<DefBasedObject>
+public sealed class WeaponsColumnWorker(ColumnDef columnDef) : ThingDefSetColumnWorker<DefBasedObject, ThingDefSetTableCell>
 {
     public override ColumnDef Def => columnDef;
 

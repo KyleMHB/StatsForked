@@ -12,6 +12,7 @@ public interface IDefTableCell : ITableCell
 public readonly struct DefTableCell : IDefTableCell
 {
     public float Width { get; }
+    public bool IsRefreshable => false;
     public Def? Value { get; }
     public string Text { get; } = "";
 

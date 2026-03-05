@@ -12,6 +12,7 @@ public readonly struct BooleanTableCell : IBooleanTableCell
     private static readonly Texture2D _textureTrue = Verse.Widgets.CheckboxOnTex;
 
     public float Width => 0f;
+    public bool IsRefreshable => false;
     public bool Value { get; }
 
     public BooleanTableCell(bool value)

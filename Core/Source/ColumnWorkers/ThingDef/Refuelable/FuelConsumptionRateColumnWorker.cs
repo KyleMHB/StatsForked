@@ -3,7 +3,7 @@ using Stats.TableCells;
 
 namespace Stats.ColumnWorkers.ThingDef.Refuelable;
 
-public sealed class FuelConsumptionRateColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
+public sealed class FuelConsumptionRateColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 

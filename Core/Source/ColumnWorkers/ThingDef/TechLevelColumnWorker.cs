@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using Stats.ObjectTable;
 using Stats.TableCells;
 using Stats.TableWorkers;
-using Stats.Widgets;
 using UnityEngine;
 using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef;
 
-public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ThingDefColumnWorker
+public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBasedObject>
 {
     //public TechLevelColumnWorker : base(columnDef, CellStyleType.String, TODO)
     //{

@@ -8,6 +8,7 @@ namespace Stats.ColumnWorkers;
 public abstract class ColumnWorker
 {
     public abstract ColumnDef Def { get; }
+    public abstract bool IsRefreshable { get; }
 }
 
 public abstract class ColumnWorker<TObject> : ColumnWorker
@@ -29,7 +30,10 @@ public abstract class ColumnWorker<TObject> : ColumnWorker
 
 public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where TCell : struct, ITableCell
 {
+    public override bool IsRefreshable => _refreshableCellsCount > 0;
+
     private readonly List<TCell> _cells = new(250);
+    private int _refreshableCellsCount;
 
     protected TCell this[int index] => _cells[index];
 
@@ -79,38 +83,47 @@ public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where
         }
 
         _cells.Add(cell);
+        if (cell.IsRefreshable)
+        {
+            _refreshableCellsCount++;
+        }
     }
 
     public override void NotifyRowRemoved(int row)
     {
+        if (_cells[row].IsRefreshable)
+        {
+            _refreshableCellsCount--;
+        }
         _cells.ReplaceWithLast(row);
     }
 
-    protected abstract TCell RefreshCell(TCell cell, out bool wasStale);
-
-    public override void RefreshCells()
-    {
-        List<TCell> cells = _cells;
-        int cellsCount = cells.Count;
-        for (int i = 0; i < cellsCount; i++)
-        {
-            TCell originalCell = cells[i];
-            TCell possiblyNewCell = RefreshCell(originalCell, out bool wasStale);
-            if (wasStale)
-            {
-                cells[i] = possiblyNewCell;
-            }
-        }
-    }
-}
-
-public abstract class StaticColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, ITableCell
-{
-    protected override TCell RefreshCell(TCell cell, out bool wasStale)
+    protected virtual TCell RefreshCell(TCell cell, out bool wasStale)
     {
         wasStale = false;
         return cell;
     }
 
-    public override void RefreshCells() { }
+    public override void RefreshCells()
+    {
+        if (_refreshableCellsCount == 0)
+        {
+            return;
+        }
+
+        List<TCell> cells = _cells;
+        int cellsCount = cells.Count;
+        for (int i = 0; i < cellsCount; i++)
+        {
+            TCell originalCell = cells[i];
+            if (originalCell.IsRefreshable)
+            {
+                TCell possiblyNewCell = RefreshCell(originalCell, out bool wasStale);
+                if (wasStale)
+                {
+                    cells[i] = possiblyNewCell;
+                }
+            }
+        }
+    }
 }

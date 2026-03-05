@@ -15,14 +15,3 @@ public abstract class NumberColumnWorker<TObject, TCell> : ColumnWorker<TObject,
         return new TableCellDescriptor(TableCellStyleType.Number, [valueField]);
     }
 }
-
-public abstract class NumberColumnWorker<TObject> : NumberColumnWorker<TObject, NumberTableCell>
-{
-    protected override NumberTableCell RefreshCell(NumberTableCell cell, out bool wasStale)
-    {
-        wasStale = false;
-        return cell;
-    }
-
-    public override void RefreshCells() { }
-}

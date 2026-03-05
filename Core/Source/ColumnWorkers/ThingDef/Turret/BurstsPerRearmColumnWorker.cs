@@ -1,11 +1,10 @@
 ﻿using RimWorld;
 using Stats.TableCells;
-using Stats.TableWorkers;
 using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Turret;
 
-public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
+public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 

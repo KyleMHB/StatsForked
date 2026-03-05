@@ -3,7 +3,7 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class LifeExpectancyColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
+public sealed class LifeExpectancyColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 

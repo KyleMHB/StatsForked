@@ -3,7 +3,7 @@ using Stats.TableCells;
 
 namespace Stats.ColumnWorkers.ThingDef.EggLayer;
 
-public sealed class EggsNutritionPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
+public sealed class EggsNutritionPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 

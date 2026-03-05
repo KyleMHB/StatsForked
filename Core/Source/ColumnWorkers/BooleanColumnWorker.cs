@@ -25,6 +25,8 @@ public abstract class BooleanColumnWorker<TObject, TCell> : ColumnWorker<TObject
 
 public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
 {
+    public override bool IsRefreshable => false;
+
     private readonly List<bool> _values = new(250);
 
     protected abstract bool GetValue(TObject @object);

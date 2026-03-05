@@ -6,7 +6,7 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Milkable;
 
-public sealed class MilkAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject>
+public sealed class MilkAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountTableCell>
 {
     public override ColumnDef Def => columnDef;
 

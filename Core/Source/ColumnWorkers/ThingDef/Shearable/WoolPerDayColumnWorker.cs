@@ -3,7 +3,7 @@ using Stats.TableCells;
 
 namespace Stats.ColumnWorkers.ThingDef.Shearable;
 
-public sealed class WoolPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
+public sealed class WoolPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 

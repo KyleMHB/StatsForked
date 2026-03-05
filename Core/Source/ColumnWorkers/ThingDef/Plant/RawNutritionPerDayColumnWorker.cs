@@ -3,7 +3,7 @@ using Stats.TableCells;
 
 namespace Stats.ColumnWorkers.ThingDef.Plant;
 
-public sealed class RawNutritionPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
+public sealed class RawNutritionPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 

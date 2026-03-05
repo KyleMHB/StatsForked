@@ -68,6 +68,7 @@ public sealed class FuelCapacityScaledColumnWorker(ColumnDef columnDef) : ThingD
         public string ThingDefLabel => _innerCell.ThingDefLabel;
         public decimal Count => _innerCell.Count;
         public float Width => _innerCell.Width;
+        public bool IsRefreshable => RefuelableCompProps != null;
 
         public readonly CompProperties_Refuelable? RefuelableCompProps;
 

@@ -6,7 +6,7 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Refuelable;
 
-public sealed class FuelCapacityColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject>
+public sealed class FuelCapacityColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountTableCell>
 {
     public override ColumnDef Def => columnDef;
 

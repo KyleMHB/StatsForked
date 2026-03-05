@@ -1,24 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using RimWorld;
 using Stats.TableCells;
 using Stats.TableWorkers;
+using Verse;
 
-namespace Stats.ColumnWorkers.ThingDef.Apparel;
+namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class LayersColumnWorker(ColumnDef columnDef) : DefSetColumnWorker<DefBasedObject, DefSetTableCell>
+public sealed class TrainabilityColumnWorker(ColumnDef columnDef) : DefColumnWorker<DefBasedObject, DefTableCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override DefSetTableCell MakeCell(DefBasedObject @object)
+    protected override DefTableCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
-            ApparelProperties? apparelProps = thingDef.apparel;
+            TrainabilityDef? trainability = thingDef.race?.trainability;
 
-            if (apparelProps != null)
+            if (trainability != null)
             {
-                return new DefSetTableCell(apparelProps.layers);
+                return new DefTableCell(trainability);
             }
         }
 
@@ -28,7 +28,7 @@ public sealed class LayersColumnWorker(ColumnDef columnDef) : DefSetColumnWorker
     protected override IEnumerable<Verse.Def?> GetValueFieldFilterOptions(TableWorker tableWorker)
     {
         return ((IRefRecordsProvider<Verse.ThingDef>)tableWorker).Records
-            .SelectMany(thingDef => thingDef.apparel?.layers)
+            .Select(thingDef => thingDef.race?.trainability)
             .Distinct();
     }
 }

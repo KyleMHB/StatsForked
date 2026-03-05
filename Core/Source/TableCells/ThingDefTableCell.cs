@@ -13,6 +13,7 @@ public interface IThingDefTableCell : ITableCell
 public readonly struct ThingDefTableCell : IThingDefTableCell
 {
     public float Width { get; }
+    public bool IsRefreshable => false;
     public ThingDef? Value { get; }
     public string Text { get; } = "";
 

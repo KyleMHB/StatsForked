@@ -17,6 +17,7 @@ public readonly struct DefSetTableCell : IDefSetTableCell
     private static readonly HashSet<Def> EmptyDefHashSet = [];
 
     public float Width { get; }
+    public bool IsRefreshable => false;
     public IReadOnlyCollection<Def> Value { get; } = EmptyDefHashSet;
     public string Text { get; } = "";
 

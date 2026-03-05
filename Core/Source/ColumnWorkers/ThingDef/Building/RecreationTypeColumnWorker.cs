@@ -6,7 +6,7 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Building;
 
-public sealed class RecreationTypeColumnWorker(ColumnDef columnDef) : DefColumnWorker<DefBasedObject>
+public sealed class RecreationTypeColumnWorker(ColumnDef columnDef) : DefColumnWorker<DefBasedObject, DefTableCell>
 {
     public override ColumnDef Def => columnDef;
 

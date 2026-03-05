@@ -4,7 +4,7 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class CaravanCarryingCapacityColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
+public sealed class CaravanCarryingCapacityColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 

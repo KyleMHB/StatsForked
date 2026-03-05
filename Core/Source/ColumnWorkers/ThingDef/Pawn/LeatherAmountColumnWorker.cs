@@ -6,7 +6,7 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class LeatherAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject>
+public sealed class LeatherAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountTableCell>
 {
     public override ColumnDef Def => columnDef;
 
