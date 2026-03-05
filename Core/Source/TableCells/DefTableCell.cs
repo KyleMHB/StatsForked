@@ -6,7 +6,7 @@ namespace Stats.TableCells;
 public interface IDefTableCell : ITableCell
 {
     public Def? Value { get; }
-    public string Text { get; }
+    public string? Text { get; }
 }
 
 public readonly struct DefTableCell : IDefTableCell
@@ -14,7 +14,7 @@ public readonly struct DefTableCell : IDefTableCell
     public float Width { get; }
     public bool IsRefreshable => false;
     public Def? Value { get; }
-    public string Text { get; } = "";
+    public string? Text { get; }
 
     public DefTableCell(Def value)
     {

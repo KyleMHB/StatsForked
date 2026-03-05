@@ -7,7 +7,7 @@ namespace Stats.TableCells;
 public interface IThingDefTableCell : ITableCell
 {
     public ThingDef? Value { get; }
-    public string Text { get; }
+    public string? Text { get; }
 }
 
 public readonly struct ThingDefTableCell : IThingDefTableCell
@@ -15,7 +15,7 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
     public float Width { get; }
     public bool IsRefreshable => false;
     public ThingDef? Value { get; }
-    public string Text { get; } = "";
+    public string? Text { get; }
 
     private readonly Widget? _icon;
     private readonly float _iconWidth;

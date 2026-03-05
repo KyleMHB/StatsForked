@@ -14,7 +14,7 @@ public readonly struct NumberTableCell : INumberTableCell
     public bool IsRefreshable => false;
     public decimal Value { get; }
 
-    private readonly string _text = "";
+    private readonly string? _text;
 
     public NumberTableCell(decimal value, string formatString = "")
     {

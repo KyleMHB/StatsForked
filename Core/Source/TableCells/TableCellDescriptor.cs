@@ -11,7 +11,7 @@ public readonly record struct TableCellFieldDescriptor(Widget Label, FilterWidge
 
 public enum TableCellStyleType
 {
-    Number = TextAnchor.LowerRight,
     String = TextAnchor.LowerLeft,
+    Number = TextAnchor.LowerRight,
     Boolean = TextAnchor.LowerCenter,
 }

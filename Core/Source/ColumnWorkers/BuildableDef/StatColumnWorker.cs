@@ -48,6 +48,11 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
 
         if (newStatValue != cell.ValueRaw)
         {
+            if (_cellTooltip != null && _cellTooltipOwner == cell.StatRequest)
+            {
+                _cellTooltip = null;
+            }
+
             wasStale = true;
             return new StatCell(newStatValue, cell.StatRequest, _stat);
         }
@@ -67,10 +72,10 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
 
     public override void NotifyRowRemoved(int row)
     {
-        _tooltipOwner = default;
+        _cellTooltipOwner = default;
         // TODO:
         //
-        // Set _tooltip to null also?
+        // Set _cellTooltip to null also?
         // Although cell removal code is already a bit heavier than i wanted it to be,
         // and i don't think a single string, that just hangs around in memory, is that big of an issue.
 
@@ -82,8 +87,8 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
     // Tooltip may become stale despite the cell's value being fresh.
     // This happens when we do not refresh a cell because its value haven't changed.
     // But the way we got to this value may have changed, and tooltip displays that info.
-    private static StatRequest _tooltipOwner;
-    private static TipSignal? _tooltip;
+    private static StatRequest _cellTooltipOwner;
+    private static TipSignal? _cellTooltip;
 
     public readonly struct StatCell : ITableCell
     {
@@ -104,17 +109,12 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
             {
                 ValueRaw = statValue;
                 _text = stat.Worker.GetStatDrawEntryLabel(stat, statValue, _ToStringNumberSense, statRequest);
+                Width = Text.CalcSize(_text).x;
                 Match match = _numberRegex.Match(_text);
                 if (match.Success)
                 {
                     Value = decimal.Parse(match.Groups[1].Captures[0].Value);
                 }
-            }
-
-            // Drop tooltip on refresh.
-            if (_tooltip != null && _tooltipOwner == statRequest)
-            {
-                _tooltip = null;
             }
         }
 
@@ -124,12 +124,12 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
             {
                 if (Mouse.IsOver(rect))
                 {
-                    if (_tooltip == null || _tooltipOwner != StatRequest)
+                    if (_cellTooltip == null || _cellTooltipOwner != StatRequest)
                     {
-                        _tooltip = _stat.Worker.GetExplanationFull(StatRequest, _ToStringNumberSense, ValueRaw);
-                        _tooltipOwner = StatRequest;
+                        _cellTooltip = _stat.Worker.GetExplanationFull(StatRequest, _ToStringNumberSense, ValueRaw);
+                        _cellTooltipOwner = StatRequest;
                     }
-                    TooltipHandler.TipRegion(rect, _tooltip.Value);
+                    TooltipHandler.TipRegion(rect, _cellTooltip.Value);
                 }
 
                 rect = rect.ContractedByObjectTableCellPadding();

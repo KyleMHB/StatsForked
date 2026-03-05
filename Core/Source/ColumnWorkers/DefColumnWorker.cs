@@ -18,7 +18,7 @@ public abstract class DefColumnWorker<TObject, TCell> : ColumnWorker<TObject, TC
                 def => def == null ? new() : new(def, def.LabelCap)
             );
         FilterWidget valueFieldFilter = new OTMFilter<Verse.Def?>((int row) => this[row].Value, valueFieldFilterOptions);
-        int CompareByDefLabel(int row1, int row2) => this[row1].Text.CompareTo(this[row2].Text);
+        int CompareByDefLabel(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Text, this[row2].Text);
         TableCellFieldDescriptor valueField = new(Def.Title, valueFieldFilter, CompareByDefLabel);
 
         return new TableCellDescriptor(TableCellStyleType.String, [valueField]);

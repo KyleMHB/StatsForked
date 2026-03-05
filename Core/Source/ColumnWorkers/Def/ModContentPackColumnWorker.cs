@@ -34,7 +34,7 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
                 mod => mod == null ? new() : new(mod, mod.Name, null, mod.PackageIdPlayerFacing)
             );
         FilterWidget valueFieldFilter = new OTMFilter<ModContentPack?>((int row) => this[row].Mod, valueFieldFilterOptions);
-        int Compare(int row1, int row2) => this[row1].ModName.CompareTo(this[row2].ModName);
+        int Compare(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].ModName, this[row2].ModName);
         TableCellFieldDescriptor valueField = new(Def.Title, valueFieldFilter, Compare);
 
         return new TableCellDescriptor(TableCellStyleType.String, [valueField]);
@@ -45,7 +45,7 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
         public float Width { get; }
         public bool IsRefreshable => false;
         public readonly ModContentPack? Mod;
-        public readonly string ModName = "";
+        public readonly string? ModName;
         private readonly TipSignal _tooltip;
 
         public ModContentPackCell(ModContentPack mod)

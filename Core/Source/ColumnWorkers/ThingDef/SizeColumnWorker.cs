@@ -53,7 +53,7 @@ public sealed class SizeColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBase
         public bool IsRefreshable => false;
         public readonly decimal Area;
 
-        private readonly string _text = "";
+        private readonly string? _text;
 
         public SizeCell(IntVec2 size)
         {

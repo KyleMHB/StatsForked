@@ -6,14 +6,14 @@ namespace Stats.TableCells;
 
 public interface IThingDefSetTableCell : ITableCell
 {
-    public IReadOnlyCollection<ThingDef?> Value { get; }
+    public IReadOnlyCollection<ThingDef?>? Value { get; }
 }
 
 public readonly struct ThingDefSetTableCell : IThingDefSetTableCell
 {
     public float Width { get; }
     public bool IsRefreshable => false;
-    public IReadOnlyCollection<ThingDef?> Value { get; }
+    public IReadOnlyCollection<ThingDef?>? Value { get; }
 
     public ThingDefSetTableCell(IReadOnlyCollection<ThingDef?> value)
     {
@@ -22,7 +22,7 @@ public readonly struct ThingDefSetTableCell : IThingDefSetTableCell
 
     public void Draw(Rect rect)
     {
-        if (Value.Count > 0 && Event.current.type == EventType.Repaint)
+        if (Value?.Count > 0 && Event.current.type == EventType.Repaint)
         {
             rect = rect.ContractedByObjectTableCellPadding();
 

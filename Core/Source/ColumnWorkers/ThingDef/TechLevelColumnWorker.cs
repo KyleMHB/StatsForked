@@ -45,7 +45,7 @@ public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<De
         public bool IsRefreshable => false;
         public readonly TechLevel Value;
 
-        private readonly string _text = "";
+        private readonly string? _text;
 
         public TechLevelCell(TechLevel techLevel)
         {

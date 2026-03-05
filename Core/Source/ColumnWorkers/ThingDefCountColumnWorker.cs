@@ -27,7 +27,7 @@ public abstract class ThingDefCountColumnWorker<TObject, TCell> : ColumnWorker<T
                     : new(thingDef, thingDef.LabelCap, new ThingDefIcon(thingDef))
             );
         FilterWidget thingDefFilter = new OTMFilter<Verse.ThingDef?>((int row) => this[row].ThingDef, thingDefFilterOptions);
-        int CompareByThingDefLabel(int row1, int row2) => this[row1].ThingDefLabel.CompareTo(this[row2].ThingDefLabel);
+        int CompareByThingDefLabel(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].ThingDefLabel, this[row2].ThingDefLabel);
         TableCellFieldDescriptor thingDefField = new(thingDefFieldLabel, thingDefFilter, CompareByThingDefLabel);
 
         return new TableCellDescriptor(TableCellStyleType.Number, [countField, thingDefField]);
