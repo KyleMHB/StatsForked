@@ -184,13 +184,13 @@
         <workerClass>Stats.Animal_AverageLitterSizeColumnWorker</workerClass>
     </Stats.ColumnDef>
 
-    <Stats.ColumnDef>
+    <!-- <Stats.ColumnDef>
         <defName>Animal_Biomes</defName>
         <label>biomes</label>
         <description>List of biomes where the animal can be found, sorted by animal's commonality.
 
 The column is sortable by the average animal commonality across all biomes where it can be found.</description>
         <workerClass>Stats.Animal_BiomesColumnWorker</workerClass>
-    </Stats.ColumnDef>
+    </Stats.ColumnDef> -->
 
 </Defs>

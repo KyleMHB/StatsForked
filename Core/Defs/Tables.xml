@@ -267,7 +267,7 @@
         <workerClass>Stats.AnimalsTableWorker</workerClass>
         <columns>
             <li>Thing_Label</li>
-            <li>Animal_Biomes</li>
+            <!-- <li>Animal_Biomes</li> -->
             <!-- Yield -->
             <li>Pawn_MeatAmount</li>
             <li>Pawn_LeatherAmount</li>
