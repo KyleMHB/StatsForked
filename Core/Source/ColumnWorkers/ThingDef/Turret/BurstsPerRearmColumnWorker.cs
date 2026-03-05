@@ -5,7 +5,7 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Turret;
 
-public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
@@ -41,6 +41,4 @@ public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : StaticColu
 
         return default;
     }
-
-    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

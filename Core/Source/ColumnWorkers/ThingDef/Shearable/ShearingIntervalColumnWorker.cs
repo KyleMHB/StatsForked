@@ -1,10 +1,9 @@
 ﻿using RimWorld;
 using Stats.TableCells;
-using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Shearable;
 
-public sealed class ShearingIntervalColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class ShearingIntervalColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
@@ -22,6 +21,4 @@ public sealed class ShearingIntervalColumnWorker(ColumnDef columnDef) : StaticCo
 
         return default;
     }
-
-    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

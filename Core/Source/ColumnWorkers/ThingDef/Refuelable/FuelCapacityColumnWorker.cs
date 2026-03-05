@@ -6,38 +6,36 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Refuelable;
 
-public sealed class FuelCapacityColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
+public sealed class FuelCapacityColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    protected override ThingDefCountTableCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
-        }
-        CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();
+            CompProperties_Refuelable? refuelableCompProps = thingDef.GetCompProperties<CompProperties_Refuelable>();
 
-        if (refuelableCompProps != null)
-        {
-            Verse.ThingDef? fuelType = refuelableCompProps.fuelFilter?.AnyAllowedDef;
-
-            if (fuelType != null)
+            if (refuelableCompProps != null)
             {
-                decimal fuelCapacity = refuelableCompProps.fuelCapacity.ToDecimal(0);
-                ThingDefCount cellValue = new(fuelType, fuelCapacity);
+                Verse.ThingDef? fuelType = refuelableCompProps.fuelFilter?.AnyAllowedDef;
 
-                return new ThingDefCountCell(cellValue);
+                if (fuelType != null)
+                {
+                    decimal fuelCapacity = refuelableCompProps.fuelCapacity.ToDecimal(0);
+
+                    return new ThingDefCountTableCell(fuelType, fuelCapacity);
+                }
             }
         }
 
-        return ThingDefCountTableCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+
+    protected override IEnumerable<Verse.ThingDef?> GetTypeFieldFilterOptions(TableWorker tableWorker)
     {
-        IEnumerable<Verse.ThingDef?> fuelDefs = ((IRefRecordsProvider)tableWorker).Records
+        return ((IRefRecordsProvider<Verse.ThingDef>)tableWorker).Records
             .Select(thingDef => thingDef.GetCompProperties<CompProperties_Refuelable>()?.fuelFilter?.AnyAllowedDef)
             .Distinct();
-
-        return ThingDefCountTableCell.GetDescriptor(fuelDefs);
     }
 }

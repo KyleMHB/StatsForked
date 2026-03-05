@@ -1,10 +1,9 @@
 ﻿using RimWorld;
 using Stats.TableCells;
-using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Refuelable;
 
-public sealed class FuelConsumptionRateColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class FuelConsumptionRateColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
@@ -25,6 +24,4 @@ public sealed class FuelConsumptionRateColumnWorker(ColumnDef columnDef) : Stati
 
         return default;
     }
-
-    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }
