@@ -6,7 +6,21 @@ using Stats.TableWorkers;
 using UnityEngine;
 
 namespace Stats.ColumnWorkers.ThingDef.Refuelable;
-// Turret rearm cost
+
+// Note: This was turret rearm cost column.
+//
+// TODO:
+//
+// Realistically, we only need to refresh our cells once after difficulty settings had been changed.
+//
+// In order to do this:
+// - Have a private _isStale flag that will be set to true after difficulty setting had been changed.
+// - Override IsRefreshable and return the flag.
+// - Override RefreshCells and set the flag to false at the end.
+//
+// Since we'll probably be subscribing to some global event, we'll need to have a Dispose method on base column worker class,
+// so we can unsubscribe from the event when/if the column will be removed from a table. Actually, check if we have to, since C#'s
+// event are built-in there is a chance that runtime handles these things itself.
 public sealed class FuelCapacityScaledColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, FuelCapacityScaledColumnWorker.TableCell>
 {
     public override ColumnDef Def => columnDef;
