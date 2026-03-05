@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
+using Stats.FilterWidgets;
 using Stats.TableCells;
 using Stats.TableWorkers;
 using UnityEngine;
@@ -9,71 +9,67 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef;
 
-public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBasedObject>
+public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBasedObject, TechLevelColumnWorker.TechLevelCell>
 {
-    //public TechLevelColumnWorker : base(columnDef, CellStyleType.String, TODO)
-    //{
-    //}
-    public override ObjectTableWidget.Cell GetCell(VirtualThing thing)
+    public override ColumnDef Def => columnDef;
+
+    protected override TechLevelCell MakeCell(DefBasedObject @object)
     {
-        return new Cell(thing.Def.techLevel);
+        if (@object.Def is Verse.ThingDef thingDef)
+        {
+            return new TechLevelCell(thingDef.techLevel);
+        }
+
+        return default;
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<VirtualThing> contextObjects)
+
+    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
     {
-        var options = contextObjects
-            .Select(thing => thing.Def.techLevel)
+        IEnumerable<NTMFilterOption<TechLevel>> valueFieldFilterOptions = ((IRefRecordsProvider<Verse.ThingDef>)tableWorker).Records
+            .Select(thingDef => thingDef.techLevel)
             .Distinct()
             .OrderBy(techLevel => techLevel)
             .Select<TechLevel, NTMFilterOption<TechLevel>>(
                 techLevel => new(techLevel, techLevel.ToStringHuman().CapitalizeFirst())
             );
+        FilterWidget valueFieldFilter = new OTMFilter<TechLevel>((int row) => this[row].Value, valueFieldFilterOptions);
+        int Compare(int row1, int row2) => this[row1].Value.CompareTo(this[row2].Value);
+        TableCellFieldDescriptor valueField = new(Def.Title, valueFieldFilter, Compare);
 
-        yield return new(Def.Title, new OTMFilter<Cell, TechLevel>(cell => cell.Value, options, this));
-    }
-    public override Cell MakeCell(Verse.ThingDef thingDef)
-    {
-        TechLevel techLevel = thingDef.techLevel;
-
-        if (techLevel != TechLevel.Undefined)
-        {
-
-        }
-
-        throw new NotImplementedException();
-    }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
-    {
-        throw new NotImplementedException();
+        return new TableCellDescriptor(TableCellStyleType.String, [valueField]);
     }
 
-    private sealed class TechLevelCell : Cell
+    public readonly struct TechLevelCell : ITableCell
     {
-        private readonly TechLevel Value;
-        private readonly string Text;
-        private readonly Vector2 Size;
+        public float Width { get; }
+        public bool IsRefreshable => false;
+        public readonly TechLevel Value;
+
+        private readonly string _text = "";
+
         public TechLevelCell(TechLevel techLevel)
         {
             Value = techLevel;
-            Text = techLevel.ToStringHuman().CapitalizeFirst();
+            if (techLevel != TechLevel.Undefined)
+            {
+                _text = techLevel.ToStringHuman().CapitalizeFirst();
+                Width = Text.CalcSize(_text).x;
+            }
         }
-        public override void Draw(Rect rect, Vector2 containerSize)
+
+        public void Draw(Rect rect)
         {
-            throw new NotImplementedException();
-        }
-        public override Vector2 GetSize()
-        {
-            throw new NotImplementedException();
-        }
-        public override void Refresh()
-        {
-        }
-        static private TechLevel GetValue(Cell cell)
-        {
-            return ((TechLevelCell)cell).Value;
-        }
-        static private int Compare(Cell cell1, Cell cell2)
-        {
-            return GetValue(cell1).CompareTo(GetValue(cell2));
+            if (Value != TechLevel.Undefined && Event.current.type == EventType.Repaint)
+            {
+                rect = rect.ContractedByObjectTableCellPadding();
+
+                TextAnchor textAnchor = Text.Anchor;
+                Text.Anchor = (TextAnchor)TableCellStyleType.String;
+
+                Verse.Widgets.Label(rect, _text);
+
+                Text.Anchor = textAnchor;
+            }
         }
     }
 }

@@ -114,6 +114,14 @@ public sealed class Thing_LabelColumnWorker : ColumnWorker, IColumnWorker<Virtua
 
     /*
     
+    TODO: 
+    
+    Instead of having this "filter", have two sets of tables for thing defs that can be made from stuff:
+    - A table that lists every def + stuff variant. Default columns are ones whose values depend on stuff.
+    - A table that lists bases (without default stuff). Default columns are ones whose values do not depend on stuff.
+
+    Note:
+
     This being a filter is a hack. It doesn't work in "OR" mode and is semantically incorrect.
     
     There are 2 ways of fixing this issue.

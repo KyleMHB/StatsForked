@@ -29,12 +29,6 @@ internal sealed partial class ObjectTableWidget<TObject>
         _pinnedRowsCount--;
     }
 
-    //private readonly struct Row(int index, TObject @object)
-    //{
-    //    public readonly int Index = index;
-    //    public readonly TObject Object = @object;
-    //}
-
     //private sealed class Row
     //{
     //    public float Height;
