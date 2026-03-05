@@ -1,10 +1,9 @@
 ﻿using RimWorld;
 using Stats.TableCells;
-using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.EggLayer;
 
-public sealed class EggsNutritionPerDayColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class EggsNutritionPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
@@ -27,5 +26,4 @@ public sealed class EggsNutritionPerDayColumnWorker(ColumnDef columnDef) : Stati
 
         return default;
     }
-    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

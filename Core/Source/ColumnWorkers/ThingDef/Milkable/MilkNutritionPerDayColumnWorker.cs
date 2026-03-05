@@ -1,10 +1,9 @@
 ﻿using RimWorld;
 using Stats.TableCells;
-using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Milkable;
 
-public sealed class MilkNutritionPerDayColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class MilkNutritionPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
@@ -26,5 +25,4 @@ public sealed class MilkNutritionPerDayColumnWorker(ColumnDef columnDef) : Stati
 
         return default;
     }
-    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

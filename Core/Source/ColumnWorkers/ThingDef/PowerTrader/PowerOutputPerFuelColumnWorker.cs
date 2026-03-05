@@ -1,10 +1,9 @@
 ﻿using RimWorld;
 using Stats.TableCells;
-using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.PowerTrader;
 
-public sealed class PowerOutputPerFuelColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class PowerOutputPerFuelColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
@@ -27,5 +26,4 @@ public sealed class PowerOutputPerFuelColumnWorker(ColumnDef columnDef) : Static
 
         return default;
     }
-    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

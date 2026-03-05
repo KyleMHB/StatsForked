@@ -3,7 +3,6 @@ using System.Linq;
 using RimWorld;
 using Stats.TableCells;
 using Stats.TableWorkers;
-using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Apparel;
 
@@ -14,27 +13,29 @@ namespace Stats.ColumnWorkers.ThingDef.Apparel;
 // Luckily, it looks like in a definition it is allowed to only list the whole
 // groups of body parts. The resulting list is of course significantly smaller
 // and can be safely displayed in a single row/column.
-public sealed class BodyPartGroupsColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
+public sealed class BodyPartGroupsColumnWorker(ColumnDef columnDef) : DefSetColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    protected override DefSetTableCell MakeCell(DefBasedObject @object)
     {
-        ApparelProperties? apparelProps = thingDef.apparel;
-
-        if (apparelProps != null)
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            return new DefSetTableCell.Constant(apparelProps.bodyPartGroups);
+            ApparelProperties? apparelProps = thingDef.apparel;
+
+            if (apparelProps != null)
+            {
+                return new DefSetTableCell(apparelProps.bodyPartGroups);
+            }
         }
 
-        return DefSetTableCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+
+    protected override IEnumerable<Verse.Def?> GetValueFieldFilterOptions(TableWorker tableWorker)
     {
-        IEnumerable<BodyPartGroupDef> bodyPartGroupDefs = ((IRefRecordsProvider)tableWorker).Records
+        return ((IRefRecordsProvider<Verse.ThingDef>)tableWorker).Records
             .SelectMany(thingDef => thingDef.apparel?.bodyPartGroups)
             .Distinct();
-
-        return DefSetTableCell.GetDescriptor(columnDef, bodyPartGroupDefs);
     }
 }

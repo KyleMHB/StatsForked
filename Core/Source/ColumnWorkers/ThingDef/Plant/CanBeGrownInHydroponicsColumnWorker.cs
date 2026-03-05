@@ -1,24 +1,16 @@
-﻿using Stats.TableCells;
-using Stats.TableWorkers;
+﻿namespace Stats.ColumnWorkers.ThingDef.Plant;
 
-namespace Stats.ColumnWorkers.ThingDef.Plant;
-
-public sealed class CanBeGrownInHydroponicsColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
+public sealed class CanBeGrownInHydroponicsColumnWorker(ColumnDef columnDef) : BooleanColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    protected override bool GetValue(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
-        }
-        if (thingDef.plant?.sowTags.Contains("Hydroponic") == true)
-        {
-            return BooleanTableCell.True;
+            return thingDef.plant?.sowTags.Contains("Hydroponic") == true;
         }
 
-        return BooleanTableCell.False;
+        return default;
     }
-
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanTableCell.GetDescriptor(columnDef);
 }

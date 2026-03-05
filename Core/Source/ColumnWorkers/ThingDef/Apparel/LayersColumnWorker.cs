@@ -3,31 +3,32 @@ using System.Linq;
 using RimWorld;
 using Stats.TableCells;
 using Stats.TableWorkers;
-using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Apparel;
 
-public sealed class LayersColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
+public sealed class LayersColumnWorker(ColumnDef columnDef) : DefSetColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    protected override DefSetTableCell MakeCell(DefBasedObject @object)
     {
-        ApparelProperties? apparelProps = thingDef.apparel;
-
-        if (apparelProps != null)
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            return new DefSetTableCell.Constant(apparelProps.layers);
+            ApparelProperties? apparelProps = thingDef.apparel;
+
+            if (apparelProps != null)
+            {
+                return new DefSetTableCell(apparelProps.layers);
+            }
         }
 
-        return DefSetTableCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+
+    protected override IEnumerable<Verse.Def?> GetValueFieldFilterOptions(TableWorker tableWorker)
     {
-        IEnumerable<ApparelLayerDef> layerDefs = ((IRefRecordsProvider)tableWorker).Records
+        return ((IRefRecordsProvider<Verse.ThingDef>)tableWorker).Records
             .SelectMany(thingDef => thingDef.apparel?.layers)
             .Distinct();
-
-        return DefSetTableCell.GetDescriptor(columnDef, layerDefs);
     }
 }

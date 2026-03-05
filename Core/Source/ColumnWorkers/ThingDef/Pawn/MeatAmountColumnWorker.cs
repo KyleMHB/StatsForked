@@ -6,38 +6,36 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class MeatAmountColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
+public sealed class MeatAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    protected override ThingDefCountTableCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
-        }
-        Verse.ThingDef? meatDef = thingDef.race?.meatDef;
+            Verse.ThingDef? meatDef = thingDef.race?.meatDef;
 
-        if (meatDef != null)
-        {
-            float meatAmount = thingDef.GetStatValuePerceived(StatDefOf.MeatAmount);
-
-            if (meatAmount > 0f)
+            if (meatDef != null)
             {
-                ThingDefCount cellValue = new(meatDef, meatAmount.ToDecimal(0));
+                float meatAmount = thingDef.GetStatValuePerceived(StatDefOf.MeatAmount);
 
-                return new ThingDefCountCell(cellValue);
+                if (meatAmount > 0f)
+                {
+                    decimal cellValue = meatAmount.ToDecimal(0);
+
+                    return new ThingDefCountTableCell(meatDef, cellValue);
+                }
             }
         }
 
-        return ThingDefCountTableCell.Empty;
+        return default;
     }
 
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    protected override IEnumerable<Verse.ThingDef?> GetTypeFieldFilterOptions(TableWorker tableWorker)
     {
-        IEnumerable<Verse.ThingDef?> meatDefs = ((IRefRecordsProvider)tableWorker).Records
+        return ((IRefRecordsProvider<Verse.ThingDef>)tableWorker).Records
             .Select(thingDef => thingDef.race?.meatDef)
             .Distinct();
-
-        return ThingDefCountTableCell.GetDescriptor(meatDefs);
     }
 }

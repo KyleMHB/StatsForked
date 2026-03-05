@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Stats.TableCells;
@@ -8,33 +7,31 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers.ThingDef.Plant;
 
-public sealed class HarvestYieldColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
+public sealed class HarvestYieldColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    protected override ThingDefCountTableCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
+            PlantProperties? plantProps = thingDef.plant;
+
+            if (plantProps is { harvestYield: > 0f, harvestedThingDef: not null })
+            {
+                decimal yield = Mathf.CeilToInt(plantProps.harvestYield);
+
+                return new ThingDefCountTableCell(plantProps.harvestedThingDef, yield);
+            }
         }
-        PlantProperties? plantProps = thingDef.plant;
 
-        if (plantProps is { harvestYield: > 0f, harvestedThingDef: not null })
-        {
-            decimal yield = Mathf.CeilToInt(plantProps.harvestYield);
-            ThingDefCount cellValue = new(plantProps.harvestedThingDef, yield);
-
-            return new ThingDefCountCell(cellValue);
-        }
-
-        return ThingDefCountTableCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+
+    protected override IEnumerable<Verse.ThingDef?> GetTypeFieldFilterOptions(TableWorker tableWorker)
     {
-        IEnumerable<Verse.ThingDef?> harvestedThingDefs = ((IRefRecordsProvider)tableWorker).Records
+        return ((IRefRecordsProvider<Verse.ThingDef>)tableWorker).Records
             .Select(thingDef => thingDef.plant?.harvestedThingDef)
             .Distinct();
-
-        return ThingDefCountTableCell.GetDescriptor(harvestedThingDefs);
     }
 }

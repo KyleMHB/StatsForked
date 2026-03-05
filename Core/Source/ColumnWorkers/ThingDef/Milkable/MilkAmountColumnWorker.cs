@@ -6,32 +6,29 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Milkable;
 
-public sealed class MilkAmountColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
+public sealed class MilkAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    protected override ThingDefCountTableCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
-        }
-        var milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
+            CompProperties_Milkable? milkableCompProps = thingDef.GetCompProperties<CompProperties_Milkable>();
 
-        if (milkableCompProps != null)
-        {
-            ThingDefCount cellValue = new(milkableCompProps.milkDef, milkableCompProps.milkAmount);
-
-            return new ThingDefCountCell(cellValue);
+            if (milkableCompProps != null)
+            {
+                return new ThingDefCountTableCell(milkableCompProps.milkDef, milkableCompProps.milkAmount);
+            }
         }
 
-        return ThingDefCountTableCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+
+    protected override IEnumerable<Verse.ThingDef?> GetTypeFieldFilterOptions(TableWorker tableWorker)
     {
-        IEnumerable<Verse.ThingDef?> milkDefs = ((IRefRecordsProvider)tableWorker).Records
+        return ((IRefRecordsProvider<Verse.ThingDef>)tableWorker).Records
             .Select(thingDef => thingDef.GetCompProperties<CompProperties_Milkable>()?.milkDef)
             .Distinct();
-
-        return ThingDefCountTableCell.GetDescriptor(milkDefs);
     }
 }

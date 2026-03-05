@@ -1,24 +1,20 @@
 ﻿using RimWorld;
-using Stats.TableCells;
-using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Apparel.Reloadable;
 
-public sealed class IsDestroyedOnEmptyColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
+public sealed class IsDestroyedOnEmptyColumnWorker(ColumnDef columnDef) : BooleanColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    protected override bool GetValue(DefBasedObject @object)
     {
-        CompProperties_ApparelReloadable? reloadableCompProperties = thingDef.GetCompProperties<CompProperties_ApparelReloadable>();
-
-        if (reloadableCompProperties?.destroyOnEmpty == true)
+        if (@object.Def is Verse.ThingDef thingDef)
         {
-            return BooleanTableCell.True;
+            CompProperties_ApparelReloadable? reloadableCompProperties = thingDef.GetCompProperties<CompProperties_ApparelReloadable>();
+
+            return reloadableCompProperties?.destroyOnEmpty == true;
         }
 
-        return BooleanTableCell.False;
+        return default;
     }
-
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanTableCell.GetDescriptor(columnDef);
 }

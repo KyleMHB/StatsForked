@@ -6,30 +6,29 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Building;
 
-public sealed class RecreationTypeColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
+public sealed class RecreationTypeColumnWorker(ColumnDef columnDef) : DefColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    protected override DefTableCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
-        }
-        JoyKindDef? joyKind = thingDef.building?.joyKind;
+            JoyKindDef? joyKind = thingDef.building?.joyKind;
 
-        if (joyKind != null)
-        {
-            return new DefTableCell.Constant(joyKind);
+            if (joyKind != null)
+            {
+                return new DefTableCell(joyKind);
+            }
         }
 
-        return DefTableCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+
+    protected override IEnumerable<Verse.Def?> GetValueFieldFilterOptions(TableWorker tableWorker)
     {
-        IEnumerable<JoyKindDef?> joyKindDefs = ((IRefRecordsProvider)tableWorker).Records
+        return ((IRefRecordsProvider<Verse.ThingDef>)tableWorker).Records
             .Select(thingDef => thingDef.building?.joyKind)
             .Distinct();
-
-        return DefTableCell.GetDescriptor(columnDef, joyKindDefs);
     }
 }

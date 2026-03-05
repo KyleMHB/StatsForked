@@ -1,40 +1,37 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using Stats;
 using Stats.TableCells;
 using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.EggLayer;
 
-public sealed class EggsAmountColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
+public sealed class EggsAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    protected override ThingDefCountTableCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
+            CompProperties_EggLayer? eggLayerCompProps = thingDef.GetCompProperties<CompProperties_EggLayer>();
+
+            if (eggLayerCompProps != null)
+            {
+                Verse.ThingDef eggDef = eggLayerCompProps.GetAnyEggDef();
+                decimal count = eggLayerCompProps.eggCountRange.Average.ToDecimal(0);
+
+                return new ThingDefCountTableCell(eggDef, count);
+            }
         }
-        CompProperties_EggLayer? eggLayerCompProps = thingDef.GetCompProperties<CompProperties_EggLayer>();
 
-        if (eggLayerCompProps != null)
-        {
-            Verse.ThingDef eggDef = eggLayerCompProps.GetAnyEggDef();
-            decimal count = eggLayerCompProps.eggCountRange.Average.ToDecimal(0);
-            ThingDefCount cellValue = new(eggDef, count);
-
-            return new ThingDefCountCell(cellValue);
-        }
-
-        return ThingDefCountTableCell.Empty;
+        return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+
+    protected override IEnumerable<Verse.ThingDef?> GetTypeFieldFilterOptions(TableWorker tableWorker)
     {
-        IEnumerable<Verse.ThingDef?> eggDefs = ((IRefRecordsProvider)tableWorker).Records
+        return ((IRefRecordsProvider<Verse.ThingDef>)tableWorker).Records
             .Select(thingDef => thingDef.GetCompProperties<CompProperties_EggLayer>()?.GetAnyEggDef())
             .Distinct();
-
-        return ThingDefCountTableCell.GetDescriptor(eggDefs);
     }
 }

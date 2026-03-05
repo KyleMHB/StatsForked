@@ -1,10 +1,9 @@
 ﻿using Stats.TableCells;
-using Stats.TableWorkers;
 using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class RangedDirectHitChanceColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class RangedDirectHitChanceColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
@@ -26,5 +25,4 @@ public sealed class RangedDirectHitChanceColumnWorker(ColumnDef columnDef) : Sta
 
         return default;
     }
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

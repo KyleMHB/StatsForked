@@ -1,24 +1,11 @@
-﻿using Stats.TableCells;
-using Stats.TableWorkers;
+﻿namespace Stats.ColumnWorkers.ThingDef.Bed;
 
-namespace Stats.ColumnWorkers.ThingDef.Bed;
-
-public sealed class FitsSmallAnimalsColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
+public sealed class FitsSmallAnimalsColumnWorker(ColumnDef columnDef) : BooleanColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    protected override bool GetValue(DefBasedObject @object)
     {
-        if (@object.Def is Verse.ThingDef thingDef)
-        {
-        }
-        if (thingDef.building?.bed_humanlike == false)
-        {
-            return BooleanTableCell.True;
-        }
-
-        return BooleanTableCell.False;
+        return @object.Def is Verse.ThingDef { building.bed_humanlike: false };
     }
-
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanTableCell.GetDescriptor(columnDef);
 }

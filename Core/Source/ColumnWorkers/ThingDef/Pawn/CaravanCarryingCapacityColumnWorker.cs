@@ -1,11 +1,10 @@
 ﻿using RimWorld;
 using Stats.TableCells;
-using Stats.TableWorkers;
 using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class CaravanCarryingCapacityColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class CaravanCarryingCapacityColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
@@ -25,5 +24,4 @@ public sealed class CaravanCarryingCapacityColumnWorker(ColumnDef columnDef) : S
 
         return default;
     }
-    //public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => NumberTableCell.GetDescriptor(columnDef);
 }

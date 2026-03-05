@@ -1,21 +1,11 @@
-﻿using Stats.TableCells;
-using Stats.TableWorkers;
+﻿namespace Stats.ColumnWorkers.ThingDef.Apparel;
 
-namespace Stats.ColumnWorkers.ThingDef.Apparel;
-
-public sealed class CountsAsClothingForNudityColumnWorker(ColumnDef columnDef) : StaticColumnWorker<DefBasedObject,>
+public sealed class CountsAsClothingForNudityColumnWorker(ColumnDef columnDef) : BooleanColumnWorker<DefBasedObject>
 {
     public override ColumnDef Def => columnDef;
 
-    public override Cell MakeCell(Verse.ThingDef thingDef)
+    protected override bool GetValue(DefBasedObject @object)
     {
-        if (thingDef.apparel?.countsAsClothingForNudity == true)
-        {
-            return BooleanTableCell.True;
-        }
-
-        return BooleanTableCell.False;
+        return @object.Def is Verse.ThingDef { apparel.countsAsClothingForNudity: true };
     }
-
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker) => BooleanTableCell.GetDescriptor(columnDef);
 }
