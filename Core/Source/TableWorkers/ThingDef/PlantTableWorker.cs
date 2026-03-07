@@ -1,10 +1,7 @@
 ﻿namespace Stats.TableWorkers.ThingDef;
 
-public sealed class PlantTableWorker : ThingDefTableWorker
+public sealed class PlantTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
 {
-    public PlantTableWorker(TableDef tableDef) : base(tableDef)
-    {
-    }
     protected override bool IsValidThingDef(Verse.ThingDef thingDef)
     {
         return thingDef.IsPlant && thingDef.plant?.isStump == false;

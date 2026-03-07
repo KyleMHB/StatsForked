@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using RimWorld;
-using Stats.ObjectTable;
 using UnityEngine;
 using Verse;
 

@@ -1,14 +1,8 @@
-﻿using Stats;
-using Verse;
+﻿namespace Stats.TableWorkers.ThingDef;
 
-namespace Stats.TableWorkers.ThingDef;
-
-public sealed class BedTableWorker : ThingDefTableWorker
+public sealed class BedTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
 {
-    public BedTableWorker(TableDef tableDef) : base(tableDef)
-    {
-    }
-    protected override bool IsValidThingDef(ThingDef thingDef)
+    protected override bool IsValidThingDef(Verse.ThingDef thingDef)
     {
         return thingDef.building != null
             && thingDef.IsBuildingObtainableByPlayer()

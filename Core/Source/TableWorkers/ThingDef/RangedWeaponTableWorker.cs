@@ -2,11 +2,8 @@
 
 namespace Stats.TableWorkers.ThingDef;
 
-public sealed class RangedWeaponTableWorker : ThingDefTableWorker
+public sealed class RangedWeaponTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
 {
-    public RangedWeaponTableWorker(TableDef tableDef) : base(tableDef)
-    {
-    }
     protected override bool IsValidThingDef(Verse.ThingDef thingDef)
     {
         return thingDef is { IsRangedWeapon: true, destroyOnDrop: false }

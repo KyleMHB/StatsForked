@@ -1,41 +1,11 @@
-﻿using System.Collections.Generic;
-using Stats;
-using Stats.Objects.Apparel;
-using Stats.TableWorkers;
-using Verse;
-
-namespace Stats.TableWorkers.ThingDef;
+﻿namespace Stats.TableWorkers.ThingDef;
 
 // We do not check for "destroyOnDrop" for better compatibility with mods like
 // VFE - Pirates.
-public sealed class ApparelTableWorker : TableWorker<ApparelDef>
+public sealed class ApparelTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
 {
-    public override IEnumerable<ApparelDef> InitialObjects
+    protected override bool IsValidThingDef(Verse.ThingDef thingDef)
     {
-        get
-        {
-            foreach (var thingDef in DefDatabase<ThingDef>.AllDefsListForReading)
-            {
-                if (thingDef.apparel != null)
-                {
-                    var stuffDefs = thingDef.GetAllowedStuffs();
-
-                    if (stuffDefs?.Count > 0)
-                    {
-                        foreach (var stuffDef in stuffDefs)
-                        {
-                            yield return new ApparelDef(thingDef, thingDef.apparel, stuffDef);
-                        }
-                    }
-                    else
-                    {
-                        yield return new ApparelDef(thingDef, thingDef.apparel);
-                    }
-                }
-            }
-        }
-    }
-    public ApparelTableWorker(TableDef tableDef) : base(tableDef)
-    {
+        return thingDef.apparel != null;
     }
 }

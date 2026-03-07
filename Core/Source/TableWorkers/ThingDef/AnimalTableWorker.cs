@@ -1,10 +1,7 @@
 ﻿namespace Stats.TableWorkers.ThingDef;
 
-public sealed class AnimalTableWorker : ThingDefTableWorker
+public sealed class AnimalTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
 {
-    public AnimalTableWorker(TableDef tableDef) : base(tableDef)
-    {
-    }
     protected override bool IsValidThingDef(Verse.ThingDef thingDef)
     {
         return thingDef is { race.Animal: true, IsCorpse: false };

@@ -1,10 +1,9 @@
-﻿namespace Stats.TableWorkers.ThingDef;
+﻿using RimWorld;
 
-public sealed class PowerGeneratorTableWorker : ThingDefTableWorker
+namespace Stats.TableWorkers.ThingDef;
+
+public sealed class PowerGeneratorTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
 {
-    public PowerGeneratorTableWorker(TableDef tableDef) : base(tableDef)
-    {
-    }
     protected override bool IsValidThingDef(Verse.ThingDef thingDef)
     {
         // Why not just "return thingDef.HasComp<CompPowerPlant>();"?
@@ -14,6 +13,6 @@ public sealed class PowerGeneratorTableWorker : ThingDefTableWorker
         // that derives from CompPowerTrader and not from CompPowerPlant.
         return thingDef.building != null
             && thingDef.IsBuildingObtainableByPlayer()
-            && thingDef.GetPowerCompProperties()?.PowerConsumption < 0f;
+            && thingDef.GetCompProperties<CompProperties_Power>()?.PowerConsumption < 0f;
     }
 }

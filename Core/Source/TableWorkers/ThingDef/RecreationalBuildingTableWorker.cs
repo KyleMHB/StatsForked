@@ -1,15 +1,10 @@
 ﻿using RimWorld;
-using Stats;
-using Verse;
 
 namespace Stats.TableWorkers.ThingDef;
 
-public sealed class RecreationalBuildingTableWorker : ThingDefTableWorker
+public sealed class RecreationalBuildingTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
 {
-    public RecreationalBuildingTableWorker(TableDef tableDef) : base(tableDef)
-    {
-    }
-    protected override bool IsValidThingDef(ThingDef thingDef)
+    protected override bool IsValidThingDef(Verse.ThingDef thingDef)
     {
         return thingDef.building != null
             && thingDef.IsBuildingObtainableByPlayer()

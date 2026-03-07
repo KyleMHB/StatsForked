@@ -58,7 +58,7 @@ internal sealed partial class ObjectTableWidget<TObject>
 
         public void DrawHeaderCell(Rect rect, int index)
         {
-            Rect titleRect = rect.ContractedBy(CellPadHor, CellPadVer);
+            Rect titleRect = rect.ContractedByObjectTableCellPadding();
             float titleWidgetWidth = _titleWidgetWidth;
             float widthDiff = titleRect.width - titleWidgetWidth;
             titleRect.width = titleWidgetWidth;
@@ -101,6 +101,11 @@ internal sealed partial class ObjectTableWidget<TObject>
             {
                 _parent._guiAction = () => _parent.UnpinColumn(index);
             }
+        }
+
+        public void RecalcWidth(List<int> rows)
+        {
+            Width = Mathf.Max(_titleWidgetWidth, Worker.GetWidth(rows)) + CellPadHor * 2f;
         }
     }
 }

@@ -85,7 +85,6 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     //private Vector2 ColumnsTabScrollPosition;
 
     // Rows
-    private const int _InitialRowCapacity = 250;
     private readonly List<TObject> _objects;
     private readonly List<int> _rows;
     private ReadOnlyListSegment<int> PinnedRows => new(_rows, 0, _pinnedRowsCount);
@@ -103,7 +102,6 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     private float _pinnedRowsHeight;
     private float _unpinnedRowsHeight;
     private float _pinnedColumnsWidth;
-    private float _unpinnedColumnsWidth;
     private Vector2 _contentSize;
 
     // Drawing
@@ -118,14 +116,14 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         //tableWorker.OnObjectRemoved += RemoveObject;
 
         // Rows
-        int rowIndex = 0;
-        List<TObject> objects = new(_InitialRowCapacity);
-        List<int> rows = new(_InitialRowCapacity);
-        foreach (TObject @object in tableWorker.InitialObjects)
+        List<TObject> objects = tableWorker.InitialObjects;
+        List<int> rows = new(objects.Count);
+        int objectsCount = objects.Count;
+        for (int i = 0; i < objectsCount; i++)
         {
+            TObject @object = objects[i];
             objects.Add(@object);
-            rows.Add(rowIndex);
-            rowIndex++;
+            rows.Add(i);
         }
 
         // Columns
@@ -136,12 +134,12 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         {
             ColumnDef columnDef = columnDefs[i];
             Type workerClass = columnDef.workerClass;
-            if (workerClass.IsAssignableFrom(typeof(ColumnWorker<TObject>)))
+            if (typeof(ColumnWorker<TObject>).IsAssignableFrom(workerClass))
             {
                 ColumnWorker<TObject> columnWorker = (ColumnWorker<TObject>)Activator.CreateInstance(workerClass, columnDef);
-                int cellIndex = columns.Count;
                 Column column = new(columnWorker, tableWorker, this);
                 columns.Add(column);
+                columnWorker.NotifyRowAdded(objects);
             }
             else
             {

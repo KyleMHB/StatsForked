@@ -15,8 +15,9 @@ public class TableDef : Def
 #pragma warning disable CS8618
     public List<ColumnDef> columns;
     public Type workerClass;
-    public TableWorker Worker { get; private set; }
+    public TableWorker Worker => field ??= (TableWorker)Activator.CreateInstance(workerClass, this);
 #pragma warning restore CS8618
+
     public override void ResolveReferences()
     {
         base.ResolveReferences();
@@ -24,9 +25,9 @@ public class TableDef : Def
         LongEventHandler.ExecuteWhenFinished(() =>
         {
             ResolveIcon();
-            Worker = (TableWorker)Activator.CreateInstance(workerClass, this);
         });
     }
+
     private void ResolveIcon()
     {
         if (iconPath?.Length > 0)

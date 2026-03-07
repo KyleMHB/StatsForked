@@ -6,10 +6,11 @@ namespace Stats.MainTabWindow;
 
 public sealed class MainTabWindowWidget : RimWorld.MainTabWindow
 {
-    protected override float Margin { get => 1f; }
     public override Vector2 RequestedTabSize => new(UI.screenWidth, base.RequestedTabSize.y);
-    private bool IsExpanded;
     internal static readonly Color BorderLineColor = new(1f, 1f, 1f, 0.4f);
+
+    protected override float Margin { get => 1f; }
+    private bool IsExpanded;
     private readonly Widget TitleBarWidget;
     private readonly MainTabWindowTitleBar TitleBar;
     private readonly TableSelector TableSelector;
@@ -28,11 +29,12 @@ public sealed class MainTabWindowWidget : RimWorld.MainTabWindow
             TitleBar.TableWidget = value.Worker.TableWidget;
         }
     }
+
     public MainTabWindowWidget()
     {
         // TODO: All of this TableDef/ITableWidget juggling,
         // can probably be replaced with a single stream of TableDefs.
-        _CurTableDef = TableDefOf.RangedWeaponDefs;
+        _CurTableDef = TableDefOf.RangedWeapons;
         TableSelector = new TableSelector(_CurTableDef);
         TableSelector.OnTableSelect += tableDef => CurTableDef = tableDef;
         TitleBar = new MainTabWindowTitleBar(
@@ -43,6 +45,7 @@ public sealed class MainTabWindowWidget : RimWorld.MainTabWindow
         );
         TitleBarWidget = TitleBar.WidthRel(1f);
     }
+
     public override void DoWindowContents(Rect rect)
     {
         var rectSize = rect.size;
@@ -61,6 +64,7 @@ public sealed class MainTabWindowWidget : RimWorld.MainTabWindow
 
         Text.WordWrap = true;
     }
+
     private void ExpandOrResetWidow()
     {
         if (IsExpanded)
@@ -74,6 +78,7 @@ public sealed class MainTabWindowWidget : RimWorld.MainTabWindow
 
         IsExpanded = !IsExpanded;
     }
+
     public override void PreOpen()
     {
         base.PreOpen();
@@ -83,8 +88,9 @@ public sealed class MainTabWindowWidget : RimWorld.MainTabWindow
             windowRect.yMin = 0f;
         }
     }
+
     private void ResetCurrentTableFilters()
     {
-        _CurTableDef.Worker.TableWidget.ResetFilters();
+        //_CurTableDef.Worker.TableWidget.ResetFilters();
     }
 }

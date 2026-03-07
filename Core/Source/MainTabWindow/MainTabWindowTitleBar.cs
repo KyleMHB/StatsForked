@@ -1,5 +1,4 @@
 ﻿using System;
-using Stats.ObjectTable;
 using Stats.Widgets;
 using UnityEngine;
 using Verse;
@@ -17,7 +16,7 @@ internal sealed class MainTabWindowTitleBar : Widget
         "  - Pinned rows are unaffected by filters.";
     internal const float Height = 30f;
     private const float IconPadding = Globals.GUI.PadXs;
-    private readonly Label TableFilterModeLabelWidget;
+    //private readonly Label TableFilterModeLabelWidget;
     private ObjectTableWidget _TableWidget;
     public ObjectTableWidget TableWidget
     {
@@ -28,10 +27,10 @@ internal sealed class MainTabWindowTitleBar : Widget
                 return;
             }
 
-            _TableWidget.OnFilterModeChange -= HandleTableFilterModeChange;
+            //_TableWidget.OnFilterModeChange -= HandleTableFilterModeChange;
             _TableWidget = value;
-            value.OnFilterModeChange += HandleTableFilterModeChange;
-            TableFilterModeLabelWidget.Text = value.FilterMode.ToString();
+            //value.OnFilterModeChange += HandleTableFilterModeChange;
+            //TableFilterModeLabelWidget.Text = value.FilterMode.ToString();
         }
     }
     public bool ShowTableSettingsMenu { get; set; } = false;
@@ -43,7 +42,7 @@ internal sealed class MainTabWindowTitleBar : Widget
     )
     {
         _TableWidget = tableWidget;
-        tableWidget.OnFilterModeChange += HandleTableFilterModeChange;
+        //tableWidget.OnFilterModeChange += HandleTableFilterModeChange;
         Widget = new HorizontalContainer([
             new HorizontalContainer([
                 tableSelector,
@@ -54,16 +53,16 @@ internal sealed class MainTabWindowTitleBar : Widget
                     () => ShowTableSettingsMenu = !ShowTableSettingsMenu
                 ),
 
-                ToToolbarButton(
-                    new Icon(Assets.FilterTex),
-                    new Label(tableWidget.FilterMode.ToString())
-                    .Ref(out TableFilterModeLabelWidget),
-                    () => _TableWidget.ToggleFilterMode()
-                )
-                .Tooltip(
-                    "Click to switch between filtering modes.\n\n" +
-                    "This setting is individual for each table."
-                ),
+                //ToToolbarButton(
+                //    new Icon(Assets.FilterTex),
+                //    new Label(tableWidget.FilterMode.ToString())
+                //    .Ref(out TableFilterModeLabelWidget),
+                //    () => _TableWidget.ToggleFilterMode()
+                //)
+                //.Tooltip(
+                //    "Click to switch between filtering modes.\n\n" +
+                //    "This setting is individual for each table."
+                //),
 
                 ToToolbarButton(
                     new Icon(TexUI.RotRightTex),
@@ -88,18 +87,22 @@ internal sealed class MainTabWindowTitleBar : Widget
         .BorderBottom(1f, MainTabWindowWidget.BorderLineColor);
         Widget.Parent = this;
     }
+
     public override Vector2 GetSize(Vector2 containerSize)
     {
         return Widget.GetSize(containerSize);
     }
+
     public override Vector2 GetSize()
     {
         return Widget.GetSize();
     }
+
     public override void Draw(Rect rect, Vector2 containerSize)
     {
         Widget.Draw(rect, containerSize);
     }
+
     private static Widget ToToolbarButtonIcon(
         Widget widget,
         Action clickEventHandler,
@@ -109,6 +112,7 @@ internal sealed class MainTabWindowTitleBar : Widget
         return ToToolbarButtonIcon(widget, tooltip)
             .ToButtonGhostly(clickEventHandler);
     }
+
     private static Widget ToToolbarButtonIcon(
         Widget widget,
         string tooltip
@@ -119,6 +123,7 @@ internal sealed class MainTabWindowTitleBar : Widget
             .SizeAbs(Height)
             .Tooltip(tooltip);
     }
+
     private static Widget ToToolbarButton(
         Widget iconWidget,
         Widget textWidget,
@@ -138,8 +143,9 @@ internal sealed class MainTabWindowTitleBar : Widget
         .HeightAbs(Height)
         .ToButtonGhostly(clickEventHandler);
     }
-    private void HandleTableFilterModeChange(ObjectTableWidget.TableFilterMode filterMode)
-    {
-        TableFilterModeLabelWidget.Text = filterMode.ToString();
-    }
+
+    //private void HandleTableFilterModeChange(ObjectTableWidget.TableFilterMode filterMode)
+    //{
+    //    TableFilterModeLabelWidget.Text = filterMode.ToString();
+    //}
 }

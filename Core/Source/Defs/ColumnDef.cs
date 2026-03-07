@@ -18,6 +18,7 @@ public class ColumnDef : Def
 #pragma warning disable CS8618
     public Type workerClass;
 #pragma warning restore CS8618
+
     public override void ResolveReferences()
     {
         base.ResolveReferences();
@@ -36,38 +37,37 @@ public class ColumnDef : Def
 
 public sealed class ColumnTitleXmlNode
 {
-    private readonly List<Element> elements = [];
+    private readonly List<Element> _elements = [];
+
     public void LoadDataFromXmlCustom(XmlNode xmlRoot)
     {
-        foreach (var node in xmlRoot.ChildNodes)
+        foreach (object? node in xmlRoot.ChildNodes)
         {
             if (node is XmlText textNode)
             {
-                var text = textNode.InnerText.Trim();
-
+                string text = textNode.InnerText.Trim();
                 if (text.Length > 0)
                 {
-                    var element = new TextElement(text);
-
-                    elements.Add(element);
+                    TextElement element = new(text);
+                    _elements.Add(element);
                 }
             }
             else if (node is XmlElement elementNode)
             {
-                var element = new IconElement(elementNode);
-
-                elements.Add(element);
+                IconElement element = new(elementNode);
+                _elements.Add(element);
             }
         }
     }
+
     public Widget ToWidget()
     {
-        if (elements.Count == 1)
+        if (_elements.Count == 1)
         {
-            return elements[0].ToWidget();
+            return _elements[0].ToWidget();
         }
 
-        return new HorizontalContainer(elements.Select(elem => elem.ToWidget()).ToList(), 2f);
+        return new HorizontalContainer(_elements.Select(elem => elem.ToWidget()).ToList(), 2f);
     }
 
     private abstract class Element
@@ -77,26 +77,30 @@ public sealed class ColumnTitleXmlNode
 
     private sealed class TextElement : Element
     {
-        private readonly string Text;
+        private readonly string _text;
+
         public TextElement(string text)
         {
-            Text = text;
+            _text = text;
         }
+
         public override Widget ToWidget()
         {
-            return new Label(Text);
+            return new Label(_text);
         }
     }
 
     private sealed class IconElement : Element
     {
         public IconDef Def;
+
 #pragma warning disable CS8618
         public IconElement(XmlNode xmlRoot)
         {
             DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, nameof(Def), xmlRoot.Name);
         }
 #pragma warning restore CS8618
+
         public override Widget ToWidget()
         {
             Widget widget = new InlineTexture(Def.Texture, Def.scale);
