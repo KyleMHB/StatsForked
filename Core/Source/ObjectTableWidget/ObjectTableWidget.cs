@@ -121,8 +121,6 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         int objectsCount = objects.Count;
         for (int i = 0; i < objectsCount; i++)
         {
-            TObject @object = objects[i];
-            objects.Add(@object);
             rows.Add(i);
         }
 

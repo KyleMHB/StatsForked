@@ -36,7 +36,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
         {
             float statValue = _stat.Worker.GetValue(statRequest);
 
-            return new StatCell(statValue, statRequest, _stat);
+            return new StatCell(statValue, statRequest, _stat, this);
         }
 
         return default;
@@ -54,7 +54,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
             }
 
             wasStale = true;
-            return new StatCell(newStatValue, cell.StatRequest, _stat);
+            return new StatCell(newStatValue, cell.StatRequest, _stat, this);
         }
 
         wasStale = false;
@@ -87,8 +87,8 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
     // Tooltip may become stale despite the cell's value being fresh.
     // This happens when we do not refresh a cell because its value haven't changed.
     // But the way we got to this value may have changed, and tooltip displays that info.
-    private static StatRequest _cellTooltipOwner;
-    private static TipSignal? _cellTooltip;
+    private StatRequest _cellTooltipOwner;
+    private TipSignal? _cellTooltip;
 
     public readonly struct StatCell : ITableCell
     {
@@ -100,9 +100,11 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
 
         private readonly StatDef? _stat;
         private readonly string? _text;
+        private readonly StatColumnWorker _column;
 
-        public StatCell(float statValue, StatRequest statRequest, StatDef stat)
+        public StatCell(float statValue, StatRequest statRequest, StatDef stat, StatColumnWorker column)
         {
+            _column = column;
             _stat = stat;
             StatRequest = statRequest;
             if (statValue != 0f)
@@ -124,12 +126,12 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
             {
                 if (Mouse.IsOver(rect))
                 {
-                    if (_cellTooltip == null || _cellTooltipOwner != StatRequest)
+                    if (_column._cellTooltip == null || _column._cellTooltipOwner != StatRequest)
                     {
-                        _cellTooltip = _stat.Worker.GetExplanationFull(StatRequest, _ToStringNumberSense, ValueRaw);
-                        _cellTooltipOwner = StatRequest;
+                        _column._cellTooltip = _stat.Worker.GetExplanationFull(StatRequest, _ToStringNumberSense, ValueRaw);
+                        _column._cellTooltipOwner = StatRequest;
                     }
-                    TooltipHandler.TipRegion(rect, _cellTooltip.Value);
+                    TooltipHandler.TipRegion(rect, _column._cellTooltip.Value);
                 }
 
                 rect = rect.ContractedByObjectTableCellPadding();

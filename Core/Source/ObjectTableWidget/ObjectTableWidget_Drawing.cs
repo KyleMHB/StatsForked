@@ -1,4 +1,5 @@
-﻿using Stats.MainTabWindow;
+﻿using System;
+using Stats.MainTabWindow;
 using UnityEngine;
 using Verse;
 
@@ -43,9 +44,10 @@ internal sealed partial class ObjectTableWidget<TObject>
             Rect viewportRect = new(scrollPosition, viewportSize);
 
             float visibleUnpinnedRowsOffsetY = scrollPosition.y % _rowHeight;
-            int firstVisibleUnpinnedRowIndex = Mathf.FloorToInt(scrollPosition.y / _rowHeight);
-            int visibleUnpinnedRowsCount = Mathf.CeilToInt((viewportHeight + visibleUnpinnedRowsOffsetY) / _rowHeight);
-            ReadOnlyListSegment<int> visibleUnpinnedRows = UnpinnedRows.Slice(firstVisibleUnpinnedRowIndex, visibleUnpinnedRowsCount);
+            int scrolledUnpinnedRowsCount = Mathf.FloorToInt(scrollPosition.y / _rowHeight);
+            int viewportRowCapacity = Mathf.CeilToInt(viewportHeight / _rowHeight);
+            int visibleUnpinnedRowsCount = Math.Min(_rows.Count - _pinnedRowsCount - scrolledUnpinnedRowsCount, viewportRowCapacity);
+            ReadOnlyListSegment<int> visibleUnpinnedRows = UnpinnedRows.Slice(scrolledUnpinnedRowsCount, visibleUnpinnedRowsCount);
 
             // Background
             DrawBackground(viewportRect, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
@@ -148,7 +150,7 @@ internal sealed partial class ObjectTableWidget<TObject>
     {
         using (new GUIClipContext(rect))
         {
-            Rect cellRect = new(0f, -offsetY, rect.width, rect.height);
+            Rect cellRect = new(0f, -offsetY, rect.width, _rowHeight);
             for (int i = 0; i < rows.Length; i++)
             {
                 int row = rows[i];
@@ -160,7 +162,7 @@ internal sealed partial class ObjectTableWidget<TObject>
                 {
                     // TODO?
                 }
-                cellRect.x += _rowHeight;
+                cellRect.y += _rowHeight;
             }
         }
     }
@@ -200,13 +202,13 @@ internal sealed partial class ObjectTableWidget<TObject>
                     //int row = visibleUnpinnedRows[i];
                     if (Mouse.IsOver(rowRect))
                     {
-                        Verse.Widgets.DrawHighlight(rect);
+                        Verse.Widgets.DrawHighlight(rowRect);
                     }
                     else if ((visibleUnpinnedRows.Start + i) % 2 == 0)
                     {
-                        Verse.Widgets.DrawLightHighlight(rect);
+                        Verse.Widgets.DrawLightHighlight(rowRect);
                     }
-                    rowRect.x += _rowHeight;
+                    rowRect.y += _rowHeight;
                 }
             }
         }
