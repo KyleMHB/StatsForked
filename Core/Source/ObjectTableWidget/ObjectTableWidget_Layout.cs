@@ -29,7 +29,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         float contentWidth = pinnedColumnsWidth + unpinnedColumnsWidth;
 
         float pinnedRowsHeight = _pinnedRowsCount * _rowHeight;
-        float unpinnedRowsHeight = (_rows.Count - _pinnedRowsCount) * _rowHeight;
+        float unpinnedRowsHeight = UnpinnedRowsCount * _rowHeight;
         float contentHeight = _rowHeight + pinnedRowsHeight + unpinnedRowsHeight;
 
         _pinnedRowsHeight = pinnedRowsHeight;

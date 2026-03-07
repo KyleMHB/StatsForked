@@ -36,17 +36,17 @@ internal sealed partial class ObjectTableWidget<TObject>
         Vector2 viewportSize = new(viewportWidth, viewportHeight);
         Rect contentRect = new(Vector2.zero, Vector2.Max(contentSize, viewportSize));
         // Add empty space for more convenient vertical scrolling.
-        contentRect.height += unpinnedRowsHeight;
+        contentRect.height += MathF.Min(unpinnedRowsHeight, viewportHeight);
 
         using (new GUIScrollContext(rect, ref _scrollPosition, contentRect))
         {
             Vector2 scrollPosition = _scrollPosition;
             Rect viewportRect = new(scrollPosition, viewportSize);
 
-            float visibleUnpinnedRowsOffsetY = scrollPosition.y % _rowHeight;
+            float visibleUnpinnedRowsOffsetY = -scrollPosition.y % _rowHeight;
             int scrolledUnpinnedRowsCount = Mathf.FloorToInt(scrollPosition.y / _rowHeight);
             int viewportRowCapacity = Mathf.CeilToInt(viewportHeight / _rowHeight);
-            int visibleUnpinnedRowsCount = Math.Min(_rows.Count - _pinnedRowsCount - scrolledUnpinnedRowsCount, viewportRowCapacity);
+            int visibleUnpinnedRowsCount = Math.Min(UnpinnedRowsCount - scrolledUnpinnedRowsCount, viewportRowCapacity);
             ReadOnlyListSegment<int> visibleUnpinnedRows = UnpinnedRows.Slice(scrolledUnpinnedRowsCount, visibleUnpinnedRowsCount);
 
             // Background
@@ -68,7 +68,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             ReadOnlyListSegment<Column> unpinnedColumns = UnpinnedColumns;
             if (unpinnedColumns.Length > 0)
             {
-                DrawPart(viewportRect, unpinnedColumns, scrollPosition.x, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY, true);
+                DrawPart(viewportRect, unpinnedColumns, -scrollPosition.x, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY, true);
             }
         }
     }
@@ -85,7 +85,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         using (new GUIClipContext(rect))
         {
             float viewportRightBoundary = rect.width;
-            Rect columnRect = new(-columnsOffsetX, 0f, 0f, rect.height);
+            Rect columnRect = new(columnsOffsetX, 0f, 0f, rect.height);
             for (int i = 0; i < columns.Length; i++)
             {
                 Column column = columns[i];
@@ -95,7 +95,7 @@ internal sealed partial class ObjectTableWidget<TObject>
 
                 if (columnRectRightBoundary > 0f)
                 {
-                    DrawColumn(columnRect, column, i, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
+                    DrawColumn(columnRect, column, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
                     if (i < columns.Length - 1)
                     {
                         Widgets.Draw.VerticalLine(columnRectRightBoundary - 1f, 0f, rect.height, _columnSeparatorLineColor);
@@ -120,7 +120,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         //}
     }
 
-    private void DrawColumn(Rect rect, Column column, int columnIndex, ReadOnlyListSegment<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY)
+    private void DrawColumn(Rect rect, Column column, ReadOnlyListSegment<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY)
     {
         using (new GUIClipContext(rect))
         {
@@ -128,7 +128,7 @@ internal sealed partial class ObjectTableWidget<TObject>
 
             // Header
             Rect headerRect = innerRect.CutByY(_rowHeight);
-            column.DrawHeaderCell(headerRect, columnIndex);
+            column.DrawHeaderCell(headerRect);
 
             // Pinned rows
             ReadOnlyListSegment<int> pinnedRows = PinnedRows;
@@ -150,7 +150,7 @@ internal sealed partial class ObjectTableWidget<TObject>
     {
         using (new GUIClipContext(rect))
         {
-            Rect cellRect = new(0f, -offsetY, rect.width, _rowHeight);
+            Rect cellRect = new(0f, offsetY, rect.width, _rowHeight);
             for (int i = 0; i < rows.Length; i++)
             {
                 int row = rows[i];

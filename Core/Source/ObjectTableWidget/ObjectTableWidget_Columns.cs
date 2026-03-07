@@ -56,7 +56,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             _parent = parent;
         }
 
-        public void DrawHeaderCell(Rect rect, int index)
+        public void DrawHeaderCell(Rect rect)
         {
             Rect titleRect = rect.ContractedByObjectTableCellPadding();
             float titleWidgetWidth = _titleWidgetWidth;
@@ -86,13 +86,14 @@ internal sealed partial class ObjectTableWidget<TObject>
             MouseoverSounds.DoRegion(rect);
             if (currentEvent.control && GUI.Button(rect, "", Verse.Widgets.EmptyStyle))
             {
-                HandlePinning(index);
+                HandlePinning();
             }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void HandlePinning(int index)
+        private void HandlePinning()
         {
+            int index = _parent._columns.IndexOf(this);
             if (index > _parent._pinnedColumnsCount - 1)
             {
                 _parent._guiAction = () => _parent.PinColumn(index);

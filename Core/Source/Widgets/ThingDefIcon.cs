@@ -12,6 +12,7 @@ public sealed class ThingDefIcon : Widget
     private readonly float Scale;
     private readonly float Angle;
     private readonly Vector2 Offset;
+
     public ThingDefIcon(ThingDef thingDef, ThingDef? stuffDef = null)
     {
         Texture = Verse.Widgets.GetIconFor(thingDef, stuffDef) ?? BaseContent.BadTex;
@@ -46,10 +47,12 @@ public sealed class ThingDefIcon : Widget
             Proportions = new Vector2(Texture.width, Texture.height);
         }
     }
+
     public override Vector2 GetSize()
     {
         return new Vector2(Text.LineHeight, Text.LineHeight);
     }
+
     public override void Draw(Rect rect, Vector2 _)
     {
         GUIDebugger.DebugRect(this, rect);
