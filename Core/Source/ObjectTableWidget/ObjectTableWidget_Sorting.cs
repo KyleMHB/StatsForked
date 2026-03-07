@@ -4,6 +4,8 @@ namespace Stats;
 
 internal sealed partial class ObjectTableWidget<TObject>
 {
+    // Note: Use row's index for stable sort (when two rows have the same cell values)?
+
     //private void SortRows()
     //{
     //    SortRows(_pinnedRows);

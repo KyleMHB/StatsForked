@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Stats.MainTabWindow;
-using Stats.Widgets;
+﻿using Stats.MainTabWindow;
 using UnityEngine;
 using Verse;
 
@@ -40,172 +37,177 @@ internal sealed partial class ObjectTableWidget<TObject>
         // Add empty space for more convenient vertical scrolling.
         contentRect.height += unpinnedRowsHeight;
 
-        Verse.Widgets.BeginScrollView(rect, ref _scrollPosition, contentRect, true);
-
-        Vector2 scrollPosition = _scrollPosition;
-        Rect viewportRect = new(scrollPosition, viewportSize);
-
-        // Left part
-        int pinnedColumnsCount = _pinnedColumnsCount;
-        if (pinnedColumnsCount > 0)
+        using (new GUIScrollContext(rect, ref _scrollPosition, contentRect))
         {
-            ReadOnlyListSegment<Column> pinnedColumns = _PinndeColumns;
-            float pinnedColumnsWidth = _pinnedColumnsWidth;
-            Rect leftPartRect = viewportRect.CutByX(pinnedColumnsWidth);
-            DrawPart(leftPartRect, pinnedColumns, scrollPosition with { x = 0f }, false);
-            // Separator line
-            Widgets.Draw.VerticalLine(leftPartRect.xMax - 1f, leftPartRect.y, rect.height, MainTabWindowWidget.BorderLineColor);
-        }
+            Vector2 scrollPosition = _scrollPosition;
+            Rect viewportRect = new(scrollPosition, viewportSize);
 
-        // Right part
-        ReadOnlyListSegment<Column> unpinnedColumns = _UnpinndeColumns;
-        if (unpinnedColumns.Length > 0)
-        {
-            DrawPart(viewportRect, unpinnedColumns, scrollPosition, true);
-        }
+            float visibleUnpinnedRowsOffsetY = scrollPosition.y % _rowHeight;
+            int firstVisibleUnpinnedRowIndex = Mathf.FloorToInt(scrollPosition.y / _rowHeight);
+            int visibleUnpinnedRowsCount = Mathf.CeilToInt((viewportHeight + visibleUnpinnedRowsOffsetY) / _rowHeight);
+            ReadOnlyListSegment<int> visibleUnpinnedRows = UnpinnedRows.Slice(firstVisibleUnpinnedRowIndex, visibleUnpinnedRowsCount);
 
-        Verse.Widgets.EndScrollView();
+            // Background
+            DrawBackground(viewportRect, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
+
+            // Left part
+            int pinnedColumnsCount = _pinnedColumnsCount;
+            if (pinnedColumnsCount > 0)
+            {
+                ReadOnlyListSegment<Column> pinnedColumns = PinnedColumns;
+                float pinnedColumnsWidth = _pinnedColumnsWidth;
+                Rect leftPartRect = viewportRect.CutByX(pinnedColumnsWidth);
+                DrawPart(leftPartRect, pinnedColumns, 0f, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY, false);
+                // Separator line
+                Widgets.Draw.VerticalLine(leftPartRect.xMax - 1f, leftPartRect.y, rect.height, MainTabWindowWidget.BorderLineColor);
+            }
+
+            // Right part
+            ReadOnlyListSegment<Column> unpinnedColumns = UnpinnedColumns;
+            if (unpinnedColumns.Length > 0)
+            {
+                DrawPart(viewportRect, unpinnedColumns, scrollPosition.x, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY, true);
+            }
+        }
     }
 
-    private void DrawPart(Rect rect, ReadOnlyListSegment<Column> columns, Vector2 scrollPosition, bool doHorScroll)
+    private void DrawPart(
+        Rect rect,
+        ReadOnlyListSegment<Column> columns,
+        float columnsOffsetX,
+        ReadOnlyListSegment<int> visibleUnpinnedRows,
+        float visibleUnpinnedRowsOffsetY,
+        bool doHorScroll
+    )
     {
-        if (Event.current.type == EventType.Repaint)
+        using (new GUIClipContext(rect))
         {
-            DrawColumnSeparators(rect, columns, scrollPosition.x);
-        }
-        float headerRowHeight = _headerRowHeight;
-        Rect headersRect = rect.CutByY(headerRowHeight);
-        columns = DrawHeaders(headersRect, columns, scrollPosition.x);
+            float viewportRightBoundary = rect.width;
+            Rect columnRect = new(-columnsOffsetX, 0f, 0f, rect.height);
+            for (int i = 0; i < columns.Length; i++)
+            {
+                Column column = columns[i];
+                float columnWidth = column.Width;
+                columnRect.width = columnWidth;
+                float columnRectRightBoundary = columnRect.xMax;
 
-        // Hor scrolling
+                if (columnRectRightBoundary > 0f)
+                {
+                    DrawColumn(columnRect, column, i, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
+                    if (i < columns.Length - 1)
+                    {
+                        Widgets.Draw.VerticalLine(columnRectRightBoundary - 1f, 0f, rect.height, _columnSeparatorLineColor);
+                    }
+                }
+
+                if (columnRectRightBoundary >= viewportRightBoundary)
+                {
+                    break;
+                }
+
+                columnRect.x = columnRectRightBoundary;
+            }
+        }
+
+        // Horizontal scrolling
         // Register mouse-drag only below headers to not interfere with them.
-        Event currentEvent = Event.current;
-        if (doHorScroll && currentEvent.type == EventType.MouseDrag && Mouse.IsOver(rect))
-        {
-            _scrollPosition.x = Mathf.Max(_scrollPosition.x + currentEvent.delta.x * -1f, 0f);
-        }
+        //Event currentEvent = Event.current;
+        //if (doHorScroll && currentEvent.type == EventType.MouseDrag && Mouse.IsOver(rect))
+        //{
+        //    _scrollPosition.x = Mathf.Max(_scrollPosition.x + currentEvent.delta.x * -1f, 0f);
+        //}
+    }
 
-        List<TableRow<TObject>> rows = _filteredRows;
-        int rowsCount = rows.Count;
-        if (rowsCount == 0)
+    private void DrawColumn(Rect rect, Column column, int columnIndex, ReadOnlyListSegment<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY)
+    {
+        using (new GUIClipContext(rect))
         {
-            return;
-        }
+            Rect innerRect = new(0f, 0f, rect.width, rect.height);
 
-        int pinnedRowsCount = _pinnedRowsCount;
-        if (pinnedRowsCount > 0)
-        {
-            ReadOnlyListSegment<TableRow<TObject>> pinnedRows = _PinndeRows;
-            float pinnedRowsHeight = _pinnedRowsHeight;
-            Rect pinnedRowsRect = rect.CutByY(pinnedRowsHeight);
-            DrawPinnedRows(pinnedRowsRect, pinnedRows, columns, scrollPosition);
-        }
+            // Header
+            Rect headerRect = innerRect.CutByY(_rowHeight);
+            column.DrawHeaderCell(headerRect, columnIndex);
 
-        ReadOnlyListSegment<TableRow<TObject>> unpinnedRows = _UnpinndeRows;
-        if (unpinnedRows.Length > 0)
-        {
-            DrawRows(rect, unpinnedRows, columns, scrollPosition);
+            // Pinned rows
+            ReadOnlyListSegment<int> pinnedRows = PinnedRows;
+            if (pinnedRows.Length > 0)
+            {
+                Rect pinnedRowsRect = innerRect.CutByY(_pinnedRowsHeight);
+                DrawColumnCells(pinnedRowsRect, column, pinnedRows, 0f);
+            }
+
+            // Unpinned rows
+            if (visibleUnpinnedRows.Length > 0)
+            {
+                DrawColumnCells(innerRect, column, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
+            }
         }
     }
 
-    private ReadOnlyListSegment<Column> DrawHeaders(Rect rect, ReadOnlyListSegment<Column> columns, float offsetX)
+    private void DrawColumnCells(Rect rect, Column column, ReadOnlyListSegment<int> rows, float offsetY)
     {
-        GUI.BeginClip(rect);
-
-        Verse.Widgets.DrawHighlight(rect);
-        Verse.Widgets.DrawLineHorizontal(rect.x, rect.yMax - 1f, rect.width, MainTabWindowWidget.BorderLineColor);
-
-        float viewportRightBoundary = rect.width;
-        rect.x = -offsetX;
-
-        int columnsCount = columns.Length;
-        int skippedColumnsCount = 0;
-        int drawnColumnsCount = 0;
-        for (int i = 0; i < columnsCount; i++)
+        using (new GUIClipContext(rect))
         {
-            Column column = columns[i];
-            rect.width = column.Width;
-            float cellRightBoundary = rect.xMax;
-
-            if (cellRightBoundary > 0f)
+            Rect cellRect = new(0f, -offsetY, rect.width, rect.height);
+            for (int i = 0; i < rows.Length; i++)
             {
-                column.DrawHeaderCell(rect, i);
-                drawnColumnsCount++;
+                int row = rows[i];
+                try
+                {
+                    column.Worker.DrawCell(cellRect, row);
+                }
+                catch
+                {
+                    // TODO?
+                }
+                cellRect.x += _rowHeight;
             }
-            else
-            {
-                skippedColumnsCount++;
-            }
+        }
+    }
 
-            if (cellRightBoundary >= viewportRightBoundary)
-            {
-                break;
-            }
+    private void DrawBackground(Rect rect, ReadOnlyListSegment<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY)
+    {
+        bool isRepaint = Event.current.type == EventType.Repaint;
 
-            rect.x = cellRightBoundary;
+        // Headers
+        Rect headersRect = rect.CutByY(_rowHeight);
+        if (isRepaint)
+        {
+            Verse.Widgets.DrawHighlight(headersRect);
+            Verse.Widgets.DrawLineHorizontal(headersRect.x, headersRect.yMax - 1f, headersRect.width, MainTabWindowWidget.BorderLineColor);
         }
 
-        GUI.EndClip();
-
-        return columns.Slice(skippedColumnsCount, drawnColumnsCount);
-    }
-
-    private void DrawPinnedRows(Rect rect, ReadOnlyListSegment<TableRow<TObject>> rows, ReadOnlyListSegment<Column> columns, Vector2 scrollPosition)
-    {
-        Verse.Widgets.DrawStrongHighlight(rect, _pinnedRowsBGColor);
-        Verse.Widgets.DrawLineHorizontal(rect.x, rect.yMax - 1f, rect.width, MainTabWindowWidget.BorderLineColor);
-        DrawRows(rect, rows, columns, scrollPosition);
-    }
-
-    private void DrawRows(Rect rect, ReadOnlyListSegment<TableRow<TObject>> rows, ReadOnlyListSegment<Column> columns, Vector2 scrollPosition)
-    {
-        GUI.BeginClip(rect);
-
-        float viewportBottomBoundary = rect.height;
-        rect.x = 0f;
-        rect.y = -scrollPosition.y;
-
-        int rowsCount = rows.Length;
-        for (int i = 0; i < rowsCount; i++)
+        // Pinned rows
+        ReadOnlyListSegment<int> pinnedRows = PinnedRows;
+        if (pinnedRows.Length > 0)
         {
-            TableRow<TObject> row = rows[i];
-            rect.height = row.Height;
-            float rowBottomBoundary = rect.yMax;
-
-            if (rowBottomBoundary > 0f)
+            Rect pinnedRowsRect = rect.CutByY(_pinnedRowsHeight);
+            if (isRepaint)
             {
-                row.Draw(rect, columns, scrollPosition.x, i);
+                Verse.Widgets.DrawStrongHighlight(pinnedRowsRect, _pinnedRowsBGColor);
+                Verse.Widgets.DrawLineHorizontal(pinnedRowsRect.x, pinnedRowsRect.yMax - 1f, pinnedRowsRect.width, MainTabWindowWidget.BorderLineColor);
             }
-
-            if (rowBottomBoundary >= viewportBottomBoundary)
-            {
-                break;
-            }
-
-            rect.y = rowBottomBoundary;
         }
 
-        GUI.EndClip();
-    }
-
-    private void DrawColumnSeparators(Rect rect, ReadOnlyListSegment<Column> columns, float x)
-    {
-        x *= -1f;
-
-        int columnsCount = columns.Length;
-        for (int i = 0; i < columnsCount; i++)
+        // Unpinned rows
+        if (visibleUnpinnedRows.Length > 0)
         {
-            Column column = columns[i];
-            x += column.Width;
-
-            if (x >= rect.width)
+            using (new GUIClipContext(rect))
             {
-                break;
-            }
-
-            if (x > 0f)
-            {
-                Widgets.Draw.VerticalLine(x + rect.x - 1f, rect.y, rect.height, _columnSeparatorLineColor);
+                Rect rowRect = new(0f, -visibleUnpinnedRowsOffsetY, rect.width, _rowHeight);
+                for (int i = 0; i < visibleUnpinnedRows.Length; i++)
+                {
+                    //int row = visibleUnpinnedRows[i];
+                    if (Mouse.IsOver(rowRect))
+                    {
+                        Verse.Widgets.DrawHighlight(rect);
+                    }
+                    else if ((visibleUnpinnedRows.Start + i) % 2 == 0)
+                    {
+                        Verse.Widgets.DrawLightHighlight(rect);
+                    }
+                    rowRect.x += _rowHeight;
+                }
             }
         }
     }

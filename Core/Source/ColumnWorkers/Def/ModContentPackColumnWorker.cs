@@ -46,6 +46,7 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
         public bool IsRefreshable => false;
         public readonly ModContentPack? Mod;
         public readonly string? ModName;
+
         private readonly TipSignal _tooltip;
 
         public ModContentPackCell(ModContentPack mod)

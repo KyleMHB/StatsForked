@@ -9,10 +9,10 @@ internal sealed partial class ObjectTableWidget<TObject>
 {
     private void PinRow(int index)
     {
-        List<TableRow<TObject>> rows = _filteredRows;
-        TableRow<TObject> row = rows[index];
+        List<int> rows = _rows;
+        int row = rows[index];
         int firstUnpinnedRowIndex = _pinnedRowsCount;
-        TableRow<TObject> firstUnpinnedRow = rows[firstUnpinnedRowIndex];
+        int firstUnpinnedRow = rows[firstUnpinnedRowIndex];
         rows[firstUnpinnedRowIndex] = row;
         rows[index] = firstUnpinnedRow;
         _pinnedRowsCount++;
@@ -20,10 +20,10 @@ internal sealed partial class ObjectTableWidget<TObject>
 
     private void UnpinRow(int index)
     {
-        List<TableRow<TObject>> rows = _filteredRows;
-        TableRow<TObject> row = rows[index];
+        List<int> rows = _rows;
+        int row = rows[index];
         int lastPinnedRowIndex = _pinnedRowsCount - 1;
-        TableRow<TObject> lastPinnedRow = rows[lastPinnedRowIndex];
+        int lastPinnedRow = rows[lastPinnedRowIndex];
         rows[lastPinnedRowIndex] = row;
         rows[index] = lastPinnedRow;
         _pinnedRowsCount--;

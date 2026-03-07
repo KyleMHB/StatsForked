@@ -39,6 +39,7 @@ public abstract class ObjectTableWidget
 // Because abstractions are not free.
 internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
 {
+    // Filtering
     //public override TableFilterMode FilterMode
     //{
     //    get => field;
@@ -59,12 +60,6 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     //    }
     //} = TableFilterMode.AND;
     //public override event Action<TableFilterMode>? OnFilterModeChange;
-
-    //private Column SortColumn;
-    //private int SortDirection = SortDirectionAscending;
-    //private const int SortDirectionAscending = 1;
-    //private const int SortDirectionDescending = -1;
-    //private readonly Widget ColumnsTabWidget;
     //private readonly List<Filter> Filters;
     //private readonly HashSet<Filter> ActiveFilters;
     //private RowCellsMatcher MatchRowCells = MatchRowCells_AND;
@@ -78,46 +73,60 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     //{
     //    return filters.Any(filter => filter.Widget.Eval(cells[filter.Column]));
     //};
+
+    // Sorting
+    //private Column SortColumn;
+    //private int SortDirection = SortDirectionAscending;
+    //private const int SortDirectionAscending = 1;
+    //private const int SortDirectionDescending = -1;
+
+    // Columns tab
+    //private readonly Widget ColumnsTabWidget;
     //private Vector2 ColumnsTabScrollPosition;
-    private readonly List<Column> _columns;
-    private ReadOnlyListSegment<Column> _PinndeColumns => new(_columns, 0, _pinnedColumnsCount);
-    private int _pinnedColumnsCount;
-    private float _pinnedColumnsWidth;
-    private ReadOnlyListSegment<Column> _UnpinndeColumns => new(_columns, _pinnedColumnsCount, _columns.Count - _pinnedColumnsCount);
-    private float _unpinnedColumnsWidth;
-    private float _headerRowHeight;
+
+    // Rows
     private const int _InitialRowCapacity = 250;
-    // Here's the idea:
-    // - Iterate through List<TObject> filtering each row.
-    // - Put filtered rows indexes in a list.
-    // - Sort the list. Use row's index for stable sort (when two rows have the same cell values)?
-    // - Pass values from the list to column workers for drawing/resizing/etc.
-    //
-    // This will make it possible to have column workers with List-based cells cache.
-    // Which in turn will give us O(1) on accessing column's cells.
-    //
-    // Objects from List<TObject> are removed by replacing removed object with the last one.
-    // Although we still need to find it, so it'll be O(n).
-    // We clear the working set and rebuild it on next GUI event, so we don't have
-    // to remove rows from it at the same time, which will be O(n)
-    // for every removed object (and the game can despawn many objects at once).
     private readonly List<TObject> _objects;
-    private readonly List<TableRow<TObject>> _filteredRows;
-    private ReadOnlyListSegment<TableRow<TObject>> _PinndeRows => new(_filteredRows, 0, _pinnedRowsCount);
+    private readonly List<int> _rows;
+    private ReadOnlyListSegment<int> PinnedRows => new(_rows, 0, _pinnedRowsCount);
     private int _pinnedRowsCount;
+    private ReadOnlyListSegment<int> UnpinnedRows => new(_rows, _pinnedRowsCount, _rows.Count - _pinnedRowsCount);
+
+    // Columns
+    private readonly List<Column> _columns;
+    private ReadOnlyListSegment<Column> PinnedColumns => new(_columns, 0, _pinnedColumnsCount);
+    private int _pinnedColumnsCount;
+    private ReadOnlyListSegment<Column> UnpinnedColumns => new(_columns, _pinnedColumnsCount, _columns.Count - _pinnedColumnsCount);
+
+    // Layout
+    private readonly float _rowHeight;
     private float _pinnedRowsHeight;
-    private ReadOnlyListSegment<TableRow<TObject>> _UnpinndeRows => new(_filteredRows, _pinnedRowsCount, _filteredRows.Count - _pinnedRowsCount);
     private float _unpinnedRowsHeight;
+    private float _pinnedColumnsWidth;
+    private float _unpinnedColumnsWidth;
+    private Vector2 _contentSize;
+
+    // Drawing
     private static readonly Color _columnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
     private static readonly Color _pinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
     private Vector2 _scrollPosition;
     private Action? _guiAction;
-    private Vector2 _contentSize;
 
     public ObjectTableWidget(TableWorker<TObject> tableWorker)
     {
         //tableWorker.OnObjectAdded += AddObject;
         //tableWorker.OnObjectRemoved += RemoveObject;
+
+        // Rows
+        int rowIndex = 0;
+        List<TObject> objects = new(_InitialRowCapacity);
+        List<int> rows = new(_InitialRowCapacity);
+        foreach (TObject @object in tableWorker.InitialObjects)
+        {
+            objects.Add(@object);
+            rows.Add(rowIndex);
+            rowIndex++;
+        }
 
         // Columns
         List<ColumnDef> columnDefs = tableWorker.TableDef.columns;
@@ -131,21 +140,13 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
             {
                 ColumnWorker<TObject> columnWorker = (ColumnWorker<TObject>)Activator.CreateInstance(workerClass, columnDef);
                 int cellIndex = columns.Count;
-                Column column = new(cellIndex, columnWorker, tableWorker, this);
+                Column column = new(columnWorker, tableWorker, this);
                 columns.Add(column);
             }
             else
             {
                 WarnIncompatibleColumn(columnDef.defName, tableWorker.TableDef.defName);
             }
-        }
-
-        // Rows
-        List<TableRow<TObject>> rows = new(_InitialRowCapacity);
-        foreach (TObject @object in tableWorker.InitialObjects)
-        {
-            TableRow<TObject> row = new(rows.Count, @object);
-            rows.Add(row);
         }
 
         // Settings tab
@@ -250,12 +251,14 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
         //}
 
         // Finalize
+        _objects = objects;
+        _rows = rows;
+        _rowHeight = Text.LineHeight + CellPadVer * 2f;
         _columns = columns;
         if (columns.Count > 0)
         {
             _pinnedColumnsCount = 1;
         }
-        _filteredRows = rows;
         //SortColumn = columns[0];
         //ColumnsTabWidget = new VerticalContainer(columnSettingsTabRows);
         //Filters = filters;
@@ -266,40 +269,5 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     private static void WarnIncompatibleColumn(string columnName, string tableName)
     {
         Log.Warning($"Column \"${columnName}\" is not compatible with table \"${tableName}\", because it does not implement \"${typeof(ColumnWorker<TObject>).Name}\".");
-    }
-
-    private readonly struct ReadOnlyListSegment<T>
-    {
-        public readonly int Length;
-
-        private readonly List<T> _list;
-        private readonly int _start;
-
-        public ReadOnlyListSegment(List<T> list, int start, int length)
-        {
-            _list = list;
-            _start = start;
-            Length = length;
-        }
-
-        public ReadOnlyListSegment(List<T> list) : this(list, 0, list.Count) { }
-
-        public T this[int index]
-        {
-            get
-            {
-                if ((uint)index >= (uint)Length)
-                {
-                    throw new ArgumentOutOfRangeException("index");
-                }
-
-                return _list[index + _start];
-            }
-        }
-
-        public ReadOnlyListSegment<T> Slice(int start, int length)
-        {
-            return new ReadOnlyListSegment<T>(_list, _start + start, length);
-        }
     }
 }

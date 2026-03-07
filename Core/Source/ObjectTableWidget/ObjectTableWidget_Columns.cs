@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Stats.ColumnWorkers;
+using Stats.TableCells;
 using Stats.TableWorkers;
 using Stats.Widgets;
 using UnityEngine;
@@ -31,35 +32,29 @@ internal sealed partial class ObjectTableWidget<TObject>
 
     private sealed class Column
     {
-        public int CellIndex;
         public float Width;
-        public readonly Vector2 HeaderCellSize;
+        public readonly ColumnWorker<TObject> Worker;
 
-        private readonly ColumnWorker<TObject> _worker;
         private readonly Widget _titleWidget;
         private readonly float _titleWidgetWidth;
         private readonly TipSignal _tooltip;
         private readonly TableCellStyleType _cellStyle;
         private readonly ObjectTableWidget<TObject> _parent;
 
-        public Column(int cellIndex, ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTableWidget<TObject> parent)
+        public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTableWidget<TObject> parent)
         {
             ColumnDef def = worker.Def;
             Widget titleWidget = def.Title;
             Vector2 titleWidgetSize = titleWidget.GetSize();
             TableCellDescriptor cellDescriptor = worker.GetCellDescriptor(tableWorker);
 
-            _worker = worker;
-            CellIndex = cellIndex;
+            Worker = worker;
             _titleWidget = titleWidget;
             _titleWidgetWidth = titleWidgetSize.x;
-            HeaderCellSize = titleWidgetSize + new Vector2(CellPadHor * 2f, CellPadVer * 2f);
             _tooltip = $"<i>{def.LabelCap}</i>\n\n{def.Description}";
             _cellStyle = cellDescriptor.Style;
             _parent = parent;
         }
-
-        public Cell MakeCell(TObject @object) => _worker.MakeCell(@object);
 
         public void DrawHeaderCell(Rect rect, int index)
         {
