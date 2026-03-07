@@ -7,8 +7,6 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers.ThingDef.Refuelable;
 
-// Note: This was turret rearm cost column.
-//
 // TODO:
 //
 // Realistically, we only need to refresh our cells once after difficulty settings had been changed.

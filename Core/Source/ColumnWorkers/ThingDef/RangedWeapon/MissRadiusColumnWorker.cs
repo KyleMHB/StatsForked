@@ -3,7 +3,7 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class RangedDirectHitChanceColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class MissRadiusColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 
@@ -15,11 +15,9 @@ public sealed class RangedDirectHitChanceColumnWorker(ColumnDef columnDef) : Num
 
             if (verbProps != null)
             {
-                decimal cellValue = verbProps.ForcedMissRadius > 0f
-                    ? (100f / GenRadial.NumCellsInRadius(verbProps.ForcedMissRadius)).ToDecimal(1)
-                    : 100m;
+                decimal cellValue = verbProps.ForcedMissRadius.ToDecimal(1);
 
-                return new NumberTableCell(cellValue, "0.0\\%");
+                return new NumberTableCell(cellValue, "0.0");
             }
         }
 

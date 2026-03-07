@@ -3,9 +3,11 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class RangedMissRadiusColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class AimingTimeColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
+
+    private static readonly string FormatString = "0.00 " + "LetterSecond".Translate();
 
     protected override NumberTableCell MakeCell(DefBasedObject @object)
     {
@@ -15,9 +17,9 @@ public sealed class RangedMissRadiusColumnWorker(ColumnDef columnDef) : NumberCo
 
             if (verbProps != null)
             {
-                decimal cellValue = verbProps.ForcedMissRadius.ToDecimal(1);
+                decimal cellValue = verbProps.warmupTime.ToDecimal(2);
 
-                return new NumberTableCell(cellValue, "0.0");
+                return new NumberTableCell(cellValue, FormatString);
             }
         }
 

@@ -1,7 +1,4 @@
-﻿using Stats.ObjectTable;
-using Verse;
-
-namespace Stats.Widgets;
+﻿namespace Stats.Widgets;
 
 public static class Make
 {

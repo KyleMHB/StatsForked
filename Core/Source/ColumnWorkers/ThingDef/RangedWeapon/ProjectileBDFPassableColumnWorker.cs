@@ -3,7 +3,7 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class ProjectileBuildingDamageFactorImpassableColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class ProjectileBDFPassableColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
 {
     public override ColumnDef Def => columnDef;
 
@@ -15,7 +15,7 @@ public sealed class ProjectileBuildingDamageFactorImpassableColumnWorker(ColumnD
 
             if (defaultProjDamageDef != null)
             {
-                decimal cellValue = (100f * defaultProjDamageDef.buildingDamageFactorImpassable).ToDecimal(0);
+                decimal cellValue = (100f * defaultProjDamageDef.buildingDamageFactorPassable).ToDecimal(0);
 
                 return new NumberTableCell(cellValue, "0\\%");
             }
