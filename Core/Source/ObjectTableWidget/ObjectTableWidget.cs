@@ -97,6 +97,8 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     private ReadOnlyListSegment<Column> PinnedColumns => new(_columns, 0, _pinnedColumnsCount);
     private int _pinnedColumnsCount;
     private ReadOnlyListSegment<Column> UnpinnedColumns => new(_columns, _pinnedColumnsCount, _columns.Count - _pinnedColumnsCount);
+    private Column? _currentlyResizedColumn;
+    private Column? _currentlyReorderedColumn;
 
     // Layout
     private readonly float _rowHeight;

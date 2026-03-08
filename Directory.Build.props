@@ -5,7 +5,7 @@
         <TargetFramework>net48</TargetFramework>
         <AssemblyTitle>$(MSBuildProjectName.Replace(" ", "_"))</AssemblyTitle>
         <OutputPath>..\Assemblies</OutputPath>
-        <Copyright>Copyright © Dmitry "Azzkiy" 2025</Copyright>
+        <Copyright>Copyright © Dmitry "Azkiy" 2026</Copyright>
         <LangVersion>preview</LangVersion>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <Nullable>enable</Nullable>

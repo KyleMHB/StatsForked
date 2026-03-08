@@ -51,6 +51,7 @@ public sealed class MainTabWindowWidget : RimWorld.MainTabWindow
         var rectSize = rect.size;
         var titleBarHeight = TitleBarWidget.GetSize(rectSize).y;
 
+        bool wordWrap = Text.WordWrap;
         Text.WordWrap = false;
 
         TitleBarWidget.Draw(rect.TopPartPixels(titleBarHeight), rectSize);
@@ -62,7 +63,7 @@ public sealed class MainTabWindowWidget : RimWorld.MainTabWindow
 
         GUIDebugger.DrawDebugInfo(rect);
 
-        Text.WordWrap = true;
+        Text.WordWrap = wordWrap;
     }
 
     private void ExpandOrResetWidow()

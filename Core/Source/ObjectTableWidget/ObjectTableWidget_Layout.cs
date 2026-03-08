@@ -15,7 +15,10 @@ internal sealed partial class ObjectTableWidget<TObject>
         for (int i = 0; i < columnsCount; i++)
         {
             Column column = columns[i];
-            column.RecalcWidth(_rows);
+            if (column.IsWidthSetManually == false)
+            {
+                column.RecalcWidth(_rows);
+            }
 
             if (i < pinnedColumnsCount)
             {

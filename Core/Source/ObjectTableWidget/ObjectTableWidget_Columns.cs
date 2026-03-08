@@ -34,6 +34,7 @@ internal sealed partial class ObjectTableWidget<TObject>
     {
         public float Width;
         public readonly ColumnWorker<TObject> Worker;
+        public bool IsWidthSetManually;
 
         private readonly Widget _titleWidget;
         private readonly float _titleWidgetWidth;
@@ -75,8 +76,9 @@ internal sealed partial class ObjectTableWidget<TObject>
             _titleWidget.DrawIn(titleRect);
 
             Event currentEvent = Event.current;
+            bool mouseIsOverRect = Mouse.IsOver(rect);
 
-            if (currentEvent.type == EventType.Repaint && Mouse.IsOver(rect))
+            if (currentEvent.type == EventType.Repaint && mouseIsOverRect)
             {
                 GUI.DrawTexture(rect, TexUI.HighlightTex, ScaleMode.StretchToFill, true, 0f, Color.white, 0f, 0f);
             }
@@ -87,6 +89,65 @@ internal sealed partial class ObjectTableWidget<TObject>
             if (currentEvent.control && GUI.Button(rect, "", Verse.Widgets.EmptyStyle))
             {
                 HandlePinning();
+            }
+
+            // Manual resizing
+            if (mouseIsOverRect && currentEvent.shift)
+            {
+                if (currentEvent.clickCount == 2)
+                {
+                    IsWidthSetManually = false;
+                }
+                else if (_parent._currentlyResizedColumn == null && currentEvent.type == EventType.MouseDown)
+                {
+                    _parent._currentlyResizedColumn = this;
+                    IsWidthSetManually = true;
+                }
+
+                if (_parent._currentlyResizedColumn == this && currentEvent.type == EventType.MouseDrag)
+                {
+                    Width = Mathf.Max(Width + currentEvent.delta.x, _parent._rowHeight);
+                }
+            }
+
+            // Reordering
+            if (mouseIsOverRect && currentEvent.type == EventType.MouseDrag && _parent._currentlyResizedColumn == null && _parent._currentlyReorderedColumn == null)
+            {
+                _parent._currentlyReorderedColumn = this;
+            }
+
+            if (_parent._currentlyReorderedColumn == this && currentEvent.type == EventType.Repaint)
+            {
+                Verse.Widgets.DrawHighlightSelected(rect);
+            }
+
+            if (currentEvent.type == EventType.MouseDrag && _parent._currentlyReorderedColumn != null && _parent._currentlyReorderedColumn != this)
+            {
+                // TODO: Check if a column on the left/right is already _parent._currentlyReorderedColumn
+                if (Mouse.IsOver(rect.LeftHalf()))
+                {
+                    _parent._guiAction = () =>
+                    {
+                        _parent._columns.Remove(_parent._currentlyReorderedColumn);
+                        int thisColumnIndex = _parent._columns.IndexOf(this);
+                        _parent._columns.Insert(thisColumnIndex, _parent._currentlyReorderedColumn);
+                    };
+                }
+                else if (Mouse.IsOver(rect.RightHalf()))
+                {
+                    _parent._guiAction = () =>
+                    {
+                        _parent._columns.Remove(_parent._currentlyReorderedColumn);
+                        int thisColumnIndex = _parent._columns.IndexOf(this);
+                        _parent._columns.Insert(thisColumnIndex + 1, _parent._currentlyReorderedColumn);
+                    };
+                }
+            }
+
+            if (currentEvent.type == EventType.MouseUp)
+            {
+                _parent._currentlyResizedColumn = null;
+                _parent._currentlyReorderedColumn = null;
             }
         }
 
