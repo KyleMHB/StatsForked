@@ -121,53 +121,62 @@ internal sealed partial class ObjectTableWidget<TObject>
 
     private void DrawColumn(Rect rect, Column column, ReadOnlyListSegment<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY)
     {
-        using (new GUIClipContext(rect))
+        // Header
+        Rect headerRect = rect.CutByY(_rowHeight);
+        using (new GUIClipContext(headerRect))
         {
-            rect.x = 0f;
-            rect.y = 0f;
-
-            // Header
-            Rect headerRect = rect.CutByY(_rowHeight);
+            headerRect.x = 0f;
+            headerRect.y = 0f;
             column.DrawHeaderCell(headerRect);
+        }
 
-            // Pinned rows
-            if (_pinnedRowsCount > 0)
+        // Pinned rows
+        if (_pinnedRowsCount > 0)
+        {
+            Rect pinnedRowsRect = rect.CutByY(_pinnedRowsHeight);
+            using (new GUIClipContext(pinnedRowsRect))
             {
-                Rect pinnedRowsRect = rect.CutByY(_pinnedRowsHeight);
-                DrawColumnCells(pinnedRowsRect, column, PinnedRows, 0f);
+                pinnedRowsRect.x = 0f;
+                pinnedRowsRect.y = 0f;
+                DrawColumnCells(pinnedRowsRect, column, PinnedRows);
             }
+        }
 
-            // Unpinned rows
-            if (visibleUnpinnedRows.Length > 0)
+        // Unpinned rows
+        if (visibleUnpinnedRows.Length > 0)
+        {
+            using (new GUIClipContext(rect))
             {
-                DrawColumnCells(rect, column, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
+                rect.x = 0f;
+                rect.y = visibleUnpinnedRowsOffsetY;
+                DrawColumnCells(rect, column, visibleUnpinnedRows);
             }
         }
     }
 
-    private void DrawColumnCells(Rect rect, Column column, ReadOnlyListSegment<int> rows, float offsetY)
+    private void DrawColumnCells(Rect rect, Column column, ReadOnlyListSegment<int> rows)
     {
-        using (new GUIClipContext(rect))
-        {
-            rect.x = 0f;
-            rect.y = offsetY;
-            rect.height = _rowHeight;
-            ColumnWorker<TObject> columnWorker = column.Worker;
+        rect.height = _rowHeight;
+        ColumnWorker<TObject> columnWorker = column.Worker;
 
-            for (int i = 0; i < rows.Length; i++)
+        TextAnchor textAnchor = Text.Anchor;
+        Text.Anchor = (TextAnchor)column.CellStyle;
+
+        for (int i = 0; i < rows.Length; i++)
+        {
+            int row = rows[i];
+            try
             {
-                int row = rows[i];
-                try
-                {
-                    columnWorker.DrawCell(rect, row);
-                }
-                catch
-                {
-                    // TODO?
-                }
-                rect.y = rect.yMax;
+                columnWorker.DrawCell(rect, row);
             }
+            catch
+            {
+                // TODO?
+            }
+            rect.y = rect.yMax;
         }
+
+        Text.Anchor = textAnchor;
     }
 
     private void DrawBackground(Rect rect, ReadOnlyListSegment<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY)
@@ -199,17 +208,20 @@ internal sealed partial class ObjectTableWidget<TObject>
         {
             using (new GUIClipContext(rect))
             {
-                Rect rowRect = new(0f, -visibleUnpinnedRowsOffsetY, rect.width, _rowHeight);
+                Rect rowRect = new(0f, visibleUnpinnedRowsOffsetY, rect.width, _rowHeight);
                 for (int i = 0; i < visibleUnpinnedRows.Length; i++)
                 {
                     //int row = visibleUnpinnedRows[i];
-                    if (Mouse.IsOver(rowRect))
+                    if (isRepaint)
                     {
-                        Verse.Widgets.DrawHighlight(rowRect);
-                    }
-                    else if ((visibleUnpinnedRows.Start + i) % 2 == 0)
-                    {
-                        Verse.Widgets.DrawLightHighlight(rowRect);
+                        if (Mouse.IsOver(rowRect))
+                        {
+                            Verse.Widgets.DrawHighlight(rowRect);
+                        }
+                        else if ((visibleUnpinnedRows.Start + i) % 2 == 0)
+                        {
+                            Verse.Widgets.DrawLightHighlight(rowRect);
+                        }
                     }
                     rowRect.y += _rowHeight;
                 }

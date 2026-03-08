@@ -5,46 +5,46 @@ namespace Stats.Widgets;
 
 public sealed class ThingDefIcon : Widget
 {
-    private readonly Texture2D Texture;
-    private readonly Color Color;
-    private readonly Vector2 Proportions;
-    private readonly Rect Coords;
-    private readonly float Scale;
-    private readonly float Angle;
-    private readonly Vector2 Offset;
+    private readonly Texture2D _texture;
+    private readonly Color _color;
+    private readonly Vector2 _proportions;
+    private readonly Rect _coords;
+    private readonly float _scale;
+    private readonly float _angle;
+    private readonly Vector2 _offset;
 
     public ThingDefIcon(ThingDef thingDef, ThingDef? stuffDef = null)
     {
-        Texture = Verse.Widgets.GetIconFor(thingDef, stuffDef) ?? BaseContent.BadTex;
-        Scale = GenUI.IconDrawScale(thingDef);
-        Angle = thingDef.uiIconAngle;
-        Offset = thingDef.uiIconOffset;
+        _texture = Verse.Widgets.GetIconFor(thingDef, stuffDef) ?? BaseContent.BadTex;
+        _scale = GenUI.IconDrawScale(thingDef);
+        _angle = thingDef.uiIconAngle;
+        _offset = thingDef.uiIconOffset;
 
         if (stuffDef != null)
         {
-            Color = thingDef.GetColorForStuff(stuffDef);
+            _color = thingDef.GetColorForStuff(stuffDef);
         }
         else
         {
-            Color = thingDef.uiIconColor;
+            _color = thingDef.uiIconColor;
         }
 
         if (thingDef.graphicData != null)
         {
-            Proportions = thingDef.graphicData.drawSize.RotatedBy(thingDef.defaultPlacingRot);
+            _proportions = thingDef.graphicData.drawSize.RotatedBy(thingDef.defaultPlacingRot);
 
             if (thingDef.uiIconPath.NullOrEmpty() && thingDef.graphicData.linkFlags != 0)
             {
-                Coords = new Rect(0f, 0.5f, 0.25f, 0.25f);// Verse.Widgets.LinkedTexCoords
+                _coords = new Rect(0f, 0.5f, 0.25f, 0.25f);// Verse.Widgets.LinkedTexCoords
             }
             else
             {
-                Coords = new Rect(0f, 0f, 1f, 1f);// Verse.Widgets.DefaultTexCoords
+                _coords = new Rect(0f, 0f, 1f, 1f);// Verse.Widgets.DefaultTexCoords
             }
         }
         else
         {
-            Proportions = new Vector2(Texture.width, Texture.height);
+            _proportions = new Vector2(_texture.width, _texture.height);
         }
     }
 
@@ -62,13 +62,12 @@ public sealed class ThingDefIcon : Widget
             return;
         }
 
-        rect.position += Offset * rect.size;
+        Color color = GUI.color;
+        GUI.color = _color.AdjustedForGUIOpacity();
 
-        var origGUIColor = GUI.color;
-        GUI.color = Color.AdjustedForGUIOpacity();
+        rect.position += _offset * rect.size;
+        Verse.Widgets.DrawTextureFitted(rect, _texture, _scale, _proportions, _coords, _angle);
 
-        Verse.Widgets.DrawTextureFitted(rect, Texture, Scale, Proportions, Coords, Angle);
-
-        GUI.color = origGUIColor;
+        GUI.color = color;
     }
 }

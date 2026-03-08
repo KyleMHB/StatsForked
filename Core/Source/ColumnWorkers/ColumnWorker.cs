@@ -9,23 +9,23 @@ public abstract class ColumnWorker
 {
     public abstract ColumnDef Def { get; }
     public abstract bool IsRefreshable { get; }
-}
 
-public abstract class ColumnWorker<TObject> : ColumnWorker
-{
     public abstract void DrawCell(Rect rect, int row);
 
     public abstract float GetWidth(List<int> rows);
-
-    public abstract void NotifyRowAdded(List<TObject> rows);
-
-    public abstract void NotifyRowAdded(TObject row);
 
     public abstract void NotifyRowRemoved(int row);
 
     public abstract void RefreshCells();
 
     public abstract TableCellDescriptor GetCellDescriptor(TableWorker tableWorker);
+}
+
+public abstract class ColumnWorker<TObject> : ColumnWorker
+{
+    public abstract void NotifyRowAdded(List<TObject> rows);
+
+    public abstract void NotifyRowAdded(TObject row);
 }
 
 public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where TCell : struct, ITableCell

@@ -26,7 +26,6 @@ public readonly struct BooleanTableCell : IBooleanTableCell
     {
         if (value && Event.current.type == EventType.Repaint)
         {
-            // TODO: Make it not take full available space.
             rect = rect.ContractedByObjectTableCellPadding();
             Verse.Widgets.DrawTextureFitted(rect, _textureTrue, 1f);
         }

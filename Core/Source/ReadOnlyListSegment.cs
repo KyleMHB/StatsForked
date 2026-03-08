@@ -17,8 +17,6 @@ public readonly struct ReadOnlyListSegment<T>
         Length = length;
     }
 
-    public ReadOnlyListSegment(List<T> list) : this(list, 0, list.Count) { }
-
     public T this[int index]
     {
         get

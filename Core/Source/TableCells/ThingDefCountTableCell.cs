@@ -33,13 +33,7 @@ public readonly struct ThingDefCountTableCell : IThingDefCountTableCell
         if (ThingDef != null && Event.current.type == EventType.Repaint)
         {
             rect = rect.ContractedByObjectTableCellPadding();
-
-            TextAnchor textAnchor = Text.Anchor;
-            Text.Anchor = (TextAnchor)TableCellStyleType.Number;
-
             Verse.Widgets.Label(rect, "TODO");
-
-            Text.Anchor = textAnchor;
         }
     }
 }

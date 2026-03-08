@@ -67,16 +67,10 @@ public sealed class SizeColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBase
 
         public void Draw(Rect rect)
         {
-            if (Area != 0m && Event.current.type == EventType.Repaint)
+            if (_text != null && Event.current.type == EventType.Repaint)
             {
                 rect = rect.ContractedByObjectTableCellPadding();
-
-                TextAnchor textAnchor = Text.Anchor;
-                Text.Anchor = (TextAnchor)TableCellStyleType.Number;
-
                 Verse.Widgets.Label(rect, _text);
-
-                Text.Anchor = textAnchor;
             }
         }
     }

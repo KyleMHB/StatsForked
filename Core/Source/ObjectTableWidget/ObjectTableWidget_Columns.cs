@@ -35,11 +35,11 @@ internal sealed partial class ObjectTableWidget<TObject>
         public float Width;
         public readonly ColumnWorker<TObject> Worker;
         public bool IsWidthSetManually;
+        public readonly TableCellStyleType CellStyle;
 
         private readonly Widget _titleWidget;
         private readonly float _titleWidgetWidth;
         private readonly TipSignal _tooltip;
-        private readonly TableCellStyleType _cellStyle;
         private readonly ObjectTableWidget<TObject> _parent;
 
         public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTableWidget<TObject> parent)
@@ -53,7 +53,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             _titleWidget = titleWidget;
             _titleWidgetWidth = titleWidgetSize.x;
             _tooltip = $"<i>{def.LabelCap}</i>\n\n{def.Description}";
-            _cellStyle = cellDescriptor.Style;
+            CellStyle = cellDescriptor.Style;
             _parent = parent;
         }
 
@@ -63,7 +63,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             float titleWidgetWidth = _titleWidgetWidth;
             float widthDiff = titleRect.width - titleWidgetWidth;
             titleRect.width = titleWidgetWidth;
-            TableCellStyleType cellStyle = _cellStyle;
+            TableCellStyleType cellStyle = CellStyle;
             if (cellStyle == TableCellStyleType.Number)
             {
                 titleRect.x += widthDiff;

@@ -33,20 +33,22 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
 
     public void Draw(Rect rect)
     {
-        if (Value != null && Event.current.type == EventType.Repaint)
+        if (Value != null)
         {
             rect = rect.ContractedByObjectTableCellPadding();
 
-            _icon!.DrawIn(rect.CutByX(_iconWidth));
+            Rect iconRect = rect.CutByX(_iconWidth);
+            _icon!.DrawIn(iconRect);
+            bool iconWasClicked = Widgets.Draw.ButtonGhostly(iconRect);
+
+            if (iconWasClicked)
+            {
+                Widgets.Draw.DefInfoDialog(Value);
+            }
 
             rect.CutByX(ObjectTableWidget.CellContentSpacing);
 
-            TextAnchor textAnchor = Verse.Text.Anchor;
-            Verse.Text.Anchor = (TextAnchor)TableCellStyleType.String;
-
             Verse.Widgets.Label(rect, Text);
-
-            Verse.Text.Anchor = textAnchor;
         }
     }
 }

@@ -2,6 +2,7 @@
 using Stats.FilterWidgets;
 using Stats.TableCells;
 using Stats.TableWorkers;
+using Stats.Widgets;
 using UnityEngine;
 using Verse;
 
@@ -83,26 +84,42 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
         public bool IsRefreshable => false;
         public readonly string? Text;
 
+        private readonly Verse.ThingDef? _thingDef;
+        private readonly Verse.ThingDef? _stuffDef;
+        private readonly Widget? _icon;
+        private readonly float _iconWidth;
+
         public LabelCell(Verse.ThingDef thingDef, Verse.ThingDef? stuffDef = null)
         {
+            _thingDef = thingDef;
+            _stuffDef = stuffDef;
             Text = stuffDef == null
                 ? thingDef.LabelCap.RawText
                 : $"{stuffDef.LabelAsStuff.CapitalizeFirst()} {thingDef.label}";
-            Width = Verse.Text.CalcSize(Text).x;
+            float textWidth = Verse.Text.CalcSize(Text).x;
+            _icon = new ThingDefIcon(thingDef, stuffDef);
+            _iconWidth = _icon.GetSize().x;
+            Width = _iconWidth + ObjectTableWidget.CellContentSpacing + textWidth;
         }
 
         public void Draw(Rect rect)
         {
-            if (Text != null && Event.current.type == EventType.Repaint)
+            if (_thingDef != null)
             {
                 rect = rect.ContractedByObjectTableCellPadding();
 
-                TextAnchor textAnchor = Verse.Text.Anchor;
-                Verse.Text.Anchor = (TextAnchor)TableCellStyleType.String;
+                Rect iconRect = rect.CutByX(_iconWidth);
+                _icon!.DrawIn(iconRect);
+                bool iconWasClicked = Widgets.Draw.ButtonGhostly(iconRect);
+
+                if (iconWasClicked)
+                {
+                    Widgets.Draw.DefInfoDialog(_thingDef, _stuffDef);
+                }
+
+                rect.CutByX(ObjectTableWidget.CellContentSpacing);
 
                 Verse.Widgets.Label(rect, Text);
-
-                Verse.Text.Anchor = textAnchor;
             }
         }
 

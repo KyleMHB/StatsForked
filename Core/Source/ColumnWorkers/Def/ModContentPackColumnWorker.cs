@@ -59,18 +59,12 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
 
         public void Draw(Rect rect)
         {
-            if (Mod != null && Event.current.type == EventType.Repaint)
+            if (ModName != null && Event.current.type == EventType.Repaint)
             {
                 TooltipHandler.TipRegion(rect, _tooltip);
 
                 rect = rect.ContractedByObjectTableCellPadding();
-
-                TextAnchor textAnchor = Text.Anchor;
-                Text.Anchor = (TextAnchor)TableCellStyleType.String;
-
                 Verse.Widgets.Label(rect, ModName);
-
-                Text.Anchor = textAnchor;
             }
         }
     }

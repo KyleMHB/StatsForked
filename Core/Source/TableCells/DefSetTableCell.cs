@@ -31,16 +31,10 @@ public readonly struct DefSetTableCell : IDefSetTableCell
 
     public void Draw(Rect rect)
     {
-        if (Text?.Length > 0 && Event.current.type == EventType.Repaint)
+        if (Text != null && Event.current.type == EventType.Repaint)
         {
             rect = rect.ContractedByObjectTableCellPadding();
-
-            TextAnchor textAnchor = Verse.Text.Anchor;
-            Verse.Text.Anchor = (TextAnchor)TableCellStyleType.String;
-
             Verse.Widgets.Label(rect, Text);
-
-            Verse.Text.Anchor = textAnchor;
         }
     }
 }
