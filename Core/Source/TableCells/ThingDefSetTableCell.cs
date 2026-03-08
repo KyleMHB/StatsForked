@@ -25,8 +25,7 @@ public readonly struct ThingDefSetTableCell : IThingDefSetTableCell
         if (Value?.Count > 0 && Event.current.type == EventType.Repaint)
         {
             rect = rect.ContractedByObjectTableCellPadding();
-
-            Verse.Widgets.Label(rect, "TODO");
+            Widgets.Draw.Label(rect, "TODO", TableCellStyle.String);
         }
     }
 }

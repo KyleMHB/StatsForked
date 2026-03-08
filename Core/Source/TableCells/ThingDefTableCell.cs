@@ -40,7 +40,6 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
             Rect iconRect = rect.CutByX(_iconWidth);
             _icon!.DrawIn(iconRect);
             bool iconWasClicked = Widgets.Draw.ButtonGhostly(iconRect);
-
             if (iconWasClicked)
             {
                 Widgets.Draw.DefInfoDialog(Value);
@@ -48,7 +47,7 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
 
             rect.CutByX(ObjectTableWidget.CellContentSpacing);
 
-            Verse.Widgets.Label(rect, Text);
+            Widgets.Draw.Label(rect, Text, TableCellStyle.String);
         }
     }
 }

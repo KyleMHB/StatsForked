@@ -34,7 +34,7 @@ public readonly struct DefSetTableCell : IDefSetTableCell
         if (Text != null && Event.current.type == EventType.Repaint)
         {
             rect = rect.ContractedByObjectTableCellPadding();
-            Verse.Widgets.Label(rect, Text);
+            Widgets.Draw.Label(rect, Text, TableCellStyle.String);
         }
     }
 }

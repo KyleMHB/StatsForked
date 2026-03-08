@@ -111,7 +111,6 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
                 Rect iconRect = rect.CutByX(_iconWidth);
                 _icon!.DrawIn(iconRect);
                 bool iconWasClicked = Widgets.Draw.ButtonGhostly(iconRect);
-
                 if (iconWasClicked)
                 {
                     Widgets.Draw.DefInfoDialog(_thingDef, _stuffDef);
@@ -119,7 +118,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
 
                 rect.CutByX(ObjectTableWidget.CellContentSpacing);
 
-                Verse.Widgets.Label(rect, Text);
+                Widgets.Draw.Label(rect, Text, TableCellStyle.String);
             }
         }
 

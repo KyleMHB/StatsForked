@@ -28,7 +28,7 @@ public readonly struct DefTableCell : IDefTableCell
         if (Text != null && Event.current.type == EventType.Repaint)
         {
             rect = rect.ContractedByObjectTableCellPadding();
-            Verse.Widgets.Label(rect, Text);
+            Widgets.Draw.Label(rect, Text, TableCellStyle.String);
         }
     }
 }

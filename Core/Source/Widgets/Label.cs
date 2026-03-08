@@ -4,35 +4,49 @@ namespace Stats.Widgets;
 
 public sealed class Label : Widget
 {
-    private string _Text;
     public string Text
     {
-        get => _Text;
+        get => _text;
         set
         {
-            if (value == _Text)
+            if (value == _text)
             {
                 return;
             }
 
-            _Text = value;
+            _text = value;
 
             Resize();
         }
     }
+
+    private string _text;
+
     public Label(string text)
     {
-        _Text = text;
+        _text = text;
     }
+
     internal Label(Observable<string> observable)
     {
-        _Text = observable.Value;
+        _text = observable.Value;
         observable.OnNext += value => Text = value;
     }
+
+    public static readonly GUIStyle Style;
+
+    static Label()
+    {
+        Style = new GUIStyle(Verse.Text.fontStyles[1]);
+        Style.alignment = TextAnchor.MiddleLeft;
+        Style.wordWrap = false;
+    }
+
     public override Vector2 GetSize()
     {
         return Verse.Text.CalcSize(Text);
     }
+
     public override void Draw(Rect rect, Vector2 _)
     {
         GUIDebugger.DebugRect(this, rect);
@@ -42,6 +56,6 @@ public sealed class Label : Widget
             return;
         }
 
-        Verse.Widgets.Label(rect, Text);
+        Widgets.Draw.Label(rect, Text, Style);
     }
 }

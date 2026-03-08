@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
+using LudeonTK;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -107,5 +109,18 @@ public static class Draw
         }
 
         return GUI.Button(rect, "", Verse.Widgets.EmptyStyle);
+    }
+
+    public static void Label(Rect rect, string text, GUIStyle style)
+    {
+        float num = Prefs.UIScale / 2f;
+        if (Prefs.UIScale > 1f && Math.Abs(num - Mathf.Floor(num)) > float.Epsilon)
+        {
+            rect.xMin = UIScaling.AdjustCoordToUIScalingFloor(rect.xMin);
+            rect.yMin = UIScaling.AdjustCoordToUIScalingFloor(rect.yMin);
+            rect.xMax = UIScaling.AdjustCoordToUIScalingCeil(rect.xMax + 1E-05f);
+            rect.yMax = UIScaling.AdjustCoordToUIScalingCeil(rect.yMax + 1E-05f);
+        }
+        GUI.Label(rect, text, style);
     }
 }

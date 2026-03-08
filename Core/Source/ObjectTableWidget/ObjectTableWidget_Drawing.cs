@@ -39,34 +39,44 @@ internal sealed partial class ObjectTableWidget<TObject>
         // Add empty space for more convenient vertical scrolling.
         contentRect.height += MathF.Min(unpinnedRowsHeight, viewportHeight);
 
-        using (new GUIScrollContext(rect, ref _scrollPosition, contentRect))
+        using (new GUIScrollContext(rect, ref _scrollPosition, contentRect)) { }
+
+        Vector2 scrollPosition = _scrollPosition;
+        Rect viewportRect = new(rect.position, viewportSize);
+
+        float firstVisibleUnpinnedRowY = -scrollPosition.y % _rowHeight;
+        int scrolledUnpinnedRowsCount = Mathf.FloorToInt(scrollPosition.y / _rowHeight);
+        int viewportRowCapacity = Mathf.CeilToInt(viewportHeight / _rowHeight);
+        int visibleUnpinnedRowsCount = Math.Min(UnpinnedRowsCount - scrolledUnpinnedRowsCount, viewportRowCapacity);
+        ReadOnlyListSegment<int> visibleUnpinnedRows = UnpinnedRows.Slice(scrolledUnpinnedRowsCount, visibleUnpinnedRowsCount);
+
+        // Background
+        DrawBackground(viewportRect, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
+
+        // Left part
+        if (_pinnedColumnsCount > 0)
         {
-            Vector2 scrollPosition = _scrollPosition;
-            Rect viewportRect = new(scrollPosition, viewportSize);
+            Rect leftPartRect = viewportRect.CutByX(_pinnedColumnsWidth);
+            DrawPart(leftPartRect, PinnedColumns, 0f, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
+            // Separator line
+            Widgets.Draw.VerticalLine(leftPartRect.xMax - 1f, leftPartRect.y, leftPartRect.height, MainTabWindowWidget.BorderLineColor);
+        }
 
-            float firstVisibleUnpinnedRowY = -scrollPosition.y % _rowHeight;
-            int scrolledUnpinnedRowsCount = Mathf.FloorToInt(scrollPosition.y / _rowHeight);
-            int viewportRowCapacity = Mathf.CeilToInt(viewportHeight / _rowHeight);
-            int visibleUnpinnedRowsCount = Math.Min(UnpinnedRowsCount - scrolledUnpinnedRowsCount, viewportRowCapacity);
-            ReadOnlyListSegment<int> visibleUnpinnedRows = UnpinnedRows.Slice(scrolledUnpinnedRowsCount, visibleUnpinnedRowsCount);
+        // Right part
+        ReadOnlyListSegment<Column> unpinnedColumns = UnpinnedColumns;
+        if (unpinnedColumns.Length > 0)
+        {
+            DrawPart(viewportRect, unpinnedColumns, -scrollPosition.x, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
 
-            // Background
-            DrawBackground(viewportRect, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
-
-            // Left part
-            if (_pinnedColumnsCount > 0)
+            // Horizontal scrolling
+            // Register mouse-drag only below headers to not interfere with them.
+            if (Event.current.type == EventType.MouseDrag && _currentlyReorderedColumn == null && _currentlyResizedColumn == null)
             {
-                Rect leftPartRect = viewportRect.CutByX(_pinnedColumnsWidth);
-                DrawPart(leftPartRect, PinnedColumns, 0f, visibleUnpinnedRows, firstVisibleUnpinnedRowY, false);
-                // Separator line
-                Widgets.Draw.VerticalLine(leftPartRect.xMax - 1f, leftPartRect.y, rect.height, MainTabWindowWidget.BorderLineColor);
-            }
-
-            // Right part
-            ReadOnlyListSegment<Column> unpinnedColumns = UnpinnedColumns;
-            if (unpinnedColumns.Length > 0)
-            {
-                DrawPart(viewportRect, unpinnedColumns, -scrollPosition.x, visibleUnpinnedRows, firstVisibleUnpinnedRowY, true);
+                viewportRect.yMin += _rowHeight + _pinnedRowsHeight;
+                if (Mouse.IsOver(viewportRect))
+                {
+                    _scrollPosition.x = Mathf.Max(_scrollPosition.x + Event.current.delta.x * -1f, 0f);
+                }
             }
         }
     }
@@ -76,8 +86,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         ReadOnlyListSegment<Column> columns,
         float columnsOffsetX,
         ReadOnlyListSegment<int> visibleUnpinnedRows,
-        float visibleUnpinnedRowsOffsetY,
-        bool doHorScroll
+        float visibleUnpinnedRowsOffsetY
     )
     {
         using (new GUIClipContext(rect))
@@ -104,17 +113,6 @@ internal sealed partial class ObjectTableWidget<TObject>
                 }
 
                 columnRect.x = columnRectXmax;
-            }
-        }
-
-        // Horizontal scrolling
-        // Register mouse-drag only below headers to not interfere with them.
-        if (doHorScroll && Event.current.type == EventType.MouseDrag && _currentlyReorderedColumn == null && _currentlyResizedColumn == null)
-        {
-            rect.yMin += _rowHeight + _pinnedRowsHeight;
-            if (Mouse.IsOver(rect))
-            {
-                _scrollPosition.x = Mathf.Max(_scrollPosition.x + Event.current.delta.x * -1f, 0f);
             }
         }
     }
@@ -158,10 +156,6 @@ internal sealed partial class ObjectTableWidget<TObject>
     {
         rect.height = _rowHeight;
         ColumnWorker<TObject> columnWorker = column.Worker;
-
-        TextAnchor textAnchor = Text.Anchor;
-        Text.Anchor = (TextAnchor)column.CellStyle;
-
         for (int i = 0; i < rows.Length; i++)
         {
             int row = rows[i];
@@ -175,8 +169,6 @@ internal sealed partial class ObjectTableWidget<TObject>
             }
             rect.y = rect.yMax;
         }
-
-        Text.Anchor = textAnchor;
     }
 
     private void DrawBackground(Rect rect, ReadOnlyListSegment<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY)

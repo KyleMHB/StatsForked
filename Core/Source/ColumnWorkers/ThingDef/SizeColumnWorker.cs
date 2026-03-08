@@ -70,7 +70,7 @@ public sealed class SizeColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBase
             if (_text != null && Event.current.type == EventType.Repaint)
             {
                 rect = rect.ContractedByObjectTableCellPadding();
-                Verse.Widgets.Label(rect, _text);
+                Widgets.Draw.Label(rect, _text, TableCellStyle.Number);
             }
         }
     }
