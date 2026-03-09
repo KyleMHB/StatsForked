@@ -73,7 +73,7 @@ internal sealed partial class ObjectTableWidget<TObject>
                 titleRect.x += widthDiff / 2f;
             }
 
-            _titleWidget.DrawIn(titleRect);
+            _titleWidget.Draw(titleRect, Vector2.zero);
 
             Event currentEvent = Event.current;
             bool mouseIsOverRect = Mouse.IsOver(rect);

@@ -46,7 +46,7 @@ internal sealed partial class ObjectTableWidget<TObject>
 
         float firstVisibleUnpinnedRowY = -scrollPosition.y % _rowHeight;
         int scrolledUnpinnedRowsCount = Mathf.FloorToInt(scrollPosition.y / _rowHeight);
-        int viewportRowCapacity = Mathf.CeilToInt(viewportHeight / _rowHeight);
+        int viewportRowCapacity = Mathf.CeilToInt((viewportHeight - _rowHeight - _pinnedRowsHeight) / _rowHeight);
         int visibleUnpinnedRowsCount = Math.Min(UnpinnedRowsCount - scrolledUnpinnedRowsCount, viewportRowCapacity);
         ReadOnlyListSegment<int> visibleUnpinnedRows = UnpinnedRows.Slice(scrolledUnpinnedRowsCount, visibleUnpinnedRowsCount);
 
@@ -147,23 +147,23 @@ internal sealed partial class ObjectTableWidget<TObject>
                 DrawColumnCells(rect, column, visibleUnpinnedRows);
             }
         }
+    }
 
-        void DrawColumnCells(Rect rect, Column column, ReadOnlyListSegment<int> rows)
+    private void DrawColumnCells(Rect rect, Column column, ReadOnlyListSegment<int> rows)
+    {
+        rect.height = _rowHeight;
+        ColumnWorker<TObject> columnWorker = column.Worker;
+        for (int i = 0; i < rows.Length; i++)
         {
-            rect.height = _rowHeight;
-            ColumnWorker<TObject> columnWorker = column.Worker;
-            for (int i = 0; i < rows.Length; i++)
+            try
             {
-                try
-                {
-                    columnWorker.DrawCell(rect, rows[i]);
-                }
-                catch
-                {
-                    // TODO?
-                }
-                rect.y = rect.yMax;
+                columnWorker.DrawCell(rect, rows[i]);
             }
+            catch
+            {
+                // TODO?
+            }
+            rect.y = rect.yMax;
         }
     }
 
@@ -194,24 +194,27 @@ internal sealed partial class ObjectTableWidget<TObject>
         // Unpinned rows
         if (visibleUnpinnedRows.Length > 0)
         {
-            using (new GUIClipContext(rect))
+            Rect rowRect = new(rect.x, rect.y, rect.width, _rowHeight + visibleUnpinnedRowsOffsetY);
+            for (int i = 0; i < visibleUnpinnedRows.Length; i++)
             {
-                Rect rowRect = new(0f, visibleUnpinnedRowsOffsetY, rect.width, _rowHeight);
-                for (int i = 0; i < visibleUnpinnedRows.Length; i++)
+                //int row = visibleUnpinnedRows[i];
+                if (isRepaint)
                 {
-                    //int row = visibleUnpinnedRows[i];
-                    if (isRepaint)
+                    if (Mouse.IsOver(rowRect))
                     {
-                        if (Mouse.IsOver(rowRect))
-                        {
-                            Verse.Widgets.DrawHighlight(rowRect);
-                        }
-                        else if ((visibleUnpinnedRows.Start + i) % 2 == 0)
-                        {
-                            Verse.Widgets.DrawLightHighlight(rowRect);
-                        }
+                        Verse.Widgets.DrawHighlight(rowRect);
                     }
-                    rowRect.y = rowRect.yMax;
+                    else if ((visibleUnpinnedRows.Start + i) % 2 == 0)
+                    {
+                        Verse.Widgets.DrawLightHighlight(rowRect);
+                    }
+                }
+
+                rowRect.y = rowRect.yMax;
+                rowRect.height = _rowHeight;
+                if (rowRect.yMax > rect.yMax)
+                {
+                    rowRect.height -= rowRect.yMax - rect.yMax;
                 }
             }
         }
