@@ -22,7 +22,7 @@ public readonly struct ThingDefSetTableCell : IThingDefSetTableCell
 
     public void Draw(Rect rect)
     {
-        if (Value?.Count > 0 && Event.current.type == EventType.Repaint)
+        if (Value?.Count > 0)
         {
             rect = rect.ContractedByObjectTableCellPadding();
             Widgets.Draw.Label(rect, "TODO", TableCellStyle.String);

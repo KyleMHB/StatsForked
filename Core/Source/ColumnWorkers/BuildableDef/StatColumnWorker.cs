@@ -122,7 +122,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
 
         public void Draw(Rect rect)
         {
-            if (_text != null && Event.current.type == EventType.Repaint)
+            if (_text != null)
             {
                 if (Mouse.IsOver(rect))
                 {

@@ -59,7 +59,7 @@ public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<De
 
         public void Draw(Rect rect)
         {
-            if (Value != TechLevel.Undefined && Event.current.type == EventType.Repaint)
+            if (Value != TechLevel.Undefined)
             {
                 rect = rect.ContractedByObjectTableCellPadding();
                 Widgets.Draw.Label(rect, _text, TableCellStyle.String);

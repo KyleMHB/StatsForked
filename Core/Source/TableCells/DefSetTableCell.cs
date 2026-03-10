@@ -31,7 +31,7 @@ public readonly struct DefSetTableCell : IDefSetTableCell
 
     public void Draw(Rect rect)
     {
-        if (Text != null && Event.current.type == EventType.Repaint)
+        if (Text != null)
         {
             rect = rect.ContractedByObjectTableCellPadding();
             Widgets.Draw.Label(rect, Text, TableCellStyle.String);

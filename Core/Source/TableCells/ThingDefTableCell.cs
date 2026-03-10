@@ -45,9 +45,12 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
                 Widgets.Draw.DefInfoDialog(Value);
             }
 
-            rect.CutByX(ObjectTableWidget.CellContentSpacing);
+            if (Event.current.type == EventType.Repaint)
+            {
+                rect.CutByX(ObjectTableWidget.CellContentSpacing);
 
-            Widgets.Draw.Label(rect, Text, TableCellStyle.String);
+                Widgets.Draw.Label(rect, Text, TableCellStyle.String);
+            }
         }
     }
 }

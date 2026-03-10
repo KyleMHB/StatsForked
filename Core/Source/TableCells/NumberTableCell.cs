@@ -28,7 +28,7 @@ public readonly struct NumberTableCell : INumberTableCell
 
     public void Draw(Rect rect)
     {
-        if (_text != null && Event.current.type == EventType.Repaint)
+        if (_text != null)
         {
             rect = rect.ContractedByObjectTableCellPadding();
             Widgets.Draw.Label(rect, _text, TableCellStyle.Number);

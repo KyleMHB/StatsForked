@@ -24,7 +24,7 @@ public readonly struct BooleanTableCell : IBooleanTableCell
 
     public static void Draw(Rect rect, bool value)
     {
-        if (value && Event.current.type == EventType.Repaint)
+        if (value)
         {
             rect = rect.ContractedByObjectTableCellPadding();
             Verse.Widgets.DrawTextureFitted(rect, _textureTrue, 1f);

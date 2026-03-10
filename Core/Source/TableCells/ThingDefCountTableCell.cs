@@ -30,7 +30,7 @@ public readonly struct ThingDefCountTableCell : IThingDefCountTableCell
 
     public void Draw(Rect rect)
     {
-        if (ThingDef != null && Event.current.type == EventType.Repaint)
+        if (ThingDef != null)
         {
             rect = rect.ContractedByObjectTableCellPadding();
             Widgets.Draw.Label(rect, "TODO", TableCellStyle.String);

@@ -87,9 +87,7 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     // Rows
     private readonly List<TObject> _objects;
     private readonly List<int> _rows;
-    private ReadOnlyListSegment<int> PinnedRows => new(_rows, 0, _pinnedRowsCount);
     private int _pinnedRowsCount;
-    private ReadOnlyListSegment<int> UnpinnedRows => new(_rows, _pinnedRowsCount, UnpinnedRowsCount);
     private int UnpinnedRowsCount => _rows.Count - _pinnedRowsCount;
 
     // Columns

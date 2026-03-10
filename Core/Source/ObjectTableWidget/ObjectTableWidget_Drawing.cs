@@ -48,16 +48,34 @@ internal sealed partial class ObjectTableWidget<TObject>
         int scrolledUnpinnedRowsCount = Mathf.FloorToInt(scrollPosition.y / _rowHeight);
         int viewportRowCapacity = Mathf.CeilToInt((viewportHeight - _rowHeight - _pinnedRowsHeight) / _rowHeight);
         int visibleUnpinnedRowsCount = Math.Min(UnpinnedRowsCount - scrolledUnpinnedRowsCount, viewportRowCapacity);
-        ReadOnlyListSegment<int> visibleUnpinnedRows = UnpinnedRows.Slice(scrolledUnpinnedRowsCount, visibleUnpinnedRowsCount);
+        if (visibleUnpinnedRowsCount < 0)
+        {
+            visibleUnpinnedRowsCount = 0;
+        }
+
+        int visibleUnpinnedRowsStart = _pinnedRowsCount + scrolledUnpinnedRowsCount;
+        Span<int> visibleUnpinnedRows = stackalloc int[visibleUnpinnedRowsCount];
+        for (int i = 0; i < visibleUnpinnedRowsCount; i++)
+        {
+            visibleUnpinnedRows[i] = _rows[visibleUnpinnedRowsStart + i];
+        }
+
+        Span<int> pinnedRows = stackalloc int[_pinnedRowsCount];
+        for (int i = 0; i < _pinnedRowsCount; i++)
+        {
+            pinnedRows[i] = _rows[i];
+        }
+
+        // TODO: Columns span (do we can directly modify columns collection on pin/reorder and don't allocate delegates)
 
         // Background
-        DrawBackground(viewportRect, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
+        DrawBackground(viewportRect, visibleUnpinnedRows, firstVisibleUnpinnedRowY, visibleUnpinnedRowsStart);
 
         // Left part
         if (_pinnedColumnsCount > 0)
         {
             Rect leftPartRect = viewportRect.CutByX(_pinnedColumnsWidth);
-            DrawPart(leftPartRect, PinnedColumns, leftPartRect.x, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
+            DrawPart(leftPartRect, PinnedColumns, leftPartRect.x, pinnedRows, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
             // Separator line
             Widgets.Draw.VerticalLine(leftPartRect.xMax - 1f, leftPartRect.y, leftPartRect.height, MainTabWindowWidget.BorderLineColor);
         }
@@ -71,7 +89,7 @@ internal sealed partial class ObjectTableWidget<TObject>
                 Rect rightPartRect = viewportRect;
                 rightPartRect.x = 0f;
                 rightPartRect.y = 0f;
-                DrawPart(rightPartRect, unpinnedColumns, -scrollPosition.x, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
+                DrawPart(rightPartRect, unpinnedColumns, -scrollPosition.x, pinnedRows, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
             }
 
             // Horizontal scrolling
@@ -91,12 +109,16 @@ internal sealed partial class ObjectTableWidget<TObject>
         Rect rect,
         ReadOnlyListSegment<Column> columns,
         float columnsOffsetX,
-        ReadOnlyListSegment<int> visibleUnpinnedRows,
+        Span<int> pinnedRows,
+        Span<int> visibleUnpinnedRows,
         float visibleUnpinnedRowsOffsetY
     )
     {
+        float rectXmax = rect.xMax;
         Rect columnRect = new(columnsOffsetX, rect.y, 0f, rect.height);
-        for (int i = 0; i < columns.Length; i++)
+        int columnsCount = columns.Length;
+        int lastColumnIndex = columnsCount - 1;
+        for (int i = 0; i < columnsCount; i++)
         {
             Column column = columns[i];
             columnRect.width = column.Width;
@@ -104,14 +126,14 @@ internal sealed partial class ObjectTableWidget<TObject>
 
             if (columnRectXmax > 0f)
             {
-                DrawColumn(columnRect, column, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
-                if (i < columns.Length - 1)
+                DrawColumn(columnRect, column, pinnedRows, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
+                if (i < lastColumnIndex)
                 {
                     Widgets.Draw.VerticalLine(columnRectXmax - 1f, 0f, rect.height, _columnSeparatorLineColor);
                 }
             }
 
-            if (columnRectXmax >= rect.width)
+            if (columnRectXmax >= rectXmax)
             {
                 break;
             }
@@ -120,8 +142,10 @@ internal sealed partial class ObjectTableWidget<TObject>
         }
     }
 
-    private void DrawColumn(Rect rect, Column column, ReadOnlyListSegment<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY)
+    private void DrawColumn(Rect rect, Column column, Span<int> pinnedRows, Span<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY)
     {
+        bool shouldDrawCells = column.Worker.ShouldDrawCells;
+
         Rect headerRect = rect.CutByY(_rowHeight);
         using (new GUIClipContext(headerRect))
         {
@@ -129,16 +153,16 @@ internal sealed partial class ObjectTableWidget<TObject>
             headerRect.y = 0f;
             column.DrawHeaderCell(headerRect);
 
-            if (_pinnedRowsCount > 0)
+            if (shouldDrawCells && pinnedRows.Length > 0)
             {
                 Rect pinnedRowsRect = rect.CutByY(_pinnedRowsHeight);
                 pinnedRowsRect.x = 0f;
                 pinnedRowsRect.y = 0f;
-                DrawColumnCells(pinnedRowsRect, column, PinnedRows);
+                DrawColumnCells(pinnedRowsRect, column, pinnedRows);
             }
         }
 
-        if (visibleUnpinnedRows.Length > 0)
+        if (shouldDrawCells && visibleUnpinnedRows.Length > 0)
         {
             using (new GUIClipContext(rect))
             {
@@ -149,11 +173,12 @@ internal sealed partial class ObjectTableWidget<TObject>
         }
     }
 
-    private void DrawColumnCells(Rect rect, Column column, ReadOnlyListSegment<int> rows)
+    private void DrawColumnCells(Rect rect, Column column, Span<int> rows)
     {
         rect.height = _rowHeight;
         ColumnWorker<TObject> columnWorker = column.Worker;
-        for (int i = 0; i < rows.Length; i++)
+        int rowsCount = rows.Length;
+        for (int i = 0; i < rowsCount; i++)
         {
             try
             {
@@ -161,13 +186,16 @@ internal sealed partial class ObjectTableWidget<TObject>
             }
             catch
             {
-                // TODO?
+                // TODO:
+                // - Add tooltip with exception's message.
+                // - Make the whole thing into a separate non-inlineable method.
+                Verse.Widgets.DrawBoxSolid(rect, Color.red);
             }
             rect.y = rect.yMax;
         }
     }
 
-    private void DrawBackground(Rect rect, ReadOnlyListSegment<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY)
+    private void DrawBackground(Rect rect, Span<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY, int visibleUnpinnedRowsStart)
     {
         bool isRepaint = Event.current.type == EventType.Repaint;
 
@@ -182,7 +210,6 @@ internal sealed partial class ObjectTableWidget<TObject>
         // Pinned rows
         if (_pinnedRowsCount > 0)
         {
-            ReadOnlyListSegment<int> pinnedRows = PinnedRows;
             Rect pinnedRowsRect = rect.CutByY(_pinnedRowsHeight);
             if (isRepaint)
             {
@@ -204,7 +231,7 @@ internal sealed partial class ObjectTableWidget<TObject>
                     {
                         Verse.Widgets.DrawHighlight(rowRect);
                     }
-                    else if ((visibleUnpinnedRows.Start + i) % 2 == 0)
+                    else if ((visibleUnpinnedRowsStart + i) % 2 == 0)
                     {
                         Verse.Widgets.DrawLightHighlight(rowRect);
                     }

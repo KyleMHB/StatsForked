@@ -59,7 +59,7 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
 
         public void Draw(Rect rect)
         {
-            if (ModName != null && Event.current.type == EventType.Repaint)
+            if (ModName != null)
             {
                 TooltipHandler.TipRegion(rect, _tooltip);
 
