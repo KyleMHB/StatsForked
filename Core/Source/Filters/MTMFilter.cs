@@ -4,7 +4,7 @@ using System.Linq;
 using Stats;
 using Verse;
 
-namespace Stats.FilterWidgets;
+namespace Stats.Filters;
 
 public sealed class MTMFilter<TOption> : NTMFilter<IEnumerable<TOption>, TOption>
 {

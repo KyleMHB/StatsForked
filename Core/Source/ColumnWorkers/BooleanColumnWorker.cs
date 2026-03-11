@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Stats.FilterWidgets;
+using Stats.Extensions;
+using Stats.Filters;
 using Stats.TableCells;
 using Stats.TableWorkers;
 using UnityEngine;
@@ -17,7 +18,7 @@ public abstract class BooleanColumnWorker<TObject, TCell> : ColumnWorker<TObject
     {
         FilterWidget valueFieldFilter = new BooleanFilter((int row) => this[row].Value);
         int Compare(int row1, int row2) => this[row1].Value.CompareTo(this[row2]);
-        TableCellFieldDescriptor valueField = new(Def.Title, valueFieldFilter, Compare);
+        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
         return new TableCellDescriptor(TableCellStyleType.Boolean, [valueField]);
     }
@@ -76,7 +77,7 @@ public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
     {
         FilterWidget valueFieldFilter = new BooleanFilter((int row) => _values[row]);
         int Compare(int row1, int row2) => _values[row1].CompareTo(_values[row2]);
-        TableCellFieldDescriptor valueField = new(Def.Title, valueFieldFilter, Compare);
+        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
         return new TableCellDescriptor(TableCellStyleType.Boolean, [valueField]);
     }

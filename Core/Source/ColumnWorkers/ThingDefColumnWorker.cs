@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Stats.FilterWidgets;
+using Stats.Filters;
 using Stats.TableCells;
 using Stats.TableWorkers;
 
@@ -19,7 +19,7 @@ public abstract class ThingDefColumnWorker<TObject, TCell> : ColumnWorker<TObjec
             );
         FilterWidget valueFieldFilter = new OTMFilter<Verse.ThingDef?>((int row) => this[row].Value, valueFieldFilterOptions);
         int CompareByCellText(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Text, this[row2].Text);
-        TableCellFieldDescriptor valueField = new(Def.Title, valueFieldFilter, CompareByCellText);
+        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, CompareByCellText);
 
         return new TableCellDescriptor(TableCellStyleType.String, [valueField]);
     }

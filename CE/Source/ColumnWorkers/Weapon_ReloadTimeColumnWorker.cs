@@ -1,5 +1,6 @@
 ﻿using CombatExtended;
 using RimWorld;
+using Stats.Extensions;
 using Stats.Objects.ThingDef;
 using Stats.ObjectTable.ColumnWorkers;
 using Verse;

@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using RimWorld;
-using Stats.FilterWidgets;
+using Stats.Extensions;
+using Stats.Filters;
 using Stats.TableCells;
 using Stats.TableWorkers;
 using UnityEngine;
@@ -65,7 +66,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
     {
         FilterWidget valueFieldFilter = new NumberFilter((int row) => this[row].Value);
         int Compare(int row1, int row2) => this[row1].Value.CompareTo(this[row2].Value);
-        TableCellFieldDescriptor valueField = new(Def.Title, valueFieldFilter, Compare);
+        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
         return new TableCellDescriptor(TableCellStyleType.Number, [valueField]);
     }

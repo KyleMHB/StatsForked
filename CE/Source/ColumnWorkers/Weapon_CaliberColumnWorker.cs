@@ -13,7 +13,7 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<VirtualThing>
     public Weapon_CaliberColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
     {
     }
-    public override ObjectTableWidget.Cell GetCell(VirtualThing thing)
+    public override ObjectTable.Cell GetCell(VirtualThing thing)
     {
         return new Cell(thing, this);
     }
@@ -51,7 +51,7 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<VirtualThing>
         yield return new(Def.Title, new OTMFilter<Cell, string?>(cell => cell.Value, options, this));
     }
 
-    private sealed class Cell : ObjectTableWidget.WidgetCell
+    private sealed class Cell : ObjectTable.WidgetCell
     {
         protected override Widget? Widget { get; set; }
         public override event Action? OnChange;
@@ -64,7 +64,7 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<VirtualThing>
 
             if (caliberName?.Length > 0)
             {
-                Widget widget = new Label(caliberName).PaddingAbs(ObjectTableWidget.CellPadHor, ObjectTableWidget.CellPadVer);
+                Widget widget = new Label(caliberName).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
                 var tooltip = StatDefOf.Caliber.Worker.GetExplanationFull(
                     statRequest,
                     ToStringNumberSense.Absolute,
@@ -80,7 +80,7 @@ public sealed class Weapon_CaliberColumnWorker : ColumnWorker<VirtualThing>
                 Value = caliberName;
             }
         }
-        public override int CompareTo(ObjectTableWidget.Cell cell)
+        public override int CompareTo(ObjectTable.Cell cell)
         {
             return Comparer<string?>.Default.Compare(Value, ((Cell)cell).Value);
         }

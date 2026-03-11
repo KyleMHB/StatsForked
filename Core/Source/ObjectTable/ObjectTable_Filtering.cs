@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using Stats.FilterWidgets;
+using Stats.Filters;
 using Verse;
 
 namespace Stats;
 
-internal sealed partial class ObjectTableWidget<TObject>
+internal sealed partial class ObjectTable<TObject>
 {
+    internal override void ToggleFiltersTab()
+    {
+    }
     //private void HandleFilterChange(Filter filter)
     //{
     //    if (filter.IsActive)

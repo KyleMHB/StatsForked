@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Stats.FilterWidgets;
+using Stats.Extensions;
+using Stats.Filters;
 using Stats.TableCells;
 using Stats.TableWorkers;
 using Stats.Widgets;
@@ -30,7 +31,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
     {
         FilterWidget textFieldFilter = new StringFilter((int row) => this[row].Text ?? "");
         int Compare(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Text, this[row2].Text);
-        TableCellFieldDescriptor textField = new(Def.Title, textFieldFilter, Compare);
+        TableCellFieldDescriptor textField = new(Def.TitleWidget, textFieldFilter, Compare);
 
         return new TableCellDescriptor(TableCellStyleType.String, [textField]);
     }
@@ -99,7 +100,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
             float textWidth = Verse.Text.CalcSize(Text).x;
             _icon = new ThingDefIcon(thingDef, stuffDef);
             _iconWidth = _icon.GetSize().x;
-            Width = _iconWidth + ObjectTableWidget.CellContentSpacing + textWidth;
+            Width = _iconWidth + ObjectTable.CellContentSpacing + textWidth;
         }
 
         public void Draw(Rect rect)
@@ -118,7 +119,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
 
                 if (Event.current.type == EventType.Repaint)
                 {
-                    rect.CutByX(ObjectTableWidget.CellContentSpacing);
+                    rect.CutByX(ObjectTable.CellContentSpacing);
 
                     Widgets.Draw.Label(rect, Text, TableCellStyle.String);
                 }

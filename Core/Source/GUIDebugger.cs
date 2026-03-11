@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using Stats.Extensions;
 using Stats.Widgets;
 using Stats.Widgets.Extensions;
 using UnityEngine;

@@ -11,7 +11,7 @@ public class TableDef : Def
     public string? iconPath;
     public Texture2D Icon { get; private set; } = BaseContent.BadTex;
     public Color iconColor = Color.white;
-    public Color IconColor => iconColor;
+    public float iconScale = 1f;
 #pragma warning disable CS8618
     public List<ColumnDef> columns;
     public Type workerClass;
@@ -22,10 +22,7 @@ public class TableDef : Def
     {
         base.ResolveReferences();
 
-        LongEventHandler.ExecuteWhenFinished(() =>
-        {
-            ResolveIcon();
-        });
+        LongEventHandler.ExecuteWhenFinished(ResolveIcon);
     }
 
     private void ResolveIcon()

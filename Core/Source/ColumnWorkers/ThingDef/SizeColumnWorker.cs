@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Stats.FilterWidgets;
+using Stats.Extensions;
+using Stats.Filters;
 using Stats.TableCells;
 using Stats.TableWorkers;
 using UnityEngine;
@@ -42,7 +43,7 @@ public sealed class SizeColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBase
             .Select(size => new NTMFilterOption<decimal>(size.Area, size.ToStringCross()));
         FilterWidget valueFieldFilter = new OTMFilter<decimal>((int row) => this[row].Area, valueFieldFilterOptions);
         int Compare(int row1, int row2) => this[row1].Area.CompareTo(this[row2].Area);
-        TableCellFieldDescriptor valueField = new(Def.Title, valueFieldFilter, Compare);
+        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
         return new TableCellDescriptor(TableCellStyleType.Number, [valueField]);
     }

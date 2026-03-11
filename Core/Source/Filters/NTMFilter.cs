@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RimWorld;
+using Stats.Extensions;
 using Stats.Widgets;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
 
-namespace Stats.FilterWidgets;
+namespace Stats.Filters;
 
 public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 {

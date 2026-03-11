@@ -1,11 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Stats;
+namespace Stats.GUIScopes;
 
-internal readonly record struct GUIClipContext : IDisposable
+internal readonly record struct GUIClipScope : IDisposable
 {
-    public GUIClipContext(Rect rect)
+    public GUIClipScope(Rect rect)
     {
         GUI.BeginClip(rect);
     }

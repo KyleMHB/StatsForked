@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Stats.FilterWidgets;
+namespace Stats.Filters;
 
 public sealed class StringFilter : FilterWidgetWithInputField<string, string>
 {

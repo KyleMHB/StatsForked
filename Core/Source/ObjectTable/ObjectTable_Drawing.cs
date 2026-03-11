@@ -1,14 +1,15 @@
 ﻿using System;
 using Stats.ColumnWorkers;
-using Stats.MainTabWindow;
+using Stats.Extensions;
+using Stats.GUIScopes;
 using UnityEngine;
 using Verse;
 
 namespace Stats;
 
-internal sealed partial class ObjectTableWidget<TObject>
+internal sealed partial class ObjectTable<TObject>
 {
-    internal override void Draw(Rect rect, bool showSettingsMenu)
+    internal override void Draw(Rect rect)
     {
         if (_guiAction != null)
         {
@@ -19,6 +20,14 @@ internal sealed partial class ObjectTableWidget<TObject>
         if (Event.current.type == EventType.Layout)
         {
             RecalcLayout();
+        }
+
+        // Toolbar
+        Rect toolbarRect = rect.CutByY(30f);
+        if (Event.current.type == EventType.Repaint)
+        {
+            Verse.Widgets.DrawLightHighlight(toolbarRect);
+            Verse.Widgets.DrawLineHorizontal(toolbarRect.x, toolbarRect.yMax - 1f, rect.width, MainTabWindow.BorderColor);
         }
 
         //if (showSettingsMenu)
@@ -39,7 +48,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         // Add empty space for more convenient vertical scrolling.
         contentRect.height += MathF.Min(unpinnedRowsHeight, viewportHeight);
 
-        using (new GUIScrollContext(rect, ref _scrollPosition, contentRect)) { }
+        using (new GUIScrollScope(rect, ref _scrollPosition, contentRect)) { }
 
         Vector2 scrollPosition = _scrollPosition;
         Rect viewportRect = new(rect.position, viewportSize);
@@ -55,40 +64,33 @@ internal sealed partial class ObjectTableWidget<TObject>
 
         int visibleUnpinnedRowsStart = _pinnedRowsCount + scrolledUnpinnedRowsCount;
         Span<int> visibleUnpinnedRows = stackalloc int[visibleUnpinnedRowsCount];
-        for (int i = 0; i < visibleUnpinnedRowsCount; i++)
-        {
-            visibleUnpinnedRows[i] = _rows[visibleUnpinnedRowsStart + i];
-        }
+        _rows.CopyTo(visibleUnpinnedRows, visibleUnpinnedRowsStart);
 
         Span<int> pinnedRows = stackalloc int[_pinnedRowsCount];
-        for (int i = 0; i < _pinnedRowsCount; i++)
-        {
-            pinnedRows[i] = _rows[i];
-        }
-
-        // TODO: Columns span (do we can directly modify columns collection on pin/reorder and don't allocate delegates)
+        _rows.CopyTo(pinnedRows);
 
         // Background
         DrawBackground(viewportRect, visibleUnpinnedRows, firstVisibleUnpinnedRowY, visibleUnpinnedRowsStart);
 
         // Left part
-        if (_pinnedColumnsCount > 0)
+        int pinnedColumnsCount = _pinnedColumnsCount;
+        if (pinnedColumnsCount > 0)
         {
             Rect leftPartRect = viewportRect.CutByX(_pinnedColumnsWidth);
-            DrawPart(leftPartRect, PinnedColumns, leftPartRect.x, pinnedRows, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
+            ReadOnlyListSegment<Column> pinnedColumns = new(_columns, 0, pinnedColumnsCount);
+            DrawPart(leftPartRect, pinnedColumns, leftPartRect.x, pinnedRows, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
             // Separator line
-            Widgets.Draw.VerticalLine(leftPartRect.xMax - 1f, leftPartRect.y, leftPartRect.height, MainTabWindowWidget.BorderLineColor);
+            Widgets.Draw.VerticalLine(leftPartRect.xMax - 1f, leftPartRect.y, viewportHeight, MainTabWindow.BorderColor);
         }
 
         // Right part
-        ReadOnlyListSegment<Column> unpinnedColumns = UnpinnedColumns;
-        if (unpinnedColumns.Length > 0)
+        int unpinnedColumnsCount = _columns.Count - pinnedColumnsCount;
+        if (unpinnedColumnsCount > 0)
         {
-            using (new GUIClipContext(viewportRect))
+            using (new GUIClipScope(viewportRect))
             {
-                Rect rightPartRect = viewportRect;
-                rightPartRect.x = 0f;
-                rightPartRect.y = 0f;
+                Rect rightPartRect = viewportRect with { x = 0f, y = 0f };
+                ReadOnlyListSegment<Column> unpinnedColumns = new(_columns, pinnedColumnsCount, unpinnedColumnsCount);
                 DrawPart(rightPartRect, unpinnedColumns, -scrollPosition.x, pinnedRows, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
             }
 
@@ -147,7 +149,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         bool shouldDrawCells = column.Worker.ShouldDrawCells;
 
         Rect headerRect = rect.CutByY(_rowHeight);
-        using (new GUIClipContext(headerRect))
+        using (new GUIClipScope(headerRect))
         {
             headerRect.x = 0f;
             headerRect.y = 0f;
@@ -164,7 +166,7 @@ internal sealed partial class ObjectTableWidget<TObject>
 
         if (shouldDrawCells && visibleUnpinnedRows.Length > 0)
         {
-            using (new GUIClipContext(rect))
+            using (new GUIClipScope(rect))
             {
                 rect.x = 0f;
                 rect.y = visibleUnpinnedRowsOffsetY;
@@ -204,7 +206,7 @@ internal sealed partial class ObjectTableWidget<TObject>
         if (isRepaint)
         {
             Verse.Widgets.DrawHighlight(headersRect);
-            Verse.Widgets.DrawLineHorizontal(headersRect.x, headersRect.yMax - 1f, headersRect.width, MainTabWindowWidget.BorderLineColor);
+            Verse.Widgets.DrawLineHorizontal(headersRect.x, headersRect.yMax - 1f, headersRect.width, MainTabWindow.BorderColor);
         }
 
         // Pinned rows
@@ -214,7 +216,7 @@ internal sealed partial class ObjectTableWidget<TObject>
             if (isRepaint)
             {
                 Verse.Widgets.DrawStrongHighlight(pinnedRowsRect, _pinnedRowsBGColor);
-                Verse.Widgets.DrawLineHorizontal(pinnedRowsRect.x, pinnedRowsRect.yMax - 1f, pinnedRowsRect.width, MainTabWindowWidget.BorderLineColor);
+                Verse.Widgets.DrawLineHorizontal(pinnedRowsRect.x, pinnedRowsRect.yMax - 1f, pinnedRowsRect.width, MainTabWindow.BorderColor);
             }
         }
 

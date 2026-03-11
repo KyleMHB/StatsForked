@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Stats.FilterWidgets;
+using Stats.Extensions;
+using Stats.Filters;
 using Stats.TableCells;
 using Stats.TableWorkers;
 using UnityEngine;
@@ -35,7 +36,7 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
             );
         FilterWidget valueFieldFilter = new OTMFilter<ModContentPack?>((int row) => this[row].Mod, valueFieldFilterOptions);
         int Compare(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].ModName, this[row2].ModName);
-        TableCellFieldDescriptor valueField = new(Def.Title, valueFieldFilter, Compare);
+        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
         return new TableCellDescriptor(TableCellStyleType.String, [valueField]);
     }

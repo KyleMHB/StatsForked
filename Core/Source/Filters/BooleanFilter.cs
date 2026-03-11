@@ -1,8 +1,9 @@
 ﻿using System;
+using Stats.Extensions;
 using UnityEngine;
 using Verse;
 
-namespace Stats.FilterWidgets;
+namespace Stats.Filters;
 
 public sealed class BooleanFilter : FilterWidget
 {

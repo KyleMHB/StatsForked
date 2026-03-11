@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Stats.FilterWidgets;
+using Stats.Filters;
 using Stats.TableCells;
 using Stats.TableWorkers;
 using Stats.Widgets;
@@ -23,7 +23,7 @@ public abstract class ThingDefSetColumnWorker<TObject, TCell> : ColumnWorker<TOb
         FilterWidget valueFieldFilter = new MTMFilter<Verse.ThingDef?>((int row) => this[row].Value ?? _emptyThingDefHashSet, valueFieldFilterOptions);
         // TODO: Figure out how to efficiently compare cells so that cells with equal values will be grouped together.
         int Compare(int row1, int row2) => row1.CompareTo(row2);
-        TableCellFieldDescriptor valueField = new(Def.Title, valueFieldFilter, Compare);
+        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
         return new TableCellDescriptor(TableCellStyleType.String, [valueField]);
     }

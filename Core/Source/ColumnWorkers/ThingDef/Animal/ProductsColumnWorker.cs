@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
+using Stats.Extensions;
 using Stats.TableCells;
 using Stats.TableWorkers;
 

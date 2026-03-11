@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Stats.Extensions;
 using Stats.TableCells;
 using Stats.TableWorkers;
 using UnityEngine;

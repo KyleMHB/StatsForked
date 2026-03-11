@@ -1,4 +1,5 @@
-﻿using Stats.Widgets;
+﻿using Stats.Extensions;
+using Stats.Widgets;
 using UnityEngine;
 using Verse;
 
@@ -27,7 +28,7 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
         _icon = new ThingDefIcon(value);
         float textWidth = Verse.Text.CalcSize(Text).x;
         float iconWidth = _icon.GetSize().x;
-        Width = iconWidth + ObjectTableWidget.CellContentSpacing + textWidth;
+        Width = iconWidth + ObjectTable.CellContentSpacing + textWidth;
         _iconWidth = iconWidth;
     }
 
@@ -47,7 +48,7 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
 
             if (Event.current.type == EventType.Repaint)
             {
-                rect.CutByX(ObjectTableWidget.CellContentSpacing);
+                rect.CutByX(ObjectTable.CellContentSpacing);
 
                 Widgets.Draw.Label(rect, Text, TableCellStyle.String);
             }

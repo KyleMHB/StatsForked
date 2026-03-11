@@ -6,7 +6,7 @@
         <defName>StatsTab</defName>
         <label>Stats</label>
         <description>Open stats tab.</description>
-        <tabWindowClass>Stats.MainTabWindow.MainTabWindowWidget</tabWindowClass>
+        <tabWindowClass>Stats.MainTabWindow</tabWindowClass>
         <order>71</order>
     </MainButtonDef>
     

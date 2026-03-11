@@ -12,9 +12,8 @@ public class ColumnDef : Def
 {
     public string? labelKey;
     public string? descriptionKey;
-    public string Description => description;
     public ColumnTitleXmlNode? title;
-    public Widget Title => title?.ToWidget() ?? new Label(LabelCap);
+    public Widget TitleWidget => title?.ToWidget() ?? new Label(LabelCap);
 #pragma warning disable CS8618
     public Type workerClass;
 #pragma warning restore CS8618

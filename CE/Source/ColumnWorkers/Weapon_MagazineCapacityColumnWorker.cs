@@ -1,4 +1,5 @@
 ﻿using CombatExtended;
+using Stats.Extensions;
 using Stats.Objects.ThingDef;
 using Stats.ObjectTable.ColumnWorkers;
 

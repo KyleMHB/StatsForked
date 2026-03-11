@@ -1,7 +1,7 @@
 ﻿using System;
 using Stats.Widgets;
 
-namespace Stats.FilterWidgets;
+namespace Stats.Filters;
 
 public abstract class FilterWidget : Widget
 {

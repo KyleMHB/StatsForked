@@ -5,7 +5,7 @@ using Verse;
 
 namespace Stats;
 
-internal sealed partial class ObjectTableWidget<TObject>
+internal sealed partial class ObjectTable<TObject>
 {
     private void PinRow(int index)
     {

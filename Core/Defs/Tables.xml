@@ -6,6 +6,7 @@
         <defName>RangedWeapons</defName>
         <label>Weapons / Ranged</label>
         <iconPath>Things/Item/Equipment/WeaponRanged/Revolver</iconPath>
+        <iconScale>1.5</iconScale>
         <workerClass>Stats.TableWorkers.ThingDef.RangedWeaponTableWorker</workerClass>
         <columns>
             <li>Thing_Label</li>
@@ -239,6 +240,7 @@
         <defName>Animals</defName>
         <label>Creatures / Animals</label>
         <iconPath>Things/Pawn/Animal/Thrumbo/Thrumbo_east</iconPath>
+        <iconScale>1.2</iconScale>
         <workerClass>Stats.TableWorkers.ThingDef.AnimalTableWorker</workerClass>
         <columns>
             <li>Thing_Label</li>

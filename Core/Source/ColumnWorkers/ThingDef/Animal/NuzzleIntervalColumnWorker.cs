@@ -1,4 +1,5 @@
-﻿using Stats.TableCells;
+﻿using Stats.Extensions;
+using Stats.TableCells;
 using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;

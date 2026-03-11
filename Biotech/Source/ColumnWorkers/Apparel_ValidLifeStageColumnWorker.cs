@@ -37,7 +37,7 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<VirtualThi
     {
         return lifeStage.ToString().Translate().CapitalizeFirst().RawText;
     });
-    public override ObjectTableWidget.Cell GetCell(VirtualThing thing)
+    public override ObjectTable.Cell GetCell(VirtualThing thing)
     {
         var lifeStages = GetValidLifeStages(thing.Def);
 
@@ -54,7 +54,7 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<VirtualThi
         yield return new(Def.Title, new MTMFilter<Cell, DevelopmentalStage>(cell => cell.Value, filterOptions, this));
     }
 
-    private sealed class Cell : ObjectTableWidget.WidgetCell
+    private sealed class Cell : ObjectTable.WidgetCell
     {
         protected override Widget? Widget { get; set; }
         public override event Action? OnChange;
@@ -79,7 +79,7 @@ public sealed class Apparel_ValidLifeStageColumnWorker : ColumnWorker<VirtualThi
                 Text = text;
             }
         }
-        public override int CompareTo(ObjectTableWidget.Cell cell)
+        public override int CompareTo(ObjectTable.Cell cell)
         {
             return Comparer<string?>.Default.Compare(Text, ((Cell)cell).Text);
         }

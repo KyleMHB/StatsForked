@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using Stats.Extensions;
 using Stats.TableCells;
 
 namespace Stats.ColumnWorkers.ThingDef.EggLayer;

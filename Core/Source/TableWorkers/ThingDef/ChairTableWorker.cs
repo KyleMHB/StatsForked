@@ -1,4 +1,6 @@
-﻿namespace Stats.TableWorkers.ThingDef;
+﻿using Stats.Extensions;
+
+namespace Stats.TableWorkers.ThingDef;
 
 public sealed class ChairTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
 {

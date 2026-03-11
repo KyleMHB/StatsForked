@@ -1,5 +1,5 @@
 ﻿using System;
-using Stats.FilterWidgets;
+using Stats.Filters;
 using Stats.Widgets;
 using UnityEngine;
 

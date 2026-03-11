@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Stats.FilterWidgets;
+namespace Stats.Filters;
 
 public sealed class OTMFilter<TOption> : NTMFilter<TOption, TOption>
 {

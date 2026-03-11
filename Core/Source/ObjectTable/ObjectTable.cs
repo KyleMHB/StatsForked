@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using RimWorld;
 using Stats.ColumnWorkers;
-using Stats.FilterWidgets;
+using Stats.Filters;
 using Stats.TableWorkers;
 using Stats.Widgets;
 using UnityEngine;
@@ -12,7 +12,7 @@ using Verse;
 
 namespace Stats;
 
-public abstract class ObjectTableWidget
+public abstract class ObjectTable
 {
     internal const float CellPadHor = 12f;
     internal const float CellPadVer = 4f;
@@ -22,7 +22,9 @@ public abstract class ObjectTableWidget
 
     //public abstract event Action<TableFilterMode> OnFilterModeChange;
 
-    internal abstract void Draw(Rect rect, bool showSettingsMenu);
+    internal abstract void Draw(Rect rect);
+
+    internal abstract void ToggleFiltersTab();
 
     //public abstract void ResetFilters();
 
@@ -37,7 +39,7 @@ public abstract class ObjectTableWidget
 
 // Lack of abstraction/leaking abstractions is (almost) intentional here.
 // Because abstractions are not free.
-internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
+internal sealed partial class ObjectTable<TObject> : ObjectTable
 {
     // Filtering
     //public override TableFilterMode FilterMode
@@ -92,9 +94,7 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
 
     // Columns
     private readonly List<Column> _columns;
-    private ReadOnlyListSegment<Column> PinnedColumns => new(_columns, 0, _pinnedColumnsCount);
     private int _pinnedColumnsCount;
-    private ReadOnlyListSegment<Column> UnpinnedColumns => new(_columns, _pinnedColumnsCount, _columns.Count - _pinnedColumnsCount);
     private Column? _currentlyResizedColumn;
     private Column? _currentlyReorderedColumn;
 
@@ -111,7 +111,7 @@ internal sealed partial class ObjectTableWidget<TObject> : ObjectTableWidget
     private Vector2 _scrollPosition;
     private Action? _guiAction;
 
-    public ObjectTableWidget(TableWorker<TObject> tableWorker)
+    public ObjectTable(TableWorker<TObject> tableWorker)
     {
         //tableWorker.OnObjectAdded += AddObject;
         //tableWorker.OnObjectRemoved += RemoveObject;

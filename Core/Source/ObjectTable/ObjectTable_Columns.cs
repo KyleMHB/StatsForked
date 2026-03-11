@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Stats.ColumnWorkers;
+using Stats.Extensions;
 using Stats.TableCells;
 using Stats.TableWorkers;
 using Stats.Widgets;
@@ -10,7 +11,7 @@ using Verse.Sound;
 
 namespace Stats;
 
-internal sealed partial class ObjectTableWidget<TObject>
+internal sealed partial class ObjectTable<TObject>
 {
     private void PinColumn(int index)
     {
@@ -40,19 +41,19 @@ internal sealed partial class ObjectTableWidget<TObject>
         private readonly Widget _titleWidget;
         private readonly float _titleWidgetWidth;
         private readonly TipSignal _tooltip;
-        private readonly ObjectTableWidget<TObject> _parent;
+        private readonly ObjectTable<TObject> _parent;
 
-        public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTableWidget<TObject> parent)
+        public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTable<TObject> parent)
         {
             ColumnDef def = worker.Def;
-            Widget titleWidget = def.Title;
+            Widget titleWidget = def.TitleWidget;
             Vector2 titleWidgetSize = titleWidget.GetSize();
             TableCellDescriptor cellDescriptor = worker.GetCellDescriptor(tableWorker);
 
             Worker = worker;
             _titleWidget = titleWidget;
             _titleWidgetWidth = titleWidgetSize.x;
-            _tooltip = $"<i>{def.LabelCap}</i>\n\n{def.Description}";
+            _tooltip = $"<i>{def.LabelCap}</i>\n\n{def.description}";
             CellStyle = cellDescriptor.Style;
             _parent = parent;
         }

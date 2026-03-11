@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Stats.FilterWidgets;
+using Stats.Filters;
 using Stats.TableCells;
 using Stats.TableWorkers;
 using Stats.Widgets;

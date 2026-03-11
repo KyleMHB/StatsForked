@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Stats.Extensions;
+using UnityEngine;
 using Verse;
 
 namespace Stats.TableCells;

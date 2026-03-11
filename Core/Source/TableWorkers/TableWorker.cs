@@ -6,7 +6,7 @@ namespace Stats.TableWorkers;
 public abstract class TableWorker
 {
     public TableDef TableDef { get; }
-    internal abstract ObjectTableWidget TableWidget { get; }
+    internal abstract ObjectTable TableWidget { get; }
 
     protected TableWorker(TableDef tableDef)
     {
@@ -17,7 +17,7 @@ public abstract class TableWorker
 public abstract class TableWorker<TObject> : TableWorker
 {
     // We don't want to create every table widget on the start of the game.
-    internal sealed override ObjectTableWidget TableWidget => field ??= new ObjectTableWidget<TObject>(this);
+    internal sealed override ObjectTable TableWidget => new ObjectTable<TObject>(this);
     public abstract List<TObject> InitialObjects { get; }
 
     public abstract event Action<TObject> OnObjectAdded;

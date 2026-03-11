@@ -2,7 +2,7 @@
 using UnityEngine;
 using Verse;
 
-namespace Stats.FilterWidgets;
+namespace Stats.Filters;
 
 public sealed class NumberFilter : FilterWidgetWithInputField<decimal, decimal>
 {
