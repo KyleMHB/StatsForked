@@ -4,10 +4,9 @@ using Stats.ColumnWorkers;
 using Stats.Extensions;
 using Stats.TableCells;
 using Stats.TableWorkers;
-using Stats.Widgets;
+using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
-using Verse.Sound;
 
 namespace Stats;
 
@@ -79,15 +78,9 @@ internal sealed partial class ObjectTable<TObject>
             Event currentEvent = Event.current;
             bool mouseIsOverRect = Mouse.IsOver(rect);
 
-            if (currentEvent.type == EventType.Repaint && mouseIsOverRect)
-            {
-                GUI.DrawTexture(rect, TexUI.HighlightTex, ScaleMode.StretchToFill, true, 0f, Color.white, 0f, 0f);
-            }
+            rect.Tip(_tooltip);
 
-            TooltipHandler.TipRegion(rect, _tooltip);
-
-            MouseoverSounds.DoRegion(rect);
-            if (currentEvent.control && GUI.Button(rect, "", Verse.Widgets.EmptyStyle))
+            if (currentEvent.control && rect.ButtonGhostly())
             {
                 HandlePinning();
             }
@@ -119,7 +112,7 @@ internal sealed partial class ObjectTable<TObject>
 
             if (_parent._currentlyReorderedColumn == this && currentEvent.type == EventType.Repaint)
             {
-                Verse.Widgets.DrawHighlightSelected(rect);
+                rect.HighlightSelected();
             }
 
             if (currentEvent.type == EventType.MouseDrag && _parent._currentlyReorderedColumn != null && _parent._currentlyReorderedColumn != this)

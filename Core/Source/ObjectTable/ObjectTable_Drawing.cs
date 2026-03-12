@@ -26,8 +26,9 @@ internal sealed partial class ObjectTable<TObject>
         Rect toolbarRect = rect.CutByY(30f);
         if (Event.current.type == EventType.Repaint)
         {
-            Verse.Widgets.DrawLightHighlight(toolbarRect);
-            Verse.Widgets.DrawLineHorizontal(toolbarRect.x, toolbarRect.yMax - 1f, rect.width, MainTabWindow.BorderColor);
+            toolbarRect
+                .HighlightLight()
+                .DrawBorderBottom(MainTabWindow.BorderColor);
         }
 
         //if (showSettingsMenu)
@@ -80,7 +81,7 @@ internal sealed partial class ObjectTable<TObject>
             ReadOnlyListSegment<Column> pinnedColumns = new(_columns, 0, pinnedColumnsCount);
             DrawPart(leftPartRect, pinnedColumns, leftPartRect.x, pinnedRows, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
             // Separator line
-            Widgets.Draw.VerticalLine(leftPartRect.xMax - 1f, leftPartRect.y, viewportHeight, MainTabWindow.BorderColor);
+            leftPartRect.DrawBorderRight(MainTabWindow.BorderColor);
         }
 
         // Right part
@@ -131,7 +132,7 @@ internal sealed partial class ObjectTable<TObject>
                 DrawColumn(columnRect, column, pinnedRows, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
                 if (i < lastColumnIndex)
                 {
-                    Widgets.Draw.VerticalLine(columnRectXmax - 1f, 0f, rect.height, _columnSeparatorLineColor);
+                    columnRect.DrawBorderRight(_columnSeparatorLineColor);
                 }
             }
 
@@ -191,7 +192,7 @@ internal sealed partial class ObjectTable<TObject>
                 // TODO:
                 // - Add tooltip with exception's message.
                 // - Make the whole thing into a separate non-inlineable method.
-                Verse.Widgets.DrawBoxSolid(rect, Color.red);
+                rect.Fill(Color.red);
             }
             rect.y = rect.yMax;
         }
@@ -205,8 +206,9 @@ internal sealed partial class ObjectTable<TObject>
         Rect headersRect = rect.CutByY(_rowHeight);
         if (isRepaint)
         {
-            Verse.Widgets.DrawHighlight(headersRect);
-            Verse.Widgets.DrawLineHorizontal(headersRect.x, headersRect.yMax - 1f, headersRect.width, MainTabWindow.BorderColor);
+            headersRect
+                .Highlight()
+                .DrawBorderBottom(MainTabWindow.BorderColor);
         }
 
         // Pinned rows
@@ -215,8 +217,9 @@ internal sealed partial class ObjectTable<TObject>
             Rect pinnedRowsRect = rect.CutByY(_pinnedRowsHeight);
             if (isRepaint)
             {
-                Verse.Widgets.DrawStrongHighlight(pinnedRowsRect, _pinnedRowsBGColor);
-                Verse.Widgets.DrawLineHorizontal(pinnedRowsRect.x, pinnedRowsRect.yMax - 1f, pinnedRowsRect.width, MainTabWindow.BorderColor);
+                pinnedRowsRect
+                    .HighlightStrong(_pinnedRowsBGColor)
+                    .DrawBorderBottom(MainTabWindow.BorderColor);
             }
         }
 
@@ -231,11 +234,11 @@ internal sealed partial class ObjectTable<TObject>
                 {
                     if (Mouse.IsOver(rowRect))
                     {
-                        Verse.Widgets.DrawHighlight(rowRect);
+                        rowRect.Highlight();
                     }
                     else if ((visibleUnpinnedRowsStart + i) % 2 == 0)
                     {
-                        Verse.Widgets.DrawLightHighlight(rowRect);
+                        rowRect.HighlightLight();
                     }
                 }
 

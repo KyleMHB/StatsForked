@@ -29,7 +29,7 @@ public readonly struct DefTableCell : IDefTableCell
         if (Text != null)
         {
             rect = rect.ContractedByObjectTableCellPadding();
-            Widgets.Draw.Label(rect, Text, TableCellStyle.String);
+            Widgets_Legacy.Draw.Label(rect, Text, TableCellStyle.String);
         }
     }
 }

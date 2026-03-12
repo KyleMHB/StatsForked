@@ -3,7 +3,7 @@ using Stats.Extensions;
 using Stats.Filters;
 using Stats.TableCells;
 using Stats.TableWorkers;
-using Stats.Widgets;
+using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
 
@@ -111,17 +111,17 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
 
                 Rect iconRect = rect.CutByX(_iconWidth);
                 _icon!.DrawIn(iconRect);
-                bool iconWasClicked = Widgets.Draw.ButtonGhostly(iconRect);
+                bool iconWasClicked = iconRect.ButtonGhostly();
                 if (iconWasClicked)
                 {
-                    Widgets.Draw.DefInfoDialog(_thingDef, _stuffDef);
+                    _thingDef.OpenInfoDialog(_stuffDef);
                 }
 
                 if (Event.current.type == EventType.Repaint)
                 {
                     rect.CutByX(ObjectTable.CellContentSpacing);
 
-                    Widgets.Draw.Label(rect, Text, TableCellStyle.String);
+                    Widgets_Legacy.Draw.Label(rect, Text, TableCellStyle.String);
                 }
             }
         }

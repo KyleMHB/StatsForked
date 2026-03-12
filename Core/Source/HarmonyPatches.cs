@@ -8,7 +8,7 @@ public static class HarmonyPatches
 {
     static HarmonyPatches()
     {
-        var harmony = new Harmony("Azzkiy.Stats");
+        Harmony harmony = new("Azzkiy.Stats");
 
         harmony.Patch(
             AccessTools.Method(typeof(MapEvents), nameof(MapEvents.Notify_ThingSpawned)),

@@ -1,5 +1,5 @@
 ﻿using System;
-using Stats.Widgets;
+using Stats.Widgets_Legacy;
 
 namespace Stats.Filters;
 

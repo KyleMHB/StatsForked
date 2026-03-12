@@ -27,8 +27,9 @@ public readonly struct BooleanTableCell : IBooleanTableCell
     {
         if (value)
         {
-            rect = rect.ContractedByObjectTableCellPadding();
-            Verse.Widgets.DrawTextureFitted(rect, _textureTrue, 1f);
+            rect
+                .ContractedByObjectTableCellPadding()
+                .DrawTexture(_textureTrue);
         }
     }
 }

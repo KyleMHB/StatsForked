@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Stats.Extensions;
-using Stats.Widgets;
+using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -66,7 +66,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
 
         if (DrawOperatorButton(operatorButtonRect))
         {
-            Find.WindowStack.Add(OperatorsMenu);
+            OperatorsMenu.Open();
         }
 
         Text.Anchor = TextAnchor.LowerLeft;
@@ -118,7 +118,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
             TooltipHandler.TipRegion(rect, Operator.Description);
         }
 
-        return Widgets.Draw.ButtonTextSubtle(rect, Operator.Symbol, GUI.color, OperatorButtonPaddingHor);
+        return Widgets_Legacy.Draw.ButtonTextSubtle(rect, Operator.Symbol, GUI.color, OperatorButtonPaddingHor);
     }
     private Vector2 CalcInputFieldSize()
     {

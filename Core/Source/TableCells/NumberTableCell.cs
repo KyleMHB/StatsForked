@@ -32,7 +32,7 @@ public readonly struct NumberTableCell : INumberTableCell
         if (_text != null)
         {
             rect = rect.ContractedByObjectTableCellPadding();
-            Widgets.Draw.Label(rect, _text, TableCellStyle.Number);
+            Widgets_Legacy.Draw.Label(rect, _text, TableCellStyle.Number);
         }
     }
 }

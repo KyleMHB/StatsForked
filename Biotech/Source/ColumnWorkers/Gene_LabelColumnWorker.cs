@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Stats.Widgets;
+using Stats.Widgets_Legacy;
 using Verse;
 
 namespace Stats.Compat.Biotech;
@@ -28,7 +28,7 @@ public sealed class Gene_LabelColumnWorker : ColumnWorker<GeneDef>
         {
             Text = geneDef.label;
             Widget = new HorizontalContainer([
-                new Icon(geneDef.Icon).ToButtonGhostly(() => Widgets.Draw.DefInfoDialog(geneDef)),
+                new Icon(geneDef.Icon).ToButtonGhostly(() => Widgets_Legacy.Draw.DefInfoDialog(geneDef)),
                 new Label(geneDef.LabelCap),
             ], Globals.GUI.Pad)
             .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)

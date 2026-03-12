@@ -1,6 +1,6 @@
 ﻿using System;
 using Stats.Filters;
-using Stats.Widgets;
+using Stats.Widgets_Legacy;
 using UnityEngine;
 
 namespace Stats.TableCells;

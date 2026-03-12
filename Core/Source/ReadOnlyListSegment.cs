@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Stats;
 
-public readonly struct ReadOnlyListSegment<T>
+internal readonly struct ReadOnlyListSegment<T>
 {
     public readonly int Start;
     public readonly int Length;

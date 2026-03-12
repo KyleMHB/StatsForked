@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using RimWorld;
-using Stats.Widgets;
+using Stats.Widgets_Legacy;
 using Verse;
 
 namespace Stats;

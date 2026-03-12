@@ -6,7 +6,7 @@ using RimWorld;
 using Stats.ColumnWorkers;
 using Stats.Filters;
 using Stats.TableWorkers;
-using Stats.Widgets;
+using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
 

@@ -136,7 +136,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
                 }
 
                 rect = rect.ContractedByObjectTableCellPadding();
-                Widgets.Draw.Label(rect, _text, TableCellStyle.Number);
+                Widgets_Legacy.Draw.Label(rect, _text, TableCellStyle.Number);
             }
         }
     }

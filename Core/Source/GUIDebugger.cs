@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Stats.Extensions;
-using Stats.Widgets;
-using Stats.Widgets.Extensions;
+using Stats.Widgets_Legacy;
+using Stats.Widgets_Legacy.Extensions;
 using UnityEngine;
 using Verse;
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using RimWorld;
 using Stats;
-using Stats.Widgets;
+using Stats.Widgets_Legacy;
 using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;

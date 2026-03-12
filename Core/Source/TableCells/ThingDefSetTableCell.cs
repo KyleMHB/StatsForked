@@ -26,7 +26,7 @@ public readonly struct ThingDefSetTableCell : IThingDefSetTableCell
         if (Value?.Count > 0)
         {
             rect = rect.ContractedByObjectTableCellPadding();
-            Widgets.Draw.Label(rect, "TODO", TableCellStyle.String);
+            Widgets_Legacy.Draw.Label(rect, "TODO", TableCellStyle.String);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Stats.Extensions;
-using Stats.Widgets;
+using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
 
@@ -40,17 +40,17 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
 
             Rect iconRect = rect.CutByX(_iconWidth);
             _icon!.DrawIn(iconRect);
-            bool iconWasClicked = Widgets.Draw.ButtonGhostly(iconRect);
+            bool iconWasClicked = iconRect.ButtonGhostly();
             if (iconWasClicked)
             {
-                Widgets.Draw.DefInfoDialog(Value);
+                Value.OpenInfoDialog();
             }
 
             if (Event.current.type == EventType.Repaint)
             {
                 rect.CutByX(ObjectTable.CellContentSpacing);
 
-                Widgets.Draw.Label(rect, Text, TableCellStyle.String);
+                Widgets_Legacy.Draw.Label(rect, Text, TableCellStyle.String);
             }
         }
     }

@@ -12,7 +12,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     internal static readonly Color BorderColor = new(1f, 1f, 1f, 0.4f);
 
     protected override float Margin { get => 1f; }
-    private bool IsExpanded;
+    private bool _isExpanded;
     private const float _ToolbarWidth = 40f;
     private const float _IconPadding = 5f;
     //private static readonly TipSignal Manual =
@@ -25,6 +25,8 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     private TableRecord? _activeTable;
     private readonly FloatMenu _tableDefsMenu;
     private static readonly TipSignal _openTableButtonTooltip = "Open table";
+    private static readonly TipSignal _expandButtonTooltip = "Expand / Reset window";
+    private Vector2 _tableListScrollPosition;
 
     public MainTabWindow()
     {
@@ -38,7 +40,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
                 tableDef.LabelCap,
                 () =>
                 {
-                    TableRecord tableRecord = new(tableDef);
+                    TableRecord tableRecord = new(tableDef, this);
                     _tables.Insert(0, tableRecord);
                     _activeTable = tableRecord;
                 },
@@ -61,57 +63,38 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         bool wordWrap = Text.WordWrap;
         Text.WordWrap = false;
 
-        #region Toolbar
         Rect toolbarRect = rect.CutByX(_ToolbarWidth);
 
-        #region "Open table" button
+        // Border
+        if (isRepaint) toolbarRect.DrawBorderRight(BorderColor);
+
+        // Expand window button
+        Rect expandButtonRect = toolbarRect.CutByY(20f);
+        DrawExpandButton(expandButtonRect);
+        if (isRepaint) expandButtonRect.DrawBorderBottom(BorderColor);
+
+        // "Open table" button
         Rect openTableButtonRect = toolbarRect.CutByY(_ToolbarWidth);
-        if (isRepaint)
-        {
-            Verse.Widgets.DrawLightHighlight(openTableButtonRect);
-            Rect openTableButtonIconRect = openTableButtonRect.ContractedBy(_IconPadding);
-            Verse.Widgets.DrawTextureFitted(openTableButtonIconRect, TexButton.Plus, 1f);
-            TooltipHandler.TipRegion(openTableButtonRect, _openTableButtonTooltip);
-        }
+        DrawOpenTableButton(openTableButtonRect);
+        if (isRepaint) openTableButtonRect.DrawBorderBottom(BorderColor);
 
-        if (Widgets.Draw.ButtonGhostly(openTableButtonRect))
+        // Table list
+        // TODO:
+        // - Add culling.
+        // - Add reordering.
+        Rect tableListContentRect = new(0f, 0f, _ToolbarWidth, _tables.Count * _ToolbarWidth);
+        using (new GUIScrollScope(toolbarRect, ref _tableListScrollPosition, tableListContentRect, false))
         {
-            Find.WindowStack.Add(_tableDefsMenu);
-        }
-        #endregion "Open table" button
-
-        #region Table list
-        int tablesCount = _tables.Count;
-        for (int i = 0; i < tablesCount; i++)
-        {
-            TableRecord tableRecord = _tables[i];
-            Rect tableRect = toolbarRect.CutByY(_ToolbarWidth);
-            if (isRepaint)
+            int tablesCount = _tables.Count;
+            for (int i = 0; i < tablesCount; i++)
             {
-                if (_activeTable == tableRecord)
-                {
-                    Verse.Widgets.DrawHighlightSelected(tableRect);
-                }
-
-                using (new GUIColorScope(tableRecord.IconColor))
-                {
-                    Rect tableIconRect = tableRect.ContractedBy(_IconPadding);
-                    Verse.Widgets.DrawTextureFitted(tableIconRect, tableRecord.Icon, tableRecord.IconScale);
-                }
-
-                TooltipHandler.TipRegion(tableRect, tableRecord.Tooltip);
-            }
-
-            if (Widgets.Draw.ButtonGhostly(tableRect))
-            {
-                _activeTable = tableRecord;
+                TableRecord tableRecord = _tables[i];
+                Rect tableButtonRect = tableListContentRect.CutByY(_ToolbarWidth);
+                tableRecord.Draw(tableButtonRect);
             }
         }
-        #endregion Table list
 
-        Widgets.Draw.VerticalLine(_ToolbarWidth - 1f, 0f, rect.height, BorderColor);
-        #endregion Toolbar
-
+        // Table
         _activeTable?.TableWidget.Draw(rect);
 
         GUIDebugger.DrawDebugInfo(rect);
@@ -119,9 +102,65 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         Text.WordWrap = wordWrap;
     }
 
-    private void ExpandOrResetWidow()
+    private void DrawOpenTableButton(Rect rect)
     {
-        if (IsExpanded)
+        if (Event.current.IsRepaint())
+        {
+            rect
+                .HighlightLight()
+                .ContractedBy(_IconPadding)
+                .DrawTexture(TexButton.Plus)
+                .Tip(_openTableButtonTooltip);
+        }
+
+        if (rect.ButtonGhostly())
+        {
+            _tableDefsMenu.Open();
+        }
+    }
+
+    private void DrawExpandButton(Rect rect)
+    {
+        if (Event.current.IsRepaint())
+        {
+            Texture2D texture = _isExpanded ? TexButton.ReorderDown : TexButton.ReorderUp;
+            rect
+                .HighlightLight()
+                .DrawTexture(texture, 0.7f)
+                .Tip(_expandButtonTooltip);
+        }
+
+        if (rect.ButtonGhostly())
+        {
+            ExpandOrResetWindow();
+        }
+    }
+
+    private void RemoveTable(TableRecord table)
+    {
+        if (_activeTable == table)
+        {
+            int index = _tables.IndexOf(table);
+
+            if (index > 0)
+            {
+                _activeTable = _tables[index - 1];
+            }
+            else if (_tables.Count > 1)
+            {
+                _activeTable = _tables[index + 1];
+            }
+            else
+            {
+                _activeTable = null;
+            }
+        }
+        _tables.Remove(table);
+    }
+
+    private void ExpandOrResetWindow()
+    {
+        if (_isExpanded)
         {
             SetInitialSizeAndPosition();
         }
@@ -130,14 +169,14 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             windowRect.yMin = 0f;
         }
 
-        IsExpanded = !IsExpanded;
+        _isExpanded = !_isExpanded;
     }
 
     public override void PreOpen()
     {
         base.PreOpen();
 
-        if (IsExpanded)
+        if (_isExpanded)
         {
             windowRect.yMin = 0f;
         }

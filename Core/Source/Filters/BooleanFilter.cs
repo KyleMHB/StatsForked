@@ -41,7 +41,7 @@ public sealed class BooleanFilter : FilterWidget
             GUI.color = Globals.GUI.TextColorSecondary;
         }
 
-        if (Widgets.Draw.ButtonImageSubtle(rect.CutByX(rect.width / 2f), Verse.Widgets.CheckboxOnTex))
+        if (Widgets_Legacy.Draw.ButtonImageSubtle(rect.CutByX(rect.width / 2f), Verse.Widgets.CheckboxOnTex))
         {
             Value = Value == true ? null : true;
         }
@@ -53,7 +53,7 @@ public sealed class BooleanFilter : FilterWidget
             GUI.color = Globals.GUI.TextColorSecondary;
         }
 
-        if (Widgets.Draw.ButtonImageSubtle(rect, Verse.Widgets.CheckboxOffTex))
+        if (Widgets_Legacy.Draw.ButtonImageSubtle(rect, Verse.Widgets.CheckboxOffTex))
         {
             Value = Value == false ? null : false;
         }

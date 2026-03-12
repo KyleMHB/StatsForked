@@ -34,7 +34,7 @@ public readonly struct ThingDefCountTableCell : IThingDefCountTableCell
         if (ThingDef != null)
         {
             rect = rect.ContractedByObjectTableCellPadding();
-            Widgets.Draw.Label(rect, "TODO", TableCellStyle.String);
+            Widgets_Legacy.Draw.Label(rect, "TODO", TableCellStyle.String);
         }
     }
 }

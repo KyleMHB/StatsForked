@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using RimWorld;
 using Stats.Extensions;
-using Stats.Widgets;
+using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -106,9 +106,9 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
             GUI.color = Globals.GUI.TextColorSecondary;
         }
 
-        if (Widgets.Draw.ButtonTextSubtle(rect, ButtonText, GUI.color, ButtonPadHor))
+        if (Widgets_Legacy.Draw.ButtonTextSubtle(rect, ButtonText, GUI.color, ButtonPadHor))
         {
-            Find.WindowStack.Add(OptionsWindow);
+            OptionsWindow.Open();
         }
 
         GUI.color = origGUIColor;

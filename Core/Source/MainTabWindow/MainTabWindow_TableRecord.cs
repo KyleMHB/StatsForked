@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Stats.Extensions;
 using UnityEngine;
 using Verse;
 
@@ -13,22 +10,58 @@ public sealed partial class MainTabWindow
     private sealed class TableRecord
     {
         public readonly ObjectTable TableWidget;
-        public readonly TipSignal Tooltip;
-        public readonly Texture2D Icon;
-        public readonly Color IconColor;
-        public readonly float IconScale;
 
-        public TableRecord(TableDef tableDef)
+        private readonly TipSignal _tooltip;
+        private readonly Texture2D _icon;
+        private readonly Color _iconColor;
+        private readonly float _iconScale;
+        private readonly MainTabWindow _parent;
+        private readonly FloatMenu _menu;
+
+        public TableRecord(TableDef tableDef, MainTabWindow parent)
         {
             TableWidget = tableDef.Worker.TableWidget;
-            Tooltip = tableDef.LabelCap;
+            _tooltip = tableDef.LabelCap;
             if (tableDef.description?.Length > 0)
             {
-                Tooltip += $"\n\n{tableDef.description}";
+                _tooltip += $"\n\n{tableDef.description}";
             }
-            Icon = tableDef.Icon;
-            IconColor = tableDef.iconColor;
-            IconScale = tableDef.iconScale;
+            _icon = tableDef.Icon;
+            _iconColor = tableDef.iconColor;
+            _iconScale = tableDef.iconScale;
+            _parent = parent;
+            List<FloatMenuOption> menuOptions = [
+                new FloatMenuOption("Remove", () => parent.RemoveTable(this))
+            ];
+            _menu = new FloatMenu(menuOptions);
+        }
+
+        public void Draw(Rect rect)
+        {
+            if (Event.current.IsRepaint())
+            {
+                if (_parent._activeTable == this)
+                {
+                    rect.HighlightSelected();
+                }
+
+                rect
+                    .ContractedBy(_IconPadding)
+                    .DrawTexture(_icon, _iconColor, _iconScale)
+                    .Tip(_tooltip);
+            }
+
+            if (rect.ButtonGhostly())
+            {
+                if (Event.current.IsLMB())
+                {
+                    _parent._activeTable = this;
+                }
+                else if (Event.current.IsRMB())
+                {
+                    _menu.Open();
+                }
+            }
         }
     }
 }
