@@ -31,7 +31,6 @@ public readonly struct NumberTableCell : INumberTableCell
     {
         if (_text != null)
         {
-            rect = rect.ContractedByObjectTableCellPadding();
             Widgets_Legacy.Draw.Label(rect, _text, TableCellStyle.Number);
         }
     }

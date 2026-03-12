@@ -46,9 +46,9 @@ public sealed partial class MainTabWindow
                 }
 
                 rect
+                    .Tip(_tooltip)
                     .ContractedBy(_IconPadding)
-                    .DrawTexture(_icon, _iconColor, _iconScale)
-                    .Tip(_tooltip);
+                    .DrawTextureFitted(_icon, _iconColor, _iconScale);
             }
 
             if (rect.ButtonGhostly())

@@ -11,6 +11,8 @@ internal sealed partial class ObjectTable<TObject>
 {
     internal override void Draw(Rect rect)
     {
+        bool isRepaint = Event.current.IsRepaint();
+
         if (_guiAction != null)
         {
             _guiAction.Invoke();
@@ -24,7 +26,7 @@ internal sealed partial class ObjectTable<TObject>
 
         // Toolbar
         Rect toolbarRect = rect.CutByY(30f);
-        if (Event.current.type == EventType.Repaint)
+        if (isRepaint)
         {
             toolbarRect
                 .HighlightLight()
@@ -41,7 +43,7 @@ internal sealed partial class ObjectTable<TObject>
         float viewportWidth = unpinnedRowsHeight > 0f// Will scroll vertically
                 ? rect.width - GenUI.ScrollBarWidth
                 : rect.width;
-        float viewportHeight = contentSize.x > rect.width// Will scroll horizontally
+        float viewportHeight = contentSize.x > viewportWidth// Will scroll horizontally
                 ? rect.height - GenUI.ScrollBarWidth
                 : rect.height;
         Vector2 viewportSize = new(viewportWidth, viewportHeight);
@@ -81,7 +83,7 @@ internal sealed partial class ObjectTable<TObject>
             ReadOnlyListSegment<Column> pinnedColumns = new(_columns, 0, pinnedColumnsCount);
             DrawPart(leftPartRect, pinnedColumns, leftPartRect.x, pinnedRows, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
             // Separator line
-            leftPartRect.DrawBorderRight(MainTabWindow.BorderColor);
+            if (isRepaint) leftPartRect.DrawBorderRight(MainTabWindow.BorderColor);
         }
 
         // Right part
@@ -130,7 +132,7 @@ internal sealed partial class ObjectTable<TObject>
             if (columnRectXmax > 0f)
             {
                 DrawColumn(columnRect, column, pinnedRows, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
-                if (i < lastColumnIndex)
+                if (Event.current.IsRepaint() && i < lastColumnIndex)
                 {
                     columnRect.DrawBorderRight(_columnSeparatorLineColor);
                 }

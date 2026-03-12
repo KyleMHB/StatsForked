@@ -29,7 +29,7 @@ public readonly struct BooleanTableCell : IBooleanTableCell
         {
             rect
                 .ContractedByObjectTableCellPadding()
-                .DrawTexture(_textureTrue);
+                .DrawTextureFitted(_textureTrue);
         }
     }
 }

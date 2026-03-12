@@ -78,13 +78,6 @@ internal sealed partial class ObjectTable<TObject>
             Event currentEvent = Event.current;
             bool mouseIsOverRect = Mouse.IsOver(rect);
 
-            rect.Tip(_tooltip);
-
-            if (currentEvent.control && rect.ButtonGhostly())
-            {
-                HandlePinning();
-            }
-
             // Manual resizing
             if (mouseIsOverRect && currentEvent.shift)
             {
@@ -143,6 +136,14 @@ internal sealed partial class ObjectTable<TObject>
                 _parent._currentlyResizedColumn = null;
                 _parent._currentlyReorderedColumn = null;
             }
+
+            // Pinning
+            if (rect.ButtonGhostly() && currentEvent.control)
+            {
+                HandlePinning();
+            }
+
+            rect.Tip(_tooltip);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

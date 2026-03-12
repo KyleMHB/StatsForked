@@ -26,7 +26,7 @@ public class InlineTexture : Widget
 
         if (Event.current.IsRepaint())
         {
-            rect.DrawTexture(Texture, GUI.color, Scale);
+            rect.DrawTextureFitted(Texture, GUI.color, Scale);
         }
     }
 }

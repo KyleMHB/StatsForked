@@ -14,8 +14,10 @@ namespace Stats;
 
 public abstract class ObjectTable
 {
-    internal const float CellPadHor = 12f;
-    internal const float CellPadVer = 4f;
+    internal const float CellPadHor = CellPadHorInt;
+    internal const float CellPadVer = CellPadVerInt;
+    internal const int CellPadHorInt = 12;
+    internal const int CellPadVerInt = 4;
 
     public static readonly float CellContentSpacing = Globals.GUI.PadSm;
     //public abstract TableFilterMode FilterMode { get; set; }

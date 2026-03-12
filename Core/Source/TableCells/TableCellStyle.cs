@@ -11,14 +11,22 @@ public static class TableCellStyle
 
     static TableCellStyle()
     {
-        String = new GUIStyle(Text.fontStyles[1]);
-        String.alignment = (TextAnchor)TableCellStyleType.String;
-        String.wordWrap = false;
-        Number = new GUIStyle(Text.fontStyles[1]);
-        Number.alignment = (TextAnchor)TableCellStyleType.Number;
-        Number.wordWrap = false;
-        Boolean = new GUIStyle(Text.fontStyles[1]);
-        Boolean.alignment = (TextAnchor)TableCellStyleType.Boolean;
-        Boolean.wordWrap = false;
+        GUIStyle baseStyle = new(Text.fontStyles[1])
+        {
+            wordWrap = false,
+            padding = new RectOffset(ObjectTable.CellPadHorInt, ObjectTable.CellPadHorInt, ObjectTable.CellPadVerInt, ObjectTable.CellPadVerInt)
+        };
+        String = new GUIStyle(baseStyle)
+        {
+            alignment = (TextAnchor)TableCellStyleType.String
+        };
+        Number = new GUIStyle(baseStyle)
+        {
+            alignment = (TextAnchor)TableCellStyleType.Number
+        };
+        Boolean = new GUIStyle(baseStyle)
+        {
+            alignment = (TextAnchor)TableCellStyleType.Boolean
+        };
     }
 }

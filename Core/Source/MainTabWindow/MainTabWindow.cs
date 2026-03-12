@@ -109,7 +109,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             rect
                 .HighlightLight()
                 .ContractedBy(_IconPadding)
-                .DrawTexture(TexButton.Plus)
+                .DrawTextureFitted(TexButton.Plus)
                 .Tip(_openTableButtonTooltip);
         }
 
@@ -126,7 +126,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             Texture2D texture = _isExpanded ? TexButton.ReorderDown : TexButton.ReorderUp;
             rect
                 .HighlightLight()
-                .DrawTexture(texture, 0.7f)
+                .DrawTextureFitted(texture, 0.7f)
                 .Tip(_expandButtonTooltip);
         }
 

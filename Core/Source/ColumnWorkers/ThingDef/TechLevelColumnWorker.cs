@@ -62,7 +62,6 @@ public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<De
         {
             if (Value != TechLevel.Undefined)
             {
-                rect = rect.ContractedByObjectTableCellPadding();
                 Widgets_Legacy.Draw.Label(rect, _text, TableCellStyle.String);
             }
         }

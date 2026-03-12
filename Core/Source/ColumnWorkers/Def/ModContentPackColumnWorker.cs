@@ -62,10 +62,8 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
         {
             if (ModName != null)
             {
-                TooltipHandler.TipRegion(rect, _tooltip);
-
-                rect = rect.ContractedByObjectTableCellPadding();
                 Widgets_Legacy.Draw.Label(rect, ModName, TableCellStyle.String);
+                rect.Tip(_tooltip);
             }
         }
     }

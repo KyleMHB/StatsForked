@@ -132,10 +132,9 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
                         _column._cellTooltip = _stat.Worker.GetExplanationFull(StatRequest, _ToStringNumberSense, ValueRaw);
                         _column._cellTooltipOwner = StatRequest;
                     }
-                    TooltipHandler.TipRegion(rect, _column._cellTooltip.Value);
+                    rect.Tip(_column._cellTooltip.Value);
                 }
 
-                rect = rect.ContractedByObjectTableCellPadding();
                 Widgets_Legacy.Draw.Label(rect, _text, TableCellStyle.Number);
             }
         }

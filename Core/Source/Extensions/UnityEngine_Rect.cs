@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -72,12 +71,18 @@ public static class UnityEngine_Rect
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Rect DrawTexture(this Rect rect, Texture2D texture, float scale)
+    internal static Rect DrawTextureFitted(this Rect rect, Texture2D texture)
     {
-        return rect.DrawTexture(texture, Color.white, scale);
+        return rect.DrawTexture(texture, Color.white, ScaleMode.ScaleToFit);
     }
 
-    internal static Rect DrawTexture(this Rect rect, Texture2D texture, Color color, float scale)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static Rect DrawTextureFitted(this Rect rect, Texture2D texture, float scale)
+    {
+        return rect.DrawTextureFitted(texture, Color.white, scale);
+    }
+
+    internal static Rect DrawTextureFitted(this Rect rect, Texture2D texture, Color color, float scale)
     {
         rect.ScaledBy(scale).DrawTexture(texture, color, ScaleMode.ScaleToFit);
 
@@ -136,10 +141,11 @@ public static class UnityEngine_Rect
 
     internal static bool ButtonGhostly(this Rect rect)
     {
+        MouseoverSounds.DoRegion(rect);
+
         if (Event.current.IsRepaint() && Mouse.IsOver(rect))
         {
-            MouseoverSounds.DoRegion(rect);
-            rect.DrawTexture(TexUI.HighlightTex);
+            rect.Highlight();
         }
 
         return GUI.Button(rect, "", Verse.Widgets.EmptyStyle);

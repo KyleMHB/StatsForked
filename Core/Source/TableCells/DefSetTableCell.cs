@@ -34,7 +34,6 @@ public readonly struct DefSetTableCell : IDefSetTableCell
     {
         if (Text != null)
         {
-            rect = rect.ContractedByObjectTableCellPadding();
             Widgets_Legacy.Draw.Label(rect, Text, TableCellStyle.String);
         }
     }
