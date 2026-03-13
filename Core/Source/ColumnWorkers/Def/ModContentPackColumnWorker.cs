@@ -4,6 +4,7 @@ using Stats.Extensions;
 using Stats.Filters;
 using Stats.TableCells;
 using Stats.TableWorkers;
+using Stats.Utils;
 using UnityEngine;
 using Verse;
 

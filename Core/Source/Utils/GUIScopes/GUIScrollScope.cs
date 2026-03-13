@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Stats.GUIScopes;
+namespace Stats.Utils.GUIScopes;
 
 internal readonly record struct GUIScrollScope : IDisposable
 {

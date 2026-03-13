@@ -3,6 +3,7 @@ using Stats.Extensions;
 using Stats.Filters;
 using Stats.TableCells;
 using Stats.TableWorkers;
+using Stats.Utils;
 using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
@@ -100,7 +101,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
             float textWidth = Verse.Text.CalcSize(Text).x;
             _icon = new ThingDefIcon(thingDef, stuffDef);
             _iconWidth = _icon.GetSize().x;
-            Width = _iconWidth + ObjectTable.CellContentSpacing + textWidth;
+            Width = _iconWidth + TableCellStyle.CellContentSpacing + textWidth;
         }
 
         public void Draw(Rect rect)
@@ -119,7 +120,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
 
                 if (Event.current.type == EventType.Repaint)
                 {
-                    rect.CutByX(ObjectTable.CellContentSpacing);
+                    rect.CutByX(TableCellStyle.CellContentSpacing);
 
                     Widgets_Legacy.Draw.Label(rect, Text, TableCellStyle.String);
                 }

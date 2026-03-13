@@ -6,20 +6,15 @@ using RimWorld;
 using Stats.ColumnWorkers;
 using Stats.Filters;
 using Stats.TableWorkers;
+using Stats.Utils;
 using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
 
 namespace Stats;
 
-public abstract class ObjectTable
+internal abstract class ObjectTable
 {
-    internal const float CellPadHor = CellPadHorInt;
-    internal const float CellPadVer = CellPadVerInt;
-    internal const int CellPadHorInt = 12;
-    internal const int CellPadVerInt = 4;
-
-    public static readonly float CellContentSpacing = Globals.GUI.PadSm;
     //public abstract TableFilterMode FilterMode { get; set; }
 
     //public abstract event Action<TableFilterMode> OnFilterModeChange;
@@ -252,7 +247,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         // Finalize
         _objects = objects;
         _rows = rows;
-        _rowHeight = Text.LineHeight + CellPadVer * 2f;
+        _rowHeight = Text.LineHeight + TableCellStyle.CellPadVer * 2f;
         _columns = columns;
         if (columns.Count > 0)
         {

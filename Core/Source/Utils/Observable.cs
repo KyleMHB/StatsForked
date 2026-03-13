@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Stats;
+namespace Stats.Utils;
 
 internal class Observable<TValue>
 {

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Stats.Utils;
 using Verse;
 
 namespace Stats;
@@ -12,11 +13,11 @@ public static class HarmonyPatches
 
         harmony.Patch(
             AccessTools.Method(typeof(MapEvents), nameof(MapEvents.Notify_ThingSpawned)),
-            postfix: new HarmonyMethod(typeof(Globals.Events), nameof(Globals.Events.NotifyThingSpawned))
+            postfix: new HarmonyMethod(typeof(Events), nameof(Events.NotifyThingSpawned))
         );
         harmony.Patch(
             AccessTools.Method(typeof(MapEvents), nameof(MapEvents.Notify_ThingDespawned)),
-            postfix: new HarmonyMethod(typeof(Globals.Events), nameof(Globals.Events.NotifyThingDespawned))
+            postfix: new HarmonyMethod(typeof(Events), nameof(Events.NotifyThingDespawned))
         );
     }
 }

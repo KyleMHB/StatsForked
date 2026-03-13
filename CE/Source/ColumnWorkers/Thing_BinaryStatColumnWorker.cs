@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text.RegularExpressions;
 using RimWorld;
 using Stats.ColumnWorkers.BuildableDef;
 using Verse;
@@ -7,6 +8,7 @@ namespace Stats.Compat.CE;
 
 public abstract class Thing_BinaryStatColumnWorker : StatColumnWorker
 {
+    protected static readonly Regex NonZeroNumberRegex = new(@"[1-9]{1}", RegexOptions.Compiled);
     protected readonly char Separator;
     protected Thing_BinaryStatColumnWorker(BinaryStatColumnDef columnDef) : base(columnDef)
     {
@@ -40,7 +42,7 @@ public sealed class Thing_BinaryStatColumnWorker_Left : Thing_BinaryStatColumnWo
     {
         label = label.Split(Separator).First();
 
-        if (Utils.NonZeroNumberRegex.IsMatch(label))
+        if (NonZeroNumberRegex.IsMatch(label))
         {
             return label.TrimEnd();
         }
@@ -58,7 +60,7 @@ public sealed class Thing_BinaryStatColumnWorker_Right : Thing_BinaryStatColumnW
     {
         label = label.Split(Separator).Last();
 
-        if (Utils.NonZeroNumberRegex.IsMatch(label))
+        if (NonZeroNumberRegex.IsMatch(label))
         {
             return label.TrimStart();
         }

@@ -1,9 +1,11 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using RimWorld;
 using Stats.Extensions;
 using Stats.Filters;
 using Stats.TableCells;
 using Stats.TableWorkers;
+using Stats.Utils;
 using UnityEngine;
 using Verse;
 
@@ -127,16 +129,22 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
             {
                 if (Mouse.IsOver(rect))
                 {
-                    if (_column._cellTooltip == null || _column._cellTooltipOwner != StatRequest)
-                    {
-                        _column._cellTooltip = _stat.Worker.GetExplanationFull(StatRequest, _ToStringNumberSense, ValueRaw);
-                        _column._cellTooltipOwner = StatRequest;
-                    }
-                    rect.Tip(_column._cellTooltip.Value);
+                    HandleTooltip(rect);
                 }
 
                 Widgets_Legacy.Draw.Label(rect, _text, TableCellStyle.Number);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void HandleTooltip(Rect rect)
+        {
+            if (_column._cellTooltip == null || _column._cellTooltipOwner != StatRequest)
+            {
+                _column._cellTooltip = _stat.Worker.GetExplanationFull(StatRequest, _ToStringNumberSense, ValueRaw);
+                _column._cellTooltipOwner = StatRequest;
+            }
+            rect.Tip(_column._cellTooltip.Value);
         }
     }
 }

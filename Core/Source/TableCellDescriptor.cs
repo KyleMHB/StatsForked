@@ -3,7 +3,7 @@ using Stats.Filters;
 using Stats.Widgets_Legacy;
 using UnityEngine;
 
-namespace Stats.TableCells;
+namespace Stats;
 
 public readonly record struct TableCellDescriptor(TableCellStyleType Style, TableCellFieldDescriptor[] Fields);
 

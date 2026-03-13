@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Verse;
 
-namespace Stats;
+namespace Stats.Utils;
 
 [StaticConstructorOnStartup]
 public static class Assets

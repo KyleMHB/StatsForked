@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Stats.Utils;
 using Stats.Widgets_Legacy;
 using Verse;
 
@@ -30,7 +31,7 @@ public sealed class Gene_LabelColumnWorker : ColumnWorker<GeneDef>
             Widget = new HorizontalContainer([
                 new Icon(geneDef.Icon).ToButtonGhostly(() => Widgets_Legacy.Draw.DefInfoDialog(geneDef)),
                 new Label(geneDef.LabelCap),
-            ], Globals.GUI.Pad)
+            ], GUIUtils.Pad)
             .PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer)
             .Tooltip(geneDef.description);
         }

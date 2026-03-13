@@ -1,5 +1,6 @@
 ﻿using System;
 using LudeonTK;
+using Stats.Utils;
 using UnityEngine;
 using Verse;
 
@@ -25,8 +26,8 @@ public static class Draw
         rect.width -= padHor * 2f;
         if (mouseIsOverRect)
         {
-            rect.x += Globals.GUI.ButtonSubtleContentHoverOffset;
-            rect.y -= Globals.GUI.ButtonSubtleContentHoverOffset;
+            rect.x += GUIUtils.ButtonSubtleContentHoverOffset;
+            rect.y -= GUIUtils.ButtonSubtleContentHoverOffset;
         }
 
         GUI.color = textColor;
@@ -58,8 +59,8 @@ public static class Draw
 
         if (mouseIsOverRect)
         {
-            rect.x += Globals.GUI.ButtonSubtleContentHoverOffset;
-            rect.y -= Globals.GUI.ButtonSubtleContentHoverOffset;
+            rect.x += GUIUtils.ButtonSubtleContentHoverOffset;
+            rect.y -= GUIUtils.ButtonSubtleContentHoverOffset;
         }
 
         Verse.Widgets.DrawTextureFitted(rect, texture, textureScale);

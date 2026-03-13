@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using RimWorld;
 using Stats.Extensions;
+using Stats.Utils;
 using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
@@ -32,7 +33,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendInNewLine($"{Operator.Symbol.Colorize(Globals.GUI.TextColorHighlight)} - {Operator.Description}:");
+            stringBuilder.AppendInNewLine($"{Operator.Symbol.Colorize(GUIUtils.TextColorHighlight)} - {Operator.Description}:");
 
             foreach (var option in OptionsList)
             {
@@ -49,7 +50,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
     private string ButtonText => IsActive ? Info : ButtonTextWhenInactive;
     private readonly string ButtonTextWhenInactive;
     private const float ButtonMinWidth = 24f;
-    private const float ButtonPadHor = Globals.GUI.PadSm;
+    private const float ButtonPadHor = GUIUtils.PadSm;
     private readonly HashSet<TRhs> SelectedOptions = [];
     private RelOperator<TLhs, HashSet<TRhs>> _Operator;
     protected RelOperator<TLhs, HashSet<TRhs>> Operator
@@ -103,7 +104,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 
         if (IsActive == false)
         {
-            GUI.color = Globals.GUI.TextColorSecondary;
+            GUI.color = GUIUtils.TextColorSecondary;
         }
 
         if (Widgets_Legacy.Draw.ButtonTextSubtle(rect, ButtonText, GUI.color, ButtonPadHor))
@@ -165,8 +166,8 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
         private static readonly Color BackgroundColor = Verse.Widgets.WindowBGFillColor;
         private const float OptionHoverHorShiftAmount = 4f;
         private static readonly Color OptionHoverBackgroundColor = FloatMenuOption.ColorBGActiveMouseover;
-        private const float OptionPadHor = Globals.GUI.Pad;
-        private const float OptionPadVer = Globals.GUI.PadXs;
+        private const float OptionPadHor = GUIUtils.Pad;
+        private const float OptionPadVer = GUIUtils.PadXs;
         private const float OperatorButtonSize = 28f;
         private bool WillScrollHor = false;
         private Vector2 ScrollPosition;
@@ -186,12 +187,12 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
                         new Label(@operator.Symbol)
                         .TextAnchor(TextAnchor.MiddleCenter)
                         .SizeAbs(OperatorButtonSize)
-                        .Color(Globals.GUI.TextColorHighlight)
+                        .Color(GUIUtils.TextColorHighlight)
                         .SkipNextExtension(() => parent.Operator != @operator)
-                        .HoverShift(Globals.GUI.ButtonSubtleContentHoverOffset, -Globals.GUI.ButtonSubtleContentHoverOffset)
+                        .HoverShift(GUIUtils.ButtonSubtleContentHoverOffset, -GUIUtils.ButtonSubtleContentHoverOffset)
                         .BackgroundAtlas(Verse.Widgets.ButtonSubtleAtlas)
                         .HoverColor(GenUI.MouseoverColor)
-                        .Color(Globals.GUI.TextColorSecondary)
+                        .Color(GUIUtils.TextColorSecondary)
                         .SkipNextExtension(() => parent.Operator != @operator)
                         .OnClick(() => parent.Operator = @operator)
                         .Tooltip(@operator.Description)
@@ -199,7 +200,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 
                     new Label("Clear")
                     .TextAnchor(TextAnchor.MiddleLeft)
-                    .PaddingAbs(Globals.GUI.PadSm, 0f)
+                    .PaddingAbs(GUIUtils.PadSm, 0f)
                     .WidthIncRel(1f)
                     .HeightAbs(OperatorButtonSize)
                     .ToButtonSubtle(parent.Clear),
@@ -207,7 +208,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
                 .WidthRel(1f),
 
                 new Label("<i>Hold [Ctrl] to select multiple options.</i>")
-                .PaddingAbs(Globals.GUI.PadSm, 0f)
+                .PaddingAbs(GUIUtils.PadSm, 0f)
                 .BorderLeft(BorderColor)
                 .BorderRight(BorderColor)
                 .WidthRel(1f),
@@ -283,7 +284,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
         }
         public override void DoWindowContents(Rect rect)
         {
-            var origGUIOpacity = Globals.GUI.Opacity;
+            var origGUIOpacity = GUIUtils.Opacity;
             var origGUIColor = GUI.color;
 
             DoFadeEffect(rect);
@@ -340,7 +341,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 
             DrawRowSeparators(rect, borderColor);
 
-            Globals.GUI.Opacity = origGUIOpacity;
+            GUIUtils.Opacity = origGUIOpacity;
             GUI.color = origGUIColor;
         }
         private void DoFadeEffect(Rect rect)
@@ -353,7 +354,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
             {
                 var mouseDistFromRect = GenUI.DistFromRect(rect, Event.current.mousePosition);
 
-                Globals.GUI.Opacity = 1f - mouseDistFromRect / maxAllovedMouseDistFromRect;
+                GUIUtils.Opacity = 1f - mouseDistFromRect / maxAllovedMouseDistFromRect;
                 GUI.color = GUI.color.AdjustedForGUIOpacity();
 
                 if (mouseDistFromRect > maxAllovedMouseDistFromRect)
@@ -385,12 +386,12 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 
             if (position.x + size.x > UI.screenWidth)
             {
-                position.x = UI.screenWidth - size.x - Globals.GUI.Pad;
+                position.x = UI.screenWidth - size.x - GUIUtils.Pad;
             }
 
             if (position.y + size.y > UI.screenHeight)
             {
-                position.y = UI.screenHeight - size.y - Globals.GUI.Pad;
+                position.y = UI.screenHeight - size.y - GUIUtils.Pad;
             }
 
             windowRect = new Rect(position, size);
@@ -434,7 +435,7 @@ public readonly record struct NTMFilterOption<TValue>
 
         if (Icon != null)
         {
-            return new HorizontalContainer([Icon, label], Globals.GUI.PadSm);
+            return new HorizontalContainer([Icon, label], GUIUtils.PadSm);
         }
 
         return label;

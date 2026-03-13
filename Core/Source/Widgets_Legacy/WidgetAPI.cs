@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Stats.Utils;
 using Stats.Widgets_Legacy.Extensions;
 using UnityEngine;
 using Verse;
@@ -310,7 +311,7 @@ public static class WidgetAPI
             widget
             // TODO: Deal with the "color situation".
             .Color(UnityEngine.Color.white)
-            .HoverShift(Globals.GUI.ButtonSubtleContentHoverOffset, -Globals.GUI.ButtonSubtleContentHoverOffset)
+            .HoverShift(GUIUtils.ButtonSubtleContentHoverOffset, -GUIUtils.ButtonSubtleContentHoverOffset)
             .BackgroundAtlas(Verse.Widgets.ButtonSubtleAtlas)
             .HoverColor(GenUI.MouseoverColor)
             .OnClick(clickEventHandler);

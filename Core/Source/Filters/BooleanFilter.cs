@@ -1,5 +1,6 @@
 ﻿using System;
 using Stats.Extensions;
+using Stats.Utils;
 using UnityEngine;
 using Verse;
 
@@ -38,7 +39,7 @@ public sealed class BooleanFilter : FilterWidget
 
         if (Value != true)
         {
-            GUI.color = Globals.GUI.TextColorSecondary;
+            GUI.color = GUIUtils.TextColorSecondary;
         }
 
         if (Widgets_Legacy.Draw.ButtonImageSubtle(rect.CutByX(rect.width / 2f), Verse.Widgets.CheckboxOnTex))
@@ -50,7 +51,7 @@ public sealed class BooleanFilter : FilterWidget
 
         if (Value != false)
         {
-            GUI.color = Globals.GUI.TextColorSecondary;
+            GUI.color = GUIUtils.TextColorSecondary;
         }
 
         if (Widgets_Legacy.Draw.ButtonImageSubtle(rect, Verse.Widgets.CheckboxOffTex))
