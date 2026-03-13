@@ -29,6 +29,6 @@ public static class UnityEngine_Rect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Rect ContractedByObjectTableCellPadding(this Rect rect)
     {
-        return rect.ContractedBy(TableCellStyle.CellPadHor, TableCellStyle.CellPadVer);
+        return rect.ContractedBy(GUISkin.TableCell.PadHor, GUISkin.TableCell.PadVer);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using Stats.TableCells;
+using Stats.ColumnWorkers.Cells;
 using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Shearable;

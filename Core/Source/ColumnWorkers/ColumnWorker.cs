@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Stats.ColumnWorkers.Cells;
 using Stats.Extensions;
-using Stats.TableCells;
 using Stats.TableWorkers;
 using UnityEngine;
 
@@ -9,6 +9,7 @@ namespace Stats.ColumnWorkers;
 public abstract class ColumnWorker<TObject>
 {
     public abstract ColumnDef Def { get; }
+    public abstract ColumnType Type { get; }
     public abstract bool IsRefreshable { get; }
     public virtual bool ShouldDrawCells => Event.current.type == EventType.Repaint;
 
@@ -24,7 +25,7 @@ public abstract class ColumnWorker<TObject>
 
     public abstract void RefreshCells();
 
-    public abstract TableCellDescriptor GetCellDescriptor(TableWorker tableWorker);
+    public abstract ICollection<CellField> GetCellFields(TableWorker tableWorker);
 }
 
 public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where TCell : struct, ITableCell

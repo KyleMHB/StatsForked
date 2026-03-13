@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Stats.ColumnWorkers.Cells;
 using Stats.Extensions;
 using Stats.Filters;
-using Stats.TableCells;
 using Stats.TableWorkers;
 using Stats.Utils;
 using Stats.Widgets_Legacy;
@@ -16,6 +16,7 @@ namespace Stats.ColumnWorkers.ThingDef;
 // icon but of different color.
 public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBasedObject, LabelColumnWorker.LabelCell>
 {
+    public override ColumnType Type => ColumnType.String;
     public override ColumnDef Def => columnDef;
 
     protected override LabelCell MakeCell(DefBasedObject @object)
@@ -28,13 +29,13 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
         return default;
     }
 
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
         FilterWidget textFieldFilter = new StringFilter((int row) => this[row].Text ?? "");
         int Compare(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Text, this[row2].Text);
-        TableCellFieldDescriptor textField = new(Def.TitleWidget, textFieldFilter, Compare);
+        CellField textField = new(Def.TitleWidget, textFieldFilter, Compare);
 
-        return new TableCellDescriptor(TableCellStyleType.String, [textField]);
+        return [textField];
     }
 
     //IEnumerable<ObjectTableWidget.ColumnPart> IColumnWorker<VirtualThing>.GetObjectProps()
@@ -101,7 +102,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
             float textWidth = Verse.Text.CalcSize(Text).x;
             _icon = new ThingDefIcon(thingDef, stuffDef);
             _iconWidth = _icon.GetSize().x;
-            Width = _iconWidth + TableCellStyle.CellContentSpacing + textWidth;
+            Width = _iconWidth + GUISkin.TableCell.ContentSpacing + textWidth;
         }
 
         public void Draw(Rect rect)
@@ -120,9 +121,9 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
 
                 if (Event.current.type == EventType.Repaint)
                 {
-                    rect.CutByX(TableCellStyle.CellContentSpacing);
+                    rect.CutByX(GUISkin.TableCell.ContentSpacing);
 
-                    Widgets_Legacy.Draw.Label(rect, Text, TableCellStyle.String);
+                    Widgets_Legacy.Draw.Label(rect, Text, GUISkin.TableCell.String);
                 }
             }
         }

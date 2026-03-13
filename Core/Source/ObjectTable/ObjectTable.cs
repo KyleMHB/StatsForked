@@ -247,7 +247,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         // Finalize
         _objects = objects;
         _rows = rows;
-        _rowHeight = Text.LineHeight + TableCellStyle.CellPadVer * 2f;
+        _rowHeight = Text.LineHeight + GUISkin.TableCell.PadVer * 2f;
         _columns = columns;
         if (columns.Count > 0)
         {

@@ -1,7 +1,7 @@
 ﻿using RimWorld;
 using Stats.Extensions;
-using Stats.TableCells;
 using Verse;
+using Stats.ColumnWorkers.Cells;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 

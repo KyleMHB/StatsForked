@@ -2,7 +2,7 @@
 using UnityEngine;
 using Verse;
 
-namespace Stats.TableCells;
+namespace Stats.ColumnWorkers.Cells;
 
 public interface INumberTableCell : ITableCell
 {
@@ -31,7 +31,7 @@ public readonly struct NumberTableCell : INumberTableCell
     {
         if (_text != null)
         {
-            Widgets_Legacy.Draw.Label(rect, _text, TableCellStyle.Number);
+            Widgets_Legacy.Draw.Label(rect, _text, GUISkin.TableCell.Number);
         }
     }
 }

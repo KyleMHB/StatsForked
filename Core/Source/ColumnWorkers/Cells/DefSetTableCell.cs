@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Stats.Extensions;
 using UnityEngine;
-using Verse;
 
-namespace Stats.TableCells;
+namespace Stats.ColumnWorkers.Cells;
 
 public interface IDefSetTableCell : ITableCell
 {
-    public IReadOnlyCollection<Def>? Value { get; }
+    public IReadOnlyCollection<Verse.Def>? Value { get; }
     public string? Text { get; }
 }
 
@@ -17,10 +15,10 @@ public readonly struct DefSetTableCell : IDefSetTableCell
 {
     public float Width { get; }
     public bool IsRefreshable => false;
-    public IReadOnlyCollection<Def>? Value { get; }
+    public IReadOnlyCollection<Verse.Def>? Value { get; }
     public string? Text { get; }
 
-    public DefSetTableCell(IReadOnlyCollection<Def> value)
+    public DefSetTableCell(IReadOnlyCollection<Verse.Def> value)
     {
         Value = value;
         if (value.Count > 0)
@@ -34,7 +32,7 @@ public readonly struct DefSetTableCell : IDefSetTableCell
     {
         if (Text != null)
         {
-            Widgets_Legacy.Draw.Label(rect, Text, TableCellStyle.String);
+            Widgets_Legacy.Draw.Label(rect, Text, GUISkin.TableCell.String);
         }
     }
 }

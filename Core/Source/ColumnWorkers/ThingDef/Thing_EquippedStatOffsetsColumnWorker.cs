@@ -7,6 +7,19 @@
 //using UnityEngine;
 //using Verse;
 
+// Since cell's set of fields is the same for every cell in a column, but we don't know it in advance
+// for this column, we'll have to use Dictionary to store each stat offset value in each cell, which will result in
+// filtering/sorting being slow(er).
+//
+// Also, if you'll implement comparison by max value in a column (gree/red lines under cell's value), you
+// wouldn't be able to compare stat offset values, or it will be bad UX and very slow.
+//
+// But here's the idea.
+// - Have this column display overall information about stat offsets on a thing (a string with names/values).
+// - Make it filterable by StatDefs and sortable by count.
+// - Generate ColumnDef for every stat offset, so the player can filter/sort/compare by individual stat offsets by adding
+// respected columns to a table. See if we can reuse StatColumnWorker for that.
+
 //namespace Stats;
 
 //public sealed class Thing_EquippedStatOffsetsColumnWorker : ColumnWorker<ThingAlike>

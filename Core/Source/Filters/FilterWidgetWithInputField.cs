@@ -13,7 +13,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
 {
     private Vector2 OperatorButtonSize;
     private const float OperatorButtonMinWidth = 24f;
-    private const float OperatorButtonPaddingHor = GUIUtils.PadXs;
+    private const float OperatorButtonPaddingHor = GUISkin.PadXs;
     private const float InputFieldMinWidth = OperatorButtonMinWidth * 2f;
     private readonly FloatMenu OperatorsMenu;
     protected abstract RelOperator<TLhs, TRhs> Operator { get; set; }
@@ -29,7 +29,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
 
         foreach (var @operator in operators)
         {
-            var operatorString = @operator.Symbol.Colorize(GUIUtils.TextColorHighlight);
+            var operatorString = @operator.Symbol.Colorize(GUISkin.Text.ColorHighlight);
             var optionLabel = @operator.Description.Length > 0
                 ? $"{operatorString} - {@operator.Description}"
                 : operatorString;
@@ -39,7 +39,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
 
         OperatorsMenu = new FloatMenu(operatorsMenuOptions);
         ClearButton = new Icon(TexButton.CloseXSmall, 0.5f)
-        .HoverColor(GUIUtils.TextColorSecondary);
+        .HoverColor(GUISkin.Text.ColorSecondary);
     }
     public sealed override Vector2 GetSize()
     {
@@ -60,7 +60,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
 
         if (IsActive == false)
         {
-            GUI.color = GUIUtils.TextColorSecondary;
+            GUI.color = GUISkin.Text.ColorSecondary;
         }
 
         Text.Anchor = TextAnchor.LowerCenter;
@@ -88,7 +88,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
 
         if (InputFieldIsEmpty && IsActive == false)
         {
-            rect.xMin += GUIUtils.EstimatedInputFieldInnerPadding;
+            rect.xMin += GUISkin.EstimatedInputFieldInnerPadding;
             Verse.Widgets.Label(rect, Placeholder);
         }
         else
@@ -128,12 +128,12 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
         if (InputFieldIsEmpty)
         {
             size = Text.CalcSize(Placeholder);
-            size.x += GUIUtils.EstimatedInputFieldInnerPadding * 2f;
+            size.x += GUISkin.EstimatedInputFieldInnerPadding * 2f;
         }
         else
         {
             size = Text.CalcSize(InputFieldText);
-            size.x += GUIUtils.Pad + ClearButton.GetSize().x;
+            size.x += GUISkin.Pad + ClearButton.GetSize().x;
         }
 
         if (size.x < InputFieldMinWidth)

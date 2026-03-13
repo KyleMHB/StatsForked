@@ -311,7 +311,7 @@ public static class WidgetAPI
             widget
             // TODO: Deal with the "color situation".
             .Color(UnityEngine.Color.white)
-            .HoverShift(GUIUtils.ButtonSubtleContentHoverOffset, -GUIUtils.ButtonSubtleContentHoverOffset)
+            .HoverShift(GUISkin.ButtonSubtleContentHoverOffset, -GUISkin.ButtonSubtleContentHoverOffset)
             .BackgroundAtlas(Verse.Widgets.ButtonSubtleAtlas)
             .HoverColor(GenUI.MouseoverColor)
             .OnClick(clickEventHandler);

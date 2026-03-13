@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Stats.ColumnWorkers.Cells;
 using Stats.Extensions;
 using Stats.Filters;
-using Stats.TableCells;
 using Stats.TableWorkers;
 using UnityEngine;
 
@@ -9,23 +9,26 @@ namespace Stats.ColumnWorkers;
 
 public abstract class BooleanColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IBooleanTableCell
 {
+    public override ColumnType Type => ColumnType.Boolean;
+
     public override float GetWidth(List<int> rows)
     {
         return Verse.Text.LineHeight;
     }
 
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
         FilterWidget valueFieldFilter = new BooleanFilter((int row) => this[row].Value);
         int Compare(int row1, int row2) => this[row1].Value.CompareTo(this[row2]);
-        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
-        return new TableCellDescriptor(TableCellStyleType.Boolean, [valueField]);
+        return [valueField];
     }
 }
 
 public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
 {
+    public override ColumnType Type => ColumnType.Boolean;
     public override bool IsRefreshable => false;
 
     private readonly List<bool> _values = new(250);
@@ -73,12 +76,12 @@ public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
 
     public override void RefreshCells() { }
 
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
         FilterWidget valueFieldFilter = new BooleanFilter((int row) => _values[row]);
         int Compare(int row1, int row2) => _values[row1].CompareTo(_values[row2]);
-        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
-        return new TableCellDescriptor(TableCellStyleType.Boolean, [valueField]);
+        return [valueField];
     }
 }

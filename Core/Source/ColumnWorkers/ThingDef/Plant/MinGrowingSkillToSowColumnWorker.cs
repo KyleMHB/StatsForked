@@ -1,5 +1,5 @@
 ﻿using RimWorld;
-using Stats.TableCells;
+using Stats.ColumnWorkers.Cells;
 
 namespace Stats.ColumnWorkers.ThingDef.Plant;
 

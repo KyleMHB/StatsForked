@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Stats.ColumnWorkers.Cells;
 using Stats.Extensions;
 using Stats.Filters;
-using Stats.TableCells;
 using Stats.TableWorkers;
 using Stats.Utils;
 using UnityEngine;
@@ -12,6 +12,7 @@ namespace Stats.ColumnWorkers.Def;
 
 public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBasedObject, ModContentPackColumnWorker.ModContentPackCell>
 {
+    public override ColumnType Type => ColumnType.String;
     public override ColumnDef Def => columnDef;
 
     protected override ModContentPackCell MakeCell(DefBasedObject @object)
@@ -26,7 +27,7 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
         return default;
     }
 
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
         IEnumerable<NTMFilterOption<ModContentPack?>> valueFieldFilterOptions = ((IRefRecordsProvider<Verse.Def>)tableWorker).Records
             .Select(def => def.modContentPack)
@@ -37,9 +38,9 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
             );
         FilterWidget valueFieldFilter = new OTMFilter<ModContentPack?>((int row) => this[row].Mod, valueFieldFilterOptions);
         int Compare(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].ModName, this[row2].ModName);
-        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
-        return new TableCellDescriptor(TableCellStyleType.String, [valueField]);
+        return [valueField];
     }
 
     public readonly struct ModContentPackCell : ITableCell
@@ -63,7 +64,7 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
         {
             if (ModName != null)
             {
-                Widgets_Legacy.Draw.Label(rect, ModName, TableCellStyle.String);
+                Widgets_Legacy.Draw.Label(rect, ModName, GUISkin.TableCell.String);
                 rect.Tip(_tooltip);
             }
         }

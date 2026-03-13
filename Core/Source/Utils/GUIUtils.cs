@@ -8,15 +8,7 @@ namespace Stats.Utils;
 
 public static class GUIUtils
 {
-    internal const float EstimatedInputFieldInnerPadding = 2f;
-    internal const float ButtonSubtleContentHoverOffset = 2f;
-    internal const float Pad = 10f;
-    internal const float PadSm = 5f;
-    internal const float PadXs = 3f;
-
-    public static readonly Color TextColorHighlight = new(1f, 0.98f, 0.62f);
-    public static readonly Color TextColorSecondary = Color.grey;
-    public static float Opacity { get; set; } = 1f;
+    internal static float Opacity = 1f;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Rect DrawTexture(this Rect rect, Texture2D texture)

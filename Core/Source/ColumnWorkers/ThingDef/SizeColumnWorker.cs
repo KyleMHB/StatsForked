@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Stats.ColumnWorkers.Cells;
 using Stats.Extensions;
 using Stats.Filters;
-using Stats.TableCells;
 using Stats.TableWorkers;
 using UnityEngine;
 using Verse;
@@ -12,6 +12,7 @@ namespace Stats.ColumnWorkers.ThingDef;
 
 public sealed class SizeColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBasedObject, SizeColumnWorker.SizeCell>
 {
+    public override ColumnType Type => ColumnType.Number;
     public override ColumnDef Def => columnDef;
 
     protected override SizeCell MakeCell(DefBasedObject @object)
@@ -34,7 +35,7 @@ public sealed class SizeColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBase
         return new IntVec2(Math.Max(size.x, size.z), Math.Min(size.x, size.z));
     }
 
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
         IEnumerable<NTMFilterOption<decimal>> valueFieldFilterOptions = ((IRefRecordsProvider<Verse.ThingDef>)tableWorker).Records
             .Select(GetSize)
@@ -43,9 +44,9 @@ public sealed class SizeColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBase
             .Select(size => new NTMFilterOption<decimal>(size.Area, size.ToStringCross()));
         FilterWidget valueFieldFilter = new OTMFilter<decimal>((int row) => this[row].Area, valueFieldFilterOptions);
         int Compare(int row1, int row2) => this[row1].Area.CompareTo(this[row2].Area);
-        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
-        return new TableCellDescriptor(TableCellStyleType.Number, [valueField]);
+        return [valueField];
     }
 
     public readonly struct SizeCell : ITableCell
@@ -70,7 +71,7 @@ public sealed class SizeColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBase
         {
             if (_text != null)
             {
-                Widgets_Legacy.Draw.Label(rect, _text, TableCellStyle.Number);
+                Widgets_Legacy.Draw.Label(rect, _text, GUISkin.TableCell.Number);
             }
         }
     }

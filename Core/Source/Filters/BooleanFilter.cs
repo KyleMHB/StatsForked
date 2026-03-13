@@ -39,7 +39,7 @@ public sealed class BooleanFilter : FilterWidget
 
         if (Value != true)
         {
-            GUI.color = GUIUtils.TextColorSecondary;
+            GUI.color = GUISkin.Text.ColorSecondary;
         }
 
         if (Widgets_Legacy.Draw.ButtonImageSubtle(rect.CutByX(rect.width / 2f), Verse.Widgets.CheckboxOnTex))
@@ -51,7 +51,7 @@ public sealed class BooleanFilter : FilterWidget
 
         if (Value != false)
         {
-            GUI.color = GUIUtils.TextColorSecondary;
+            GUI.color = GUISkin.Text.ColorSecondary;
         }
 
         if (Widgets_Legacy.Draw.ButtonImageSubtle(rect, Verse.Widgets.CheckboxOffTex))

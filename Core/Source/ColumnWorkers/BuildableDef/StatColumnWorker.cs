@@ -1,9 +1,10 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using RimWorld;
+using Stats.ColumnWorkers.Cells;
 using Stats.Extensions;
 using Stats.Filters;
-using Stats.TableCells;
 using Stats.TableWorkers;
 using Stats.Utils;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Stats.ColumnWorkers.BuildableDef;
 
 public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedObject, StatColumnWorker.StatCell>
 {
+    public override ColumnType Type => ColumnType.Number;
     public override ColumnDef Def => columnDef;
 
     private static readonly Regex _numberRegex = new(@"(-?[0-9]+\.?[0-9]*).*", RegexOptions.Compiled);
@@ -64,13 +66,13 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
         return cell;
     }
 
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
         FilterWidget valueFieldFilter = new NumberFilter((int row) => this[row].Value);
         int Compare(int row1, int row2) => this[row1].Value.CompareTo(this[row2].Value);
-        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
-        return new TableCellDescriptor(TableCellStyleType.Number, [valueField]);
+        return [valueField];
     }
 
     public override void NotifyRowRemoved(int row)
@@ -132,7 +134,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
                     HandleTooltip(rect);
                 }
 
-                Widgets_Legacy.Draw.Label(rect, _text, TableCellStyle.Number);
+                Widgets_Legacy.Draw.Label(rect, _text, GUISkin.TableCell.Number);
             }
         }
 

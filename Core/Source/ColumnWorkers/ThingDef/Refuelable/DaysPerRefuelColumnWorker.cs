@@ -1,6 +1,6 @@
 ﻿using RimWorld;
 using Stats.Extensions;
-using Stats.TableCells;
+using Stats.ColumnWorkers.Cells;
 
 namespace Stats.ColumnWorkers.ThingDef.Refuelable;
 

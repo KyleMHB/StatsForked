@@ -1,22 +1,21 @@
 ﻿using System.Collections.Generic;
 using Stats.Extensions;
 using UnityEngine;
-using Verse;
 
-namespace Stats.TableCells;
+namespace Stats.ColumnWorkers.Cells;
 
 public interface IThingDefSetTableCell : ITableCell
 {
-    public IReadOnlyCollection<ThingDef?>? Value { get; }
+    public IReadOnlyCollection<Verse.ThingDef?>? Value { get; }
 }
 
 public readonly struct ThingDefSetTableCell : IThingDefSetTableCell
 {
     public float Width { get; }
     public bool IsRefreshable => false;
-    public IReadOnlyCollection<ThingDef?>? Value { get; }
+    public IReadOnlyCollection<Verse.ThingDef?>? Value { get; }
 
-    public ThingDefSetTableCell(IReadOnlyCollection<ThingDef?> value)
+    public ThingDefSetTableCell(IReadOnlyCollection<Verse.ThingDef?> value)
     {
         Value = value;
     }
@@ -26,7 +25,7 @@ public readonly struct ThingDefSetTableCell : IThingDefSetTableCell
         if (Value?.Count > 0)
         {
             rect = rect.ContractedByObjectTableCellPadding();
-            Widgets_Legacy.Draw.Label(rect, "TODO", TableCellStyle.String);
+            Widgets_Legacy.Draw.Label(rect, "TODO", GUISkin.TableCell.String);
         }
     }
 }

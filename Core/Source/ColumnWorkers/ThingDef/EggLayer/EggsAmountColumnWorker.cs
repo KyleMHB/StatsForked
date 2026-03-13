@@ -2,8 +2,8 @@
 using System.Linq;
 using RimWorld;
 using Stats.Extensions;
-using Stats.TableCells;
 using Stats.TableWorkers;
+using Stats.ColumnWorkers.Cells;
 
 namespace Stats.ColumnWorkers.ThingDef.EggLayer;
 

@@ -35,7 +35,6 @@ internal sealed partial class ObjectTable<TObject>
         public float Width;
         public readonly ColumnWorker<TObject> Worker;
         public bool IsWidthSetManually;
-        public readonly TableCellStyleType CellStyle;
 
         private readonly Widget _titleWidget;
         private readonly float _titleWidgetWidth;
@@ -47,13 +46,11 @@ internal sealed partial class ObjectTable<TObject>
             ColumnDef def = worker.Def;
             Widget titleWidget = def.TitleWidget;
             Vector2 titleWidgetSize = titleWidget.GetSize();
-            TableCellDescriptor cellDescriptor = worker.GetCellDescriptor(tableWorker);
 
             Worker = worker;
             _titleWidget = titleWidget;
             _titleWidgetWidth = titleWidgetSize.x;
             _tooltip = $"<i>{def.LabelCap}</i>\n\n{def.description}";
-            CellStyle = cellDescriptor.Style;
             _parent = parent;
         }
 
@@ -63,12 +60,12 @@ internal sealed partial class ObjectTable<TObject>
             float titleWidgetWidth = _titleWidgetWidth;
             float widthDiff = titleRect.width - titleWidgetWidth;
             titleRect.width = titleWidgetWidth;
-            TableCellStyleType cellStyle = CellStyle;
-            if (cellStyle == TableCellStyleType.Number)
+            ColumnType columnType = Worker.Type;
+            if (columnType == ColumnType.Number)
             {
                 titleRect.x += widthDiff;
             }
-            else if (cellStyle == TableCellStyleType.Boolean)
+            else if (columnType == ColumnType.Boolean)
             {
                 titleRect.x += widthDiff / 2f;
             }
@@ -162,7 +159,7 @@ internal sealed partial class ObjectTable<TObject>
 
         public void RecalcWidth(List<int> rows)
         {
-            Width = Mathf.Max(_titleWidgetWidth, Worker.GetWidth(rows)) + TableCellStyle.CellPadHor * 2f;
+            Width = Mathf.Max(_titleWidgetWidth, Worker.GetWidth(rows)) + GUISkin.TableCell.PadHor * 2f;
         }
     }
 }

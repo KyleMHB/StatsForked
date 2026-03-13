@@ -2,7 +2,7 @@
 using Stats.Utils;
 using UnityEngine;
 
-namespace Stats.TableCells;
+namespace Stats.ColumnWorkers.Cells;
 
 public interface IBooleanTableCell : ITableCell
 {

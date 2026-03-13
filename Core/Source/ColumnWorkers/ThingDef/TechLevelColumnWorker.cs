@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
+using Stats.ColumnWorkers.Cells;
 using Stats.Extensions;
 using Stats.Filters;
-using Stats.TableCells;
 using Stats.TableWorkers;
 using UnityEngine;
 using Verse;
@@ -12,6 +12,7 @@ namespace Stats.ColumnWorkers.ThingDef;
 
 public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBasedObject, TechLevelColumnWorker.TechLevelCell>
 {
+    public override ColumnType Type => ColumnType.String;
     public override ColumnDef Def => columnDef;
 
     protected override TechLevelCell MakeCell(DefBasedObject @object)
@@ -24,7 +25,7 @@ public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<De
         return default;
     }
 
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
         IEnumerable<NTMFilterOption<TechLevel>> valueFieldFilterOptions = ((IRefRecordsProvider<Verse.ThingDef>)tableWorker).Records
             .Select(thingDef => thingDef.techLevel)
@@ -35,9 +36,9 @@ public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<De
             );
         FilterWidget valueFieldFilter = new OTMFilter<TechLevel>((int row) => this[row].Value, valueFieldFilterOptions);
         int Compare(int row1, int row2) => this[row1].Value.CompareTo(this[row2].Value);
-        TableCellFieldDescriptor valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
-        return new TableCellDescriptor(TableCellStyleType.String, [valueField]);
+        return [valueField];
     }
 
     public readonly struct TechLevelCell : ITableCell
@@ -62,7 +63,7 @@ public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<De
         {
             if (Value != TechLevel.Undefined)
             {
-                Widgets_Legacy.Draw.Label(rect, _text, TableCellStyle.String);
+                Widgets_Legacy.Draw.Label(rect, _text, GUISkin.TableCell.String);
             }
         }
     }

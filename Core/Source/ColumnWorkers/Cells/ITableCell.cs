@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Stats.TableCells;
+namespace Stats.ColumnWorkers.Cells;
 
 public interface ITableCell
 {

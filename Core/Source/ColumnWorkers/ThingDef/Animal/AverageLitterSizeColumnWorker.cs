@@ -1,6 +1,6 @@
 ﻿using RimWorld;
+using Stats.ColumnWorkers.Cells;
 using Stats.Extensions;
-using Stats.TableCells;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 

@@ -13,7 +13,7 @@ internal static class GUIDebugger
     private static readonly List<(string, Color, Vector2)> DebugData = new(10);
     private static readonly Color OutlineColor = Color.white.ToTransparent(0.5f);
     private const int BorderWidth = 1;
-    private const float Padding = GUIUtils.Pad;
+    private const float Padding = GUISkin.Pad;
     private static Vector2 ContentSize = Vector2.zero;
     [Conditional("DEBUG")]
     public static void DebugRect(Widget widget, Rect rect)

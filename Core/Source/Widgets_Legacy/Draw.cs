@@ -26,8 +26,8 @@ public static class Draw
         rect.width -= padHor * 2f;
         if (mouseIsOverRect)
         {
-            rect.x += GUIUtils.ButtonSubtleContentHoverOffset;
-            rect.y -= GUIUtils.ButtonSubtleContentHoverOffset;
+            rect.x += GUISkin.ButtonSubtleContentHoverOffset;
+            rect.y -= GUISkin.ButtonSubtleContentHoverOffset;
         }
 
         GUI.color = textColor;
@@ -59,8 +59,8 @@ public static class Draw
 
         if (mouseIsOverRect)
         {
-            rect.x += GUIUtils.ButtonSubtleContentHoverOffset;
-            rect.y -= GUIUtils.ButtonSubtleContentHoverOffset;
+            rect.x += GUISkin.ButtonSubtleContentHoverOffset;
+            rect.y -= GUISkin.ButtonSubtleContentHoverOffset;
         }
 
         Verse.Widgets.DrawTextureFitted(rect, texture, textureScale);

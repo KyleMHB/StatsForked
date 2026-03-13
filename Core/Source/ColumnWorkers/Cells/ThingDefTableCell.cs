@@ -2,13 +2,12 @@
 using Stats.Utils;
 using Stats.Widgets_Legacy;
 using UnityEngine;
-using Verse;
 
-namespace Stats.TableCells;
+namespace Stats.ColumnWorkers.Cells;
 
 public interface IThingDefTableCell : ITableCell
 {
-    public ThingDef? Value { get; }
+    public Verse.ThingDef? Value { get; }
     public string? Text { get; }
 }
 
@@ -16,20 +15,20 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
 {
     public float Width { get; }
     public bool IsRefreshable => false;
-    public ThingDef? Value { get; }
+    public Verse.ThingDef? Value { get; }
     public string? Text { get; }
 
     private readonly Widget? _icon;
     private readonly float _iconWidth;
 
-    public ThingDefTableCell(ThingDef value)
+    public ThingDefTableCell(Verse.ThingDef value)
     {
         Value = value;
         Text = value.LabelCap;
         _icon = new ThingDefIcon(value);
         float textWidth = Verse.Text.CalcSize(Text).x;
         float iconWidth = _icon.GetSize().x;
-        Width = iconWidth + TableCellStyle.CellContentSpacing + textWidth;
+        Width = iconWidth + GUISkin.TableCell.ContentSpacing + textWidth;
         _iconWidth = iconWidth;
     }
 
@@ -49,9 +48,9 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
 
             if (Event.current.type == EventType.Repaint)
             {
-                rect.CutByX(TableCellStyle.CellContentSpacing);
+                rect.CutByX(GUISkin.TableCell.ContentSpacing);
 
-                Widgets_Legacy.Draw.Label(rect, Text, TableCellStyle.String);
+                Widgets_Legacy.Draw.Label(rect, Text, GUISkin.TableCell.String);
             }
         }
     }

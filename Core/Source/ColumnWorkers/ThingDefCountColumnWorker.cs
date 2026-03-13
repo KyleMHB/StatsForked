@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Stats.ColumnWorkers.Cells;
 using Stats.Filters;
-using Stats.TableCells;
 using Stats.TableWorkers;
 using Stats.Widgets_Legacy;
 
@@ -9,14 +9,16 @@ namespace Stats.ColumnWorkers;
 
 public abstract class ThingDefCountColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefCountTableCell
 {
+    public override ColumnType Type => ColumnType.Number;
+
     protected abstract IEnumerable<Verse.ThingDef?> GetTypeFieldFilterOptions(TableWorker tableWorker);
 
-    public override TableCellDescriptor GetCellDescriptor(TableWorker tableWorker)
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
         Widget countFieldLabel = new Label("Amount");
         FilterWidget countFilter = new NumberFilter((int row) => this[row].Count);
         int CompareByCount(int row1, int row2) => this[row1].Count.CompareTo(this[row2].Count);
-        TableCellFieldDescriptor countField = new(countFieldLabel, countFilter, CompareByCount);
+        CellField countField = new(countFieldLabel, countFilter, CompareByCount);
 
         Widget thingDefFieldLabel = new Label("Type");
         IEnumerable<NTMFilterOption<Verse.ThingDef?>> thingDefFilterOptions = GetTypeFieldFilterOptions(tableWorker)
@@ -28,8 +30,8 @@ public abstract class ThingDefCountColumnWorker<TObject, TCell> : ColumnWorker<T
             );
         FilterWidget thingDefFilter = new OTMFilter<Verse.ThingDef?>((int row) => this[row].ThingDef, thingDefFilterOptions);
         int CompareByThingDefLabel(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].ThingDefLabel, this[row2].ThingDefLabel);
-        TableCellFieldDescriptor thingDefField = new(thingDefFieldLabel, thingDefFilter, CompareByThingDefLabel);
+        CellField thingDefField = new(thingDefFieldLabel, thingDefFilter, CompareByThingDefLabel);
 
-        return new TableCellDescriptor(TableCellStyleType.Number, [countField, thingDefField]);
+        return [countField, thingDefField];
     }
 }
