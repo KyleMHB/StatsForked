@@ -2,7 +2,7 @@
 using RimWorld;
 using Verse;
 
-namespace Stats.Extensions;
+namespace Stats.Utils.Extensions;
 
 public static class RimWorld_StuffCategoryDef
 {

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Stats.ColumnWorkers;
-using Stats.Extensions;
 using Stats.TableWorkers;
 using Stats.Utils;
+using Stats.Utils.Extensions;
 using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
@@ -159,7 +159,7 @@ internal sealed partial class ObjectTable<TObject>
 
         public void RecalcWidth(List<int> rows)
         {
-            Width = Mathf.Max(_titleWidgetWidth, Worker.GetWidth(rows)) + GUISkin.TableCell.PadHor * 2f;
+            Width = Mathf.Max(_titleWidgetWidth, Worker.GetWidth(rows)) + GUIStyles.TableCell.PadHor * 2f;
         }
     }
 }

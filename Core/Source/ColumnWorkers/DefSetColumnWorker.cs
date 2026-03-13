@@ -21,7 +21,7 @@ public abstract class DefSetColumnWorker<TObject, TCell> : ColumnWorker<TObject,
             .Select<Verse.Def?, NTMFilterOption<Verse.Def?>>(
                 def => def == null ? new() : new(def, def.LabelCap)
             );
-        FilterWidget valueFieldFilter = new MTMFilter<Verse.Def?>((int row) => this[row].Value ?? _emptyDefHashSet, valueFieldFilterOptions);
+        Filter valueFieldFilter = new MTMFilter<Verse.Def?>((int row) => this[row].Value ?? _emptyDefHashSet, valueFieldFilterOptions);
         int CompareByCellText(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Text, this[row2].Text);
         CellField valueField = new(Def.TitleWidget, valueFieldFilter, CompareByCellText);
 

@@ -1,4 +1,4 @@
-﻿using Stats.Extensions;
+﻿using Stats.Utils;
 using UnityEngine;
 using Verse;
 
@@ -31,7 +31,7 @@ public readonly struct NumberTableCell : INumberTableCell
     {
         if (_text != null)
         {
-            Widgets_Legacy.Draw.Label(rect, _text, GUISkin.TableCell.Number);
+            rect.Label(_text, GUIStyles.TableCell.Number);
         }
     }
 }

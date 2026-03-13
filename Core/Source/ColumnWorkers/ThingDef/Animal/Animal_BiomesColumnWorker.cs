@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RimWorld;
-using Stats;
-using Stats.Widgets_Legacy;
-using Verse;
-
-namespace Stats.ColumnWorkers.ThingDef.Animal;
+﻿namespace Stats.ColumnWorkers.ThingDef.Animal;
 
 //public sealed class Animal_BiomesColumnWorker : StaticColumnWorker<DefBasedObject,>
 //{

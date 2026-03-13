@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Stats.TableWorkers;
-using Verse;
-
-namespace Stats.TableWorkers.Thing;
+﻿namespace Stats.TableWorkers.Thing;
 
 //public sealed class ApparelTableWorker : TableWorker<ApparelThing>, TableWorker<ApparelThing>.IStreaming
 //{

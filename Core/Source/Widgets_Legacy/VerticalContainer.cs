@@ -60,8 +60,6 @@ public sealed class VerticalContainer : Widget
     }
     public override void Draw(Rect rect, Vector2 _)
     {
-        GUIDebugger.DebugRect(this, rect);
-
         var size = rect.size;
         size.y = Mathf.Max(size.y - OccupiedSpaceAmount, 0f);
         var additionalChildHeight = 0f;

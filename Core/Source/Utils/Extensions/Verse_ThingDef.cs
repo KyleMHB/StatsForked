@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using RimWorld;
 using Verse;
 
-namespace Stats.Extensions;
+namespace Stats.Utils.Extensions;
 
 public static class Verse_ThingDef
 {

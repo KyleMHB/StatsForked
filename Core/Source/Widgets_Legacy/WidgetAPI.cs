@@ -270,10 +270,6 @@ public static class WidgetAPI
         Foreground(this Widget widget, Action<Rect> drawForeground) =>
         new(widget, drawForeground);
 
-    internal static ToggleDisplayWidgetExtension
-        ToggleDisplay(this Widget widget, Observable<bool> state) =>
-        new(widget, state);
-
     internal static Widget Background(this Widget widget, Texture2D texture, bool shouldApply)
     {
         if (shouldApply)
@@ -311,7 +307,7 @@ public static class WidgetAPI
             widget
             // TODO: Deal with the "color situation".
             .Color(UnityEngine.Color.white)
-            .HoverShift(GUISkin.ButtonSubtleContentHoverOffset, -GUISkin.ButtonSubtleContentHoverOffset)
+            .HoverShift(GUIStyles.Global.ButtonSubtleContentHoverOffset, -GUIStyles.Global.ButtonSubtleContentHoverOffset)
             .BackgroundAtlas(Verse.Widgets.ButtonSubtleAtlas)
             .HoverColor(GenUI.MouseoverColor)
             .OnClick(clickEventHandler);

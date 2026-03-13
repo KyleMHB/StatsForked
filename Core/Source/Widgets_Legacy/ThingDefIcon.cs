@@ -1,5 +1,4 @@
-﻿using Stats.Extensions;
-using Stats.Utils;
+﻿using Stats.Utils;
 using UnityEngine;
 using Verse;
 
@@ -57,8 +56,6 @@ public sealed class ThingDefIcon : Widget
 
     public override void Draw(Rect rect, Vector2 _)
     {
-        GUIDebugger.DebugRect(this, rect);
-
         if (Event.current.type != EventType.Repaint)
         {
             return;

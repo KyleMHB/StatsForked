@@ -1,4 +1,5 @@
-﻿using Stats.Extensions;
+﻿using Stats.Utils;
+using Stats.Utils.Extensions;
 using UnityEngine;
 
 namespace Stats.ColumnWorkers.Cells;
@@ -33,7 +34,7 @@ public readonly struct ThingDefCountTableCell : IThingDefCountTableCell
         if (ThingDef != null)
         {
             rect = rect.ContractedByObjectTableCellPadding();
-            Widgets_Legacy.Draw.Label(rect, "TODO", GUISkin.TableCell.String);
+            rect.Label("TODO", GUIStyles.TableCell.String);
         }
     }
 }

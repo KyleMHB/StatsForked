@@ -3,7 +3,7 @@ using Stats.Widgets_Legacy;
 
 namespace Stats.Filters;
 
-public abstract class FilterWidget : Widget
+public abstract class Filter : Widget
 {
     public abstract bool IsActive { get; }
     public abstract event Action? OnChange;

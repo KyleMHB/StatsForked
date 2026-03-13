@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Stats.ColumnWorkers.Cells;
-using Stats.Extensions;
 using Stats.Filters;
 using Stats.TableWorkers;
+using Stats.Utils.Extensions;
 using UnityEngine;
 
 namespace Stats.ColumnWorkers;
@@ -18,7 +18,7 @@ public abstract class BooleanColumnWorker<TObject, TCell> : ColumnWorker<TObject
 
     public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-        FilterWidget valueFieldFilter = new BooleanFilter((int row) => this[row].Value);
+        Filter valueFieldFilter = new BooleanFilter((int row) => this[row].Value);
         int Compare(int row1, int row2) => this[row1].Value.CompareTo(this[row2]);
         CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
@@ -78,7 +78,7 @@ public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
 
     public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-        FilterWidget valueFieldFilter = new BooleanFilter((int row) => _values[row]);
+        Filter valueFieldFilter = new BooleanFilter((int row) => _values[row]);
         int Compare(int row1, int row2) => _values[row1].CompareTo(_values[row2]);
         CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 

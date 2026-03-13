@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Stats.Extensions;
 using Stats.Utils;
+using Stats.Utils.Extensions;
 using UnityEngine;
 using Verse;
 

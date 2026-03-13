@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Stats.Extensions;
 using Stats.TableWorkers;
 using Stats.ColumnWorkers.Cells;
+using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 

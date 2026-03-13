@@ -14,7 +14,6 @@ public sealed class EmptyWidget : Widget
     }
     public override void Draw(Rect rect, Vector2 _)
     {
-        GUIDebugger.DebugRect(this, rect);
     }
     //public static readonly EmptyWidget Instance = new();
 }

@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace Stats.Extensions;
+namespace Stats.Utils.Extensions;
 
 internal static class UnityEngine_Event
 {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Stats.ColumnWorkers.Cells;
-using Stats.Extensions;
 using Stats.Filters;
 using Stats.TableWorkers;
 using Stats.Utils;
@@ -36,7 +35,7 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
             .Select<ModContentPack?, NTMFilterOption<ModContentPack?>>(
                 mod => mod == null ? new() : new(mod, mod.Name, null, mod.PackageIdPlayerFacing)
             );
-        FilterWidget valueFieldFilter = new OTMFilter<ModContentPack?>((int row) => this[row].Mod, valueFieldFilterOptions);
+        Filter valueFieldFilter = new OTMFilter<ModContentPack?>((int row) => this[row].Mod, valueFieldFilterOptions);
         int Compare(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].ModName, this[row2].ModName);
         CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
@@ -64,8 +63,9 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
         {
             if (ModName != null)
             {
-                Widgets_Legacy.Draw.Label(rect, ModName, GUISkin.TableCell.String);
-                rect.Tip(_tooltip);
+                rect
+                    .Label(ModName, GUIStyles.TableCell.String)
+                    .Tip(_tooltip);
             }
         }
     }

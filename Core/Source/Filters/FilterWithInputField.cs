@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Stats.Extensions;
 using Stats.Utils;
+using Stats.Utils.Extensions;
 using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
@@ -9,11 +9,11 @@ using Verse.Sound;
 
 namespace Stats.Filters;
 
-public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
+public abstract class FilterWithInputField<TLhs, TRhs> : Filter
 {
     private Vector2 OperatorButtonSize;
     private const float OperatorButtonMinWidth = 24f;
-    private const float OperatorButtonPaddingHor = GUISkin.PadXs;
+    private const float OperatorButtonPaddingHor = GUIStyles.Global.PadXs;
     private const float InputFieldMinWidth = OperatorButtonMinWidth * 2f;
     private readonly FloatMenu OperatorsMenu;
     protected abstract RelOperator<TLhs, TRhs> Operator { get; set; }
@@ -21,7 +21,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
     protected abstract string InputFieldText { get; }
     private bool InputFieldIsEmpty => InputFieldText.Length == 0;
     private readonly Widget ClearButton;
-    protected FilterWidgetWithInputField(IEnumerable<RelOperator<TLhs, TRhs>> operators, string? placeholder = null)
+    protected FilterWithInputField(IEnumerable<RelOperator<TLhs, TRhs>> operators, string? placeholder = null)
     {
         Placeholder = placeholder ?? "";
 
@@ -29,7 +29,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
 
         foreach (var @operator in operators)
         {
-            var operatorString = @operator.Symbol.Colorize(GUISkin.Text.ColorHighlight);
+            var operatorString = @operator.Symbol.Colorize(GUIStyles.Text.ColorHighlight);
             var optionLabel = @operator.Description.Length > 0
                 ? $"{operatorString} - {@operator.Description}"
                 : operatorString;
@@ -39,7 +39,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
 
         OperatorsMenu = new FloatMenu(operatorsMenuOptions);
         ClearButton = new Icon(TexButton.CloseXSmall, 0.5f)
-        .HoverColor(GUISkin.Text.ColorSecondary);
+        .HoverColor(GUIStyles.Text.ColorSecondary);
     }
     public sealed override Vector2 GetSize()
     {
@@ -52,15 +52,13 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
     }
     public sealed override void Draw(Rect rect, Vector2 _)
     {
-        GUIDebugger.DebugRect(this, rect);
-
         var origTextAnchor = Text.Anchor;
         var operatorButtonRect = rect.CutByX(OperatorButtonSize.x);
         var origGUIColor = GUI.color;
 
         if (IsActive == false)
         {
-            GUI.color = GUISkin.Text.ColorSecondary;
+            GUI.color = GUIStyles.Text.ColorSecondary;
         }
 
         Text.Anchor = TextAnchor.LowerCenter;
@@ -88,7 +86,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
 
         if (InputFieldIsEmpty && IsActive == false)
         {
-            rect.xMin += GUISkin.EstimatedInputFieldInnerPadding;
+            rect.xMin += GUIStyles.Global.EstimatedInputFieldInnerPadding;
             Verse.Widgets.Label(rect, Placeholder);
         }
         else
@@ -119,7 +117,7 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
             TooltipHandler.TipRegion(rect, Operator.Description);
         }
 
-        return Widgets_Legacy.Draw.ButtonTextSubtle(rect, Operator.Symbol, GUI.color, OperatorButtonPaddingHor);
+        return rect.ButtonTextSubtle(Operator.Symbol, GUI.color, OperatorButtonPaddingHor);
     }
     private Vector2 CalcInputFieldSize()
     {
@@ -128,12 +126,12 @@ public abstract class FilterWidgetWithInputField<TLhs, TRhs> : FilterWidget
         if (InputFieldIsEmpty)
         {
             size = Text.CalcSize(Placeholder);
-            size.x += GUISkin.EstimatedInputFieldInnerPadding * 2f;
+            size.x += GUIStyles.Global.EstimatedInputFieldInnerPadding * 2f;
         }
         else
         {
             size = Text.CalcSize(InputFieldText);
-            size.x += GUISkin.Pad + ClearButton.GetSize().x;
+            size.x += GUIStyles.Global.Pad + ClearButton.GetSize().x;
         }
 
         if (size.x < InputFieldMinWidth)

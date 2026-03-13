@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using Verse;
 
-namespace Stats.Extensions;
+namespace Stats.Utils.Extensions;
 
 public static class Verse_VerbProperties_List
 {

@@ -1,6 +1,6 @@
 ﻿using RimWorld;
 
-namespace Stats.Extensions;
+namespace Stats.Utils.Extensions;
 
 public static class RimWorld_PlantProperties
 {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Stats.Utils;
 using UnityEngine;
 
 namespace Stats.ColumnWorkers.Cells;
@@ -32,7 +33,7 @@ public readonly struct DefSetTableCell : IDefSetTableCell
     {
         if (Text != null)
         {
-            Widgets_Legacy.Draw.Label(rect, Text, GUISkin.TableCell.String);
+            rect.Label(Text, GUIStyles.TableCell.String);
         }
     }
 }

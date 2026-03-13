@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Stats.Extensions;
+using Stats.Utils;
 using UnityEngine;
 
 namespace Stats.ColumnWorkers.Cells;
@@ -24,8 +24,7 @@ public readonly struct ThingDefSetTableCell : IThingDefSetTableCell
     {
         if (Value?.Count > 0)
         {
-            rect = rect.ContractedByObjectTableCellPadding();
-            Widgets_Legacy.Draw.Label(rect, "TODO", GUISkin.TableCell.String);
+            rect.Label("TODO", GUIStyles.TableCell.String);
         }
     }
 }

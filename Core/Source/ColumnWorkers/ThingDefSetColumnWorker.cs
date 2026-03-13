@@ -22,7 +22,7 @@ public abstract class ThingDefSetColumnWorker<TObject, TCell> : ColumnWorker<TOb
             .Select<Verse.ThingDef?, NTMFilterOption<Verse.ThingDef?>>(
                 def => def == null ? new() : new(def, def.LabelCap, new ThingDefIcon(def))
             );
-        FilterWidget valueFieldFilter = new MTMFilter<Verse.ThingDef?>((int row) => this[row].Value ?? _emptyThingDefHashSet, valueFieldFilterOptions);
+        Filter valueFieldFilter = new MTMFilter<Verse.ThingDef?>((int row) => this[row].Value ?? _emptyThingDefHashSet, valueFieldFilterOptions);
         // TODO: Figure out how to efficiently compare cells so that cells with equal values will be grouped together.
         int Compare(int row1, int row2) => row1.CompareTo(row2);
         CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);

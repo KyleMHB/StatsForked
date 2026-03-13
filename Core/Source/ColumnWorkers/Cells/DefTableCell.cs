@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Stats.Utils;
+using UnityEngine;
 
 namespace Stats.ColumnWorkers.Cells;
 
@@ -26,7 +27,7 @@ public readonly struct DefTableCell : IDefTableCell
     {
         if (Text != null)
         {
-            Widgets_Legacy.Draw.Label(rect, Text, GUISkin.TableCell.String);
+            rect.Label(Text, GUIStyles.TableCell.String);
         }
     }
 }

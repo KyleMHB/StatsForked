@@ -2,7 +2,7 @@
 using UnityEngine;
 using Verse;
 
-namespace Stats.Extensions;
+namespace Stats.Utils.Extensions;
 
 public static class UnityEngine_Rect
 {
@@ -29,6 +29,6 @@ public static class UnityEngine_Rect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Rect ContractedByObjectTableCellPadding(this Rect rect)
     {
-        return rect.ContractedBy(GUISkin.TableCell.PadHor, GUISkin.TableCell.PadVer);
+        return rect.ContractedBy(GUIStyles.TableCell.PadHor, GUIStyles.TableCell.PadVer);
     }
 }

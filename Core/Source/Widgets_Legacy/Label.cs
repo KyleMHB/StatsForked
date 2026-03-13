@@ -28,12 +28,6 @@ public sealed class Label : Widget
         _text = text;
     }
 
-    internal Label(Observable<string> observable)
-    {
-        _text = observable.Value;
-        observable.OnNext += value => Text = value;
-    }
-
     public static readonly GUIStyle Style;
 
     static Label()
@@ -50,13 +44,11 @@ public sealed class Label : Widget
 
     public override void Draw(Rect rect, Vector2 _)
     {
-        GUIDebugger.DebugRect(this, rect);
-
         if (Event.current.type != EventType.Repaint)
         {
             return;
         }
 
-        Widgets_Legacy.Draw.Label(rect, Text, Style);
+        rect.Label(Text, Style);
     }
 }

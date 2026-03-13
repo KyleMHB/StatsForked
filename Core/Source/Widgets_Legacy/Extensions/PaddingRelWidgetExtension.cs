@@ -32,8 +32,6 @@ public sealed class PaddingRelWidgetExtension : WidgetExtension
     }
     public override void Draw(Rect rect, Vector2 containerSize)
     {
-        GUIDebugger.DebugRect(this, rect);
-
         rect.x += Left * containerSize.x;
         rect.y += Top * containerSize.y;
         rect.width -= Horizontal * containerSize.x;

@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using RimWorld;
 using Stats.ColumnWorkers;
-using Stats.Filters;
 using Stats.TableWorkers;
-using Stats.Utils;
-using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
 
@@ -247,7 +242,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         // Finalize
         _objects = objects;
         _rows = rows;
-        _rowHeight = Text.LineHeight + GUISkin.TableCell.PadVer * 2f;
+        _rowHeight = Text.LineHeight + GUIStyles.TableCell.PadVer * 2f;
         _columns = columns;
         if (columns.Count > 0)
         {

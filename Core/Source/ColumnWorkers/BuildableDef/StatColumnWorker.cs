@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using RimWorld;
 using Stats.ColumnWorkers.Cells;
-using Stats.Extensions;
 using Stats.Filters;
 using Stats.TableWorkers;
 using Stats.Utils;
@@ -68,7 +67,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
 
     public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-        FilterWidget valueFieldFilter = new NumberFilter((int row) => this[row].Value);
+        Filter valueFieldFilter = new NumberFilter((int row) => this[row].Value);
         int Compare(int row1, int row2) => this[row1].Value.CompareTo(this[row2].Value);
         CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
@@ -134,7 +133,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
                     HandleTooltip(rect);
                 }
 
-                Widgets_Legacy.Draw.Label(rect, _text, GUISkin.TableCell.Number);
+                rect.Label(_text, GUIStyles.TableCell.Number);
             }
         }
 

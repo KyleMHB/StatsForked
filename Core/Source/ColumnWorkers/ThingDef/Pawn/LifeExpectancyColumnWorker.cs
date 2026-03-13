@@ -1,6 +1,6 @@
-﻿using Stats.Extensions;
-using Verse;
+﻿using Verse;
 using Stats.ColumnWorkers.Cells;
+using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 

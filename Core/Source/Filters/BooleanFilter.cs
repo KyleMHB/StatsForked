@@ -1,12 +1,12 @@
 ﻿using System;
-using Stats.Extensions;
 using Stats.Utils;
+using Stats.Utils.Extensions;
 using UnityEngine;
 using Verse;
 
 namespace Stats.Filters;
 
-public sealed class BooleanFilter : FilterWidget
+public sealed class BooleanFilter : Filter
 {
     public override bool IsActive => Value != null;
     public override event Action? OnChange;
@@ -39,10 +39,10 @@ public sealed class BooleanFilter : FilterWidget
 
         if (Value != true)
         {
-            GUI.color = GUISkin.Text.ColorSecondary;
+            GUI.color = GUIStyles.Text.ColorSecondary;
         }
 
-        if (Widgets_Legacy.Draw.ButtonImageSubtle(rect.CutByX(rect.width / 2f), Verse.Widgets.CheckboxOnTex))
+        if (rect.CutByX(rect.width / 2f).ButtonImageSubtle(Verse.Widgets.CheckboxOnTex))
         {
             Value = Value == true ? null : true;
         }
@@ -51,10 +51,10 @@ public sealed class BooleanFilter : FilterWidget
 
         if (Value != false)
         {
-            GUI.color = GUISkin.Text.ColorSecondary;
+            GUI.color = GUIStyles.Text.ColorSecondary;
         }
 
-        if (Widgets_Legacy.Draw.ButtonImageSubtle(rect, Verse.Widgets.CheckboxOffTex))
+        if (rect.ButtonImageSubtle(Verse.Widgets.CheckboxOffTex))
         {
             Value = Value == false ? null : false;
         }

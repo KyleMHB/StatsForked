@@ -2,9 +2,9 @@
 using System.Linq;
 using RimWorld;
 using Stats.ColumnWorkers.Cells;
-using Stats.Extensions;
 using Stats.Filters;
 using Stats.TableWorkers;
+using Stats.Utils;
 using UnityEngine;
 using Verse;
 
@@ -34,7 +34,7 @@ public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<De
             .Select<TechLevel, NTMFilterOption<TechLevel>>(
                 techLevel => new(techLevel, techLevel.ToStringHuman().CapitalizeFirst())
             );
-        FilterWidget valueFieldFilter = new OTMFilter<TechLevel>((int row) => this[row].Value, valueFieldFilterOptions);
+        Filter valueFieldFilter = new OTMFilter<TechLevel>((int row) => this[row].Value, valueFieldFilterOptions);
         int Compare(int row1, int row2) => this[row1].Value.CompareTo(this[row2].Value);
         CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
@@ -63,7 +63,7 @@ public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<De
         {
             if (Value != TechLevel.Undefined)
             {
-                Widgets_Legacy.Draw.Label(rect, _text, GUISkin.TableCell.String);
+                rect.Label(_text, GUIStyles.TableCell.String);
             }
         }
     }

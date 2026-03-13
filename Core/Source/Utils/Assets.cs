@@ -6,8 +6,8 @@ namespace Stats.Utils;
 [StaticConstructorOnStartup]
 public static class Assets
 {
-    public static readonly Texture2D ExpandWindowTex;
-    public static readonly Texture2D FilterTex;
+    internal static readonly Texture2D ExpandWindowTex;
+    internal static readonly Texture2D FilterTex;
 
     static Assets()
     {

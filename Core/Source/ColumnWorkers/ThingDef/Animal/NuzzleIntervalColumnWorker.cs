@@ -1,6 +1,6 @@
-﻿using Stats.Extensions;
+﻿using Stats.ColumnWorkers.Cells;
+using Stats.Utils.Extensions;
 using Verse;
-using Stats.ColumnWorkers.Cells;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 

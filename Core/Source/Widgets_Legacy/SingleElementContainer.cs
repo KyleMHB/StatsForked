@@ -24,8 +24,6 @@ public sealed class SingleElementContainer : Widget
     }
     public override void Draw(Rect rect, Vector2 _)
     {
-        GUIDebugger.DebugRect(this, rect);
-
         var size = rect.size;
         size.x = Mathf.Max(size.x - OccupiedWidth, 0f);
         size.y = Mathf.Max(size.y - OccupiedHeight, 0f);

@@ -11,7 +11,7 @@ public abstract class NumberColumnWorker<TObject, TCell> : ColumnWorker<TObject,
 
     public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-        FilterWidget valueFieldFilter = new NumberFilter((int row) => this[row].Value);
+        Filter valueFieldFilter = new NumberFilter((int row) => this[row].Value);
         int Compare(int row1, int row2) => this[row1].Value.CompareTo(this[row2].Value);
         CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 

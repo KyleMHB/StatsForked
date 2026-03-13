@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Stats.ColumnWorkers.Cells;
-using Stats.Extensions;
 using Stats.Filters;
 using Stats.TableWorkers;
+using Stats.Utils;
 using UnityEngine;
 using Verse;
 
@@ -42,7 +42,7 @@ public sealed class SizeColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBase
             .Distinct()
             .OrderBy(size => size.Area)
             .Select(size => new NTMFilterOption<decimal>(size.Area, size.ToStringCross()));
-        FilterWidget valueFieldFilter = new OTMFilter<decimal>((int row) => this[row].Area, valueFieldFilterOptions);
+        Filter valueFieldFilter = new OTMFilter<decimal>((int row) => this[row].Area, valueFieldFilterOptions);
         int Compare(int row1, int row2) => this[row1].Area.CompareTo(this[row2].Area);
         CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
@@ -71,7 +71,7 @@ public sealed class SizeColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBase
         {
             if (_text != null)
             {
-                Widgets_Legacy.Draw.Label(rect, _text, GUISkin.TableCell.Number);
+                rect.Label(_text, GUIStyles.TableCell.Number);
             }
         }
     }

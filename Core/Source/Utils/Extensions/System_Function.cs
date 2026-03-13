@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Stats.Extensions;
+namespace Stats.Utils.Extensions;
 
 public static class System_Function
 {

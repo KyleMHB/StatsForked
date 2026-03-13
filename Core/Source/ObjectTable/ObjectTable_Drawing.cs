@@ -1,7 +1,7 @@
 ﻿using System;
 using Stats.ColumnWorkers;
-using Stats.Extensions;
 using Stats.Utils;
+using Stats.Utils.Extensions;
 using Stats.Utils.GUIScopes;
 using UnityEngine;
 using Verse;

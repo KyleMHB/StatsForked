@@ -41,8 +41,6 @@ public sealed class PaddingAbsWidgetExtension
     }
     public override void Draw(Rect rect, Vector2 containerSize)
     {
-        GUIDebugger.DebugRect(this, rect);
-
         rect.x += Left;
         rect.y += Top;
         rect.width -= Horizontal;

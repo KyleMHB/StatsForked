@@ -6,7 +6,7 @@ namespace Stats.Utils;
 
 public static class Events
 {
-    public static event Action? ResearchCompleted;
+    internal static event Action? ResearchCompleted;
     public static event Action<Thing>? ThingSpawned;
     public static event Action<Thing>? ThingDespawned;
 

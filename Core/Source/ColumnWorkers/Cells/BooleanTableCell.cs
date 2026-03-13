@@ -1,5 +1,5 @@
-﻿using Stats.Extensions;
-using Stats.Utils;
+﻿using Stats.Utils;
+using Stats.Utils.Extensions;
 using UnityEngine;
 
 namespace Stats.ColumnWorkers.Cells;

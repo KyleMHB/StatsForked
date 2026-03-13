@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Stats.ColumnWorkers.Cells;
-using Stats.Extensions;
 using Stats.Filters;
 using Stats.TableWorkers;
 using Stats.Utils;
+using Stats.Utils.Extensions;
 using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
@@ -31,7 +31,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
 
     public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-        FilterWidget textFieldFilter = new StringFilter((int row) => this[row].Text ?? "");
+        Filter textFieldFilter = new StringFilter((int row) => this[row].Text ?? "");
         int Compare(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Text, this[row2].Text);
         CellField textField = new(Def.TitleWidget, textFieldFilter, Compare);
 
@@ -102,7 +102,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
             float textWidth = Verse.Text.CalcSize(Text).x;
             _icon = new ThingDefIcon(thingDef, stuffDef);
             _iconWidth = _icon.GetSize().x;
-            Width = _iconWidth + GUISkin.TableCell.ContentSpacing + textWidth;
+            Width = _iconWidth + GUIStyles.TableCell.ContentSpacing + textWidth;
         }
 
         public void Draw(Rect rect)
@@ -121,9 +121,9 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
 
                 if (Event.current.type == EventType.Repaint)
                 {
-                    rect.CutByX(GUISkin.TableCell.ContentSpacing);
-
-                    Widgets_Legacy.Draw.Label(rect, Text, GUISkin.TableCell.String);
+                    rect
+                        .CutByX(GUIStyles.TableCell.ContentSpacing)
+                        .Label(Text, GUIStyles.TableCell.String);
                 }
             }
         }

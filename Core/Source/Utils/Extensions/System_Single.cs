@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace Stats.Extensions;
+namespace Stats.Utils.Extensions;
 
 public static class System_Single
 {

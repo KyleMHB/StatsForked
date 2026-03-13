@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Stats.Extensions;
 using Stats.Utils;
+using Stats.Utils.Extensions;
 using Stats.Utils.GUIScopes;
 using UnityEngine;
 using Verse;
@@ -97,8 +97,6 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
 
         // Table
         _activeTable?.TableWidget.Draw(rect);
-
-        GUIDebugger.DrawDebugInfo(rect);
 
         Text.WordWrap = wordWrap;
     }

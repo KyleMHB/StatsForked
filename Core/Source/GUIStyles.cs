@@ -2,13 +2,16 @@
 
 namespace Stats;
 
-public static class GUISkin
+public static class GUIStyles
 {
-    internal const float Pad = 10f;
-    internal const float PadSm = 5f;
-    internal const float PadXs = 3f;
-    internal const float EstimatedInputFieldInnerPadding = 2f;
-    internal const float ButtonSubtleContentHoverOffset = 2f;
+    public static class Global
+    {
+        internal const float Pad = 10f;
+        internal const float PadSm = 5f;
+        internal const float PadXs = 3f;
+        internal const float EstimatedInputFieldInnerPadding = 2f;
+        internal const float ButtonSubtleContentHoverOffset = 2f;
+    }
 
     public static class Text
     {
@@ -21,7 +24,7 @@ public static class GUISkin
         public static readonly GUIStyle String;
         public static readonly GUIStyle Number;
         public static readonly GUIStyle Boolean;
-        public const float ContentSpacing = PadSm;
+        public const float ContentSpacing = Global.PadSm;
         internal const float PadHor = _PadHor;
         internal const float PadVer = _PadVer;
 

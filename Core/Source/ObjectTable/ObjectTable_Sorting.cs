@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Stats;
+﻿namespace Stats;
 
 internal sealed partial class ObjectTable<TObject>
 {

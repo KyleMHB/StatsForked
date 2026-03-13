@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Stats.Filters;
-using Verse;
-
-namespace Stats;
+﻿namespace Stats;
 
 internal sealed partial class ObjectTable<TObject>
 {

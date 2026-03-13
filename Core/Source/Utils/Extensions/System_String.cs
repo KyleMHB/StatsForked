@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Stats.Extensions;
+namespace Stats.Utils.Extensions;
 
 public static class System_String
 {

@@ -59,8 +59,6 @@ public sealed class HorizontalContainer : Widget
     }
     public override void Draw(Rect rect, Vector2 _)
     {
-        GUIDebugger.DebugRect(this, rect);
-
         var size = rect.size;
         size.x = Mathf.Max(size.x - OccupiedSpaceAmount, 0f);
         var additionalChildWidth = 0f;

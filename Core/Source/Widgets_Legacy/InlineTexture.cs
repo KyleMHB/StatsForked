@@ -1,5 +1,5 @@
-﻿using Stats.Extensions;
-using Stats.Utils;
+﻿using Stats.Utils;
+using Stats.Utils.Extensions;
 using UnityEngine;
 using Verse;
 
@@ -23,8 +23,6 @@ public class InlineTexture : Widget
     }
     public override void Draw(Rect rect, Vector2 _)
     {
-        GUIDebugger.DebugRect(this, rect);
-
         if (Event.current.IsRepaint())
         {
             rect.DrawTextureFitted(Texture, GUI.color, Scale);

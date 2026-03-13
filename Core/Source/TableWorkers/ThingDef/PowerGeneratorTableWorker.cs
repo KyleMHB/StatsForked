@@ -1,5 +1,5 @@
 ﻿using RimWorld;
-using Stats.Extensions;
+using Stats.Utils.Extensions;
 
 namespace Stats.TableWorkers.ThingDef;
 

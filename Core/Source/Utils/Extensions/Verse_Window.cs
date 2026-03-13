@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-namespace Stats.Extensions;
+namespace Stats.Utils.Extensions;
 
 internal static class Verse_Window
 {

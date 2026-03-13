@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RimWorld;
-using Stats.Extensions;
 using Stats.Utils;
+using Stats.Utils.Extensions;
 using Stats.Widgets_Legacy;
 using UnityEngine;
 using Verse;
@@ -12,7 +12,7 @@ using Verse.Sound;
 
 namespace Stats.Filters;
 
-public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
+public abstract class NTMFilter<TLhs, TRhs> : Filter
 {
     public override bool IsActive => SelectedOptions.Count > 0;
     // TODO: See if IEnumerable is most fitting type here.
@@ -33,7 +33,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendInNewLine($"{Operator.Symbol.Colorize(GUISkin.Text.ColorHighlight)} - {Operator.Description}:");
+            stringBuilder.AppendInNewLine($"{Operator.Symbol.Colorize(GUIStyles.Text.ColorHighlight)} - {Operator.Description}:");
 
             foreach (var option in OptionsList)
             {
@@ -50,7 +50,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
     private string ButtonText => IsActive ? Info : ButtonTextWhenInactive;
     private readonly string ButtonTextWhenInactive;
     private const float ButtonMinWidth = 24f;
-    private const float ButtonPadHor = GUISkin.PadSm;
+    private const float ButtonPadHor = GUIStyles.Global.PadSm;
     private readonly HashSet<TRhs> SelectedOptions = [];
     private RelOperator<TLhs, HashSet<TRhs>> _Operator;
     protected RelOperator<TLhs, HashSet<TRhs>> Operator
@@ -104,10 +104,10 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 
         if (IsActive == false)
         {
-            GUI.color = GUISkin.Text.ColorSecondary;
+            GUI.color = GUIStyles.Text.ColorSecondary;
         }
 
-        if (Widgets_Legacy.Draw.ButtonTextSubtle(rect, ButtonText, GUI.color, ButtonPadHor))
+        if (rect.ButtonTextSubtle(ButtonText, GUI.color, ButtonPadHor))
         {
             OptionsWindow.Open();
         }
@@ -166,8 +166,8 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
         private static readonly Color BackgroundColor = Verse.Widgets.WindowBGFillColor;
         private const float OptionHoverHorShiftAmount = 4f;
         private static readonly Color OptionHoverBackgroundColor = FloatMenuOption.ColorBGActiveMouseover;
-        private const float OptionPadHor = GUISkin.Pad;
-        private const float OptionPadVer = GUISkin.PadXs;
+        private const float OptionPadHor = GUIStyles.Global.Pad;
+        private const float OptionPadVer = GUIStyles.Global.PadXs;
         private const float OperatorButtonSize = 28f;
         private bool WillScrollHor = false;
         private Vector2 ScrollPosition;
@@ -187,12 +187,12 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
                         new Label(@operator.Symbol)
                         .TextAnchor(TextAnchor.MiddleCenter)
                         .SizeAbs(OperatorButtonSize)
-                        .Color(GUISkin.Text.ColorHighlight)
+                        .Color(GUIStyles.Text.ColorHighlight)
                         .SkipNextExtension(() => parent.Operator != @operator)
-                        .HoverShift(GUISkin.ButtonSubtleContentHoverOffset, -GUISkin.ButtonSubtleContentHoverOffset)
+                        .HoverShift(GUIStyles.Global.ButtonSubtleContentHoverOffset, -GUIStyles.Global.ButtonSubtleContentHoverOffset)
                         .BackgroundAtlas(Verse.Widgets.ButtonSubtleAtlas)
                         .HoverColor(GenUI.MouseoverColor)
-                        .Color(GUISkin.Text.ColorSecondary)
+                        .Color(GUIStyles.Text.ColorSecondary)
                         .SkipNextExtension(() => parent.Operator != @operator)
                         .OnClick(() => parent.Operator = @operator)
                         .Tooltip(@operator.Description)
@@ -200,7 +200,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 
                     new Label("Clear")
                     .TextAnchor(TextAnchor.MiddleLeft)
-                    .PaddingAbs(GUISkin.PadSm, 0f)
+                    .PaddingAbs(GUIStyles.Global.PadSm, 0f)
                     .WidthIncRel(1f)
                     .HeightAbs(OperatorButtonSize)
                     .ToButtonSubtle(parent.Clear),
@@ -208,7 +208,7 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
                 .WidthRel(1f),
 
                 new Label("<i>Hold [Ctrl] to select multiple options.</i>")
-                .PaddingAbs(GUISkin.PadSm, 0f)
+                .PaddingAbs(GUIStyles.Global.PadSm, 0f)
                 .BorderLeft(BorderColor)
                 .BorderRight(BorderColor)
                 .WidthRel(1f),
@@ -386,12 +386,12 @@ public abstract class NTMFilter<TLhs, TRhs> : FilterWidget
 
             if (position.x + size.x > UI.screenWidth)
             {
-                position.x = UI.screenWidth - size.x - GUISkin.Pad;
+                position.x = UI.screenWidth - size.x - GUIStyles.Global.Pad;
             }
 
             if (position.y + size.y > UI.screenHeight)
             {
-                position.y = UI.screenHeight - size.y - GUISkin.Pad;
+                position.y = UI.screenHeight - size.y - GUIStyles.Global.Pad;
             }
 
             windowRect = new Rect(position, size);
@@ -435,7 +435,7 @@ public readonly record struct NTMFilterOption<TValue>
 
         if (Icon != null)
         {
-            return new HorizontalContainer([Icon, label], GUISkin.PadSm);
+            return new HorizontalContainer([Icon, label], GUIStyles.Global.PadSm);
         }
 
         return label;

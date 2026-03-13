@@ -4,7 +4,7 @@ using Verse;
 
 namespace Stats.Filters;
 
-public sealed class NumberFilter : FilterWidgetWithInputField<decimal, decimal>
+public sealed class NumberFilter : FilterWithInputField<decimal, decimal>
 {
     public override bool IsActive => _TextFieldText.Length > 0 && InputIsValid;
     private decimal _Value = 0m;

@@ -2,6 +2,7 @@
 using Stats.Extensions;
 using Stats.Objects.ThingDef;
 using Stats.ObjectTable.ColumnWorkers;
+using Stats.Utils.Extensions;
 
 namespace Stats.Compat.CE;
 

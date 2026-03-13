@@ -1,5 +1,5 @@
-﻿using Stats.Extensions;
-using Stats.Utils;
+﻿using Stats.Utils;
+using Stats.Utils.Extensions;
 using Stats.Widgets_Legacy;
 using UnityEngine;
 
@@ -28,7 +28,7 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
         _icon = new ThingDefIcon(value);
         float textWidth = Verse.Text.CalcSize(Text).x;
         float iconWidth = _icon.GetSize().x;
-        Width = iconWidth + GUISkin.TableCell.ContentSpacing + textWidth;
+        Width = iconWidth + GUIStyles.TableCell.ContentSpacing + textWidth;
         _iconWidth = iconWidth;
     }
 
@@ -48,9 +48,9 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
 
             if (Event.current.type == EventType.Repaint)
             {
-                rect.CutByX(GUISkin.TableCell.ContentSpacing);
-
-                Widgets_Legacy.Draw.Label(rect, Text, GUISkin.TableCell.String);
+                rect
+                    .CutByX(GUIStyles.TableCell.ContentSpacing)
+                    .Label(Text, GUIStyles.TableCell.String);
             }
         }
     }

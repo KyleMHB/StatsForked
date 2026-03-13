@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Stats.Filters;
 
-public sealed class StringFilter : FilterWidgetWithInputField<string, string>
+public sealed class StringFilter : FilterWithInputField<string, string>
 {
     public override bool IsActive => Value.Length > 0;
     private string _Value = "";

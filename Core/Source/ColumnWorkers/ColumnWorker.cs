@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Stats.ColumnWorkers.Cells;
-using Stats.Extensions;
 using Stats.TableWorkers;
+using Stats.Utils.Extensions;
 using UnityEngine;
 
 namespace Stats.ColumnWorkers;

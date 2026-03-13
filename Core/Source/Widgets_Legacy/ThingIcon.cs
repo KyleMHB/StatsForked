@@ -20,8 +20,6 @@ public sealed class ThingIcon : Widget
 
     public override void Draw(Rect rect, Vector2 _)
     {
-        GUIDebugger.DebugRect(this, rect);
-
         if (Event.current.type == EventType.Repaint)
         {
             Verse.Widgets.ThingIcon(rect, Thing);

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Stats.Extensions;
+using Stats.Utils.Extensions;
 using Verse;
 
 namespace Stats.TableWorkers.ThingDef;
