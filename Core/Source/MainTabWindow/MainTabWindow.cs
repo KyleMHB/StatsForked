@@ -4,24 +4,16 @@ using Stats.Utils.Extensions;
 using Stats.Utils.GUIScopes;
 using UnityEngine;
 using Verse;
+using static Stats.GUIStyles.MainTabWindow;
 
 namespace Stats;
 
 public sealed partial class MainTabWindow : RimWorld.MainTabWindow
 {
     public override Vector2 RequestedTabSize => new(UI.screenWidth, base.RequestedTabSize.y);
-    internal static readonly Color BorderColor = new(1f, 1f, 1f, 0.4f);
 
     protected override float Margin { get => 1f; }
     private bool _isExpanded;
-    private const float _ToolbarWidth = 40f;
-    private const float _IconPadding = 5f;
-    //private static readonly TipSignal Manual =
-    //    "- Hold (LMB) and move mouse cursor to scroll horizontally.\n" +
-    //    "- Hold [Ctrl] and click on a column's name to pin/unpin it.\n" +
-    //    "- Hold [Ctrl] and click on a row to pin/unpin it.\n" +
-    //    "  - You can pin multiple rows.\n" +
-    //    "  - Pinned rows are unaffected by filters.";
     private readonly List<TableRecord> _tables;
     private TableRecord? _activeTable;
     private readonly FloatMenu _tableDefsMenu;
@@ -64,7 +56,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         bool wordWrap = Text.WordWrap;
         Text.WordWrap = false;
 
-        Rect toolbarRect = rect.CutByX(_ToolbarWidth);
+        Rect toolbarRect = rect.CutByX(ToolbarWidth);
 
         // Border
         if (isRepaint) toolbarRect.DrawBorderRight(BorderColor);
@@ -75,7 +67,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         if (isRepaint) expandButtonRect.DrawBorderBottom(BorderColor);
 
         // "Open table" button
-        Rect openTableButtonRect = toolbarRect.CutByY(_ToolbarWidth);
+        Rect openTableButtonRect = toolbarRect.CutByY(ToolbarWidth);
         DrawOpenTableButton(openTableButtonRect);
         if (isRepaint) openTableButtonRect.DrawBorderBottom(BorderColor);
 
@@ -83,14 +75,14 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         // TODO:
         // - Add culling.
         // - Add reordering.
-        Rect tableListContentRect = new(0f, 0f, _ToolbarWidth, _tables.Count * _ToolbarWidth);
+        Rect tableListContentRect = new(0f, 0f, ToolbarWidth, _tables.Count * ToolbarWidth);
         using (new GUIScrollScope(toolbarRect, ref _tableListScrollPosition, tableListContentRect, false))
         {
             int tablesCount = _tables.Count;
             for (int i = 0; i < tablesCount; i++)
             {
                 TableRecord tableRecord = _tables[i];
-                Rect tableButtonRect = tableListContentRect.CutByY(_ToolbarWidth);
+                Rect tableButtonRect = tableListContentRect.CutByY(ToolbarWidth);
                 tableRecord.Draw(tableButtonRect);
             }
         }
@@ -107,7 +99,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         {
             rect
                 .HighlightLight()
-                .ContractedBy(_IconPadding)
+                .ContractedBy(IconPadding)
                 .DrawTextureFitted(TexButton.Plus)
                 .Tip(_openTableButtonTooltip);
         }

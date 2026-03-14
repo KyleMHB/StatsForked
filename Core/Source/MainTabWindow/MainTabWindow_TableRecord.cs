@@ -48,7 +48,7 @@ public sealed partial class MainTabWindow
 
                 rect
                     .Tip(_tooltip)
-                    .ContractedBy(_IconPadding)
+                    .ContractedBy(GUIStyles.MainTabWindow.IconPadding)
                     .DrawTextureFitted(_icon, _iconColor, _iconScale);
             }
 

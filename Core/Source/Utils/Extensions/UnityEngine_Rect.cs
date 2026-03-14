@@ -10,7 +10,6 @@ public static class UnityEngine_Rect
     internal static Rect CutByX(ref this Rect rect, float amount)
     {
         Rect result = rect with { width = amount };
-        // Changing "xMin" also auto corrects width. Changing "x" doesn't.
         rect.xMin += amount;
 
         return result;
@@ -20,7 +19,6 @@ public static class UnityEngine_Rect
     internal static Rect CutByY(ref this Rect rect, float amount)
     {
         Rect result = rect with { height = amount };
-        // Changing "yMin" also auto corrects height. Changing "y" doesn't.
         rect.yMin += amount;
 
         return result;

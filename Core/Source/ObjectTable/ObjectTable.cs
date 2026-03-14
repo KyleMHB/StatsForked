@@ -10,29 +10,21 @@ namespace Stats;
 
 internal abstract class ObjectTable
 {
-    //public abstract TableFilterMode FilterMode { get; set; }
-
-    //public abstract event Action<TableFilterMode> OnFilterModeChange;
-
     internal abstract void Draw(Rect rect);
 
     internal abstract void ToggleFiltersTab();
-
-    //public abstract void ResetFilters();
-
-    //public abstract void ToggleFilterMode();
-
-    //public enum TableFilterMode
-    //{
-    //    AND = 0,
-    //    OR = 1,
-    //}
 }
 
 // Lack of abstraction/leaking abstractions is (almost) intentional here.
 // Because abstractions are not free.
 internal sealed partial class ObjectTable<TObject> : ObjectTable
 {
+    //private static readonly TipSignal Manual =
+    //    "- Hold (LMB) and move mouse cursor to scroll horizontally.\n" +
+    //    "- Hold [Ctrl] and click on a column's name to pin/unpin it.\n" +
+    //    "- Hold [Ctrl] and click on a row to pin/unpin it.\n" +
+    //    "  - You can pin multiple rows.\n" +
+    //    "  - Pinned rows are unaffected by filters.";
     // Filtering
     //public override TableFilterMode FilterMode
     //{
@@ -98,8 +90,6 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     private Vector2 _contentSize;
 
     // Drawing
-    private static readonly Color _columnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
-    private static readonly Color _pinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
     private Vector2 _scrollPosition;
     private Action? _guiAction;
 

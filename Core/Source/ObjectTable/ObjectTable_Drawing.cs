@@ -31,7 +31,7 @@ internal sealed partial class ObjectTable<TObject>
         {
             toolbarRect
                 .HighlightLight()
-                .DrawBorderBottom(MainTabWindow.BorderColor);
+                .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
         }
 
         //if (showSettingsMenu)
@@ -84,7 +84,7 @@ internal sealed partial class ObjectTable<TObject>
             ReadOnlyListSegment<Column> pinnedColumns = new(_columns, 0, pinnedColumnsCount);
             DrawPart(leftPartRect, pinnedColumns, leftPartRect.x, pinnedRows, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
             // Separator line
-            if (isRepaint) leftPartRect.DrawBorderRight(MainTabWindow.BorderColor);
+            if (isRepaint) leftPartRect.DrawBorderRight(GUIStyles.MainTabWindow.BorderColor);
         }
 
         // Right part
@@ -135,7 +135,7 @@ internal sealed partial class ObjectTable<TObject>
                 DrawColumn(columnRect, column, pinnedRows, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
                 if (Event.current.IsRepaint() && i < lastColumnIndex)
                 {
-                    columnRect.DrawBorderRight(_columnSeparatorLineColor);
+                    columnRect.DrawBorderRight(GUIStyles.Table.ColumnSeparatorLineColor);
                 }
             }
 
@@ -211,7 +211,7 @@ internal sealed partial class ObjectTable<TObject>
         {
             headersRect
                 .Highlight()
-                .DrawBorderBottom(MainTabWindow.BorderColor);
+                .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
         }
 
         // Pinned rows
@@ -221,8 +221,8 @@ internal sealed partial class ObjectTable<TObject>
             if (isRepaint)
             {
                 pinnedRowsRect
-                    .HighlightStrong(_pinnedRowsBGColor)
-                    .DrawBorderBottom(MainTabWindow.BorderColor);
+                    .HighlightStrong(GUIStyles.Table.PinnedRowsBGColor)
+                    .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
             }
         }
 

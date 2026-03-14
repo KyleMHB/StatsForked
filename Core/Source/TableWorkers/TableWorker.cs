@@ -23,7 +23,5 @@ public abstract class TableWorker<TObject> : TableWorker
     public abstract event Action<TObject> OnObjectAdded;
     public abstract event Action<TObject> OnObjectRemoved;
 
-    protected TableWorker(TableDef tableDef) : base(tableDef)
-    {
-    }
+    protected TableWorker(TableDef tableDef) : base(tableDef) { }
 }
