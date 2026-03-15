@@ -4,9 +4,10 @@ using Stats.ColumnWorkers;
 using Stats.TableWorkers;
 using Stats.Utils;
 using Stats.Utils.Extensions;
-using Stats.Widgets_Legacy;
+using Stats.Utils.Widgets;
 using UnityEngine;
 using Verse;
+using static Stats.GUIStyles.Table;
 
 namespace Stats;
 
@@ -45,7 +46,7 @@ internal sealed partial class ObjectTable<TObject>
         {
             ColumnDef def = worker.Def;
             Widget titleWidget = def.TitleWidget;
-            Vector2 titleWidgetSize = titleWidget.GetSize();
+            Vector2 titleWidgetSize = titleWidget.Size;
 
             Worker = worker;
             _titleWidget = titleWidget;
@@ -70,7 +71,7 @@ internal sealed partial class ObjectTable<TObject>
                 titleRect.x += widthDiff / 2f;
             }
 
-            _titleWidget.Draw(titleRect, Vector2.zero);
+            _titleWidget.Draw(titleRect);
 
             Event currentEvent = Event.current;
             bool mouseIsOverRect = Mouse.IsOver(rect);
@@ -90,7 +91,7 @@ internal sealed partial class ObjectTable<TObject>
 
                 if (_parent._currentlyResizedColumn == this && currentEvent.type == EventType.MouseDrag)
                 {
-                    Width = Mathf.Max(Width + currentEvent.delta.x, _parent._rowHeight);
+                    Width = Mathf.Max(Width + currentEvent.delta.x, RowHeight);
                 }
             }
 

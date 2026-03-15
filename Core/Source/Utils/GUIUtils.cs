@@ -12,12 +12,20 @@ public static class GUIUtils
 {
     internal static float Opacity = 1f;
 
+    private static readonly GUIContent _guiContent = new();
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Color AdjustedForGUIOpacity(this Color color)
     {
         color.a *= Opacity;
 
         return color;
+    }
+
+    public static Vector2 CalcSize(this string text, GUIStyle style)
+    {
+        _guiContent.text = text.StripTags();
+        return style.CalcSize(_guiContent);
     }
 
     public static Rect Label(this Rect rect, string text, GUIStyle style)

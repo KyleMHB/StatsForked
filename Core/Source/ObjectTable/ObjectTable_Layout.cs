@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static Stats.GUIStyles.Table;
 
 namespace Stats;
 
@@ -31,9 +32,9 @@ internal sealed partial class ObjectTable<TObject>
         }
         float contentWidth = pinnedColumnsWidth + unpinnedColumnsWidth;
 
-        float pinnedRowsHeight = _pinnedRowsCount * _rowHeight;
-        float unpinnedRowsHeight = UnpinnedRowsCount * _rowHeight;
-        float contentHeight = _rowHeight + pinnedRowsHeight + unpinnedRowsHeight;
+        float pinnedRowsHeight = _pinnedRowsCount * RowHeight;
+        float unpinnedRowsHeight = UnpinnedRowsCount * RowHeight;
+        float contentHeight = RowHeight + pinnedRowsHeight + unpinnedRowsHeight;
 
         _pinnedRowsHeight = pinnedRowsHeight;
         _unpinnedRowsHeight = unpinnedRowsHeight;

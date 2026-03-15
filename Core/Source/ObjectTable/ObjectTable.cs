@@ -83,7 +83,6 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     private Column? _currentlyReorderedColumn;
 
     // Layout
-    private readonly float _rowHeight;
     private float _pinnedRowsHeight;
     private float _unpinnedRowsHeight;
     private float _pinnedColumnsWidth;
@@ -232,7 +231,6 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         // Finalize
         _objects = objects;
         _rows = rows;
-        _rowHeight = Text.LineHeight + GUIStyles.TableCell.PadVer * 2f;
         _columns = columns;
         if (columns.Count > 0)
         {

@@ -5,6 +5,7 @@ using Stats.Utils.Extensions;
 using Stats.Utils.GUIScopes;
 using UnityEngine;
 using Verse;
+using static Stats.GUIStyles.Table;
 
 namespace Stats;
 
@@ -57,9 +58,9 @@ internal sealed partial class ObjectTable<TObject>
         Vector2 scrollPosition = _scrollPosition;
         Rect viewportRect = new(rect.position, viewportSize);
 
-        float firstVisibleUnpinnedRowY = -scrollPosition.y % _rowHeight;
-        int scrolledUnpinnedRowsCount = Mathf.FloorToInt(scrollPosition.y / _rowHeight);
-        int viewportRowCapacity = Mathf.CeilToInt((viewportHeight - _rowHeight - _pinnedRowsHeight) / _rowHeight);
+        float firstVisibleUnpinnedRowY = -scrollPosition.y % RowHeight;
+        int scrolledUnpinnedRowsCount = Mathf.FloorToInt(scrollPosition.y / RowHeight);
+        int viewportRowCapacity = Mathf.CeilToInt((viewportHeight - RowHeight - _pinnedRowsHeight) / RowHeight);
         int visibleUnpinnedRowsCount = Math.Min(UnpinnedRowsCount - scrolledUnpinnedRowsCount, viewportRowCapacity);
         if (visibleUnpinnedRowsCount < 0)
         {
@@ -102,7 +103,7 @@ internal sealed partial class ObjectTable<TObject>
             if (Event.current.type == EventType.MouseDrag && _currentlyReorderedColumn == null && _currentlyResizedColumn == null)
             {
                 // Register mouse-drag only below headers to not interfere with them.
-                viewportRect.yMin += _rowHeight + _pinnedRowsHeight;
+                viewportRect.yMin += RowHeight + _pinnedRowsHeight;
                 if (Mouse.IsOver(viewportRect))
                 {
                     _scrollPosition.x = Mathf.Max(_scrollPosition.x + Event.current.delta.x * -1f, 0f);
@@ -152,7 +153,7 @@ internal sealed partial class ObjectTable<TObject>
     {
         bool shouldDrawCells = column.Worker.ShouldDrawCells;
 
-        Rect headerRect = rect.CutByY(_rowHeight);
+        Rect headerRect = rect.CutByY(RowHeight);
         using (new GUIClipScope(headerRect))
         {
             headerRect.x = 0f;
@@ -181,7 +182,7 @@ internal sealed partial class ObjectTable<TObject>
 
     private void DrawColumnCells(Rect rect, Column column, Span<int> rows)
     {
-        rect.height = _rowHeight;
+        rect.height = RowHeight;
         ColumnWorker<TObject> columnWorker = column.Worker;
         int rowsCount = rows.Length;
         for (int i = 0; i < rowsCount; i++)
@@ -206,7 +207,7 @@ internal sealed partial class ObjectTable<TObject>
         bool isRepaint = Event.current.type == EventType.Repaint;
 
         // Headers
-        Rect headersRect = rect.CutByY(_rowHeight);
+        Rect headersRect = rect.CutByY(RowHeight);
         if (isRepaint)
         {
             headersRect
@@ -229,7 +230,7 @@ internal sealed partial class ObjectTable<TObject>
         // Unpinned rows
         if (visibleUnpinnedRows.Length > 0)
         {
-            Rect rowRect = new(rect.x, rect.y, rect.width, _rowHeight + visibleUnpinnedRowsOffsetY);
+            Rect rowRect = new(rect.x, rect.y, rect.width, RowHeight + visibleUnpinnedRowsOffsetY);
             for (int i = 0; i < visibleUnpinnedRows.Length; i++)
             {
                 //int row = visibleUnpinnedRows[i];
@@ -246,7 +247,7 @@ internal sealed partial class ObjectTable<TObject>
                 }
 
                 rowRect.y = rowRect.yMax;
-                rowRect.height = _rowHeight;
+                rowRect.height = RowHeight;
                 if (rowRect.yMax > rect.yMax)
                 {
                     rowRect.height -= rowRect.yMax - rect.yMax;

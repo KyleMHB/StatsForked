@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using RimWorld;
-using Stats.Widgets_Legacy;
+using Stats.Utils.Widgets;
 using Verse;
 
 namespace Stats;
@@ -13,8 +13,8 @@ public class ColumnDef : Def
     public string? labelKey;
     public string? descriptionKey;
     public ColumnTitleXmlNode? title;
-    public Widget TitleWidget => title?.ToWidget() ?? new Label(LabelCap);
 #pragma warning disable CS8618
+    internal Widget TitleWidget => field ??= title?.ToWidget() ?? new Label(LabelCap);
     public Type workerClass;
 #pragma warning restore CS8618
 
@@ -59,19 +59,19 @@ public sealed class ColumnTitleXmlNode
         }
     }
 
-    public Widget ToWidget()
+    internal Widget ToWidget()
     {
         if (_elements.Count == 1)
         {
             return _elements[0].ToWidget();
         }
 
-        return new HorizontalContainer(_elements.Select(elem => elem.ToWidget()).ToList(), 2f);
+        return new HorContainer(_elements.Select(elem => elem.ToWidget()).ToArray(), 2f);
     }
 
     private abstract class Element
     {
-        public abstract Widget ToWidget();
+        internal abstract Widget ToWidget();
     }
 
     private sealed class TextElement : Element
@@ -83,7 +83,7 @@ public sealed class ColumnTitleXmlNode
             _text = text;
         }
 
-        public override Widget ToWidget()
+        internal override Widget ToWidget()
         {
             return new Label(_text);
         }
@@ -100,16 +100,9 @@ public sealed class ColumnTitleXmlNode
         }
 #pragma warning restore CS8618
 
-        public override Widget ToWidget()
+        internal override Widget ToWidget()
         {
-            Widget widget = new InlineTexture(Def.Texture, Def.scale);
-
-            if (Def.color != null)
-            {
-                widget = widget.Color(Def.color.Value);
-            }
-
-            return widget;
+            return new InlineIcon(Def.Texture, Def.color, Def.scale);
         }
     }
 }

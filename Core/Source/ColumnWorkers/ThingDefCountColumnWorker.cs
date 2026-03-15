@@ -3,13 +3,16 @@ using System.Linq;
 using Stats.ColumnWorkers.Cells;
 using Stats.Filters;
 using Stats.TableWorkers;
-using Stats.Widgets_Legacy;
+using Stats.Utils.Extensions;
+using Stats.Utils.Widgets;
+using UnityEngine;
 
 namespace Stats.ColumnWorkers;
 
 public abstract class ThingDefCountColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefCountTableCell
 {
     public override ColumnType Type => ColumnType.Number;
+    public override bool ShouldDrawCells => Event.current.IsRepaint() || Event.current.IsLMB();
 
     protected abstract IEnumerable<Verse.ThingDef?> GetTypeFieldFilterOptions(TableWorker tableWorker);
 
@@ -26,7 +29,7 @@ public abstract class ThingDefCountColumnWorker<TObject, TCell> : ColumnWorker<T
             .Select<Verse.ThingDef?, NTMFilterOption<Verse.ThingDef?>>(
                 thingDef => thingDef == null
                     ? new()
-                    : new(thingDef, thingDef.LabelCap, new ThingDefIcon(thingDef))
+                    : new(thingDef, thingDef.LabelCap, new Widgets_Legacy.ThingDefIcon(thingDef))
             );
         Filter thingDefFilter = new OTMFilter<Verse.ThingDef?>((int row) => this[row].ThingDef, thingDefFilterOptions);
         int CompareByThingDefLabel(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].ThingDefLabel, this[row2].ThingDefLabel);

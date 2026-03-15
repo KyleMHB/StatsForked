@@ -1,6 +1,6 @@
 ﻿using System;
 using Stats.Filters;
-using Stats.Widgets_Legacy;
+using Stats.Utils.Widgets;
 
 namespace Stats.ColumnWorkers;
 

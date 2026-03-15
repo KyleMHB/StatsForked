@@ -9,7 +9,7 @@ public class IconDef : Def
     public string path;
 #pragma warning restore CS8618
     public float scale = 1f;
-    public Color? color;
+    public Color color = Color.white;
 #pragma warning disable CS8618
     public Texture2D Texture { get; private set; }
 #pragma warning restore CS8618

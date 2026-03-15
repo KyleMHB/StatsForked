@@ -23,7 +23,7 @@ public readonly struct NumberTableCell : INumberTableCell
         if (value != 0m)
         {
             _text = value.ToString(formatString);
-            Width = Text.CalcSize(_text).x;
+            Width = _text.CalcSize(GUIStyles.TableCell.NumberNoPad).x;
         }
     }
 
