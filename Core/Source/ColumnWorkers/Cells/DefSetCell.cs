@@ -5,21 +5,21 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers.Cells;
 
-public interface IDefSetTableCell : ITableCell
+public interface IDefSetCell : ICell
 {
     public IReadOnlyCollection<Verse.Def>? Value { get; }
     public string? Text { get; }
 }
 
 // TODO: Since all rows are now of constant height, we need to refactor this cell.
-public readonly struct DefSetTableCell : IDefSetTableCell
+public readonly struct DefSetCell : IDefSetCell
 {
     public float Width { get; }
     public bool IsRefreshable => false;
     public IReadOnlyCollection<Verse.Def>? Value { get; }
     public string? Text { get; }
 
-    public DefSetTableCell(IReadOnlyCollection<Verse.Def> value)
+    public DefSetCell(IReadOnlyCollection<Verse.Def> value)
     {
         Value = value;
         if (value.Count > 0)

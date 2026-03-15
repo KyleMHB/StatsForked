@@ -7,11 +7,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class LeatherAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountTableCell>
+public sealed class LeatherAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override ThingDefCountTableCell MakeCell(DefBasedObject @object)
+    protected override ThingDefCountCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -25,7 +25,7 @@ public sealed class LeatherAmountColumnWorker(ColumnDef columnDef) : ThingDefCou
                 {
                     decimal cellValue = leatherAmount.ToDecimal(0);
 
-                    return new ThingDefCountTableCell(leatherDef, cellValue);
+                    return new ThingDefCountCell(leatherDef, cellValue);
                 }
             }
         }

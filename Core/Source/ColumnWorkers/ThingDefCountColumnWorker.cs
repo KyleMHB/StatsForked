@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers;
 
-public abstract class ThingDefCountColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefCountTableCell
+public abstract class ThingDefCountColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefCountCell
 {
     public override ColumnType Type => ColumnType.Number;
     public override bool ShouldDrawCells => Event.current.IsRepaint() || Event.current.IsLMB();

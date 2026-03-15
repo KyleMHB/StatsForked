@@ -6,11 +6,11 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class TrainabilityColumnWorker(ColumnDef columnDef) : DefColumnWorker<DefBasedObject, DefTableCell>
+public sealed class TrainabilityColumnWorker(ColumnDef columnDef) : DefColumnWorker<DefBasedObject, DefCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override DefTableCell MakeCell(DefBasedObject @object)
+    protected override DefCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -18,7 +18,7 @@ public sealed class TrainabilityColumnWorker(ColumnDef columnDef) : DefColumnWor
 
             if (trainability != null)
             {
-                return new DefTableCell(trainability);
+                return new DefCell(trainability);
             }
         }
 

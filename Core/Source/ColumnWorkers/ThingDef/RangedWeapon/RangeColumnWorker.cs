@@ -4,11 +4,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class RangeColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class RangeColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -18,7 +18,7 @@ public sealed class RangeColumnWorker(ColumnDef columnDef) : NumberColumnWorker<
             {
                 decimal cellValue = verbProps.range.ToDecimal(0);
 
-                return new NumberTableCell(cellValue);
+                return new NumberCell(cellValue);
             }
         }
 

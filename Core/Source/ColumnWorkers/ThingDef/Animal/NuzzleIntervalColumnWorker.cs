@@ -4,11 +4,11 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class NuzzleIntervalColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class NuzzleIntervalColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -18,7 +18,7 @@ public sealed class NuzzleIntervalColumnWorker(ColumnDef columnDef) : NumberColu
             {
                 decimal cellValue = raceProps.nuzzleMtbHours.ToDecimal(1);
 
-                return new NumberTableCell(cellValue, "0.0 h");
+                return new NumberCell(cellValue, "0.0 h");
             }
         }
 

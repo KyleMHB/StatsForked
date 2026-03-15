@@ -6,14 +6,14 @@ using Verse;
 
 namespace Stats.ColumnWorkers.Cells;
 
-public interface IThingDefCountTableCell : ITableCell
+public interface IThingDefCountCell : ICell
 {
     public Verse.ThingDef? ThingDef { get; }
     public string? ThingDefLabel { get; }
     public decimal Count { get; }
 }
 
-public readonly struct ThingDefCountTableCell : IThingDefCountTableCell
+public readonly struct ThingDefCountCell : IThingDefCountCell
 {
     public float Width { get; }
     public bool IsRefreshable => false;
@@ -26,7 +26,7 @@ public readonly struct ThingDefCountTableCell : IThingDefCountTableCell
     private readonly float _iconWidth;
     private readonly TipSignal _tooltip;
 
-    public ThingDefCountTableCell(Verse.ThingDef thingDef, decimal count)
+    public ThingDefCountCell(Verse.ThingDef thingDef, decimal count)
     {
         ThingDef = thingDef;
         ThingDefLabel = thingDef.label;

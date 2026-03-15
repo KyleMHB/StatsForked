@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers;
 
-public abstract class BooleanColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IBooleanTableCell
+public abstract class BooleanColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IBooleanCell
 {
     public override ColumnType Type => ColumnType.Boolean;
 
@@ -37,7 +37,7 @@ public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
 
     public override void DrawCell(Rect rect, int row)
     {
-        BooleanTableCell.Draw(rect, _values[row]);
+        BooleanCell.Draw(rect, _values[row]);
     }
 
     public override float GetWidth(List<int> rows)

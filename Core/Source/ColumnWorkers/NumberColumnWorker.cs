@@ -5,7 +5,7 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers;
 
-public abstract class NumberColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, INumberTableCell
+public abstract class NumberColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, INumberCell
 {
     public override ColumnType Type => ColumnType.Number;
 

@@ -6,11 +6,11 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Apparel;
 
-public sealed class LayersColumnWorker(ColumnDef columnDef) : DefSetColumnWorker<DefBasedObject, DefSetTableCell>
+public sealed class LayersColumnWorker(ColumnDef columnDef) : DefSetColumnWorker<DefBasedObject, DefSetCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override DefSetTableCell MakeCell(DefBasedObject @object)
+    protected override DefSetCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -18,7 +18,7 @@ public sealed class LayersColumnWorker(ColumnDef columnDef) : DefSetColumnWorker
 
             if (apparelProps != null)
             {
-                return new DefSetTableCell(apparelProps.layers);
+                return new DefSetCell(apparelProps.layers);
             }
         }
 

@@ -6,11 +6,11 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Milkable;
 
-public sealed class MilkAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountTableCell>
+public sealed class MilkAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override ThingDefCountTableCell MakeCell(DefBasedObject @object)
+    protected override ThingDefCountCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -18,7 +18,7 @@ public sealed class MilkAmountColumnWorker(ColumnDef columnDef) : ThingDefCountC
 
             if (milkableCompProps != null)
             {
-                return new ThingDefCountTableCell(milkableCompProps.milkDef, milkableCompProps.milkAmount);
+                return new ThingDefCountCell(milkableCompProps.milkDef, milkableCompProps.milkAmount);
             }
         }
 

@@ -4,11 +4,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.Milkable;
 
-public sealed class MilkPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class MilkPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -18,7 +18,7 @@ public sealed class MilkPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWo
             {
                 decimal cellValue = ((float)milkableCompProps.milkAmount / milkableCompProps.milkIntervalDays).ToDecimal(1);
 
-                return new NumberTableCell(cellValue, "0.0/d");
+                return new NumberCell(cellValue, "0.0/d");
             }
         }
 

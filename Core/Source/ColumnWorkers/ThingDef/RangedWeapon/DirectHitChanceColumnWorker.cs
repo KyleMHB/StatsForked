@@ -4,11 +4,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class DirectHitChanceColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class DirectHitChanceColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -20,7 +20,7 @@ public sealed class DirectHitChanceColumnWorker(ColumnDef columnDef) : NumberCol
                     ? (100f / GenRadial.NumCellsInRadius(verbProps.ForcedMissRadius)).ToDecimal(1)
                     : 100m;
 
-                return new NumberTableCell(cellValue, "0.0\\%");
+                return new NumberCell(cellValue, "0.0\\%");
             }
         }
 

@@ -5,11 +5,11 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class LeatherPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class LeatherPerDayColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -24,7 +24,7 @@ public sealed class LeatherPerDayColumnWorker(ColumnDef columnDef) : NumberColum
                     float leatherAmount = thingDef.GetStatValuePerceived(StatDefOf.LeatherAmount);
                     decimal cellValue = (leatherAmount / growthTime).ToDecimal(1);
 
-                    return new NumberTableCell(cellValue, "0.0/d");
+                    return new NumberCell(cellValue, "0.0/d");
                 }
             }
         }

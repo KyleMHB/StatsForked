@@ -6,7 +6,7 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers;
 
-public abstract class DefSetColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IDefSetTableCell
+public abstract class DefSetColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IDefSetCell
 {
     public override ColumnType Type => ColumnType.String;
 

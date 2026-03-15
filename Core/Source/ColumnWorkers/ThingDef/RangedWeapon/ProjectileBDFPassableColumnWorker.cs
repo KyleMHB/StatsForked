@@ -4,11 +4,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class ProjectileBDFPassableColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class ProjectileBDFPassableColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -18,7 +18,7 @@ public sealed class ProjectileBDFPassableColumnWorker(ColumnDef columnDef) : Num
             {
                 decimal cellValue = (100f * defaultProjDamageDef.buildingDamageFactorPassable).ToDecimal(0);
 
-                return new NumberTableCell(cellValue, "0\\%");
+                return new NumberCell(cellValue, "0\\%");
             }
         }
 

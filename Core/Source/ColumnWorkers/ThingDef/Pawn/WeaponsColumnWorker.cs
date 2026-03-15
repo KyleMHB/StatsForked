@@ -6,11 +6,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class WeaponsColumnWorker(ColumnDef columnDef) : ThingDefSetColumnWorker<DefBasedObject, ThingDefSetTableCell>
+public sealed class WeaponsColumnWorker(ColumnDef columnDef) : ThingDefSetColumnWorker<DefBasedObject, ThingDefSetCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override ThingDefSetTableCell MakeCell(DefBasedObject @object)
+    protected override ThingDefSetCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -18,7 +18,7 @@ public sealed class WeaponsColumnWorker(ColumnDef columnDef) : ThingDefSetColumn
 
             if (weapons != null)
             {
-                return new ThingDefSetTableCell(weapons);
+                return new ThingDefSetCell(weapons);
             }
         }
 

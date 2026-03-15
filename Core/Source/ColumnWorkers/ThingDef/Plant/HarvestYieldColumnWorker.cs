@@ -7,11 +7,11 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers.ThingDef.Plant;
 
-public sealed class HarvestYieldColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountTableCell>
+public sealed class HarvestYieldColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override ThingDefCountTableCell MakeCell(DefBasedObject @object)
+    protected override ThingDefCountCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -21,7 +21,7 @@ public sealed class HarvestYieldColumnWorker(ColumnDef columnDef) : ThingDefCoun
             {
                 decimal yield = Mathf.CeilToInt(plantProps.harvestYield);
 
-                return new ThingDefCountTableCell(plantProps.harvestedThingDef, yield);
+                return new ThingDefCountCell(plantProps.harvestedThingDef, yield);
             }
         }
 

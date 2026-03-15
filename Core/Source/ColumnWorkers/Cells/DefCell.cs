@@ -3,20 +3,20 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers.Cells;
 
-public interface IDefTableCell : ITableCell
+public interface IDefCell : ICell
 {
     public Verse.Def? Value { get; }
     public string? Text { get; }
 }
 
-public readonly struct DefTableCell : IDefTableCell
+public readonly struct DefCell : IDefCell
 {
     public float Width { get; }
     public bool IsRefreshable => false;
     public Verse.Def? Value { get; }
     public string? Text { get; }
 
-    public DefTableCell(Verse.Def value)
+    public DefCell(Verse.Def value)
     {
         Value = value;
         Text = value.LabelCap;

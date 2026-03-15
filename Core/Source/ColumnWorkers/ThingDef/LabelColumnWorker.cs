@@ -82,7 +82,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
     //    }
     //}
 
-    public readonly struct LabelCell : ITableCell
+    public readonly struct LabelCell : ICell
     {
         public float Width { get; }
         public bool IsRefreshable => false;

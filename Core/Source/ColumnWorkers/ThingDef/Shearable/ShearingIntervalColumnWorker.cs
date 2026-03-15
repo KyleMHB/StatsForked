@@ -3,11 +3,11 @@ using Stats.ColumnWorkers.Cells;
 
 namespace Stats.ColumnWorkers.ThingDef.Shearable;
 
-public sealed class ShearingIntervalColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class ShearingIntervalColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -15,7 +15,7 @@ public sealed class ShearingIntervalColumnWorker(ColumnDef columnDef) : NumberCo
 
             if (shearableCompProps != null)
             {
-                return new NumberTableCell(shearableCompProps.shearIntervalDays, "0 d");
+                return new NumberCell(shearableCompProps.shearIntervalDays, "0 d");
             }
         }
 

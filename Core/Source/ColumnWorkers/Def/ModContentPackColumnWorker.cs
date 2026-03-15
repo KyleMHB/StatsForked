@@ -42,7 +42,7 @@ public sealed class ModContentPackColumnWorker(ColumnDef columnDef) : ColumnWork
         return [valueField];
     }
 
-    public readonly struct ModContentPackCell : ITableCell
+    public readonly struct ModContentPackCell : ICell
     {
         public float Width { get; }
         public bool IsRefreshable => false;

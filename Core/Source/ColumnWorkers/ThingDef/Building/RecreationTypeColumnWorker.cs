@@ -6,11 +6,11 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Building;
 
-public sealed class RecreationTypeColumnWorker(ColumnDef columnDef) : DefColumnWorker<DefBasedObject, DefTableCell>
+public sealed class RecreationTypeColumnWorker(ColumnDef columnDef) : DefColumnWorker<DefBasedObject, DefCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override DefTableCell MakeCell(DefBasedObject @object)
+    protected override DefCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -18,7 +18,7 @@ public sealed class RecreationTypeColumnWorker(ColumnDef columnDef) : DefColumnW
 
             if (joyKind != null)
             {
-                return new DefTableCell(joyKind);
+                return new DefCell(joyKind);
             }
         }
 

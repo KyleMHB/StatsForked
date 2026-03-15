@@ -4,11 +4,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.PowerTrader;
 
-public sealed class PowerOutputPerFuelColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class PowerOutputPerFuelColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -21,7 +21,7 @@ public sealed class PowerOutputPerFuelColumnWorker(ColumnDef columnDef) : Number
                 float fuelConsumptionRate = refuelableCompProps.fuelConsumptionRate;
                 decimal cellValue = (powerOutput / fuelConsumptionRate).ToDecimal(0);
 
-                return new NumberTableCell(cellValue, "0 W/u");
+                return new NumberCell(cellValue, "0 W/u");
             }
         }
 

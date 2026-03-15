@@ -4,11 +4,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.Plant;
 
-public sealed class NutritionPerHarvestColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class NutritionPerHarvestColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -19,7 +19,7 @@ public sealed class NutritionPerHarvestColumnWorker(ColumnDef columnDef) : Numbe
                 float productNutrition = plantProps.harvestedThingDef.GetStatValuePerceived(StatDefOf.Nutrition);
                 float nutritionPerHarvest = plantProps.harvestYield * productNutrition;
 
-                return new NumberTableCell(nutritionPerHarvest.ToDecimal(2), "0.00");
+                return new NumberCell(nutritionPerHarvest.ToDecimal(2), "0.00");
             }
         }
 

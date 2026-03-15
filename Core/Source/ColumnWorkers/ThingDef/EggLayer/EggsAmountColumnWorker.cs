@@ -7,11 +7,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.EggLayer;
 
-public sealed class EggsAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountTableCell>
+public sealed class EggsAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override ThingDefCountTableCell MakeCell(DefBasedObject @object)
+    protected override ThingDefCountCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -22,7 +22,7 @@ public sealed class EggsAmountColumnWorker(ColumnDef columnDef) : ThingDefCountC
                 Verse.ThingDef eggDef = eggLayerCompProps.GetAnyEggDef();
                 decimal count = eggLayerCompProps.eggCountRange.Average.ToDecimal(0);
 
-                return new ThingDefCountTableCell(eggDef, count);
+                return new ThingDefCountCell(eggDef, count);
             }
         }
 

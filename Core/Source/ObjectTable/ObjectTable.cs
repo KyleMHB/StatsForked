@@ -92,6 +92,9 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     private Vector2 _scrollPosition;
     private Action? _guiAction;
 
+    // Toolbar
+    private readonly Toolbar _toolbar;
+
     public ObjectTable(TableWorker<TObject> tableWorker)
     {
         //tableWorker.OnObjectAdded += AddObject;
@@ -236,6 +239,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         {
             _pinnedColumnsCount = 1;
         }
+        _toolbar = new Toolbar(this);
         //SortColumn = columns[0];
         //ColumnsTabWidget = new VerticalContainer(columnSettingsTabRows);
         //Filters = filters;

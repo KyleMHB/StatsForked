@@ -7,11 +7,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class ProductsColumnWorker(ColumnDef columnDef) : ThingDefSetColumnWorker<DefBasedObject, ThingDefSetTableCell>
+public sealed class ProductsColumnWorker(ColumnDef columnDef) : ThingDefSetColumnWorker<DefBasedObject, ThingDefSetCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override ThingDefSetTableCell MakeCell(DefBasedObject @object)
+    protected override ThingDefSetCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -19,7 +19,7 @@ public sealed class ProductsColumnWorker(ColumnDef columnDef) : ThingDefSetColum
 
             if (products.Count > 0)
             {
-                return new ThingDefSetTableCell(products);
+                return new ThingDefSetCell(products);
             }
         }
 

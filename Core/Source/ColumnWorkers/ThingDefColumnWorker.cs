@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers;
 
-public abstract class ThingDefColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefTableCell
+public abstract class ThingDefColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefCell
 {
     public override ColumnType Type => ColumnType.String;
     public override bool ShouldDrawCells => Event.current.IsRepaint() || Event.current.IsLMB();

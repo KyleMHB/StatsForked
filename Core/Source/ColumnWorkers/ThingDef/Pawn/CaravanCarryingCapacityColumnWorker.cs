@@ -5,11 +5,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.Pawn;
 
-public sealed class CaravanCarryingCapacityColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class CaravanCarryingCapacityColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -19,7 +19,7 @@ public sealed class CaravanCarryingCapacityColumnWorker(ColumnDef columnDef) : N
             {
                 decimal cellValue = (raceProps.baseBodySize * MassUtility.MassCapacityPerBodySize).ToDecimal(0);
 
-                return new NumberTableCell(cellValue, "0 kg");
+                return new NumberCell(cellValue, "0 kg");
             }
         }
 

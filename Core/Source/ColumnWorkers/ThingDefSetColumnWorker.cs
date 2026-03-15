@@ -7,7 +7,7 @@ using Stats.Widgets_Legacy;
 
 namespace Stats.ColumnWorkers;
 
-public abstract class ThingDefSetColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefSetTableCell
+public abstract class ThingDefSetColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefSetCell
 {
     public override ColumnType Type => ColumnType.String;
 

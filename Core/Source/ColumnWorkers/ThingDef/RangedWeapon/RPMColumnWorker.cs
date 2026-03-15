@@ -4,11 +4,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class RPMColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class RPMColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -19,7 +19,7 @@ public sealed class RPMColumnWorker(ColumnDef columnDef) : NumberColumnWorker<De
                 // Reminder: This is not IRL RPM.
                 decimal cellValue = (60f / verbProps.ticksBetweenBurstShots.TicksToSeconds()).ToDecimal(0);
 
-                return new NumberTableCell(cellValue, "0 rpm");
+                return new NumberCell(cellValue, "0 rpm");
             }
         }
 

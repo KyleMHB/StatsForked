@@ -4,17 +4,17 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.Animal;
 
-public sealed class AverageLitterSizeColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class AverageLitterSizeColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef and { race: not null })
         {
             decimal cellValue = AnimalProductionUtility.OffspringRange(thingDef).Average.ToDecimal(1);
 
-            return new NumberTableCell(cellValue, "0.0");
+            return new NumberCell(cellValue, "0.0");
         }
 
         return default;

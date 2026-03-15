@@ -3,11 +3,11 @@ using Stats.ColumnWorkers.Cells;
 
 namespace Stats.ColumnWorkers.ThingDef.Plant;
 
-public sealed class MinGrowingSkillToSowColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class MinGrowingSkillToSowColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -15,7 +15,7 @@ public sealed class MinGrowingSkillToSowColumnWorker(ColumnDef columnDef) : Numb
 
             if (plantProps != null)
             {
-                return new NumberTableCell(plantProps.sowMinSkill);
+                return new NumberCell(plantProps.sowMinSkill);
             }
         }
 

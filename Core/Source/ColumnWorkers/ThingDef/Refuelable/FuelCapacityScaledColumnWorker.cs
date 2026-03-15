@@ -74,7 +74,7 @@ public sealed class FuelCapacityScaledColumnWorker(ColumnDef columnDef) : ThingD
         return Mathf.CeilToInt(refuelableCompProps.fuelCapacity / refuelableCompProps.FuelMultiplierCurrentDifficulty);
     }
 
-    public readonly struct TableCell : IThingDefCountTableCell
+    public readonly struct TableCell : IThingDefCountCell
     {
         public Verse.ThingDef? ThingDef => _innerCell.ThingDef;
         public string ThingDefLabel => _innerCell.ThingDefLabel;
@@ -84,12 +84,12 @@ public sealed class FuelCapacityScaledColumnWorker(ColumnDef columnDef) : ThingD
 
         public readonly CompProperties_Refuelable? RefuelableCompProps;
 
-        private readonly ThingDefCountTableCell _innerCell;
+        private readonly ThingDefCountCell _innerCell;
 
         public TableCell(Verse.ThingDef fuelType, decimal fuelCapacity, CompProperties_Refuelable refuelableCompProps)
         {
             RefuelableCompProps = refuelableCompProps;
-            _innerCell = new ThingDefCountTableCell(fuelType, fuelCapacity);
+            _innerCell = new ThingDefCountCell(fuelType, fuelCapacity);
         }
 
         public void Draw(Rect rect)

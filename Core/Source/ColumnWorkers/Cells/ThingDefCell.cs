@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers.Cells;
 
-public interface IThingDefTableCell : ITableCell
+public interface IThingDefCell : ICell
 {
     public Verse.ThingDef? Value { get; }
     public string? Text { get; }
 }
 
-public readonly struct ThingDefTableCell : IThingDefTableCell
+public readonly struct ThingDefCell : IThingDefCell
 {
     public float Width { get; }
     public bool IsRefreshable => false;
@@ -21,7 +21,7 @@ public readonly struct ThingDefTableCell : IThingDefTableCell
     private readonly Widget? _icon;
     private readonly float _iconWidth;
 
-    public ThingDefTableCell(Verse.ThingDef value)
+    public ThingDefCell(Verse.ThingDef value)
     {
         Value = value;
         Text = value.LabelCap;

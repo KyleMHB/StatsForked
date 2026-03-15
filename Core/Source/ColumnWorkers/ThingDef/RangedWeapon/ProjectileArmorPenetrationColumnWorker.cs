@@ -4,11 +4,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.RangedWeapon;
 
-public sealed class ProjectileArmorPenetrationColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class ProjectileArmorPenetrationColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -20,13 +20,13 @@ public sealed class ProjectileArmorPenetrationColumnWorker(ColumnDef columnDef) 
             {
                 decimal cellValue = (defaultProjProps.GetArmorPenetration(null) * 100f).ToDecimal(0);
 
-                return new NumberTableCell(cellValue, formatString);
+                return new NumberCell(cellValue, formatString);
             }
             else if (defaultProjProps == null && verbProps?.beamDamageDef != null)
             {
                 decimal cellValue = (verbProps.beamDamageDef.defaultArmorPenetration * 100f).ToDecimal(0);
 
-                return new NumberTableCell(cellValue, formatString);
+                return new NumberCell(cellValue, formatString);
             }
         }
 

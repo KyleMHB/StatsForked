@@ -5,6 +5,11 @@ namespace Stats;
 
 public static class GUIStyles
 {
+    private static readonly GUIStyle _baseStyle = new(Verse.Text.fontStyles[1])
+    {
+        wordWrap = false
+    };
+
     internal static class Global
     {
         internal const float Pad = 10f;
@@ -35,6 +40,23 @@ public static class GUIStyles
         internal static readonly Color PinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
     }
 
+    internal static class TableToolbar
+    {
+        internal const float Height = Text.LineHeight + TableCell.PadVer * 2f;
+        internal const float Gap = Global.PadSm;
+    }
+
+    internal static class TableToolbarButton
+    {
+        internal const float IconWidth = TableToolbar.Height;
+        internal const float PadHor = Global.Pad;
+        internal static readonly GUIStyle LabelStyle = new(_baseStyle)
+        {
+            alignment = TextAnchor.MiddleLeft,
+            padding = new RectOffset((int)TableToolbar.Gap, (int)PadHor, 0, 0),
+        };
+    }
+
     public static class TableCell
     {
         public static readonly GUIStyle String;
@@ -52,21 +74,19 @@ public static class GUIStyles
 
         static TableCell()
         {
-            GUIStyle baseStyle = new(Verse.Text.fontStyles[1]);
-            baseStyle.wordWrap = false;
             RectOffset padding = new(_PadHor, _PadHor, _PadVer, _PadVer);
 
-            StringNoPad = new GUIStyle(baseStyle);
+            StringNoPad = new GUIStyle(_baseStyle);
             StringNoPad.alignment = TextAnchor.LowerLeft;
             String = new GUIStyle(StringNoPad);
             String.padding = padding;
 
-            NumberNoPad = new GUIStyle(baseStyle);
+            NumberNoPad = new GUIStyle(_baseStyle);
             NumberNoPad.alignment = TextAnchor.LowerRight;
             Number = new GUIStyle(NumberNoPad);
             Number.padding = padding;
 
-            BooleanNoPad = new GUIStyle(baseStyle);
+            BooleanNoPad = new GUIStyle(_baseStyle);
             BooleanNoPad.alignment = TextAnchor.LowerCenter;
             Boolean = new GUIStyle(BooleanNoPad);
             Boolean.padding = padding;

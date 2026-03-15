@@ -4,18 +4,18 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers.Cells;
 
-public interface IThingDefSetTableCell : ITableCell
+public interface IThingDefSetCell : ICell
 {
     public IReadOnlyCollection<Verse.ThingDef?>? Value { get; }
 }
 
-public readonly struct ThingDefSetTableCell : IThingDefSetTableCell
+public readonly struct ThingDefSetCell : IThingDefSetCell
 {
     public float Width { get; }
     public bool IsRefreshable => false;
     public IReadOnlyCollection<Verse.ThingDef?>? Value { get; }
 
-    public ThingDefSetTableCell(IReadOnlyCollection<Verse.ThingDef?> value)
+    public ThingDefSetCell(IReadOnlyCollection<Verse.ThingDef?> value)
     {
         Value = value;
     }

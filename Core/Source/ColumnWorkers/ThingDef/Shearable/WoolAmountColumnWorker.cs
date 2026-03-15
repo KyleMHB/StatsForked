@@ -6,11 +6,11 @@ using Stats.TableWorkers;
 
 namespace Stats.ColumnWorkers.ThingDef.Shearable;
 
-public sealed class WoolAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountTableCell>
+public sealed class WoolAmountColumnWorker(ColumnDef columnDef) : ThingDefCountColumnWorker<DefBasedObject, ThingDefCountCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override ThingDefCountTableCell MakeCell(DefBasedObject @object)
+    protected override ThingDefCountCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -18,7 +18,7 @@ public sealed class WoolAmountColumnWorker(ColumnDef columnDef) : ThingDefCountC
 
             if (shearableCompProps != null)
             {
-                return new ThingDefCountTableCell(shearableCompProps.woolDef, shearableCompProps.woolAmount);
+                return new ThingDefCountCell(shearableCompProps.woolDef, shearableCompProps.woolAmount);
             }
         }
 

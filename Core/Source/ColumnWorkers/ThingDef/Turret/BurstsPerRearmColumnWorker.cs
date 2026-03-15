@@ -5,11 +5,11 @@ using Stats.Utils.Extensions;
 
 namespace Stats.ColumnWorkers.ThingDef.Turret;
 
-public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -33,7 +33,7 @@ public sealed class BurstsPerRearmColumnWorker(ColumnDef columnDef) : NumberColu
                     {
                         decimal cellValue = (refuelableCompProps.fuelCapacity / fuelPerBurst).ToDecimal(0);
 
-                        return new NumberTableCell(cellValue);
+                        return new NumberCell(cellValue);
                     }
                 }
             }

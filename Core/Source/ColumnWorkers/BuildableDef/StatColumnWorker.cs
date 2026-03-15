@@ -94,7 +94,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
     private StatRequest _cellTooltipOwner;
     private TipSignal? _cellTooltip;
 
-    public readonly struct StatCell : ITableCell
+    public readonly struct StatCell : ICell
     {
         public float Width { get; }
         public bool IsRefreshable => StatRequest.Thing != null;

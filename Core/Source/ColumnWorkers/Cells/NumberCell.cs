@@ -4,12 +4,12 @@ using Verse;
 
 namespace Stats.ColumnWorkers.Cells;
 
-public interface INumberTableCell : ITableCell
+public interface INumberCell : ICell
 {
     public decimal Value { get; }
 }
 
-public readonly struct NumberTableCell : INumberTableCell
+public readonly struct NumberCell : INumberCell
 {
     public float Width { get; }
     public bool IsRefreshable => false;
@@ -17,7 +17,7 @@ public readonly struct NumberTableCell : INumberTableCell
 
     private readonly string? _text;
 
-    public NumberTableCell(decimal value, string formatString = "")
+    public NumberCell(decimal value, string formatString = "")
     {
         Value = value;
         if (value != 0m)

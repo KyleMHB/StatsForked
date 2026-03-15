@@ -2,7 +2,7 @@
 
 namespace Stats.ColumnWorkers.Cells;
 
-public interface ITableCell
+public interface ICell
 {
     public float Width { get; }
     public bool IsRefreshable { get; }

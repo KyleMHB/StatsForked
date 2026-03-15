@@ -3,11 +3,11 @@ using Stats.ColumnWorkers.Cells;
 
 namespace Stats.ColumnWorkers.ThingDef.Apparel.Reloadable;
 
-public sealed class MaxChargesCountColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberTableCell>
+public sealed class MaxChargesCountColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
     public override ColumnDef Def => columnDef;
 
-    protected override NumberTableCell MakeCell(DefBasedObject @object)
+    protected override NumberCell MakeCell(DefBasedObject @object)
     {
         if (@object.Def is Verse.ThingDef thingDef)
         {
@@ -15,7 +15,7 @@ public sealed class MaxChargesCountColumnWorker(ColumnDef columnDef) : NumberCol
 
             if (reloadableCompProperties != null)
             {
-                return new NumberTableCell(reloadableCompProperties.maxCharges);
+                return new NumberCell(reloadableCompProperties.maxCharges);
             }
         }
 

@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace Stats.ColumnWorkers.Cells;
 
-public interface IBooleanTableCell : ITableCell
+public interface IBooleanCell : ICell
 {
     public bool Value { get; }
 }
 
-public readonly struct BooleanTableCell : IBooleanTableCell
+public readonly struct BooleanCell : IBooleanCell
 {
     private static readonly Texture2D _textureTrue = Verse.Widgets.CheckboxOnTex;
 
@@ -17,7 +17,7 @@ public readonly struct BooleanTableCell : IBooleanTableCell
     public bool IsRefreshable => false;
     public bool Value { get; }
 
-    public BooleanTableCell(bool value)
+    public BooleanCell(bool value)
     {
         Value = value;
     }

@@ -49,7 +49,7 @@ public sealed class SizeColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBase
         return [valueField];
     }
 
-    public readonly struct SizeCell : ITableCell
+    public readonly struct SizeCell : ICell
     {
         public float Width { get; }
         public bool IsRefreshable => false;

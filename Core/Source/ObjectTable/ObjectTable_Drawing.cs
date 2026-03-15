@@ -27,13 +27,8 @@ internal sealed partial class ObjectTable<TObject>
         }
 
         // Toolbar
-        Rect toolbarRect = rect.CutByY(30f);
-        if (isRepaint)
-        {
-            toolbarRect
-                .HighlightLight()
-                .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
-        }
+        Rect toolbarRect = rect.CutByY(GUIStyles.TableToolbar.Height);
+        _toolbar.Draw(toolbarRect);
 
         //if (showSettingsMenu)
         //{

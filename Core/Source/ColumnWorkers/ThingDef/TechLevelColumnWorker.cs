@@ -41,7 +41,7 @@ public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<De
         return [valueField];
     }
 
-    public readonly struct TechLevelCell : ITableCell
+    public readonly struct TechLevelCell : ICell
     {
         public float Width { get; }
         public bool IsRefreshable => false;
