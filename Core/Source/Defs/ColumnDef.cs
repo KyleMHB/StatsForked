@@ -13,10 +13,11 @@ public class ColumnDef : Def
     public string? labelKey;
     public string? descriptionKey;
     public ColumnTitleXmlNode? title;
-#pragma warning disable CS8618
     internal Widget TitleWidget => field ??= title?.ToWidget() ?? new Label(LabelCap);
+#pragma warning disable CS8618
     public Type workerClass;
 #pragma warning restore CS8618
+    public List<string> tags = [];
 
     public override void ResolveReferences()
     {
@@ -30,6 +31,19 @@ public class ColumnDef : Def
         if (descriptionKey?.Length > 0 && string.IsNullOrEmpty(description))
         {
             description = descriptionKey.Translate();
+        }
+    }
+
+    public override IEnumerable<string> ConfigErrors()
+    {
+        foreach (string item in base.ConfigErrors())
+        {
+            yield return item;
+        }
+
+        if (tags.Count == 0)
+        {
+            yield return "no tags.";
         }
     }
 }

@@ -34,7 +34,10 @@ public abstract class TableWorker<TObject> : TableWorker
         {
             ColumnDef columnDef = columnDefs[i];
             Type workerClass = columnDef.workerClass;
-            if (typeof(ColumnWorker<TObject>).IsAssignableFrom(workerClass))
+            if (
+                typeof(ColumnWorker<TObject>).IsAssignableFrom(workerClass)
+                && Def.columnTags.Any(columnDef.tags.Contains)
+            )
             {
                 compatibleColumns.Add(columnDef);
             }

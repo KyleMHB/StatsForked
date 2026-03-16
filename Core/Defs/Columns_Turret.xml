@@ -7,6 +7,9 @@
         <label>is manned</label>
         <title><IsTurretManned/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.HasInteractionCellColumnWorker</workerClass>
+        <tags>
+            <li>Thing_Turret</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -14,6 +17,9 @@
         <title><Accuracy/><Shoot/></title>
         <stat>ShootingAccuracyTurret</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_Turret</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -21,6 +27,9 @@
         <label>rearm cost</label>
         <title><Reload/><Resources/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Refuelable.FuelCapacityScaledColumnWorker</workerClass>
+        <tags>
+            <li>Thing_Turret</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -28,6 +37,9 @@
         <label>bursts per rearm</label>
         <title><Reload/><Shoot/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Turret.BurstsPerRearmColumnWorker</workerClass>
+        <tags>
+            <li>Thing_Turret</li>
+        </tags>
     </Stats.ColumnDef>
 
 </Defs>

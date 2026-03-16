@@ -15,6 +15,7 @@ public static class GUIUtils
     private static readonly GUIContent _guiContent = new();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete]
     internal static Color AdjustedForGUIOpacity(this Color color)
     {
         color.a *= Opacity;
@@ -51,6 +52,7 @@ public static class GUIUtils
 
     internal static Rect DrawTexture(this Rect rect, Texture2D texture, Color color, ScaleMode scaleMode = ScaleMode.StretchToFill)
     {
+        color.a *= GUI.color.a;
         GUI.DrawTexture(
             rect,
             texture,

@@ -6,6 +6,9 @@
         <defName>Thing_Label</defName>
         <label>thing</label>
         <workerClass>Stats.ColumnWorkers.ThingDef.LabelColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -13,6 +16,9 @@
         <title>$$$</title>
         <stat>MarketValue</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -20,6 +26,9 @@
         <title>HP</title>
         <stat>MaxHitPoints</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -27,24 +36,36 @@
         <title><Damage_Heat/></title>
         <stat>Flammability</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Thing_Mass</defName>
         <stat>Mass</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Thing_ContentSource</defName>
         <labelKey>Stat_Source_Label</labelKey>
         <workerClass>Stats.ColumnWorkers.Def.ModContentPackColumnWorker</workerClass>
+        <tags>
+            <li>Def</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Thing_TechLevel</defName>
         <label>tech level</label>
         <workerClass>Stats.ColumnWorkers.ThingDef.TechLevelColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
     </Stats.ColumnDef>
 
     <!-- <Stats.ColumnDef>
@@ -64,6 +85,9 @@
         <defName>Thing_Beauty</defName>
         <stat>Beauty</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">

@@ -17,6 +17,7 @@ public class TableDef : Def
     public Type workerClass;
     public TableWorker Worker => field ??= (TableWorker)Activator.CreateInstance(workerClass, this);
 #pragma warning restore CS8618
+    public List<string> columnTags = [];
 
     public override void ResolveReferences()
     {
@@ -30,6 +31,19 @@ public class TableDef : Def
         if (iconPath?.Length > 0)
         {
             Icon = ContentFinder<Texture2D>.Get(iconPath);
+        }
+    }
+
+    public override IEnumerable<string> ConfigErrors()
+    {
+        foreach (string item in base.ConfigErrors())
+        {
+            yield return item;
+        }
+
+        if (columnTags.Count == 0)
+        {
+            yield return "no column tags.";
         }
     }
 }
