@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Stats.ColumnWorkers;
 using Stats.TableWorkers;
@@ -6,6 +7,7 @@ using Stats.Utils;
 using Stats.Utils.Extensions;
 using Stats.Utils.Widgets;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Verse;
 using static Stats.GUIStyles.Table;
 
@@ -31,6 +33,37 @@ internal sealed partial class ObjectTable<TObject>
         columns.Insert(_pinnedColumnsCount, column);
     }
 
+    private void AddColumn(ColumnDef columnDef)
+    {
+        Type workerClass = columnDef.workerClass;
+        ColumnWorker<TObject> columnWorker = (ColumnWorker<TObject>)Activator.CreateInstance(workerClass, columnDef);
+        Column column = new(columnWorker, _tableWorker, this);
+        _columns.Add(column);
+        columnWorker.NotifyRowAdded(_objects);
+    }
+
+    private void RemoveColumn(int index)
+    {
+        if (index < _pinnedColumnsCount)
+        {
+            _pinnedColumnsCount--;
+        }
+
+        _columns.RemoveAt(index);
+    }
+
+    private void RemoveColumn(Column column)
+    {
+        int index = _columns.IndexOf(column);
+        RemoveColumn(index);
+    }
+
+    private void RemoveColumn(ColumnDef columnDef)
+    {
+        int index = _columns.FindIndex(column => column.Worker.Def == columnDef);
+        RemoveColumn(index);
+    }
+
     private sealed class Column
     {
         public float Width;
@@ -41,6 +74,7 @@ internal sealed partial class ObjectTable<TObject>
         private readonly float _titleWidgetWidth;
         private readonly TipSignal _tooltip;
         private readonly ObjectTable<TObject> _parent;
+        private readonly FloatMenu _menu;
 
         public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTable<TObject> parent)
         {
@@ -53,6 +87,9 @@ internal sealed partial class ObjectTable<TObject>
             _titleWidgetWidth = titleWidgetSize.x;
             _tooltip = $"<i>{def.LabelCap}</i>\n\n{def.description}";
             _parent = parent;
+            _menu = new FloatMenu([
+                new FloatMenuOption("Remove",()=> parent.RemoveColumn(this))
+            ]);
         }
 
         public void DrawHeaderCell(Rect rect)
@@ -135,10 +172,17 @@ internal sealed partial class ObjectTable<TObject>
                 _parent._currentlyReorderedColumn = null;
             }
 
-            // Pinning
-            if (rect.ButtonGhostly() && currentEvent.control)
+            // Pinning/Menu
+            if (rect.ButtonGhostly())
             {
-                HandlePinning();
+                if (currentEvent.control && Event.current.IsLMB())
+                {
+                    HandlePinning();
+                }
+                else if (Event.current.IsRMB())
+                {
+                    _menu.Open();
+                }
             }
 
             rect.Tip(_tooltip);

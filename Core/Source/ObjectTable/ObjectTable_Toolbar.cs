@@ -1,6 +1,12 @@
-﻿using Stats.Utils;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using Stats.Utils;
 using Stats.Utils.Extensions;
 using UnityEngine;
+using Verse;
+using ButtonStyle = Stats.GUIStyles.TableToolbarButton;
+using Style = Stats.GUIStyles.TableToolbar;
 
 namespace Stats;
 
@@ -12,12 +18,17 @@ internal sealed partial class ObjectTable<TObject>
         private readonly ToolbarButton _filtersButton;
         private readonly ToolbarButton _addColumnButton;
         private readonly ToolbarButton _columnPresetButton;
+        private FloatMenu ColumnsMenu => field ??= MakeColumnsMenu();
+        private static readonly FieldInfo _floatMenuOptionIconTexField =
+            typeof(FloatMenuOption)
+            .GetField("iconTex", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public Toolbar(ObjectTable<TObject> parent)
         {
             _parent = parent;
             _filtersButton = new ToolbarButton(Assets.FilterTex, "Filters", 0.7f);
             _addColumnButton = new ToolbarButton(Verse.TexButton.Add, "Add Column");
+            // TODO: Do we really need this feature if plan to save opened tables?
             _columnPresetButton = new ToolbarButton(Verse.TexButton.Paste, "Apply Preset", 0.8f);
         }
 
@@ -30,15 +41,53 @@ internal sealed partial class ObjectTable<TObject>
                     .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
             }
 
-            _filtersButton.Draw(rect.CutByX(_filtersButton.Width));
+            bool filterButtonWasClicked = _filtersButton.Draw(rect.CutByX(_filtersButton.Width));
+            if (filterButtonWasClicked) _parent.ToggleFiltersTab();
 
-            rect.xMin += GUIStyles.TableToolbar.Gap;
+            rect.xMin += Style.Gap;
 
-            _addColumnButton.Draw(rect.CutByX(_addColumnButton.Width));
+            bool addColumnButtonWasClicked = _addColumnButton.Draw(rect.CutByX(_addColumnButton.Width));
+            if (addColumnButtonWasClicked) ColumnsMenu.Open();
 
-            rect.xMin += GUIStyles.TableToolbar.Gap;
+            rect.xMin += Style.Gap;
 
             _columnPresetButton.Draw(rect.CutByX(_columnPresetButton.Width));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private FloatMenu MakeColumnsMenu()
+        {
+            List<ColumnDef> compatibleColumns = _parent._tableWorker.CompatibleColumns;
+            int compatibleColumnsCount = compatibleColumns.Count;
+            List<FloatMenuOption> columnsMenuOptions = new(compatibleColumnsCount);
+            for (int i = 0; i < compatibleColumnsCount; i++)
+            {
+                ColumnDef columnDef = compatibleColumns[i];
+                FloatMenuOption menuOption = new(
+                    columnDef.LabelCap,
+                    null,
+                    _parent._columns.Find(column => column.Worker.Def == columnDef) == null ? null : Verse.Widgets.CheckboxOnTex,
+                    Color.white
+                );
+                menuOption.tooltip = columnDef.description;
+                menuOption.action = () =>
+                {
+                    if (_parent._columns.Find(column => column.Worker.Def == columnDef) != null)
+                    {
+                        _parent.RemoveColumn(columnDef);
+                        _floatMenuOptionIconTexField.SetValue(menuOption, null);
+                    }
+                    else
+                    {
+                        _parent.AddColumn(columnDef);
+                        _floatMenuOptionIconTexField.SetValue(menuOption, Verse.Widgets.CheckboxOnTex);
+                    }
+                };
+                columnsMenuOptions.Add(menuOption);
+            }
+            columnsMenuOptions.SortBy(option => option.Label);
+
+            return new FloatMenu(columnsMenuOptions);
         }
     }
 
@@ -55,8 +104,8 @@ internal sealed partial class ObjectTable<TObject>
             _icon = icon;
             _iconScale = iconScale;
             _label = label;
-            float labelWidth = label.CalcSize(GUIStyles.TableToolbarButton.LabelStyle).x;
-            Width = GUIStyles.TableToolbarButton.PadHor + GUIStyles.TableToolbarButton.IconWidth + labelWidth;
+            float labelWidth = label.CalcSize(ButtonStyle.LabelStyle).x;
+            Width = ButtonStyle.PadHor + ButtonStyle.IconWidth + labelWidth;
         }
 
         public bool Draw(Rect rect)
@@ -65,24 +114,16 @@ internal sealed partial class ObjectTable<TObject>
             {
                 Rect contentRect = rect;
 
-                contentRect.xMin += GUIStyles.TableToolbarButton.PadHor;
+                contentRect.xMin += ButtonStyle.PadHor;
 
                 contentRect
-                    .CutByX(GUIStyles.TableToolbarButton.IconWidth)
+                    .CutByX(ButtonStyle.IconWidth)
                     .DrawTextureFitted(_icon, _iconScale);
 
-                contentRect.Label(_label, GUIStyles.TableToolbarButton.LabelStyle);
+                contentRect.Label(_label, ButtonStyle.LabelStyle);
             }
 
             return rect.ButtonGhostly();
         }
     }
-
-    //private sealed class ToggleFiltersTabToolBarButton
-    //{
-    //    public void Draw(Rect rect)
-    //    {
-
-    //    }
-    //}
 }

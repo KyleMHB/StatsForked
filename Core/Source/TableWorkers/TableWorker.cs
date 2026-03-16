@@ -1,27 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
+using Stats.ColumnWorkers;
+using Verse;
 
 namespace Stats.TableWorkers;
 
 public abstract class TableWorker
 {
-    public TableDef TableDef { get; }
+    public TableDef Def { get; }
     internal abstract ObjectTable TableWidget { get; }
 
-    protected TableWorker(TableDef tableDef)
+    protected TableWorker(TableDef def)
     {
-        TableDef = tableDef;
+        Def = def;
     }
 }
 
 public abstract class TableWorker<TObject> : TableWorker
 {
-    // We don't want to create every table widget on the start of the game.
     internal sealed override ObjectTable TableWidget => new ObjectTable<TObject>(this);
+    internal readonly List<ColumnDef> CompatibleColumns;
     public abstract List<TObject> InitialObjects { get; }
 
     public abstract event Action<TObject> OnObjectAdded;
     public abstract event Action<TObject> OnObjectRemoved;
 
-    protected TableWorker(TableDef tableDef) : base(tableDef) { }
+    protected TableWorker(TableDef def) : base(def)
+    {
+        List<ColumnDef> compatibleColumns = [];
+        List<ColumnDef> columnDefs = DefDatabase<ColumnDef>.AllDefsListForReading;
+        int columnDefsCount = columnDefs.Count;
+        for (int i = 0; i < columnDefsCount; i++)
+        {
+            ColumnDef columnDef = columnDefs[i];
+            Type workerClass = columnDef.workerClass;
+            if (typeof(ColumnWorker<TObject>).IsAssignableFrom(workerClass))
+            {
+                compatibleColumns.Add(columnDef);
+            }
+        }
+        CompatibleColumns = compatibleColumns;
+    }
 }

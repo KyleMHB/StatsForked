@@ -2,7 +2,7 @@
 
 internal sealed partial class ObjectTable<TObject>
 {
-    internal override void ToggleFiltersTab()
+    private void ToggleFiltersTab()
     {
     }
     //private void HandleFilterChange(Filter filter)
