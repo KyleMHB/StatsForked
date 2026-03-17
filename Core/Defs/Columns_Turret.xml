@@ -8,7 +8,7 @@
         <title><IsTurretManned/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.HasInteractionCellColumnWorker</workerClass>
         <tags>
-            <li>Thing_Turret</li>
+            <li>Thing_IsTurret</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -18,7 +18,7 @@
         <stat>ShootingAccuracyTurret</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
         <tags>
-            <li>Thing_Turret</li>
+            <li>Thing_IsTurret</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -28,7 +28,7 @@
         <title><Reload/><Resources/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Refuelable.FuelCapacityScaledColumnWorker</workerClass>
         <tags>
-            <li>Thing_Turret</li>
+            <li>Thing_IsTurret</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -38,7 +38,7 @@
         <title><Reload/><Shoot/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Turret.BurstsPerRearmColumnWorker</workerClass>
         <tags>
-            <li>Thing_Turret</li>
+            <li>Thing_IsTurret</li>
         </tags>
     </Stats.ColumnDef>
 

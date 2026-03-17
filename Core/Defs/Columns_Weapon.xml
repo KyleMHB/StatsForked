@@ -7,6 +7,9 @@
         <title>DPS</title>
         <stat>MeleeWeapon_AverageDPS</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMeleeWeapon</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -14,6 +17,9 @@
         <title>AP</title>
         <stat>MeleeWeapon_AverageArmorPenetration</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMeleeWeapon</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -23,8 +29,7 @@
         <title><Projectile/><RangedWeaponDamage/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.ProjectileDamageColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -35,8 +40,7 @@
         <title><Projectile/><StoppingPower/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.ProjectileStoppingPowerColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -47,8 +51,7 @@
         <descriptionKey>ArmorPenetrationExplanation</descriptionKey>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.ProjectileArmorPenetrationColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -59,8 +62,7 @@
         <title>RPM</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.RPMColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -71,8 +73,7 @@
         <title><Shoot/><Projectile/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.BurstShotCountColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -82,8 +83,7 @@
         <descriptionKey>Stat_Thing_Weapon_Range_Desc</descriptionKey>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.RangeColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -93,8 +93,7 @@
         <stat>AccuracyTouch</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.GunStatColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -104,8 +103,7 @@
         <stat>AccuracyShort</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.GunStatColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -115,8 +113,7 @@
         <stat>AccuracyMedium</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.GunStatColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -126,8 +123,7 @@
         <stat>AccuracyLong</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.GunStatColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -137,8 +133,7 @@
         <stat>RangedWeapon_Cooldown</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.GunStatColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -149,8 +144,7 @@
         <title><Time/><DirectHit/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.AimingTimeColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -161,8 +155,7 @@
         <title><Projectile/><RangedWeaponDamage/><BuildingPassable/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.ProjectileBDFPassableColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -173,8 +166,7 @@
         <title><Projectile/><RangedWeaponDamage/><BuildingImpassable/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.ProjectileBDFImpassableColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -185,8 +177,7 @@
         <title>%<DirectHit/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.DirectHitChanceColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -197,8 +188,7 @@
         <descriptionKey>Stat_Thing_Weapon_MissRadius_Desc</descriptionKey>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.MissRadiusColumnWorker</workerClass>
         <tags>
-            <li>Thing_RangedWeapon</li>
-            <li>Thing_Turret</li>
+            <li>Thing_IsRangedWeapon</li>
         </tags>
     </Stats.ColumnDef>
 

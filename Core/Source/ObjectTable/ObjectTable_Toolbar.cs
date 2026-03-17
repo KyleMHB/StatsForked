@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Stats.Utils;
 using Stats.Utils.Extensions;
@@ -18,7 +17,7 @@ internal sealed partial class ObjectTable<TObject>
         private readonly ToolbarButton _filtersButton;
         private readonly ToolbarButton _addColumnButton;
         private readonly ToolbarButton _columnPresetButton;
-        private FloatMenu ColumnsMenu => field ??= MakeColumnsMenu();
+        private ColumnsFloatMenu ColumnsMenu => field ??= MakeColumnsMenu();
 
         public Toolbar(ObjectTable<TObject> parent)
         {
@@ -27,6 +26,16 @@ internal sealed partial class ObjectTable<TObject>
             _addColumnButton = new ToolbarButton(Verse.TexButton.Add, "Add Column");
             // TODO: Do we really need this feature if plan to save opened tables?
             _columnPresetButton = new ToolbarButton(Verse.TexButton.Paste, "Apply Preset", 0.8f);
+        }
+
+        public void NotifyColumnAdded(Column column)
+        {
+            ColumnsMenu.NotifyColumnAdded(column);
+        }
+
+        public void NotifyColumnRemoved(Column column)
+        {
+            ColumnsMenu.NotifyColumnRemoved(column);
         }
 
         public void Draw(Rect rect)
@@ -52,7 +61,7 @@ internal sealed partial class ObjectTable<TObject>
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private FloatMenu MakeColumnsMenu()
+        private ColumnsFloatMenu MakeColumnsMenu()
         {
             List<ColumnDef> compatibleColumns = _parent._tableWorker.CompatibleColumns;
             int compatibleColumnsCount = compatibleColumns.Count;
@@ -60,59 +69,106 @@ internal sealed partial class ObjectTable<TObject>
             for (int i = 0; i < compatibleColumnsCount; i++)
             {
                 ColumnDef columnDef = compatibleColumns[i];
-                MyFloatMenuOption menuOption = new(
-                    columnDef.LabelCap,
-                    null,
-                    Verse.Widgets.CheckboxOnTex,
-                    _parent._columns.Find(column => column.Worker.Def == columnDef) == null ? Color.white with { a = 0f } : Color.white
-                );
-                menuOption.tooltip = columnDef.description;
-                menuOption.action = () =>
+                ColumnsFloatMenuOption menuOption = new(columnDef, _parent);
+                columnsMenuOptions.Add(menuOption);
+            }
+            columnsMenuOptions.SortBy(option => option.Label);
+
+            return new ColumnsFloatMenu(columnsMenuOptions);
+        }
+
+        private sealed class ColumnsFloatMenu : FloatMenu
+        {
+            public ColumnsFloatMenu(List<FloatMenuOption> options) : base(options) { }
+
+            public void NotifyColumnAdded(Column column)
+            {
+                ColumnDef columnDef = column.Worker.Def;
+                int optionsCount = options.Count;
+                for (int i = 0; i < optionsCount; i++)
                 {
-                    if (_parent._columns.Find(column => column.Worker.Def == columnDef) != null)
+                    ColumnsFloatMenuOption option = (ColumnsFloatMenuOption)options[i];
+                    if (option.ColumnDef == columnDef)
                     {
-                        _parent.RemoveColumn(columnDef);
-                        menuOption.iconColor.a = 0f;
+                        option.Select();
+                        break;
+                    }
+                }
+            }
+
+            public void NotifyColumnRemoved(Column column)
+            {
+                ColumnDef columnDef = column.Worker.Def;
+                int optionsCount = options.Count;
+                for (int i = 0; i < optionsCount; i++)
+                {
+                    ColumnsFloatMenuOption option = (ColumnsFloatMenuOption)options[i];
+                    if (option.ColumnDef == columnDef)
+                    {
+                        option.Unselect();
+                        break;
+                    }
+                }
+            }
+        }
+
+        private sealed class ColumnsFloatMenuOption : FloatMenuOption
+        {
+            public readonly ColumnDef ColumnDef;
+
+            public ColumnsFloatMenuOption(ColumnDef columnDef, ObjectTable<TObject> parent)
+                : base(columnDef.LabelCap, null, Verse.Widgets.CheckboxOnTex, Color.white)
+            {
+                ColumnDef = columnDef;
+                tooltip = columnDef.description;
+                action = () =>
+                {
+                    if (parent._columns.Find(column => column.Worker.Def == columnDef) != null)
+                    {
+                        parent.RemoveColumn(columnDef);
                     }
                     else
                     {
-                        _parent.AddColumn(columnDef);
-                        menuOption.iconColor.a = 1f;
+                        parent.AddColumn(columnDef);
                     }
                 };
+                if (parent._columns.Find(column => column.Worker.Def == columnDef) == null)
+                {
+                    Unselect();
+                }
                 if (columnDef.title != null)
                 {
-                    menuOption.extraPartOnGUI = rect =>
+                    extraPartOnGUI = rect =>
                     {
                         rect = rect.ContractedBy(0f, (rect.height - columnDef.TitleWidget.Size.y) / 2f);
                         columnDef.TitleWidget.Draw(rect);
                         return false;
                     };
-                    menuOption.extraPartWidth = columnDef.TitleWidget.Size.x + GUIStyles.Global.PadSm;
-                    menuOption.extraPartRightJustified = true;
+                    extraPartWidth = columnDef.TitleWidget.Size.x + GUIStyles.Global.PadSm;
+                    extraPartRightJustified = true;
                 }
-                columnsMenuOptions.Add(menuOption);
             }
-            columnsMenuOptions.SortBy(option => option.Label);
 
-            return new FloatMenu(columnsMenuOptions);
-        }
+            public void Select()
+            {
+                iconColor.a = 1f;
+            }
 
-        private sealed class MyFloatMenuOption : FloatMenuOption
-        {
-            public MyFloatMenuOption(string label, Action? action, Texture2D? iconTex, Color iconColor)
-                : base(label, action, iconTex, iconColor) { }
+            public void Unselect()
+            {
+                iconColor.a = 0f;
+            }
 
             public override bool DoGUI(Rect rect, bool colonistOrdering, FloatMenu floatMenu)
             {
                 bool wordWrap = Verse.Text.WordWrap;
                 Verse.Text.WordWrap = false;
 
-                bool flag = base.DoGUI(rect, colonistOrdering, floatMenu);
+                base.DoGUI(rect, colonistOrdering, floatMenu);
 
                 Verse.Text.WordWrap = wordWrap;
 
-                return flag;
+                return false;
             }
         }
     }

@@ -9,7 +9,8 @@
         <iconScale>1.5</iconScale>
         <workerClass>Stats.TableWorkers.ThingDef.RangedWeaponTableWorker</workerClass>
         <columnTags>
-            <li>Thing_RangedWeapon</li>
+            <li>Thing_IsRangedWeapon</li>
+            <li>Thing_IsMeleeWeapon</li>
             <li>Thing</li>
             <li>Def</li>
         </columnTags>
@@ -113,6 +114,13 @@
         <label>Buildings / Power / Generators</label>
         <iconPath>Things/Building/Power/ChemfuelPoweredGenerator</iconPath>
         <workerClass>Stats.TableWorkers.ThingDef.PowerGeneratorTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsPowerGenerator</li>
+            <li>Thing_IsRefuelable</li>
+            <li>Thing_IsBuilding</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
             <li>Building_PowerOutput</li>
@@ -342,6 +350,14 @@
         <label>Buildings / Turrets</label>
         <iconPath>Things/Building/Security/TurretMini_MenuIcon</iconPath>
         <workerClass>Stats.TableWorkers.ThingDef.TurretTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsTurret</li>
+            <li>Thing_IsRangedWeapon</li>
+            <li>Thing_IsBuilding</li>
+            <li>Thing_IsPowerConsumer</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
             <li MayRequire="CETeam.CombatExtended">Weapon_Caliber</li>

@@ -40,6 +40,7 @@ internal sealed partial class ObjectTable<TObject>
         Column column = new(columnWorker, _tableWorker, this);
         _columns.Add(column);
         columnWorker.NotifyRowAdded(_objects);
+        _toolbar.NotifyColumnAdded(column);
     }
 
     private void RemoveColumn(int index)
@@ -49,6 +50,7 @@ internal sealed partial class ObjectTable<TObject>
             _pinnedColumnsCount--;
         }
 
+        _toolbar.NotifyColumnRemoved(_columns[index]);
         _columns.RemoveAt(index);
     }
 
@@ -88,7 +90,7 @@ internal sealed partial class ObjectTable<TObject>
             _tooltip = $"<i>{def.LabelCap}</i>\n\n{def.description}";
             _parent = parent;
             _menu = new FloatMenu([
-                new FloatMenuOption("Remove",()=> parent.RemoveColumn(this))
+                new FloatMenuOption("Remove", () => parent.RemoveColumn(this))
             ]);
         }
 
