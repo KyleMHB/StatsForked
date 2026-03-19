@@ -56,6 +56,11 @@
         <iconPath>Things/Item/Equipment/WeaponMelee/Club</iconPath>
         <iconColor>(105,95,97)</iconColor>
         <workerClass>Stats.TableWorkers.ThingDef.MeleeWeaponTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsMeleeWeapon</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
             <li MayRequire="CETeam.CombatExtended">Weapon_MeleeDamageMin</li>
@@ -82,6 +87,13 @@
         <iconPath>Things/Pawn/Humanlike/Apparel/Duster/Duster</iconPath>
         <iconColor>(112,82,65)</iconColor>
         <workerClass>Stats.TableWorkers.ThingDef.ApparelTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsApparel</li>
+            <li>Thing_HasArmor</li>
+            <li>Thing_HasEnergyShield</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
             <li>Thing_ArmorRatingSharp</li>
@@ -143,6 +155,13 @@
         <iconPath>Things/Building/Joy/BilliardsTable_east</iconPath>
         <iconColor>(133,97,67)</iconColor>
         <workerClass>Stats.TableWorkers.ThingDef.RecreationalBuildingTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsBuilding</li>
+            <li>Thing_GivesJoy</li>
+            <li>Thing_IsPowerConsumer</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
             <li>Building_JoyGainFactor</li>
@@ -163,6 +182,15 @@
         <iconPath>Things/Building/Furniture/Bed/Bed_south</iconPath>
         <iconColor>(133,97,67)</iconColor>
         <workerClass>Stats.TableWorkers.ThingDef.BedTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsBed</li>
+            <li>Thing_IsBuilding</li>
+            <li>Thing_GivesComfort</li>
+            <li>Thing_IsMedical</li>
+            <li>Thing_IsPowerConsumer</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
             <li>Building_Comfort</li>
@@ -188,6 +216,13 @@
         <iconPath>Things/Building/Furniture/DiningChair_south</iconPath>
         <iconColor>(133,97,67)</iconColor>
         <workerClass>Stats.TableWorkers.ThingDef.ChairTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsBuilding</li>
+            <li>Thing_GivesComfort</li>
+            <li>Thing_IsPowerConsumer</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
             <li>Building_Comfort</li>
@@ -206,6 +241,12 @@
         <iconPath>StatsMod/UI/Icons/Art</iconPath>
         <iconColor>(132,135,132)</iconColor>
         <workerClass>Stats.TableWorkers.ThingDef.ArtBuildingTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsBuilding</li>
+            <li>Thing_IsPowerConsumer</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
             <li>Thing_Beauty</li>
@@ -222,6 +263,11 @@
         <label>Plants</label>
         <iconPath>Things/Plant/CottonPlant/CottonPlantA</iconPath>
         <workerClass>Stats.TableWorkers.ThingDef.PlantTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsPlant</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
             <li>Plant_MinGrowingSkillToSow</li>
@@ -241,11 +287,7 @@
             <li>Plant_IsTree</li>
             <li>Plant_CanBePlantedUnderRoof</li>
             <li>Plant_IsDestroyedOnHarvest</li>
-            <li>Thing_Beauty</li>
             <li>Plant_LifeSpan</li>
-            <li>Thing_MaxHitPoints</li>
-            <li>Thing_Flammability</li>
-            <li>Thing_ContentSource</li>
         </columns>
     </Stats.TableDef>
 
@@ -255,49 +297,23 @@
         <iconPath>Things/Pawn/Animal/Thrumbo/Thrumbo_east</iconPath>
         <iconScale>1.2</iconScale>
         <workerClass>Stats.TableWorkers.ThingDef.AnimalTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsAnimal</li>
+            <li>Thing_IsPawn</li>
+            <li>Thing_HasMeat</li>
+            <li>Thing_HasSkin</li>
+            <li>Thing_IsMilkable</li>
+            <li>Thing_LaysEggs</li>
+            <li>Thing_IsShearable</li>
+            <li>Thing_HasArmor</li>
+            <li>Thing_ConsumesFood</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
-            <!-- <li>Animal_Biomes</li> -->
-            <!-- Yield -->
             <li>Pawn_MeatAmount</li>
             <li>Pawn_LeatherAmount</li>
-            <!-- Yield/d -->
-            <li>Animal_MeatNutritionPerDay</li>
-            <li>Animal_LeatherPerDay</li>
-            <!-- Nutrition consumption -->
-            <li>Pawn_MaxNutrition</li>
-            <!-- TODO: Diet column -->
-            <!-- Handling -->
-            <li>Animal_MinimumHandlingSkill</li>
-            <li>Animal_Trainability</li>
-            <li>Animal_Wildness</li>
-            <li>Animal_IsBlockedByFences</li>
-            <!-- Reproduction -->
-            <li>Animal_AverageLitterSize</li>
-            <li>Animal_GestationTime</li>
-            <li>Animal_GrowthTime</li>
-            <li>Pawn_LifeExpectancy</li>
-            <!-- Combat: Offense -->
-            <li MayRequire="CETeam.CombatExtended">Pawn_MeleeArmorPenetrationSharp</li>
-            <li MayRequire="CETeam.CombatExtended">Pawn_MeleeArmorPenetrationBlunt</li>
-            <li MayRequire="CETeam.CombatExtended">Pawn_MeleeCritChance</li>
-            <!-- Combat: Defense -->
-            <li>Pawn_MeleeDodgeChance</li>
-            <li MayRequire="CETeam.CombatExtended">Pawn_MeleeParryChance</li>
-            <li>Thing_ArmorRatingSharp</li>
-            <li>Thing_ArmorRatingBlunt</li>
-            <li>Thing_ArmorRatingHeat</li>
-            <li MayRequire="CETeam.CombatExtended">Thing_ArmorRatingElectric</li>
-            <!-- Physique -->
-            <li>Pawn_ComfyTemperatureMin</li>
-            <li>Pawn_ComfyTemperatureMax</li>
-            <li>Pawn_ToxicResistance</li>
-            <li>Pawn_ToxicEnvironmentResistance</li>
-            <li>Pawn_MoveSpeed</li>
-            <!-- Misc -->
-            <li>Animal_NuzzleInterval</li>
-            <li>Thing_MarketValue</li>
-            <li>Thing_ContentSource</li>
         </columns>
     </Stats.TableDef>
 
@@ -306,6 +322,15 @@
         <label>Creatures / Mechanoids</label>
         <iconPath>Things/Pawn/Mechanoid/Centipede_east</iconPath>
         <workerClass>Stats.TableWorkers.ThingDef.MechanoidTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsMech</li>
+            <li>Thing_IsPawn</li>
+            <li>Thing_HasArmor</li>
+            <li>Thing_HasEnergyShield</li>
+            <li>Thing_CanUseWeapons</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
             <!-- General -->
@@ -326,8 +351,6 @@
             <li MayRequire="CETeam.CombatExtended">Pawn_MeleeArmorPenetrationBlunt</li>
             <li MayRequire="CETeam.CombatExtended">Pawn_MeleeCritChance</li>
             <!-- Combat: Defense -->
-            <li>Pawn_MeleeDodgeChance</li>
-            <li MayRequire="CETeam.CombatExtended">Pawn_MeleeParryChance</li>
             <li>Thing_ArmorRatingSharp</li>
             <li>Thing_ArmorRatingBlunt</li>
             <li>Thing_ArmorRatingHeat</li>
@@ -335,13 +358,7 @@
             <li MayRequire="Ludeon.RimWorld.Biotech">Mech_EMPResistance</li>
             <li>Thing_EnergyShieldCapacity</li>
             <li>Thing_EnergyShieldRechargeRate</li>
-            <!-- Caravan -->
-            <!-- TODO: VE compat -->
-            <li>Pawn_CaravanCarryingCapacity</li>
-            <!-- Misc -->
-            <li>Pawn_PsychicSensitivity</li>
             <li>Pawn_MoveSpeed</li>
-            <li>Thing_ContentSource</li>
         </columns>
     </Stats.TableDef>
 

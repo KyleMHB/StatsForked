@@ -7,6 +7,9 @@
         <title><Slaughter/><Meat/></title>
         <stat>MeatAmount</stat>
         <workerClass>Stats.ColumnWorkers.ThingDef.Pawn.MeatAmountColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasMeat</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -14,6 +17,9 @@
         <title><Slaughter/><Leather/></title>
         <stat>LeatherAmount</stat>
         <workerClass>Stats.ColumnWorkers.ThingDef.Pawn.LeatherAmountColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasSkin</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -21,6 +27,9 @@
         <title><Resistance/><Toxic/></title>
         <stat>ToxicResistance</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -28,6 +37,9 @@
         <title><Resistance/><ToxicEnvironment/></title>
         <stat>ToxicEnvironmentResistance</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -35,6 +47,9 @@
         <title><Nutrition/><Decrease/></title>
         <stat>MaxNutrition</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_ConsumesFood</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -42,6 +57,9 @@
         <title><MoveSpeed/></title>
         <stat>MoveSpeed</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
     
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -49,6 +67,9 @@
         <title><Temp_Cold/></title>
         <stat>ComfyTemperatureMin</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -56,6 +77,9 @@
         <title><Temp_Hot/></title>
         <stat>ComfyTemperatureMax</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -64,6 +88,9 @@
         <descriptionKey>Stat_Race_LifeExpectancy_Desc</descriptionKey>
         <title><Time/>Life</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Pawn.LifeExpectancyColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -71,6 +98,9 @@
         <title><Accuracy/><Shoot/></title>
         <stat>ShootingAccuracyPawn</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -78,6 +108,9 @@
         <title><Time/><DirectHit/></title>
         <stat>AimingDelayFactor</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
     
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -85,12 +118,18 @@
         <stat>MeleeDodgeChance</stat>
         <title>Dodge %</title>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_PsychicSensitivity</defName>
         <stat>PsychicSensitivity</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -98,6 +137,9 @@
         <label>caravan carrying capacity</label>
         <title><Caravan/>kg</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Pawn.CaravanCarryingCapacityColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -106,6 +148,9 @@
         <description>Possible weapons that this creature can spawn with.</description>
         <title><RangedWeapon/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Pawn.WeaponsColumnWorker</workerClass>
+        <tags>
+            <li>Thing_CanUseWeapons</li>
+        </tags>
     </Stats.ColumnDef>
 
 </Defs>

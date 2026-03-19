@@ -53,6 +53,9 @@
         <title>Immunity *%</title>
         <stat>ImmunityGainSpeedFactor</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMedical</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -60,6 +63,9 @@
         <title>Tend +%</title>
         <stat>MedicalTendQualityOffset</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMedical</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -67,6 +73,9 @@
         <title>Surgery *%</title>
         <stat>SurgerySuccessChanceFactor</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMedical</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -86,7 +95,6 @@
         <workerClass>Stats.ColumnWorkers.ThingDef.PowerTrader.PowerOutputPerCellColumnWorker</workerClass>
         <tags>
             <li>Thing_IsPowerGenerator</li>
-            <li>Thing_IsBuilding</li>
         </tags>
     </Stats.ColumnDef>
 
@@ -98,7 +106,6 @@
         <workerClass>Stats.ColumnWorkers.ThingDef.PowerTrader.PowerOutputPerFuelColumnWorker</workerClass>
         <tags>
             <li>Thing_IsPowerGenerator</li>
-            <li>Thing_IsRefuelable</li>
         </tags>
     </Stats.ColumnDef>
 

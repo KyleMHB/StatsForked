@@ -75,11 +75,11 @@
         <workerClass>Stats.ColumnWorkers.ThingDef.EquippedStatOffsetsColumnWorker</workerClass>
     </Stats.ColumnDef> -->
 
-    <Stats.ColumnDef Class="Stats.StatColumnDef">
+    <!-- <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Thing_Nutrition</defName>
         <stat>Nutrition</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
-    </Stats.ColumnDef>
+    </Stats.ColumnDef> -->
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Thing_Beauty</defName>
@@ -95,6 +95,9 @@
         <title><Armor/><Damage_Sharp/></title>
         <stat>ArmorRating_Sharp</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasArmor</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -102,6 +105,9 @@
         <title><Armor/><Damage_Blunt/></title>
         <stat>ArmorRating_Blunt</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasArmor</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -109,6 +115,9 @@
         <title><Armor/><Damage_Heat/></title>
         <stat>ArmorRating_Heat</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasArmor</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -116,6 +125,9 @@
         <title>Shield %</title>
         <stat>EnergyShieldEnergyMax</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasEnergyShield</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -123,6 +135,9 @@
         <title>Shield %/s</title>
         <stat>EnergyShieldRechargeRate</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasEnergyShield</li>
+        </tags>
     </Stats.ColumnDef>
 
     <!-- <Stats.ColumnDef>

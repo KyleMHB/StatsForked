@@ -7,6 +7,9 @@
         <label>Meat nutrition per day during growth</label>
         <title><Nutrition/><Meat/><Per/>D</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Animal.MeatNutritionPerDayColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasMeat</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -14,6 +17,9 @@
         <label>Leather per day</label>
         <title><Leather/><Per/>D</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Animal.LeatherPerDayColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasSkin</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -22,6 +28,9 @@
         <descriptionKey>Stat_Animal_MilkAmountDesc</descriptionKey>
         <title><CollectAnimalProducts/><Milk/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Milkable.MilkAmountColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMilkable</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -30,6 +39,9 @@
         <descriptionKey>Stat_Animal_MilkGrowthTimeDesc</descriptionKey>
         <title><TimeInterval/><Milk/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Milkable.MilkingIntervalColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMilkable</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -37,6 +49,9 @@
         <label>Milk per day</label>
         <title><Milk/><Per/>D</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Milkable.MilkPerDayColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMilkable</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -44,6 +59,9 @@
         <label>Milk nutrition per day</label>
         <title><Nutrition/><Milk/><Per/>D</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Milkable.MilkNutritionPerDayColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMilkable</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -51,6 +69,9 @@
         <label>Average eggs amount</label>
         <title><CollectAnimalProducts/><Egg/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.EggLayer.EggsAmountColumnWorker</workerClass>
+        <tags>
+            <li>Thing_LaysEggs</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -58,6 +79,9 @@
         <label>Egg laying interval</label>
         <title><TimeInterval/><Egg/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.EggLayer.EggLayingIntervalColumnWorker</workerClass>
+        <tags>
+            <li>Thing_LaysEggs</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -65,6 +89,9 @@
         <label>Eggs per day</label>
         <title><Egg/><Per/>D</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.EggLayer.EggsPerDayColumnWorker</workerClass>
+        <tags>
+            <li>Thing_LaysEggs</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -72,6 +99,9 @@
         <label>Eggs nutrition per day</label>
         <title><Nutrition/><Egg/><Per/>D</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.EggLayer.EggsNutritionPerDayColumnWorker</workerClass>
+        <tags>
+            <li>Thing_LaysEggs</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -80,6 +110,9 @@
         <descriptionKey>Stat_Animal_WoolAmountDesc</descriptionKey>
         <title><CollectAnimalProducts/><Wool/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Shearable.WoolAmountColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsShearable</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -88,6 +121,9 @@
         <descriptionKey>Stat_Animal_WoolGrowthTimeDesc</descriptionKey>
         <title><TimeInterval/><Wool/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Shearable.ShearingIntervalColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsShearable</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -95,6 +131,9 @@
         <label>Wool per day</label>
         <title><Wool/><Per/>D</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Shearable.WoolPerDayColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsShearable</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -103,6 +142,9 @@
         <descriptionKey>PackAnimalExplanation</descriptionKey>
         <title><Caravan/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Animal.IsPackAnimalColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsAnimal</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -110,6 +152,9 @@
         <title><Caravan/><MoveSpeed/></title>
         <stat>CaravanRidingSpeedFactor</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -117,12 +162,18 @@
         <title>LVL<AnimalHandling/></title>
         <stat>MinimumHandlingSkill</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsAnimal</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Animal_Wildness</defName>
         <stat>Wildness</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsAnimal</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -131,6 +182,9 @@
         <descriptionKey>Stat_Race_BlockedByFences_Desc</descriptionKey>
         <title><Fence/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Animal.IsBlockedByFencesColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsAnimal</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -139,6 +193,9 @@
         <descriptionKey>NuzzleIntervalExplanation</descriptionKey>
         <title><TimeInterval/><Nuzzle/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Animal.NuzzleIntervalColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsAnimal</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -146,6 +203,9 @@
         <labelKey>Trainability</labelKey>
         <descriptionKey>Stat_Race_Trainability_Desc</descriptionKey>
         <workerClass>Stats.ColumnWorkers.ThingDef.Animal.TrainabilityColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsAnimal</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -154,6 +214,9 @@
         <descriptionKey>Stat_Animal_GestationTimeDesc</descriptionKey>
         <title><Time/>Gestation</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Animal.GestationTimeColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsAnimal</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -162,12 +225,20 @@
         <descriptionKey>Stat_Animal_GrowthTimeDesc</descriptionKey>
         <title><Time/>Growth</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Animal.GrowthTimeColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsAnimal</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
         <defName>Animal_Products</defName>
         <label>products</label>
         <workerClass>Stats.ColumnWorkers.ThingDef.Animal.ProductsColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMilkable</li>
+            <li>Thing_LaysEggs</li>
+            <li>Thing_IsShearable</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -175,6 +246,11 @@
         <label>products nutrition per day</label>
         <title><Nutrition/>(<Milk/>+<Egg/>)<Per/>D</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Animal.ProductsNutritionPerDayColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMilkable</li>
+            <li>Thing_LaysEggs</li>
+            <li>Thing_IsShearable</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -182,6 +258,9 @@
         <labelKey>Stat_Animal_LitterSize</labelKey>
         <descriptionKey>Stat_Animal_LitterSizeDesc</descriptionKey>
         <workerClass>Stats.ColumnWorkers.ThingDef.Animal.AverageLitterSizeColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsAnimal</li>
+        </tags>
     </Stats.ColumnDef>
 
     <!-- <Stats.ColumnDef>

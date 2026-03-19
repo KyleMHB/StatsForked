@@ -7,6 +7,9 @@
         <title><Resistance/><Electricity/></title>
         <stat>EMPResistance</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
     </Stats.ColumnDef>
 
 </Defs>

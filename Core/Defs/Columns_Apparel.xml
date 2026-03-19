@@ -7,6 +7,9 @@
         <title><Temp_Cold/></title>
         <stat>Insulation_Cold</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsApparel</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -14,6 +17,9 @@
         <title><Temp_Hot/></title>
         <stat>Insulation_Heat</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsApparel</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -21,6 +27,9 @@
         <labelKey>Layer</labelKey>
         <descriptionKey>Stat_Thing_Apparel_Layer_Desc</descriptionKey>
         <workerClass>Stats.ColumnWorkers.ThingDef.Apparel.LayersColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsApparel</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -28,6 +37,9 @@
         <labelKey>Covers</labelKey>
         <descriptionKey>Stat_Thing_Apparel_Covers_Desc</descriptionKey>
         <workerClass>Stats.ColumnWorkers.ThingDef.Apparel.BodyPartGroupsColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsApparel</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -36,6 +48,9 @@
         <descriptionKey>Stat_Thing_Apparel_CountsAsClothingNudity_Desc</descriptionKey>
         <title><NudistPawn/></title>
         <workerClass>Stats.ColumnWorkers.ThingDef.Apparel.CountsAsClothingForNudityColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsApparel</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -43,6 +58,9 @@
         <title><Time/>Equip</title>
         <stat>EquipDelay</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsApparel</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -50,6 +68,9 @@
         <label>charges</label>
         <description>The maximum number of charges this object has.</description>
         <workerClass>Stats.ColumnWorkers.ThingDef.Apparel.Reloadable.MaxChargesCountColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsApparel</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -57,6 +78,9 @@
         <label>expendable</label>
         <description>This item will vanish when its last charge is used.</description>
         <workerClass>Stats.ColumnWorkers.ThingDef.Apparel.Reloadable.IsDestroyedOnEmptyColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsApparel</li>
+        </tags>
     </Stats.ColumnDef>
 
 </Defs>
