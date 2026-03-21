@@ -12,7 +12,7 @@ namespace Stats.ColumnWorkers;
 public abstract class ThingDefCountColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefCountCell
 {
     public override ColumnType Type => ColumnType.Number;
-    public override bool ShouldDrawCells => Event.current.IsRepaint() || Event.current.IsLMB();
+    public override bool ShouldDrawCellsNow => Event.current.IsRepaint() || Event.current.IsLMB();
 
     protected abstract IEnumerable<Verse.ThingDef?> GetTypeFieldFilterOptions(TableWorker tableWorker);
 

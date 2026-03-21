@@ -18,7 +18,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
 {
     public override ColumnType Type => ColumnType.String;
     public override ColumnDef Def => columnDef;
-    public override bool ShouldDrawCells => Event.current.IsRepaint() || Event.current.IsLMB();
+    public override bool ShouldDrawCellsNow => Event.current.IsRepaint() || Event.current.IsLMB();
 
     protected override LabelCell MakeCell(DefBasedObject @object)
     {

@@ -10,9 +10,9 @@ internal sealed partial class ObjectTable<TObject>
     {
         List<Column> columns = _columns;
         int columnsCount = _columns.Count;
-        int pinnedColumnsCount = _leftColumnsCount;
-        float pinnedColumnsWidth = 0f;
-        float unpinnedColumnsWidth = 0f;
+        int leftColumnsCount = _leftColumnsCount;
+        float leftColumnsWidth = 0f;
+        float rightColumnsWidth = 0f;
         for (int i = 0; i < columnsCount; i++)
         {
             Column column = columns[i];
@@ -21,24 +21,24 @@ internal sealed partial class ObjectTable<TObject>
                 column.RecalcWidth(_rows);
             }
 
-            if (i < pinnedColumnsCount)
+            if (i < leftColumnsCount)
             {
-                pinnedColumnsWidth += column.Width;
+                leftColumnsWidth += column.Width;
             }
             else
             {
-                unpinnedColumnsWidth += column.Width;
+                rightColumnsWidth += column.Width;
             }
         }
-        float contentWidth = pinnedColumnsWidth + unpinnedColumnsWidth;
 
-        float pinnedRowsHeight = _topRowsCount * RowHeight;
-        float unpinnedRowsHeight = BottomRowsCount * RowHeight;
-        float contentHeight = RowHeight + pinnedRowsHeight + unpinnedRowsHeight;
+        float contentWidth = leftColumnsWidth + rightColumnsWidth;
+        float topRowsHeight = _topRowsCount * RowHeight;
+        float bottomRowsHeight = BottomRowsCount * RowHeight;
+        float contentHeight = HeadersRowHeight + topRowsHeight + bottomRowsHeight;
 
-        _topRowsHeight = pinnedRowsHeight;
-        _bottomRowsHeight = unpinnedRowsHeight;
-        _leftColumnsWidth = pinnedColumnsWidth;
+        _topRowsHeight = topRowsHeight;
+        _bottomRowsHeight = bottomRowsHeight;
+        _leftColumnsWidth = leftColumnsWidth;
         _contentSize = new Vector2(contentWidth, contentHeight);
     }
 }

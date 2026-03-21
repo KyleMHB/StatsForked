@@ -40,7 +40,7 @@ internal sealed partial class ObjectTable<TObject>
         {
             viewportRect.width -= GenUI.ScrollBarWidth;
             // Add empty space for more convenient vertical scrolling.
-            contentRect.height += viewportRect.height - RowHeight - _topRowsHeight;
+            contentRect.height += viewportRect.height - HeadersRowHeight - _topRowsHeight;
         }
         // Will scroll horizontally
         if (contentRect.width > viewportRect.width)
@@ -59,7 +59,7 @@ internal sealed partial class ObjectTable<TObject>
         Vector2 scrollPosition = _scrollPosition;
         float firstVisibleBottomRowY = -scrollPosition.y % RowHeight;
         int scrolledBottomRowsCount = Mathf.FloorToInt(scrollPosition.y / RowHeight);
-        int viewportRowCapacity = Mathf.CeilToInt((rect.height - RowHeight - _topRowsHeight) / RowHeight);
+        int viewportRowCapacity = Mathf.CeilToInt((rect.height - HeadersRowHeight - _topRowsHeight) / RowHeight);
         int visibleBottomRowsCount = Math.Min(BottomRowsCount - scrolledBottomRowsCount, viewportRowCapacity);
         if (visibleBottomRowsCount < 0)
         {
@@ -77,12 +77,19 @@ internal sealed partial class ObjectTable<TObject>
         // Background
         DrawRows(rect, visibleBottomRowsStart, visibleBottomRowsCount, firstVisibleBottomRowY);
 
+        // Layout
+        Rect leftPartRect = rect.CutByX(_leftColumnsWidth);
+        Rect rightPartRect = rect;
+        Rect mouseDragScrollAreaRect = rightPartRect;
+        // Register mouse-drag only below headers to not interfere with them.
+        mouseDragScrollAreaRect.yMin += HeadersRowHeight;
+
         // Left part
         int leftColumnsCount = _leftColumnsCount;
         if (leftColumnsCount > 0)
         {
-            Rect leftPartRect = rect.CutByX(_leftColumnsWidth);
             ReadOnlyListSegment<Column> leftColumns = new(_columns, 0, leftColumnsCount);
+
             DrawColumns(leftPartRect, leftColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
             // Separator line
             if (Event.current.IsRepaint())
@@ -95,22 +102,20 @@ internal sealed partial class ObjectTable<TObject>
         int rightColumnsCount = _columns.Count - leftColumnsCount;
         if (rightColumnsCount > 0)
         {
-            using (new GUIClipScope(rect))
-            {
-                ReadOnlyListSegment<Column> rightColumns = new(_columns, leftColumnsCount, rightColumnsCount);
-                DrawColumns(rect with { xMin = -scrollPosition.x, y = 0f }, rightColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
-            }
+            ReadOnlyListSegment<Column> rightColumns = new(_columns, leftColumnsCount, rightColumnsCount);
 
-            // Horizontal scrolling
-            if (Event.current.type == EventType.MouseDrag && _currentlyReorderedColumn == null && _currentlyResizedColumn == null)
+            using (new GUIClipScope(rightPartRect))
             {
-                // Register mouse-drag only below headers to not interfere with them.
-                rect.yMin += RowHeight + _topRowsHeight;
-                if (Mouse.IsOver(rect))
-                {
-                    _scrollPosition.x = Mathf.Max(scrollPosition.x + Event.current.delta.x * -1f, 0f);
-                }
+                rightPartRect.xMin = -scrollPosition.x;
+                rightPartRect.y = 0f;
+                DrawColumns(rightPartRect, rightColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
             }
+        }
+
+        // Horizontal scrolling
+        if (Event.current.type == EventType.MouseDrag && Mouse.IsOver(mouseDragScrollAreaRect) && _currentlyReorderedColumn == null && _currentlyResizedColumn == null)
+        {
+            _scrollPosition.x = Mathf.Max(scrollPosition.x + Event.current.delta.x * -1f, 0f);
         }
     }
 
@@ -146,27 +151,34 @@ internal sealed partial class ObjectTable<TObject>
 
     private void DrawColumn(Rect rect, Column column, Span<int> topRows, Span<int> bottomRows, float bottomRowsY)
     {
-        bool shouldDrawCells = column.Worker.ShouldDrawCells;
+        bool shouldDrawCellsNow = column.Worker.ShouldDrawCellsNow;
 
-        Rect topRect = rect.CutByY(RowHeight + _topRowsHeight);
+        // Layout
+        Rect topRect = rect.CutByY(HeadersRowHeight + _topRowsHeight);
         ref Rect bottomRowsRect = ref rect;
 
+        // Header cell and pinned rows
         using (new GUIClipScope(topRect))
         {
             topRect.x = 0f;
             topRect.y = 0f;
-            Rect headerCellRect = topRect.CutByY(RowHeight);
+
+            // Layout
+            Rect headerCellRect = topRect.CutByY(HeadersRowHeight);
             ref Rect topRowsRect = ref topRect;
 
+            // Header cell
             column.DrawHeaderCell(headerCellRect);
 
-            if (shouldDrawCells && topRows.Length > 0)
+            // Pinned rows
+            if (shouldDrawCellsNow && topRows.Length > 0)
             {
                 DrawColumnCells(topRowsRect, column.Worker, topRows);
             }
         }
 
-        if (shouldDrawCells && bottomRows.Length > 0)
+        // Unpinned rows
+        if (shouldDrawCellsNow && bottomRows.Length > 0)
         {
             using (new GUIClipScope(bottomRowsRect))
             {
@@ -204,11 +216,11 @@ internal sealed partial class ObjectTable<TObject>
         bool isRepaint = Event.current.type == EventType.Repaint;
 
         // Layout
-        Rect headersRowRect = rect.CutByY(RowHeight);
+        Rect headersRowRect = rect.CutByY(HeadersRowHeight);
         Rect topRowsRect = rect.CutByY(_topRowsHeight);
         ref Rect bottomRowsRect = ref rect;
 
-        // Headers
+        // Headers row
         if (isRepaint)
         {
             headersRowRect
@@ -217,9 +229,10 @@ internal sealed partial class ObjectTable<TObject>
         }
 
         // Pinned rows
-        int pinnedRowsCount = _topRowsCount;
-        if (pinnedRowsCount > 0)
+        int topRowsCount = _topRowsCount;
+        if (topRowsCount > 0)
         {
+            // Background
             if (isRepaint)
             {
                 topRowsRect
@@ -227,9 +240,11 @@ internal sealed partial class ObjectTable<TObject>
                     .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
             }
 
-            for (int i = 0; i < pinnedRowsCount; i++)
+            // Rows
+            for (int i = 0; i < topRowsCount; i++)
             {
-                DrawRow(topRowsRect.CutByY(RowHeight), i);
+                Rect rowRect = topRowsRect.CutByY(RowHeight);
+                DrawRow(rowRect, i);
             }
         }
 

@@ -101,8 +101,8 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
         // Rows
         List<TObject> objects = tableWorker.InitialObjects;
-        List<int> rows = new(objects.Count);
         int objectsCount = objects.Count;
+        List<int> rows = new(objectsCount);
         for (int i = 0; i < objectsCount; i++)
         {
             rows.Add(i);

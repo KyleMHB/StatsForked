@@ -11,7 +11,7 @@ public abstract class ColumnWorker<TObject>
     public abstract ColumnDef Def { get; }
     public abstract ColumnType Type { get; }
     public abstract bool IsRefreshable { get; }
-    public virtual bool ShouldDrawCells => Event.current.type == EventType.Repaint;
+    public virtual bool ShouldDrawCellsNow => Event.current.type == EventType.Repaint;
 
     public abstract void DrawCell(Rect rect, int row);
 
