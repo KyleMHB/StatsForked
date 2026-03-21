@@ -13,8 +13,6 @@ internal sealed partial class ObjectTable<TObject>
 {
     internal override void Draw(Rect rect)
     {
-        bool isRepaint = Event.current.IsRepaint();
-
         if (_guiAction != null)
         {
             _guiAction.Invoke();
@@ -35,89 +33,91 @@ internal sealed partial class ObjectTable<TObject>
         //    DrawColumnsTab(ref rect);
         //}
 
-        Vector2 contentSize = _contentSize;
-        float unpinnedRowsHeight = _unpinnedRowsHeight;
-        float viewportWidth = unpinnedRowsHeight > 0f// Will scroll vertically
-                ? rect.width - GenUI.ScrollBarWidth
-                : rect.width;
-        float viewportHeight = contentSize.x > viewportWidth// Will scroll horizontally
-                ? rect.height - GenUI.ScrollBarWidth
-                : rect.height;
-        Vector2 viewportSize = new(viewportWidth, viewportHeight);
-        Rect contentRect = new(Vector2.zero, Vector2.Max(contentSize, viewportSize));
-        // Add empty space for more convenient vertical scrolling.
-        contentRect.height += MathF.Min(unpinnedRowsHeight, viewportHeight);
+        Rect viewportRect = rect;
+        Rect contentRect = new(Vector2.zero, _contentSize);
+        // Will scroll vertically
+        if (_bottomRowsHeight > 0f)
+        {
+            viewportRect.width -= GenUI.ScrollBarWidth;
+            // Add empty space for more convenient vertical scrolling.
+            contentRect.height += viewportRect.height - RowHeight - _topRowsHeight;
+        }
+        // Will scroll horizontally
+        if (contentRect.width > viewportRect.width)
+        {
+            viewportRect.height -= GenUI.ScrollBarWidth;
+            contentRect.height -= GenUI.ScrollBarWidth;
+        }
 
         using (new GUIScrollScope(rect, ref _scrollPosition, contentRect)) { }
 
+        DrawVisibleContent(viewportRect);
+    }
+
+    private void DrawVisibleContent(Rect rect)
+    {
         Vector2 scrollPosition = _scrollPosition;
-        Rect viewportRect = new(rect.position, viewportSize);
-
-        float firstVisibleUnpinnedRowY = -scrollPosition.y % RowHeight;
-        int scrolledUnpinnedRowsCount = Mathf.FloorToInt(scrollPosition.y / RowHeight);
-        int viewportRowCapacity = Mathf.CeilToInt((viewportHeight - RowHeight - _pinnedRowsHeight) / RowHeight);
-        int visibleUnpinnedRowsCount = Math.Min(UnpinnedRowsCount - scrolledUnpinnedRowsCount, viewportRowCapacity);
-        if (visibleUnpinnedRowsCount < 0)
+        float firstVisibleBottomRowY = -scrollPosition.y % RowHeight;
+        int scrolledBottomRowsCount = Mathf.FloorToInt(scrollPosition.y / RowHeight);
+        int viewportRowCapacity = Mathf.CeilToInt((rect.height - RowHeight - _topRowsHeight) / RowHeight);
+        int visibleBottomRowsCount = Math.Min(BottomRowsCount - scrolledBottomRowsCount, viewportRowCapacity);
+        if (visibleBottomRowsCount < 0)
         {
-            visibleUnpinnedRowsCount = 0;
+            visibleBottomRowsCount = 0;
         }
+        int topRowsCount = _topRowsCount;
 
-        int visibleUnpinnedRowsStart = _pinnedRowsCount + scrolledUnpinnedRowsCount;
-        Span<int> visibleUnpinnedRows = stackalloc int[visibleUnpinnedRowsCount];
-        _rows.CopyTo(visibleUnpinnedRows, visibleUnpinnedRowsStart);
+        int visibleBottomRowsStart = topRowsCount + scrolledBottomRowsCount;
+        Span<int> visibleBottomRows = stackalloc int[visibleBottomRowsCount];
+        _rows.CopyTo(visibleBottomRows, visibleBottomRowsStart);
 
-        Span<int> pinnedRows = stackalloc int[_pinnedRowsCount];
-        _rows.CopyTo(pinnedRows);
+        Span<int> topRows = stackalloc int[topRowsCount];
+        _rows.CopyTo(topRows);
 
         // Background
-        DrawBackground(viewportRect, visibleUnpinnedRows, firstVisibleUnpinnedRowY, visibleUnpinnedRowsStart);
+        DrawRows(rect, visibleBottomRowsStart, visibleBottomRowsCount, firstVisibleBottomRowY);
 
         // Left part
-        int pinnedColumnsCount = _pinnedColumnsCount;
-        if (pinnedColumnsCount > 0)
+        int leftColumnsCount = _leftColumnsCount;
+        if (leftColumnsCount > 0)
         {
-            Rect leftPartRect = viewportRect.CutByX(_pinnedColumnsWidth);
-            ReadOnlyListSegment<Column> pinnedColumns = new(_columns, 0, pinnedColumnsCount);
-            DrawPart(leftPartRect, pinnedColumns, leftPartRect.x, pinnedRows, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
+            Rect leftPartRect = rect.CutByX(_leftColumnsWidth);
+            ReadOnlyListSegment<Column> leftColumns = new(_columns, 0, leftColumnsCount);
+            DrawColumns(leftPartRect, leftColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
             // Separator line
-            if (isRepaint) leftPartRect.DrawBorderRight(GUIStyles.MainTabWindow.BorderColor);
+            if (Event.current.IsRepaint())
+            {
+                leftPartRect.DrawBorderRight(GUIStyles.MainTabWindow.BorderColor);
+            }
         }
 
         // Right part
-        int unpinnedColumnsCount = _columns.Count - pinnedColumnsCount;
-        if (unpinnedColumnsCount > 0)
+        int rightColumnsCount = _columns.Count - leftColumnsCount;
+        if (rightColumnsCount > 0)
         {
-            using (new GUIClipScope(viewportRect))
+            using (new GUIClipScope(rect))
             {
-                Rect rightPartRect = viewportRect with { x = 0f, y = 0f };
-                ReadOnlyListSegment<Column> unpinnedColumns = new(_columns, pinnedColumnsCount, unpinnedColumnsCount);
-                DrawPart(rightPartRect, unpinnedColumns, -scrollPosition.x, pinnedRows, visibleUnpinnedRows, firstVisibleUnpinnedRowY);
+                ReadOnlyListSegment<Column> rightColumns = new(_columns, leftColumnsCount, rightColumnsCount);
+                DrawColumns(rect with { xMin = -scrollPosition.x, y = 0f }, rightColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
             }
 
             // Horizontal scrolling
             if (Event.current.type == EventType.MouseDrag && _currentlyReorderedColumn == null && _currentlyResizedColumn == null)
             {
                 // Register mouse-drag only below headers to not interfere with them.
-                viewportRect.yMin += RowHeight + _pinnedRowsHeight;
-                if (Mouse.IsOver(viewportRect))
+                rect.yMin += RowHeight + _topRowsHeight;
+                if (Mouse.IsOver(rect))
                 {
-                    _scrollPosition.x = Mathf.Max(_scrollPosition.x + Event.current.delta.x * -1f, 0f);
+                    _scrollPosition.x = Mathf.Max(scrollPosition.x + Event.current.delta.x * -1f, 0f);
                 }
             }
         }
     }
 
-    private void DrawPart(
-        Rect rect,
-        ReadOnlyListSegment<Column> columns,
-        float columnsOffsetX,
-        Span<int> pinnedRows,
-        Span<int> visibleUnpinnedRows,
-        float visibleUnpinnedRowsOffsetY
-    )
+    private void DrawColumns(Rect rect, ReadOnlyListSegment<Column> columns, Span<int> topRows, Span<int> bottomRows, float bottomRowsY)
     {
         float rectXmax = rect.xMax;
-        Rect columnRect = new(columnsOffsetX, rect.y, 0f, rect.height);
+        ref Rect columnRect = ref rect;
         int columnsCount = columns.Length;
         int lastColumnIndex = columnsCount - 1;
         for (int i = 0; i < columnsCount; i++)
@@ -128,10 +128,10 @@ internal sealed partial class ObjectTable<TObject>
 
             if (columnRectXmax > 0f)
             {
-                DrawColumn(columnRect, column, pinnedRows, visibleUnpinnedRows, visibleUnpinnedRowsOffsetY);
+                DrawColumn(columnRect, column, topRows, bottomRows, bottomRowsY);
                 if (Event.current.IsRepaint() && i < lastColumnIndex)
                 {
-                    columnRect.DrawBorderRight(GUIStyles.Table.ColumnSeparatorLineColor);
+                    columnRect.DrawBorderRight(ColumnSeparatorLineColor);
                 }
             }
 
@@ -144,109 +144,145 @@ internal sealed partial class ObjectTable<TObject>
         }
     }
 
-    private void DrawColumn(Rect rect, Column column, Span<int> pinnedRows, Span<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY)
+    private void DrawColumn(Rect rect, Column column, Span<int> topRows, Span<int> bottomRows, float bottomRowsY)
     {
         bool shouldDrawCells = column.Worker.ShouldDrawCells;
 
-        Rect headerRect = rect.CutByY(RowHeight);
-        using (new GUIClipScope(headerRect))
-        {
-            headerRect.x = 0f;
-            headerRect.y = 0f;
-            column.DrawHeaderCell(headerRect);
+        Rect topRect = rect.CutByY(RowHeight + _topRowsHeight);
+        ref Rect bottomRowsRect = ref rect;
 
-            if (shouldDrawCells && pinnedRows.Length > 0)
+        using (new GUIClipScope(topRect))
+        {
+            topRect.x = 0f;
+            topRect.y = 0f;
+            Rect headerCellRect = topRect.CutByY(RowHeight);
+            ref Rect topRowsRect = ref topRect;
+
+            column.DrawHeaderCell(headerCellRect);
+
+            if (shouldDrawCells && topRows.Length > 0)
             {
-                Rect pinnedRowsRect = rect.CutByY(_pinnedRowsHeight);
-                pinnedRowsRect.x = 0f;
-                pinnedRowsRect.y = 0f;
-                DrawColumnCells(pinnedRowsRect, column, pinnedRows);
+                DrawColumnCells(topRowsRect, column.Worker, topRows);
             }
         }
 
-        if (shouldDrawCells && visibleUnpinnedRows.Length > 0)
+        if (shouldDrawCells && bottomRows.Length > 0)
         {
-            using (new GUIClipScope(rect))
+            using (new GUIClipScope(bottomRowsRect))
             {
-                rect.x = 0f;
-                rect.y = visibleUnpinnedRowsOffsetY;
-                DrawColumnCells(rect, column, visibleUnpinnedRows);
+                bottomRowsRect.x = 0f;
+                bottomRowsRect.yMin = bottomRowsY;
+                DrawColumnCells(bottomRowsRect, column.Worker, bottomRows);
             }
         }
     }
 
-    private void DrawColumnCells(Rect rect, Column column, Span<int> rows)
+    private void DrawColumnCells(Rect rect, ColumnWorker<TObject> columnWorker, Span<int> rows)
     {
-        rect.height = RowHeight;
-        ColumnWorker<TObject> columnWorker = column.Worker;
+        ref Rect cellRect = ref rect;
+        cellRect.height = RowHeight;
         int rowsCount = rows.Length;
         for (int i = 0; i < rowsCount; i++)
         {
             try
             {
-                columnWorker.DrawCell(rect, rows[i]);
+                columnWorker.DrawCell(cellRect, rows[i]);
             }
             catch
             {
                 // TODO:
                 // - Add tooltip with exception's message.
                 // - Make the whole thing into a separate non-inlineable method.
-                rect.Fill(Color.red);
+                cellRect.Fill(Color.red);
             }
-            rect.y = rect.yMax;
+            cellRect.y = cellRect.yMax;
         }
     }
 
-    private void DrawBackground(Rect rect, Span<int> visibleUnpinnedRows, float visibleUnpinnedRowsOffsetY, int visibleUnpinnedRowsStart)
+    private void DrawRows(Rect rect, int bottomRowsStart, int bottomRowsCount, float bottomRowsY)
     {
         bool isRepaint = Event.current.type == EventType.Repaint;
 
+        // Layout
+        Rect headersRowRect = rect.CutByY(RowHeight);
+        Rect topRowsRect = rect.CutByY(_topRowsHeight);
+        ref Rect bottomRowsRect = ref rect;
+
         // Headers
-        Rect headersRect = rect.CutByY(RowHeight);
         if (isRepaint)
         {
-            headersRect
+            headersRowRect
                 .Highlight()
                 .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
         }
 
         // Pinned rows
-        if (_pinnedRowsCount > 0)
+        int pinnedRowsCount = _topRowsCount;
+        if (pinnedRowsCount > 0)
         {
-            Rect pinnedRowsRect = rect.CutByY(_pinnedRowsHeight);
             if (isRepaint)
             {
-                pinnedRowsRect
-                    .HighlightStrong(GUIStyles.Table.PinnedRowsBGColor)
+                topRowsRect
+                    .HighlightStrong(PinnedRowsBGColor)
                     .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
+            }
+
+            for (int i = 0; i < pinnedRowsCount; i++)
+            {
+                DrawRow(topRowsRect.CutByY(RowHeight), i);
             }
         }
 
         // Unpinned rows
-        if (visibleUnpinnedRows.Length > 0)
+        // 
+        // This part uses manual clipping.
+        // - No need to use GUI.BeginClip/EndClip.
+        // - Top row's "click" event will never collide with bottom row.
+        if (bottomRowsCount > 0)
         {
-            Rect rowRect = new(rect.x, rect.y, rect.width, RowHeight + visibleUnpinnedRowsOffsetY);
-            for (int i = 0; i < visibleUnpinnedRows.Length; i++)
+            ref Rect rowRect = ref bottomRowsRect;
+            rowRect.height = RowHeight + bottomRowsY;
+            for (int i = 0; i < bottomRowsCount; i++)
             {
-                //int row = visibleUnpinnedRows[i];
-                if (isRepaint)
-                {
-                    if (Mouse.IsOver(rowRect))
-                    {
-                        rowRect.Highlight();
-                    }
-                    else if ((visibleUnpinnedRowsStart + i) % 2 == 0)
-                    {
-                        rowRect.HighlightLight();
-                    }
-                }
+                int rowIndex = bottomRowsStart + i;
+                DrawRow(rowRect, rowIndex);
 
+                // TODO: I think this part can be optimized
                 rowRect.y = rowRect.yMax;
                 rowRect.height = RowHeight;
                 if (rowRect.yMax > rect.yMax)
                 {
                     rowRect.height -= rowRect.yMax - rect.yMax;
                 }
+            }
+        }
+    }
+
+    private void DrawRow(Rect rect, int index)
+    {
+        bool mouseIsOverRect = Mouse.IsOver(rect);
+
+        if (Event.current.IsRepaint())
+        {
+            if (mouseIsOverRect)
+            {
+                rect.Highlight();
+            }
+            else if (index % 2 == 0)
+            {
+                rect.HighlightLight();
+            }
+        }
+
+        if (mouseIsOverRect && Event.current is { control: true, type: EventType.MouseDown })
+        {
+            if (index < _topRowsCount)
+            {
+                UnpinRow(index);
+            }
+            else
+            {
+                PinRow(index);
             }
         }
     }

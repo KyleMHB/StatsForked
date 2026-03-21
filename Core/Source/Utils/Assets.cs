@@ -6,12 +6,12 @@ namespace Stats.Utils;
 [StaticConstructorOnStartup]
 public static class Assets
 {
-    internal static readonly Texture2D ExpandWindowTex;
-    internal static readonly Texture2D FilterTex;
+    internal static readonly Texture2D TableFiltersTabIcon;
+    internal static readonly Texture2D TableColumnsMenuIcon;
 
     static Assets()
     {
-        ExpandWindowTex = ContentFinder<Texture2D>.Get("StatsMod/UI/Icons/ExpandWindow");
-        FilterTex = ContentFinder<Texture2D>.Get("StatsMod/UI/Icons/Filter");
+        TableFiltersTabIcon = ContentFinder<Texture2D>.Get("StatsMod/UI/Icons/Filter");
+        TableColumnsMenuIcon = ContentFinder<Texture2D>.Get("UI/Buttons/OpenSpecificTab");
     }
 }

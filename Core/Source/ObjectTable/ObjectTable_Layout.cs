@@ -10,7 +10,7 @@ internal sealed partial class ObjectTable<TObject>
     {
         List<Column> columns = _columns;
         int columnsCount = _columns.Count;
-        int pinnedColumnsCount = _pinnedColumnsCount;
+        int pinnedColumnsCount = _leftColumnsCount;
         float pinnedColumnsWidth = 0f;
         float unpinnedColumnsWidth = 0f;
         for (int i = 0; i < columnsCount; i++)
@@ -32,13 +32,13 @@ internal sealed partial class ObjectTable<TObject>
         }
         float contentWidth = pinnedColumnsWidth + unpinnedColumnsWidth;
 
-        float pinnedRowsHeight = _pinnedRowsCount * RowHeight;
-        float unpinnedRowsHeight = UnpinnedRowsCount * RowHeight;
+        float pinnedRowsHeight = _topRowsCount * RowHeight;
+        float unpinnedRowsHeight = BottomRowsCount * RowHeight;
         float contentHeight = RowHeight + pinnedRowsHeight + unpinnedRowsHeight;
 
-        _pinnedRowsHeight = pinnedRowsHeight;
-        _unpinnedRowsHeight = unpinnedRowsHeight;
-        _pinnedColumnsWidth = pinnedColumnsWidth;
+        _topRowsHeight = pinnedRowsHeight;
+        _bottomRowsHeight = unpinnedRowsHeight;
+        _leftColumnsWidth = pinnedColumnsWidth;
         _contentSize = new Vector2(contentWidth, contentHeight);
     }
 }

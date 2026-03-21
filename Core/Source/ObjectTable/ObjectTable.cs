@@ -69,19 +69,19 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     // Rows
     private readonly List<TObject> _objects;
     private readonly List<int> _rows;
-    private int _pinnedRowsCount;
-    private int UnpinnedRowsCount => _rows.Count - _pinnedRowsCount;
+    private int _topRowsCount;
+    private int BottomRowsCount => _rows.Count - _topRowsCount;
 
     // Columns
     private readonly List<Column> _columns;
-    private int _pinnedColumnsCount;
+    private int _leftColumnsCount;
     private Column? _currentlyResizedColumn;
     private Column? _currentlyReorderedColumn;
 
     // Layout
-    private float _pinnedRowsHeight;
-    private float _unpinnedRowsHeight;
-    private float _pinnedColumnsWidth;
+    private float _topRowsHeight;
+    private float _bottomRowsHeight;
+    private float _leftColumnsWidth;
     private Vector2 _contentSize;
 
     // Drawing
@@ -136,7 +136,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         _columns = columns;
         if (columns.Count > 0)
         {
-            _pinnedColumnsCount = 1;
+            _leftColumnsCount = 1;
         }
         _toolbar = new Toolbar(this);
     }

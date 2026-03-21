@@ -1,29 +1,32 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Stats;
 
 internal sealed partial class ObjectTable<TObject>
 {
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private void PinRow(int index)
     {
         List<int> rows = _rows;
         int row = rows[index];
-        int firstUnpinnedRowIndex = _pinnedRowsCount;
+        int firstUnpinnedRowIndex = _topRowsCount;
         int firstUnpinnedRow = rows[firstUnpinnedRowIndex];
         rows[firstUnpinnedRowIndex] = row;
         rows[index] = firstUnpinnedRow;
-        _pinnedRowsCount++;
+        _topRowsCount++;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private void UnpinRow(int index)
     {
         List<int> rows = _rows;
         int row = rows[index];
-        int lastPinnedRowIndex = _pinnedRowsCount - 1;
+        int lastPinnedRowIndex = _topRowsCount - 1;
         int lastPinnedRow = rows[lastPinnedRowIndex];
         rows[lastPinnedRowIndex] = row;
         rows[index] = lastPinnedRow;
-        _pinnedRowsCount--;
+        _topRowsCount--;
     }
 
     //private sealed class Row

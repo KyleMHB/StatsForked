@@ -15,17 +15,17 @@ internal sealed partial class ObjectTable<TObject>
     {
         private readonly ObjectTable<TObject> _parent;
         private readonly ToolbarButton _filtersButton;
-        private readonly ToolbarButton _addColumnButton;
-        private readonly ToolbarButton _columnPresetButton;
+        private readonly ToolbarButton _columnsMenuButton;
+        private readonly ToolbarButton _columnPresetsButton;
         private ColumnsFloatMenu ColumnsMenu => field ??= MakeColumnsMenu();
 
         public Toolbar(ObjectTable<TObject> parent)
         {
             _parent = parent;
-            _filtersButton = new ToolbarButton(Assets.FilterTex, "Filters", 0.7f);
-            _addColumnButton = new ToolbarButton(Verse.TexButton.Add, "Add Column");
+            _filtersButton = new ToolbarButton(Assets.TableFiltersTabIcon, "Filters", 0.7f);
+            _columnsMenuButton = new ToolbarButton(Assets.TableColumnsMenuIcon, "Columns", 0.8f);
             // TODO: Do we really need this feature if plan to save opened tables?
-            _columnPresetButton = new ToolbarButton(Verse.TexButton.Paste, "Apply Preset", 0.8f);
+            _columnPresetsButton = new ToolbarButton(Verse.TexButton.Paste, "Apply Preset", 0.8f);
         }
 
         public void NotifyColumnAdded(Column column)
@@ -47,17 +47,27 @@ internal sealed partial class ObjectTable<TObject>
                     .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
             }
 
-            bool filterButtonWasClicked = _filtersButton.Draw(rect.CutByX(_filtersButton.Width));
-            if (filterButtonWasClicked) _parent.ToggleFiltersTab();
-
+            // Layout
+            Rect filtersTabButtonRect = rect.CutByX(_filtersButton.Width);
             rect.xMin += Style.Gap;
-
-            bool addColumnButtonWasClicked = _addColumnButton.Draw(rect.CutByX(_addColumnButton.Width));
-            if (addColumnButtonWasClicked) ColumnsMenu.Open();
-
+            Rect columnsMenuButtonRect = rect.CutByX(_columnsMenuButton.Width);
             rect.xMin += Style.Gap;
+            Rect columnPresetsButtonRect = rect.CutByX(_columnPresetsButton.Width);
 
-            _columnPresetButton.Draw(rect.CutByX(_columnPresetButton.Width));
+            // Draw
+            bool filtersTabButtonWasClicked = _filtersButton.Draw(filtersTabButtonRect);
+            bool columnsMenuButtonWasClicked = _columnsMenuButton.Draw(columnsMenuButtonRect);
+            _columnPresetsButton.Draw(columnPresetsButtonRect);
+
+            // Events
+            if (filtersTabButtonWasClicked)
+            {
+                _parent.ToggleFiltersTab();
+            }
+            else if (columnsMenuButtonWasClicked)
+            {
+                ColumnsMenu.Open();
+            }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

@@ -20,8 +20,8 @@ internal sealed partial class ObjectTable<TObject>
         List<Column> columns = _columns;
         Column column = columns[index];
         columns.RemoveAt(index);
-        columns.Insert(_pinnedColumnsCount, column);
-        _pinnedColumnsCount++;
+        columns.Insert(_leftColumnsCount, column);
+        _leftColumnsCount++;
     }
 
     private void UnpinColumn(int index)
@@ -29,8 +29,8 @@ internal sealed partial class ObjectTable<TObject>
         List<Column> columns = _columns;
         Column column = columns[index];
         columns.RemoveAt(index);
-        _pinnedColumnsCount--;
-        columns.Insert(_pinnedColumnsCount, column);
+        _leftColumnsCount--;
+        columns.Insert(_leftColumnsCount, column);
     }
 
     private void AddColumn(ColumnDef columnDef)
@@ -45,9 +45,9 @@ internal sealed partial class ObjectTable<TObject>
 
     private void RemoveColumn(int index)
     {
-        if (index < _pinnedColumnsCount)
+        if (index < _leftColumnsCount)
         {
-            _pinnedColumnsCount--;
+            _leftColumnsCount--;
         }
 
         _toolbar.NotifyColumnRemoved(_columns[index]);
@@ -194,7 +194,7 @@ internal sealed partial class ObjectTable<TObject>
         private void HandlePinning()
         {
             int index = _parent._columns.IndexOf(this);
-            if (index > _parent._pinnedColumnsCount - 1)
+            if (index > _parent._leftColumnsCount - 1)
             {
                 _parent._guiAction = () => _parent.PinColumn(index);
             }
