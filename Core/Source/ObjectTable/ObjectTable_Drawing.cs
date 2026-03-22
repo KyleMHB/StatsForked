@@ -27,7 +27,7 @@ internal sealed partial class ObjectTable<TObject>
         // Layout
         rect
             .CutTop(out Rect toolbarRect, GUIStyles.TableToolbar.Height)
-            .TakeRest(out Rect viewportRect);
+            .TakeRest(out Rect tableRect);
 
         // Toolbar
         _toolbar.Draw(toolbarRect);
@@ -37,6 +37,7 @@ internal sealed partial class ObjectTable<TObject>
         //    DrawColumnsTab(ref rect);
         //}
 
+        Rect viewportRect = tableRect;
         Rect contentRect = new(Vector2.zero, _contentSize);
         // Will scroll vertically
         if (_bottomRowsHeight > 0f)
@@ -52,7 +53,7 @@ internal sealed partial class ObjectTable<TObject>
             contentRect.height -= GenUI.ScrollBarWidth;
         }
 
-        using (new GUIScrollScope(rect, ref _scrollPosition, contentRect)) { }
+        using (new GUIScrollScope(tableRect, ref _scrollPosition, contentRect)) { }
 
         DrawVisibleContent(viewportRect);
     }
@@ -62,8 +63,14 @@ internal sealed partial class ObjectTable<TObject>
         Vector2 scrollPosition = _scrollPosition;
         float firstVisibleBottomRowY = -scrollPosition.y % RowHeight;
         int scrolledBottomRowsCount = Mathf.FloorToInt(scrollPosition.y / RowHeight);
-        int viewportRowCapacity = Mathf.CeilToInt((rect.height - HeadersRowHeight - _topRowsHeight) / RowHeight);
-        int visibleBottomRowsCount = Math.Min(BottomRowsCount - scrolledBottomRowsCount, viewportRowCapacity);
+        int bottomRowsLeftToScroll = BottomRowsCount - scrolledBottomRowsCount;
+        float bottomRowsRectHeight = rect.height - HeadersRowHeight - _topRowsHeight;
+        int bottomRowsRectRowCapacity = Mathf.CeilToInt(bottomRowsRectHeight / RowHeight);
+        int visibleBottomRowsCount = Math.Min(bottomRowsLeftToScroll, bottomRowsRectRowCapacity);
+        // There was a bug where this value was evaluating to negative int which caused CTD when
+        // int[] was being allocated on a stack below.
+        // Although i couldn't reproduce it in recent testing, i'll leave this check just in case.
+        // The math for this value is not very precise (lots of divisions, rounding and float values are involved).
         if (visibleBottomRowsCount < 0)
         {
             visibleBottomRowsCount = 0;
@@ -79,31 +86,31 @@ internal sealed partial class ObjectTable<TObject>
 
         // Layout
         rect
-            .CutLeft(out Rect leftPartRect, _leftColumnsWidth)
-            .TakeRest(out Rect rightPartRect)
+            .CutLeft(out Rect leftColumnsRect, _leftColumnsWidth)
+            .TakeRest(out Rect rightColumnsRect)
             .SkipTop(HeadersRowHeight)// Register mouse-drag only below headers to not interfere with them.
             .TakeRest(out Rect mouseDragScrollAreaRect);
 
-        // Background
-        DrawBackground(rect, visibleBottomRowsStart, visibleBottomRowsCount, firstVisibleBottomRowY);
+        // Rows
+        DrawRows(rect, visibleBottomRowsStart, visibleBottomRowsCount, firstVisibleBottomRowY);
 
-        // Left part
+        // Pinned columns
         if (_leftColumnsCount > 0)
         {
-            DrawColumns(leftPartRect, LeftColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
+            DrawColumns(leftColumnsRect, LeftColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
             // Separator line
             if (Event.current.IsRepaint())
             {
-                leftPartRect.DrawBorderRight(FixedPartSeparatorLineColor);
+                leftColumnsRect.DrawBorderRight(FixedPartSeparatorLineColor);
             }
         }
 
-        // Right part
+        // Unpinned columns
         if (RightColumnsCount > 0)
         {
-            using (new GUIClipScope(rightPartRect))
+            using (new GUIClipScope(rightColumnsRect))
             {
-                DrawColumns(rightPartRect with { xMin = -scrollPosition.x, y = 0f }, RightColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
+                DrawColumns(rightColumnsRect with { xMin = -scrollPosition.x, y = 0f }, RightColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
             }
         }
 
@@ -204,7 +211,7 @@ internal sealed partial class ObjectTable<TObject>
         }
     }
 
-    private void DrawBackground(Rect rect, int bottomRowsStart, int bottomRowsCount, float bottomRowsY)
+    private void DrawRows(Rect rect, int bottomRowsStart, int bottomRowsCount, float bottomRowsY)
     {
         bool isRepaint = Event.current.type == EventType.Repaint;
 
@@ -252,8 +259,9 @@ internal sealed partial class ObjectTable<TObject>
         {
             float rectYmax = rect.yMax;
             float firstRowHeight = RowHeight + bottomRowsY;
+            int bottomRowsEnd = bottomRowsCount + bottomRowsStart;// Exclusive
             Rect rowRect = bottomRowsRect with { height = firstRowHeight };
-            for (int i = bottomRowsStart; i < bottomRowsCount + bottomRowsStart; i++)
+            for (int i = bottomRowsStart; i < bottomRowsEnd; i++)
             {
                 DrawRow(rowRect, i);
 
