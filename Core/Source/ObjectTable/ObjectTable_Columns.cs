@@ -179,7 +179,7 @@ internal sealed partial class ObjectTable<TObject>
             {
                 if (currentEvent.control && Event.current.IsLMB())
                 {
-                    HandlePinning();
+                    HandlePin();
                 }
                 else if (Event.current.IsRMB())
                 {
@@ -191,7 +191,7 @@ internal sealed partial class ObjectTable<TObject>
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void HandlePinning()
+        private void HandlePin()
         {
             int index = _parent._columns.IndexOf(this);
             if (index > _parent._leftColumnsCount - 1)

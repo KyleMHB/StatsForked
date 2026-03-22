@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Stats.ColumnWorkers;
 using Stats.TableWorkers;
+using Stats.Utils;
 using UnityEngine;
 using Verse;
 
@@ -75,6 +76,9 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     // Columns
     private readonly List<Column> _columns;
     private int _leftColumnsCount;
+    private int RightColumnsCount => _columns.Count - _leftColumnsCount;
+    private ReadOnlyListSegment<Column> LeftColumns => new(_columns, 0, _leftColumnsCount);
+    private ReadOnlyListSegment<Column> RightColumns => new(_columns, _leftColumnsCount, RightColumnsCount);
     private Column? _currentlyResizedColumn;
     private Column? _currentlyReorderedColumn;
 

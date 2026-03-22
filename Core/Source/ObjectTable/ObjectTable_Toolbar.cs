@@ -42,11 +42,11 @@ internal sealed partial class ObjectTable<TObject>
         {
             // Layout
             rect
-                .CutByX(out Rect filtersTabButtonRect, _filtersButton.Width)
-                .SkipX(Style.Gap)
-                .CutByX(out Rect columnsMenuButtonRect, _columnsMenuButton.Width)
-                .SkipX(Style.Gap)
-                .CutByX(out Rect columnPresetsButtonRect, _columnPresetsButton.Width);
+                .CutLeft(out Rect filtersTabButtonRect, _filtersButton.Width)
+                .SkipLeft(Style.Gap)
+                .CutLeft(out Rect columnsMenuButtonRect, _columnsMenuButton.Width)
+                .SkipLeft(Style.Gap)
+                .CutLeft(out Rect columnPresetsButtonRect, _columnPresetsButton.Width);
 
             // Background
             if (Event.current.IsRepaint())
@@ -206,15 +206,13 @@ internal sealed partial class ObjectTable<TObject>
         {
             if (Event.current.IsRepaint())
             {
-                Rect contentRect = rect;
+                rect
+                    .SkipLeft(ButtonStyle.PadHor)
+                    .CutLeft(out Rect iconRect, ButtonStyle.IconWidth)
+                    .TakeRest(out Rect labelRect);
 
-                contentRect.xMin += ButtonStyle.PadHor;
-
-                contentRect
-                    .CutByX(ButtonStyle.IconWidth)
-                    .DrawTextureFitted(_icon, _iconScale);
-
-                contentRect.Label(_label, ButtonStyle.LabelStyle);
+                iconRect.DrawTextureFitted(_icon, _iconScale);
+                labelRect.Label(_label, ButtonStyle.LabelStyle);
             }
 
             return rect.ButtonGhostly();

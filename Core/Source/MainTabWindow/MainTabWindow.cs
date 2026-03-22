@@ -59,11 +59,11 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
 
         // Layout
         rect
-            .CutByX(out Rect toolbarRect, ToolbarWidth)
+            .CutLeft(out Rect toolbarRect, ToolbarWidth)
             .TakeRest(out Rect tableRect);
         toolbarRect
-            .CutByY(out Rect expandButtonRect, 20f)
-            .CutByY(out Rect openTableButtonRect, ToolbarWidth)
+            .CutTop(out Rect expandButtonRect, 20f)
+            .CutTop(out Rect openTableButtonRect, ToolbarWidth)
             .TakeRest(out Rect tableListRect);
 
         // Border
@@ -83,12 +83,13 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         Rect tableListContentRect = new(0f, 0f, ToolbarWidth, _tables.Count * ToolbarWidth);
         using (new GUIScrollScope(tableListRect, ref _tableListScrollPosition, tableListContentRect, false))
         {
+            Rect tableButtonRect = tableListContentRect with { height = ToolbarWidth };
             int tablesCount = _tables.Count;
             for (int i = 0; i < tablesCount; i++)
             {
                 TableRecord tableRecord = _tables[i];
-                Rect tableButtonRect = tableListContentRect.CutByY(ToolbarWidth);
                 tableRecord.Draw(tableButtonRect);
+                tableButtonRect.y = tableButtonRect.yMax;
             }
         }
 
@@ -116,6 +117,12 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         }
     }
 
+    // TODO:
+    // - Window height is reset on close.
+    // - There is a bit of a conflict between manual resizing and maximizing the window by double-clicking on the button.
+    //   If the wndow is resized to maximum height, it still thinks that it is not maximized, and double-clicking on the button
+    //   will cause it to maximize instead of reset.
+    // - When manually resizing the window its top border can go beyond the screen.
     private void DrawExpandButton(Rect rect)
     {
         if (Event.current.IsRepaint())

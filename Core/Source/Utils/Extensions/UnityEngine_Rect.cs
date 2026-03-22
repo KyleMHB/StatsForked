@@ -18,7 +18,7 @@ public static class UnityEngine_Rect
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Rect CutByX(this Rect rect, out Rect result, float amount)
+    internal static Rect CutLeft(this Rect rect, out Rect result, float amount)
     {
         result = rect with { width = amount };
 
@@ -26,9 +26,24 @@ public static class UnityEngine_Rect
         return rect;
     }
 
-    internal static Rect SkipX(this Rect rect, float amount)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static Rect CutRight(this Rect rect, out Rect result, float amount)
+    {
+        result = rect with { xMin = rect.xMax - amount };
+
+        rect.width -= amount;
+        return rect;
+    }
+
+    internal static Rect SkipLeft(this Rect rect, float amount)
     {
         rect.xMin += amount;
+        return rect;
+    }
+
+    internal static Rect SkipRight(this Rect rect, float amount)
+    {
+        rect.width -= amount;
         return rect;
     }
 
@@ -43,7 +58,7 @@ public static class UnityEngine_Rect
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Rect CutByY(this Rect rect, out Rect result, float amount)
+    internal static Rect CutTop(this Rect rect, out Rect result, float amount)
     {
         result = rect with { height = amount };
 
@@ -51,7 +66,7 @@ public static class UnityEngine_Rect
         return rect;
     }
 
-    internal static Rect SkipY(this Rect rect, float amount)
+    internal static Rect SkipTop(this Rect rect, float amount)
     {
         rect.yMin += amount;
         return rect;

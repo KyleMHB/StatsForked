@@ -7,6 +7,7 @@ using Stats.Utils.Extensions;
 using Stats.Utils.Widgets;
 using UnityEngine;
 using Verse;
+using static Stats.GUIStyles.TableCell;
 
 namespace Stats.ColumnWorkers.ThingDef;
 
@@ -100,11 +101,10 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
             Text = stuffDef == null
                 ? thingDef.LabelCap.RawText
                 : $"{stuffDef.LabelAsStuff.CapitalizeFirst()} {thingDef.label}";
-            float textWidth = Text.CalcSize(GUIStyles.TableCell.StringNoPad).x;
-            Vector2 iconSize = new(GUIStyles.Text.LineHeight, GUIStyles.Text.LineHeight);
-            _icon = new ThingDefIcon(iconSize, thingDef, stuffDef);
-            _iconWidth = iconSize.x;
-            Width = _iconWidth + GUIStyles.TableCell.ContentSpacing + textWidth;
+            float textWidth = Text.CalcSize(StringNoPad).x;
+            _icon = new ThingDefIcon(thingDef, stuffDef);
+            _iconWidth = _icon.Size.x;
+            Width = _iconWidth + ContentSpacing + textWidth;
         }
 
         public void Draw(Rect rect)
@@ -113,26 +113,20 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
             {
                 rect
                     .ContractedByObjectTableCellPadding()
-                    .CutByX(out Rect iconRect, _iconWidth)
-                    .SkipX(GUIStyles.TableCell.ContentSpacing)
+                    .CutLeft(out Rect iconRect, _iconWidth)
+                    .SkipLeft(ContentSpacing)
                     .TakeRest(out Rect labelRect);
 
-                bool isRepaint = Event.current.IsRepaint();
-
-                if (isRepaint)
+                if (Event.current.IsRepaint())
                 {
                     _icon!.Draw(iconRect);
+                    Text!.Draw(labelRect, StringNoPad);
                 }
 
                 bool iconWasClicked = iconRect.ButtonGhostly();
                 if (iconWasClicked)
                 {
                     _thingDef.OpenInfoDialog(_stuffDef);
-                }
-
-                if (isRepaint)
-                {
-                    labelRect.Label(Text, GUIStyles.TableCell.StringNoPad);
                 }
             }
         }

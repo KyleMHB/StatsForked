@@ -45,7 +45,7 @@ public sealed class HorContainer : Widget
             widgetRect.width = widgetSize.x;
             widgetRect.height = widgetSize.y;
             widget.Draw(widgetRect);
-            rect.x = widgetRect.xMax + gap;
+            widgetRect.x = widgetRect.xMax + gap;
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using Stats.Utils;
 using Stats.Utils.Extensions;
-using Stats.Widgets_Legacy;
+using Stats.Utils.Widgets;
 using UnityEngine;
+using static Stats.GUIStyles.TableCell;
 
 namespace Stats.ColumnWorkers.Cells;
 
@@ -18,39 +19,39 @@ public readonly struct ThingDefCell : IThingDefCell
     public Verse.ThingDef? Value { get; }
     public string? Text { get; }
 
-    private readonly Widget? _icon;
+    private readonly ThingDefIcon? _icon;
     private readonly float _iconWidth;
 
     public ThingDefCell(Verse.ThingDef value)
     {
         Value = value;
         Text = value.LabelCap;
-        _icon = new ThingDefIcon(value);
         float textWidth = Verse.Text.CalcSize(Text).x;
-        float iconWidth = _icon.GetSize().x;
-        Width = iconWidth + GUIStyles.TableCell.ContentSpacing + textWidth;
-        _iconWidth = iconWidth;
+        _icon = new ThingDefIcon(value);
+        _iconWidth = _icon.Size.x;
+        Width = _iconWidth + ContentSpacing + textWidth;
     }
 
     public void Draw(Rect rect)
     {
         if (Value != null)
         {
-            rect = rect.ContractedByObjectTableCellPadding();
+            rect
+                .ContractedByObjectTableCellPadding()
+                .CutLeft(out Rect iconRect, _iconWidth)
+                .SkipLeft(ContentSpacing)
+                .TakeRest(out Rect labelRect);
 
-            Rect iconRect = rect.CutByX(_iconWidth);
-            _icon!.DrawIn(iconRect);
+            if (Event.current.IsRepaint())
+            {
+                _icon!.Draw(iconRect);
+                Text!.Draw(labelRect, StringNoPad);
+            }
+
             bool iconWasClicked = iconRect.ButtonGhostly();
             if (iconWasClicked)
             {
                 Value.OpenInfoDialog();
-            }
-
-            if (Event.current.type == EventType.Repaint)
-            {
-                rect
-                    .CutByX(GUIStyles.TableCell.ContentSpacing)
-                    .Label(Text, GUIStyles.TableCell.String);
             }
         }
     }

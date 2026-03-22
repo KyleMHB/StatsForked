@@ -33,6 +33,10 @@ public readonly struct DefSetCell : IDefSetCell
     {
         if (Text != null)
         {
+            // TODO:
+            // Because table rows now have a constant height, only the first row of text is visible.
+            // One solution is to show the first row and an indicator if there's more.
+            // And if there's more rows, use tooltip to show all rows.
             rect.Label(Text, GUIStyles.TableCell.String);
         }
     }

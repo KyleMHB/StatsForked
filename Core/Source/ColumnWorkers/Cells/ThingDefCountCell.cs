@@ -3,6 +3,7 @@ using Stats.Utils.Extensions;
 using Stats.Utils.Widgets;
 using UnityEngine;
 using Verse;
+using static Stats.GUIStyles.TableCell;
 
 namespace Stats.ColumnWorkers.Cells;
 
@@ -33,34 +34,34 @@ public readonly struct ThingDefCountCell : IThingDefCountCell
         _tooltip = thingDef.LabelCap;
         Count = count;
         _text = count.ToString();
-        float textWidth = _text.CalcSize(GUIStyles.TableCell.NumberNoPad).x;
-        Vector2 iconSize = new(GUIStyles.Text.LineHeight, GUIStyles.Text.LineHeight);
-        _iconWidth = iconSize.x;
-        _icon = new ThingDefIcon(iconSize, thingDef);
-        Width = textWidth + GUIStyles.TableCell.ContentSpacing + _iconWidth;
+        float textWidth = _text.CalcSize(NumberNoPad).x;
+        _icon = new ThingDefIcon(thingDef);
+        _iconWidth = _icon.Size.x;
+        Width = textWidth + ContentSpacing + _iconWidth;
     }
 
     public void Draw(Rect rect)
     {
         if (ThingDef != null && Count != 0m)
         {
-            rect = rect.ContractedByObjectTableCellPadding();
+            rect
+                .ContractedByObjectTableCellPadding()
+                .CutRight(out Rect iconRect, _iconWidth)
+                .SkipRight(ContentSpacing)
+                .TakeRest(out Rect labelRect);
 
-            Rect labelRect = rect.CutByX(rect.width - GUIStyles.TableCell.ContentSpacing - _iconWidth);
             if (Event.current.IsRepaint())
             {
-                labelRect.Label(_text, GUIStyles.TableCell.NumberNoPad);
+                _text!.Draw(labelRect, NumberNoPad);
+                _icon!.Draw(iconRect);
+                iconRect.Tip(_tooltip);
             }
 
-            rect.xMin += GUIStyles.TableCell.ContentSpacing;
-
-            if (Event.current.IsRepaint()) _icon!.Draw(rect);
-            bool iconWasClicked = rect.ButtonGhostly();
+            bool iconWasClicked = iconRect.ButtonGhostly();
             if (iconWasClicked)
             {
                 ThingDef.OpenInfoDialog();
             }
-            rect.Tip(_tooltip);
         }
     }
 }

@@ -44,6 +44,8 @@ public static class GUIUtils
         return rect;
     }
 
+    public static void Draw(this string text, Rect rect, GUIStyle style) => rect.Label(text, style);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Rect DrawTexture(this Rect rect, Texture2D texture)
     {

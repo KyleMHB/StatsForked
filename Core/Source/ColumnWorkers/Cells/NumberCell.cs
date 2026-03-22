@@ -1,6 +1,5 @@
 ﻿using Stats.Utils;
 using UnityEngine;
-using Verse;
 
 namespace Stats.ColumnWorkers.Cells;
 

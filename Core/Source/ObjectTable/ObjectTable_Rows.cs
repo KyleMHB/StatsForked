@@ -29,6 +29,19 @@ internal sealed partial class ObjectTable<TObject>
         _topRowsCount--;
     }
 
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private void HandleRowPin(int index)
+    {
+        if (index < _topRowsCount)
+        {
+            UnpinRow(index);
+        }
+        else
+        {
+            PinRow(index);
+        }
+    }
+
     //private sealed class Row
     //{
     //    public float Height;
