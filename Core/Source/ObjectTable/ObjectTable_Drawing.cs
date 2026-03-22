@@ -74,15 +74,15 @@ internal sealed partial class ObjectTable<TObject>
         Span<int> topRows = stackalloc int[topRowsCount];
         _rows.CopyTo(topRows);
 
-        // Background
-        DrawRows(rect, visibleBottomRowsStart, visibleBottomRowsCount, firstVisibleBottomRowY);
-
         // Layout
-        Rect leftPartRect = rect.CutByX(_leftColumnsWidth);
-        Rect rightPartRect = rect;
-        Rect mouseDragScrollAreaRect = rightPartRect;
-        // Register mouse-drag only below headers to not interfere with them.
-        mouseDragScrollAreaRect.yMin += HeadersRowHeight;
+        rect
+            .CutByX(out Rect leftPartRect, _leftColumnsWidth)
+            .TakeRest(out Rect rightPartRect)
+            .SkipY(HeadersRowHeight)// Register mouse-drag only below headers to not interfere with them.
+            .TakeRest(out Rect mouseDragScrollAreaRect);
+
+        // Background
+        DrawBackground(rect, visibleBottomRowsStart, visibleBottomRowsCount, firstVisibleBottomRowY);
 
         // Left part
         int leftColumnsCount = _leftColumnsCount;
@@ -94,7 +94,7 @@ internal sealed partial class ObjectTable<TObject>
             // Separator line
             if (Event.current.IsRepaint())
             {
-                leftPartRect.DrawBorderRight(GUIStyles.MainTabWindow.BorderColor);
+                leftPartRect.DrawBorderRight(FixedPartSeparatorLineColor);
             }
         }
 
@@ -154,18 +154,18 @@ internal sealed partial class ObjectTable<TObject>
         bool shouldDrawCellsNow = column.Worker.ShouldDrawCellsNow;
 
         // Layout
-        Rect topRect = rect.CutByY(HeadersRowHeight + _topRowsHeight);
-        ref Rect bottomRowsRect = ref rect;
+        rect
+            .CutByY(out Rect topRect, HeadersRowHeight + _topRowsHeight)
+            .TakeRest(out Rect bottomRowsRect);
 
         // Header cell and pinned rows
         using (new GUIClipScope(topRect))
         {
-            topRect.x = 0f;
-            topRect.y = 0f;
-
             // Layout
-            Rect headerCellRect = topRect.CutByY(HeadersRowHeight);
-            ref Rect topRowsRect = ref topRect;
+            topRect
+                .AtZero()
+                .CutByY(out Rect headerCellRect, HeadersRowHeight)
+                .TakeRest(out Rect topRowsRect);
 
             // Header cell
             column.DrawHeaderCell(headerCellRect);
@@ -211,14 +211,15 @@ internal sealed partial class ObjectTable<TObject>
         }
     }
 
-    private void DrawRows(Rect rect, int bottomRowsStart, int bottomRowsCount, float bottomRowsY)
+    private void DrawBackground(Rect rect, int bottomRowsStart, int bottomRowsCount, float bottomRowsY)
     {
         bool isRepaint = Event.current.type == EventType.Repaint;
 
         // Layout
-        Rect headersRowRect = rect.CutByY(HeadersRowHeight);
-        Rect topRowsRect = rect.CutByY(_topRowsHeight);
-        ref Rect bottomRowsRect = ref rect;
+        rect
+            .CutByY(out Rect headersRowRect, HeadersRowHeight)
+            .CutByY(out Rect topRowsRect, _topRowsHeight)
+            .TakeRest(out Rect bottomRowsRect);
 
         // Headers row
         if (isRepaint)
@@ -236,15 +237,16 @@ internal sealed partial class ObjectTable<TObject>
             if (isRepaint)
             {
                 topRowsRect
-                    .HighlightStrong(PinnedRowsBGColor)
-                    .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
+                    .Fill(PinnedRowsBGColor)
+                    .DrawBorderBottom(FixedPartSeparatorLineColor);
             }
 
             // Rows
+            Rect rowRect = topRowsRect with { height = RowHeight };
             for (int i = 0; i < topRowsCount; i++)
             {
-                Rect rowRect = topRowsRect.CutByY(RowHeight);
                 DrawRow(rowRect, i);
+                rowRect.y = rowRect.yMax;
             }
         }
 
@@ -255,7 +257,7 @@ internal sealed partial class ObjectTable<TObject>
         // - Top row's "click" event will never collide with bottom row.
         if (bottomRowsCount > 0)
         {
-            ref Rect rowRect = ref bottomRowsRect;
+            Rect rowRect = bottomRowsRect;
             rowRect.height = RowHeight + bottomRowsY;
             for (int i = 0; i < bottomRowsCount; i++)
             {

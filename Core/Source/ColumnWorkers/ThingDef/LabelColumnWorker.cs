@@ -111,20 +111,28 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
         {
             if (_thingDef != null)
             {
-                rect = rect.ContractedByObjectTableCellPadding();
+                rect
+                    .ContractedByObjectTableCellPadding()
+                    .CutByX(out Rect iconRect, _iconWidth)
+                    .SkipX(GUIStyles.TableCell.ContentSpacing)
+                    .TakeRest(out Rect labelRect);
 
-                Rect iconRect = rect.CutByX(_iconWidth);
-                if (Event.current.IsRepaint()) _icon!.Draw(iconRect);
+                bool isRepaint = Event.current.IsRepaint();
+
+                if (isRepaint)
+                {
+                    _icon!.Draw(iconRect);
+                }
+
                 bool iconWasClicked = iconRect.ButtonGhostly();
                 if (iconWasClicked)
                 {
                     _thingDef.OpenInfoDialog(_stuffDef);
                 }
 
-                if (Event.current.IsRepaint())
+                if (isRepaint)
                 {
-                    rect.xMin += GUIStyles.TableCell.ContentSpacing;
-                    rect.Label(Text, GUIStyles.TableCell.StringNoPad);
+                    labelRect.Label(Text, GUIStyles.TableCell.StringNoPad);
                 }
             }
         }

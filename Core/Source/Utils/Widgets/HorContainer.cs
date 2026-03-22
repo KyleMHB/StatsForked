@@ -37,13 +37,15 @@ public sealed class HorContainer : Widget
     {
         float gap = _gap;
         int widgetsCount = _widgets.Length;
+        ref Rect widgetRect = ref rect;
         for (int i = 0; i < widgetsCount; i++)
         {
             Widget widget = _widgets[i];
-            float widgetWidth = widget.Size.x;
-            Rect widgetRect = rect.CutByX(widgetWidth);
-            rect.xMin += gap;
+            Vector2 widgetSize = widget.Size;
+            widgetRect.width = widgetSize.x;
+            widgetRect.height = widgetSize.y;
             widget.Draw(widgetRect);
+            rect.x = widgetRect.xMax + gap;
         }
     }
 }

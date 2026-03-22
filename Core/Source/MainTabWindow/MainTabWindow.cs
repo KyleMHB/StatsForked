@@ -18,8 +18,11 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     private TableRecord? _activeTable;
     private readonly FloatMenu _tableDefsMenu;
     private static readonly TipSignal _openTableButtonTooltip = "Open table";
-    private static readonly TipSignal _expandButtonTooltip = "Expand / Reset window";
+    private static readonly TipSignal _expandButtonTooltip =
+        "- Double click to Expand / Reset window\n" +
+        "- Pull to change window height";
     private Vector2 _tableListScrollPosition;
+    private bool _isResized;
 
     public MainTabWindow()
     {
@@ -50,33 +53,35 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
 
     public override void DoWindowContents(Rect rect)
     {
-        bool isRepaint = Event.current.type == EventType.Repaint;
-
         // TODO: Remove this after you'll explixitly set word wrap for every inner widget.
         bool wordWrap = Text.WordWrap;
         Text.WordWrap = false;
 
-        Rect toolbarRect = rect.CutByX(ToolbarWidth);
+        // Layout
+        rect
+            .CutByX(out Rect toolbarRect, ToolbarWidth)
+            .TakeRest(out Rect tableRect);
+        toolbarRect
+            .CutByY(out Rect expandButtonRect, 20f)
+            .CutByY(out Rect openTableButtonRect, ToolbarWidth)
+            .TakeRest(out Rect tableListRect);
 
         // Border
-        if (isRepaint) toolbarRect.DrawBorderRight(BorderColor);
+        if (Event.current.IsRepaint())
+        {
+            toolbarRect.DrawBorderRight(BorderColor);
+        }
 
-        // Expand window button
-        Rect expandButtonRect = toolbarRect.CutByY(20f);
+        // Buttons
         DrawExpandButton(expandButtonRect);
-        if (isRepaint) expandButtonRect.DrawBorderBottom(BorderColor);
-
-        // "Open table" button
-        Rect openTableButtonRect = toolbarRect.CutByY(ToolbarWidth);
         DrawOpenTableButton(openTableButtonRect);
-        if (isRepaint) openTableButtonRect.DrawBorderBottom(BorderColor);
 
         // Table list
         // TODO:
         // - Add culling.
         // - Add reordering.
         Rect tableListContentRect = new(0f, 0f, ToolbarWidth, _tables.Count * ToolbarWidth);
-        using (new GUIScrollScope(toolbarRect, ref _tableListScrollPosition, tableListContentRect, false))
+        using (new GUIScrollScope(tableListRect, ref _tableListScrollPosition, tableListContentRect, false))
         {
             int tablesCount = _tables.Count;
             for (int i = 0; i < tablesCount; i++)
@@ -88,7 +93,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         }
 
         // Table
-        _activeTable?.TableWidget.Draw(rect);
+        _activeTable?.TableWidget.Draw(tableRect);
 
         Text.WordWrap = wordWrap;
     }
@@ -99,6 +104,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         {
             rect
                 .HighlightLight()
+                .DrawBorderBottom(BorderColor)
                 .ContractedBy(IconPadding)
                 .DrawTextureFitted(TexButton.Plus)
                 .Tip(_openTableButtonTooltip);
@@ -117,13 +123,33 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             Texture2D texture = _isExpanded ? TexButton.ReorderDown : TexButton.ReorderUp;
             rect
                 .HighlightLight()
+                .DrawBorderBottom(BorderColor)
                 .DrawTextureFitted(texture, 0.7f)
                 .Tip(_expandButtonTooltip);
         }
 
-        if (rect.ButtonGhostly())
+        rect.DummyButtonGhostly();
+
+        if (Mouse.IsOver(rect))
         {
-            ExpandOrResetWindow();
+            if (Event.current.clickCount > 1)
+            {
+                ExpandOrResetWindow();
+            }
+            else if (Event.current.type == EventType.MouseDrag && _isResized == false)
+            {
+                _isResized = true;
+            }
+        }
+
+        if (_isResized)
+        {
+            windowRect.yMin = UI.GUIToScreenPoint(Event.current.mousePosition).y - rect.height / 2f;
+
+            if (Event.current.type == EventType.MouseUp)
+            {
+                _isResized = false;
+            }
         }
     }
 

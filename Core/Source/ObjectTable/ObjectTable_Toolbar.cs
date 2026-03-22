@@ -40,6 +40,15 @@ internal sealed partial class ObjectTable<TObject>
 
         public void Draw(Rect rect)
         {
+            // Layout
+            rect
+                .CutByX(out Rect filtersTabButtonRect, _filtersButton.Width)
+                .SkipX(Style.Gap)
+                .CutByX(out Rect columnsMenuButtonRect, _columnsMenuButton.Width)
+                .SkipX(Style.Gap)
+                .CutByX(out Rect columnPresetsButtonRect, _columnPresetsButton.Width);
+
+            // Background
             if (Event.current.IsRepaint())
             {
                 rect
@@ -47,14 +56,7 @@ internal sealed partial class ObjectTable<TObject>
                     .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
             }
 
-            // Layout
-            Rect filtersTabButtonRect = rect.CutByX(_filtersButton.Width);
-            rect.xMin += Style.Gap;
-            Rect columnsMenuButtonRect = rect.CutByX(_columnsMenuButton.Width);
-            rect.xMin += Style.Gap;
-            Rect columnPresetsButtonRect = rect.CutByX(_columnPresetsButton.Width);
-
-            // Draw
+            // Buttons
             bool filtersTabButtonWasClicked = _filtersButton.Draw(filtersTabButtonRect);
             bool columnsMenuButtonWasClicked = _columnsMenuButton.Draw(columnsMenuButtonRect);
             _columnPresetsButton.Draw(columnPresetsButtonRect);

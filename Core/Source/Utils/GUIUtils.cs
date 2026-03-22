@@ -95,18 +95,18 @@ public static class GUIUtils
         return rect;
     }
 
-    internal static void DrawBorderBottom(this Rect rect, Color color)
+    internal static Rect DrawBorderBottom(this Rect rect, Color color)
     {
-        rect.y = rect.yMax - 1f;
-        rect.height = 1f;
-        rect.Fill(color);
+        (rect with { y = rect.yMax - 1f, height = 1f }).Fill(color);
+
+        return rect;
     }
 
-    internal static void DrawBorderRight(this Rect rect, Color color)
+    internal static Rect DrawBorderRight(this Rect rect, Color color)
     {
-        rect.x = rect.xMax - 1f;
-        rect.width = 1f;
-        rect.Fill(color);
+        (rect with { x = rect.xMax - 1f, width = 1f }).Fill(color);
+
+        return rect;
     }
 
     internal static Rect Fill(this Rect rect, Color color)
@@ -155,6 +155,19 @@ public static class GUIUtils
         }
 
         return GUI.Button(rect, "", Verse.Widgets.EmptyStyle);
+    }
+
+    // This method is not chainable because usually the whole chain is locked behind the same
+    // condition, and usually this condition is Event.current.type == EventType.Repaint, and
+    // mouse-over sounds do not work properly if triggered only on repaint.
+    internal static void DummyButtonGhostly(this Rect rect)
+    {
+        MouseoverSounds.DoRegion(rect);
+
+        if (Event.current.IsRepaint() && Mouse.IsOver(rect))
+        {
+            rect.Highlight();
+        }
     }
 
     internal static bool ButtonTextSubtle(this Rect rect, string text, Color textColor, float padHor = 0f)
