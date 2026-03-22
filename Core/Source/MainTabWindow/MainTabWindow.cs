@@ -10,10 +10,9 @@ namespace Stats;
 
 public sealed partial class MainTabWindow : RimWorld.MainTabWindow
 {
-    public override Vector2 RequestedTabSize => new(UI.screenWidth, base.RequestedTabSize.y);
+    public override Vector2 RequestedTabSize => new(UI.screenWidth, windowRect.height);
 
     protected override float Margin { get => 1f; }
-    private bool _isExpanded;
     private readonly List<TableRecord> _tables;
     private TableRecord? _activeTable;
     private readonly FloatMenu _tableDefsMenu;
@@ -22,10 +21,14 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         "- Double click to Expand / Reset window\n" +
         "- Pull to change window height";
     private Vector2 _tableListScrollPosition;
+    private readonly float _defaultHeight;
+    private bool IsExpanded => windowRect.yMin == 0f;
     private bool _isResized;
 
     public MainTabWindow()
     {
+        _defaultHeight = base.RequestedTabSize.y;
+        windowRect.height = _defaultHeight;
         List<TableDef> tableDefs = DefDatabase<TableDef>.AllDefsListForReading;
         int tableDefsCount = tableDefs.Count;
         List<FloatMenuOption> tableDefsMenuOptions = new(tableDefsCount);
@@ -117,17 +120,11 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         }
     }
 
-    // TODO:
-    // - Window height is reset on close.
-    // - There is a bit of a conflict between manual resizing and maximizing the window by double-clicking on the button.
-    //   If the wndow is resized to maximum height, it still thinks that it is not maximized, and double-clicking on the button
-    //   will cause it to maximize instead of reset.
-    // - When manually resizing the window its top border can go beyond the screen.
     private void DrawExpandButton(Rect rect)
     {
         if (Event.current.IsRepaint())
         {
-            Texture2D texture = _isExpanded ? TexButton.ReorderDown : TexButton.ReorderUp;
+            Texture2D texture = IsExpanded ? TexButton.ReorderDown : TexButton.ReorderUp;
             rect
                 .HighlightLight()
                 .DrawBorderBottom(BorderColor)
@@ -139,9 +136,9 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
 
         if (Mouse.IsOver(rect))
         {
-            if (Event.current.clickCount > 1)
+            if (Event.current is { type: EventType.MouseDown, clickCount: > 1 })
             {
-                ExpandOrResetWindow();
+                ExpandOrReset();
             }
             else if (Event.current.type == EventType.MouseDrag && _isResized == false)
             {
@@ -156,6 +153,11 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             if (Event.current.type == EventType.MouseUp)
             {
                 _isResized = false;
+
+                if (windowRect.yMin < 0f)
+                {
+                    Expand();
+                }
             }
         }
     }
@@ -182,27 +184,34 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         _tables.Remove(table);
     }
 
-    private void ExpandOrResetWindow()
+    private void ExpandOrReset()
     {
-        if (_isExpanded)
+        if (IsExpanded)
         {
-            SetInitialSizeAndPosition();
+            Reset();
         }
         else
         {
-            windowRect.yMin = 0f;
+            Expand();
         }
-
-        _isExpanded = !_isExpanded;
     }
 
-    public override void PreOpen()
+    private void Expand()
     {
-        base.PreOpen();
+        windowRect.yMin = 0f;
+    }
 
-        if (_isExpanded)
-        {
-            windowRect.yMin = 0f;
-        }
+    private void Reset()
+    {
+        windowRect.height = _defaultHeight;
+        SetInitialSizeAndPosition();
+    }
+
+    public override void PostClose()
+    {
+        // Just in case
+        _isResized = false;
+
+        base.PostClose();
     }
 }

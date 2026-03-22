@@ -60,6 +60,10 @@ internal sealed partial class ObjectTable<TObject>
 
     private void DrawVisibleContent(Rect rect)
     {
+        // O(1) scroll content culling.
+        // Since all rows have constant height, we can calculate:
+        // - From what row/y to start drawing rows.
+        // - How many rows to draw.
         Vector2 scrollPosition = _scrollPosition;
         float firstVisibleBottomRowY = -scrollPosition.y % RowHeight;
         int scrolledBottomRowsCount = Mathf.FloorToInt(scrollPosition.y / RowHeight);
