@@ -77,6 +77,7 @@ internal sealed partial class ObjectTable<TObject>
         private readonly TipSignal _tooltip;
         private readonly ObjectTable<TObject> _parent;
         private readonly FloatMenu _menu;
+        private float _resizeWidthOffset;
 
         public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTable<TObject> parent)
         {
@@ -112,72 +113,83 @@ internal sealed partial class ObjectTable<TObject>
 
             _titleWidget.Draw(titleRect);
 
-            Event currentEvent = Event.current;
             bool mouseIsOverRect = Mouse.IsOver(rect);
 
             // Manual resizing
-            if (mouseIsOverRect && currentEvent.shift)
+            if (mouseIsOverRect && Event.current.shift)
             {
-                if (currentEvent.clickCount == 2)
+                if (Event.current.clickCount > 1)
                 {
                     IsWidthSetManually = false;
                 }
-                else if (_parent._currentlyResizedColumn == null && currentEvent.type == EventType.MouseDown)
+                else if (Event.current.type == EventType.MouseDrag && _parent._currentlyResizedColumn == null)
                 {
                     _parent._currentlyResizedColumn = this;
                     IsWidthSetManually = true;
+                    _resizeWidthOffset = rect.xMax - Event.current.mousePosition.x;
                 }
+            }
 
-                if (_parent._currentlyResizedColumn == this && currentEvent.type == EventType.MouseDrag)
+            if (_parent._currentlyResizedColumn == this)
+            {
+                if (Event.current.type == EventType.MouseDrag)
                 {
-                    Width = Mathf.Max(Width + currentEvent.delta.x, RowHeight);
+                    Width = UI.GUIToScreenPoint(Event.current.mousePosition).x - UI.GUIToScreenPoint(rect.position).x + _resizeWidthOffset;
+                    if (Width < RowHeight)
+                    {
+                        Width = RowHeight;
+                    }
+                }
+                else if (Event.current.rawType == EventType.MouseUp || Event.current.shift == false)
+                {
+                    _parent._currentlyResizedColumn = null;
                 }
             }
 
             // Reordering
-            if (mouseIsOverRect && currentEvent.type == EventType.MouseDrag && _parent._currentlyResizedColumn == null && _parent._currentlyReorderedColumn == null)
-            {
-                _parent._currentlyReorderedColumn = this;
-            }
+            //if (mouseIsOverRect && currentEvent.type == EventType.MouseDrag && _parent._currentlyResizedColumn == null && _parent._currentlyReorderedColumn == null)
+            //{
+            //    _parent._currentlyReorderedColumn = this;
+            //}
 
-            if (_parent._currentlyReorderedColumn == this && currentEvent.type == EventType.Repaint)
-            {
-                rect.HighlightSelected();
-            }
+            //if (_parent._currentlyReorderedColumn == this && currentEvent.type == EventType.Repaint)
+            //{
+            //    rect.HighlightSelected();
+            //}
 
-            if (currentEvent.type == EventType.MouseDrag && _parent._currentlyReorderedColumn != null && _parent._currentlyReorderedColumn != this)
-            {
-                // TODO: Check if a column on the left/right is already _parent._currentlyReorderedColumn
-                if (Mouse.IsOver(rect.LeftHalf()))
-                {
-                    _parent._guiAction = () =>
-                    {
-                        _parent._columns.Remove(_parent._currentlyReorderedColumn);
-                        int thisColumnIndex = _parent._columns.IndexOf(this);
-                        _parent._columns.Insert(thisColumnIndex, _parent._currentlyReorderedColumn);
-                    };
-                }
-                else if (Mouse.IsOver(rect.RightHalf()))
-                {
-                    _parent._guiAction = () =>
-                    {
-                        _parent._columns.Remove(_parent._currentlyReorderedColumn);
-                        int thisColumnIndex = _parent._columns.IndexOf(this);
-                        _parent._columns.Insert(thisColumnIndex + 1, _parent._currentlyReorderedColumn);
-                    };
-                }
-            }
+            //if (currentEvent.type == EventType.MouseDrag && _parent._currentlyReorderedColumn != null && _parent._currentlyReorderedColumn != this)
+            //{
+            //    // TODO: Check if a column on the left/right is already _parent._currentlyReorderedColumn
+            //    if (Mouse.IsOver(rect.LeftHalf()))
+            //    {
+            //        _parent._guiAction = () =>
+            //        {
+            //            _parent._columns.Remove(_parent._currentlyReorderedColumn);
+            //            int thisColumnIndex = _parent._columns.IndexOf(this);
+            //            _parent._columns.Insert(thisColumnIndex, _parent._currentlyReorderedColumn);
+            //        };
+            //    }
+            //    else if (Mouse.IsOver(rect.RightHalf()))
+            //    {
+            //        _parent._guiAction = () =>
+            //        {
+            //            _parent._columns.Remove(_parent._currentlyReorderedColumn);
+            //            int thisColumnIndex = _parent._columns.IndexOf(this);
+            //            _parent._columns.Insert(thisColumnIndex + 1, _parent._currentlyReorderedColumn);
+            //        };
+            //    }
+            //}
 
-            if (currentEvent.type == EventType.MouseUp)
-            {
-                _parent._currentlyResizedColumn = null;
-                _parent._currentlyReorderedColumn = null;
-            }
+            //if (Event.current.type == EventType.MouseUp)
+            //{
+            //    _parent._currentlyResizedColumn = null;
+            //    _parent._currentlyReorderedColumn = null;
+            //}
 
             // Pinning/Menu
             if (rect.ButtonGhostly())
             {
-                if (currentEvent.control && Event.current.IsLMB())
+                if (Event.current.control && Event.current.IsLMB())
                 {
                     HandlePin();
                 }

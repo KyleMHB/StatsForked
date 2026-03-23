@@ -50,12 +50,12 @@ public static class GUIStyles
 
     internal static class TableToolbarButton
     {
-        internal const float IconWidth = TableToolbar.Height;
+        internal const float IconWidth = Text.LineHeight;
         internal const float PadHor = Global.Pad;
+        internal const float PadVer = TableCell.PadVer;
         internal static readonly GUIStyle LabelStyle = new(_baseStyle)
         {
             alignment = TextAnchor.MiddleLeft,
-            padding = new RectOffset((int)TableToolbar.Gap, (int)PadHor, 0, 0),
         };
     }
 

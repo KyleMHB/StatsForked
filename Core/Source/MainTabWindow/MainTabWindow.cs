@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Stats.Utils;
 using Stats.Utils.Extensions;
 using Stats.Utils.GUIScopes;
@@ -132,8 +133,6 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
                 .Tip(_expandButtonTooltip);
         }
 
-        rect.DummyButtonGhostly();
-
         if (Mouse.IsOver(rect))
         {
             if (Event.current is { type: EventType.MouseDown, clickCount: > 1 })
@@ -148,16 +147,32 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
 
         if (_isResized)
         {
-            windowRect.yMin = UI.GUIToScreenPoint(Event.current.mousePosition).y - rect.height / 2f;
+            DoResize(rect.height);
+        }
 
-            if (Event.current.type == EventType.MouseUp)
+        // If the mouse cursor goes outside the window during MouseDrag/Up events (haven't tested the other ones),
+        // the window stops recieving input events. Having a GUI control (which ButtonGhostly uses) drawn after
+        // the code that checks for the aforementioned events, fixes the issue. And it just so happens that we need one here.
+        rect.ButtonGhostly();
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private void DoResize(float rectHeight)
+    {
+        // Something eats the MouseUp event (but not the MouseDrag).
+        // So we can use "type/rawType" for MouseDrag event.
+        // But we must use "rawType" for MouseUp event.
+        if (Event.current.type == EventType.MouseDrag)
+        {
+            windowRect.yMin = UI.GUIToScreenPoint(Event.current.mousePosition).y - rectHeight / 2f;
+        }
+        else if (Event.current.rawType == EventType.MouseUp)
+        {
+            _isResized = false;
+
+            if (windowRect.yMin < 0f)
             {
-                _isResized = false;
-
-                if (windowRect.yMin < 0f)
-                {
-                    Expand();
-                }
+                Expand();
             }
         }
     }

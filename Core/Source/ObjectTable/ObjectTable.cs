@@ -18,12 +18,12 @@ internal abstract class ObjectTable
 // Because abstractions are not free.
 internal sealed partial class ObjectTable<TObject> : ObjectTable
 {
-    //private static readonly TipSignal Manual =
-    //    "- Hold (LMB) and move mouse cursor to scroll horizontally.\n" +
-    //    "- Hold [Ctrl] and click on a column's name to pin/unpin it.\n" +
-    //    "- Hold [Ctrl] and click on a row to pin/unpin it.\n" +
-    //    "  - You can pin multiple rows.\n" +
-    //    "  - Pinned rows are unaffected by filters.";
+    private static readonly TipSignal _manual =
+        "- Hold (LMB) and move mouse cursor to scroll horizontally.\n" +
+        "- Hold [Ctrl] and click on a column's name to pin/unpin it.\n" +
+        "- Hold [Ctrl] and click on a row to pin/unpin it.\n" +
+        "  - You can pin multiple rows.\n" +
+        "  - Pinned rows are unaffected by filters.";
     // Filtering
     //public override TableFilterMode FilterMode
     //{
@@ -91,6 +91,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     // Drawing
     private Vector2 _scrollPosition;
     private Action? _guiAction;
+    private bool IsAnyColumnBeingDragged => _currentlyResizedColumn != null || _currentlyReorderedColumn != null;
 
     // Toolbar
     private readonly Toolbar _toolbar;

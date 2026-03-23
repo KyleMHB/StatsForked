@@ -14,18 +14,18 @@ internal sealed partial class ObjectTable<TObject>
     private sealed class Toolbar
     {
         private readonly ObjectTable<TObject> _parent;
-        private readonly ToolbarButton _filtersButton;
-        private readonly ToolbarButton _columnsMenuButton;
-        private readonly ToolbarButton _columnPresetsButton;
+        private readonly Button _filtersButton;
+        private readonly Button _columnsMenuButton;
+        private readonly Button _columnPresetsButton;
         private ColumnsFloatMenu ColumnsMenu => field ??= MakeColumnsMenu();
 
         public Toolbar(ObjectTable<TObject> parent)
         {
             _parent = parent;
-            _filtersButton = new ToolbarButton(Assets.TableFiltersTabIcon, "Filters", 0.7f);
-            _columnsMenuButton = new ToolbarButton(Assets.TableColumnsMenuIcon, "Columns", 0.8f);
+            _filtersButton = new Button(Assets.TableFiltersTabIcon, "Filters");
+            _columnsMenuButton = new Button(Assets.TableColumnsMenuIcon, "Columns");
             // TODO: Do we really need this feature if plan to save opened tables?
-            _columnPresetsButton = new ToolbarButton(Verse.TexButton.Paste, "Apply Preset", 0.8f);
+            _columnPresetsButton = new Button(Verse.TexButton.Paste, "Apply Preset");
         }
 
         public void NotifyColumnAdded(Column column)
@@ -46,7 +46,8 @@ internal sealed partial class ObjectTable<TObject>
                 .SkipLeft(Style.Gap)
                 .CutLeft(out Rect columnsMenuButtonRect, _columnsMenuButton.Width)
                 .SkipLeft(Style.Gap)
-                .CutLeft(out Rect columnPresetsButtonRect, _columnPresetsButton.Width);
+                .CutLeft(out Rect columnPresetsButtonRect, _columnPresetsButton.Width)
+                .CutRight(out Rect infoIconRect, rect.height);
 
             // Background
             if (Event.current.IsRepaint())
@@ -60,6 +61,10 @@ internal sealed partial class ObjectTable<TObject>
             bool filtersTabButtonWasClicked = _filtersButton.Draw(filtersTabButtonRect);
             bool columnsMenuButtonWasClicked = _columnsMenuButton.Draw(columnsMenuButtonRect);
             _columnPresetsButton.Draw(columnPresetsButtonRect);
+            infoIconRect
+                .ContractedBy(ButtonStyle.PadVer)
+                .DrawTextureFitted(TexButton.Info)
+                .Tip(_manual);
 
             // Events
             if (filtersTabButtonWasClicked)
@@ -69,6 +74,40 @@ internal sealed partial class ObjectTable<TObject>
             else if (columnsMenuButtonWasClicked)
             {
                 ColumnsMenu.Open();
+            }
+        }
+
+        private sealed class Button
+        {
+            public readonly float Width;
+
+            private readonly Texture2D _icon;
+            private readonly float _iconScale;
+            private readonly string _label;
+
+            public Button(Texture2D icon, string label, float iconScale = 1f)
+            {
+                _icon = icon;
+                _iconScale = iconScale;
+                _label = label;
+                float labelWidth = label.CalcSize(ButtonStyle.LabelStyle).x;
+                Width = ButtonStyle.PadHor * 2f + ButtonStyle.IconWidth + labelWidth;
+            }
+
+            public bool Draw(Rect rect)
+            {
+                if (Event.current.IsRepaint())
+                {
+                    rect
+                        .ContractedBy(ButtonStyle.PadHor, ButtonStyle.PadVer)
+                        .CutLeft(out Rect iconRect, ButtonStyle.IconWidth)
+                        .TakeRest(out Rect labelRect);
+
+                    iconRect.DrawTextureFitted(_icon, _iconScale);
+                    labelRect.Label(_label, ButtonStyle.LabelStyle);
+                }
+
+                return rect.ButtonGhostly();
             }
         }
 
@@ -182,40 +221,6 @@ internal sealed partial class ObjectTable<TObject>
 
                 return false;
             }
-        }
-    }
-
-    private sealed class ToolbarButton
-    {
-        public readonly float Width;
-
-        private readonly Texture2D _icon;
-        private readonly float _iconScale;
-        private readonly string _label;
-
-        public ToolbarButton(Texture2D icon, string label, float iconScale = 1f)
-        {
-            _icon = icon;
-            _iconScale = iconScale;
-            _label = label;
-            float labelWidth = label.CalcSize(ButtonStyle.LabelStyle).x;
-            Width = ButtonStyle.PadHor + ButtonStyle.IconWidth + labelWidth;
-        }
-
-        public bool Draw(Rect rect)
-        {
-            if (Event.current.IsRepaint())
-            {
-                rect
-                    .SkipLeft(ButtonStyle.PadHor)
-                    .CutLeft(out Rect iconRect, ButtonStyle.IconWidth)
-                    .TakeRest(out Rect labelRect);
-
-                iconRect.DrawTextureFitted(_icon, _iconScale);
-                labelRect.Label(_label, ButtonStyle.LabelStyle);
-            }
-
-            return rect.ButtonGhostly();
         }
     }
 }
