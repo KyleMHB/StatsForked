@@ -92,7 +92,7 @@ internal sealed partial class ObjectTable<TObject>
         rect
             .CutLeft(out Rect leftColumnsRect, _leftColumnsWidth)
             .TakeRest(out Rect rightColumnsRect)
-            .SkipTop(HeadersRowHeight)// Register mouse-drag only below headers to not interfere with them.
+            .CutTop(HeadersRowHeight)// Register mouse-drag only below headers to not interfere with them.
             .TakeRest(out Rect mouseDragScrollAreaRect);
 
         // Rows

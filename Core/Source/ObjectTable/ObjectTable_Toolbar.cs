@@ -43,9 +43,9 @@ internal sealed partial class ObjectTable<TObject>
             // Layout
             rect
                 .CutLeft(out Rect filtersTabButtonRect, _filtersButton.Width)
-                .SkipLeft(Style.Gap)
+                .CutLeft(Style.Gap)
                 .CutLeft(out Rect columnsMenuButtonRect, _columnsMenuButton.Width)
-                .SkipLeft(Style.Gap)
+                .CutLeft(Style.Gap)
                 .CutLeft(out Rect columnPresetsButtonRect, _columnPresetsButton.Width)
                 .CutRight(out Rect infoIconRect, rect.height);
 

@@ -77,6 +77,7 @@ internal sealed partial class ObjectTable<TObject>
         private readonly TipSignal _tooltip;
         private readonly ObjectTable<TObject> _parent;
         private readonly FloatMenu _menu;
+        private bool _isResized;
         private float _resizeWidthOffset;
 
         public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTable<TObject> parent)
@@ -98,17 +99,14 @@ internal sealed partial class ObjectTable<TObject>
         public void DrawHeaderCell(Rect rect)
         {
             Rect titleRect = rect.ContractedByObjectTableCellPadding();
-            float titleWidgetWidth = _titleWidgetWidth;
-            float widthDiff = titleRect.width - titleWidgetWidth;
-            titleRect.width = titleWidgetWidth;
             ColumnType columnType = Worker.Type;
             if (columnType == ColumnType.Number)
             {
-                titleRect.x += widthDiff;
+                titleRect.CutRight(out titleRect, _titleWidgetWidth);
             }
             else if (columnType == ColumnType.Boolean)
             {
-                titleRect.x += widthDiff / 2f;
+                titleRect.CutMidX(out titleRect, _titleWidgetWidth);
             }
 
             _titleWidget.Draw(titleRect);
@@ -116,21 +114,21 @@ internal sealed partial class ObjectTable<TObject>
             bool mouseIsOverRect = Mouse.IsOver(rect);
 
             // Manual resizing
-            if (mouseIsOverRect && Event.current.shift)
+            if (mouseIsOverRect && Event.current.type == EventType.MouseDown && Event.current.shift)
             {
                 if (Event.current.clickCount > 1)
                 {
                     IsWidthSetManually = false;
                 }
-                else if (Event.current.type == EventType.MouseDrag && _parent._currentlyResizedColumn == null)
+                else
                 {
-                    _parent._currentlyResizedColumn = this;
+                    _isResized = true;
                     IsWidthSetManually = true;
                     _resizeWidthOffset = rect.xMax - Event.current.mousePosition.x;
                 }
             }
 
-            if (_parent._currentlyResizedColumn == this)
+            if (_isResized)
             {
                 if (Event.current.type == EventType.MouseDrag)
                 {
@@ -142,7 +140,7 @@ internal sealed partial class ObjectTable<TObject>
                 }
                 else if (Event.current.rawType == EventType.MouseUp || Event.current.shift == false)
                 {
-                    _parent._currentlyResizedColumn = null;
+                    _isResized = false;
                 }
             }
 
@@ -178,12 +176,6 @@ internal sealed partial class ObjectTable<TObject>
             //            _parent._columns.Insert(thisColumnIndex + 1, _parent._currentlyReorderedColumn);
             //        };
             //    }
-            //}
-
-            //if (Event.current.type == EventType.MouseUp)
-            //{
-            //    _parent._currentlyResizedColumn = null;
-            //    _parent._currentlyReorderedColumn = null;
             //}
 
             // Pinning/Menu

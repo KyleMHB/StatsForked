@@ -133,13 +133,13 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
                 .Tip(_expandButtonTooltip);
         }
 
-        if (Mouse.IsOver(rect))
+        if (Event.current.type == EventType.MouseDown && Mouse.IsOver(rect))
         {
-            if (Event.current is { type: EventType.MouseDown, clickCount: > 1 })
+            if (Event.current.clickCount > 1)
             {
                 ExpandOrReset();
             }
-            else if (Event.current.type == EventType.MouseDrag && _isResized == false)
+            else
             {
                 _isResized = true;
             }

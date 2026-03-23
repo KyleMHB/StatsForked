@@ -114,7 +114,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
                 rect
                     .ContractedByObjectTableCellPadding()
                     .CutLeft(out Rect iconRect, _iconWidth)
-                    .SkipLeft(ContentSpacing)
+                    .CutLeft(ContentSpacing)
                     .TakeRest(out Rect labelRect);
 
                 if (Event.current.IsRepaint())

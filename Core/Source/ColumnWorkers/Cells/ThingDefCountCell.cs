@@ -47,7 +47,7 @@ public readonly struct ThingDefCountCell : IThingDefCountCell
             rect
                 .ContractedByObjectTableCellPadding()
                 .CutRight(out Rect iconRect, _iconWidth)
-                .SkipRight(ContentSpacing)
+                .CutRight(ContentSpacing)
                 .TakeRest(out Rect labelRect);
 
             if (Event.current.IsRepaint())
