@@ -7,7 +7,6 @@ using Stats.Utils;
 using Stats.Utils.Extensions;
 using Stats.Utils.Widgets;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Verse;
 using static Stats.GUIStyles.Table;
 
@@ -98,8 +97,8 @@ internal sealed partial class ObjectTable<TObject>
 
         public void DrawHeaderCell(Rect rect)
         {
-            Rect titleRect = rect.ContractedByObjectTableCellPadding();
             ColumnType columnType = Worker.Type;
+            Rect titleRect = rect.ContractedByObjectTableCellPadding();
             if (columnType == ColumnType.Number)
             {
                 titleRect.CutRight(out titleRect, _titleWidgetWidth);
@@ -109,28 +108,43 @@ internal sealed partial class ObjectTable<TObject>
                 titleRect.CutMidX(out titleRect, _titleWidgetWidth);
             }
 
-            _titleWidget.Draw(titleRect);
+            bool isRepaint = Event.current.IsRepaint();
 
-            bool mouseIsOverRect = Mouse.IsOver(rect);
-
-            // Manual resizing
-            if (mouseIsOverRect && Event.current.type == EventType.MouseDown && Event.current.shift)
+            if (isRepaint)
             {
-                if (Event.current.clickCount > 1)
+                if (_parent._currentlyReorderedColumn == this)
                 {
-                    IsWidthSetManually = false;
+                    rect.HighlightSelected();
                 }
-                else
+
+                _titleWidget.Draw(titleRect);
+            }
+
+            if (Event.current.type == EventType.MouseDown && Mouse.IsOver(rect))
+            {
+                if (Event.current.shift)
                 {
-                    _isResized = true;
-                    IsWidthSetManually = true;
-                    _resizeWidthOffset = rect.xMax - Event.current.mousePosition.x;
+                    // Reset size
+                    if (Event.current.clickCount > 1)
+                    {
+                        IsWidthSetManually = false;
+                    }
+                    else // Resize start 
+                    {
+                        _isResized = true;
+                        IsWidthSetManually = true;
+                        _resizeWidthOffset = rect.xMax - Event.current.mousePosition.x;
+                    }
+                }
+                else // Reorder start
+                {
+                    _parent._currentlyReorderedColumn = this;
                 }
             }
 
             if (_isResized)
             {
-                if (Event.current.type == EventType.MouseDrag)
+                if (Event.current.type == EventType.MouseDrag)// Do resize
                 {
                     Width = UI.GUIToScreenPoint(Event.current.mousePosition).x - UI.GUIToScreenPoint(rect.position).x + _resizeWidthOffset;
                     if (Width < RowHeight)
@@ -138,45 +152,74 @@ internal sealed partial class ObjectTable<TObject>
                         Width = RowHeight;
                     }
                 }
-                else if (Event.current.rawType == EventType.MouseUp || Event.current.shift == false)
+                else if (Event.current.rawType == EventType.MouseUp || Event.current.shift == false)// Resize stop
                 {
                     _isResized = false;
                 }
             }
+            else if (
+                OriginalEventUtility.EventType == EventType.MouseDrag
+                && _parent._currentlyReorderedColumn != null
+                && _parent._currentlyReorderedColumn != this
+            ) // Do reorder
+            {
+                float mouseScreenX = UI.GUIToScreenPoint(Event.current.mousePosition).x;
 
-            // Reordering
-            //if (mouseIsOverRect && currentEvent.type == EventType.MouseDrag && _parent._currentlyResizedColumn == null && _parent._currentlyReorderedColumn == null)
-            //{
-            //    _parent._currentlyReorderedColumn = this;
-            //}
+                float leftHalfX = UI.GUIToScreenPoint(new Vector2(rect.x, 0f)).x;
+                float leftHalfXmax = UI.GUIToScreenPoint(new Vector2(rect.x + rect.width / 2f, 0f)).x;
+                bool mouseIsOverLeftHalf = mouseScreenX > leftHalfX && mouseScreenX < leftHalfXmax;
 
-            //if (_parent._currentlyReorderedColumn == this && currentEvent.type == EventType.Repaint)
-            //{
-            //    rect.HighlightSelected();
-            //}
+                float rightHalfX = UI.GUIToScreenPoint(new Vector2(rect.x + rect.width / 2f, 0f)).x;
+                float rightHalfXmax = UI.GUIToScreenPoint(new Vector2(rect.xMax, 0f)).x;
+                bool mouseIsOverRightHalf = mouseScreenX > rightHalfX && mouseScreenX < rightHalfXmax;
 
-            //if (currentEvent.type == EventType.MouseDrag && _parent._currentlyReorderedColumn != null && _parent._currentlyReorderedColumn != this)
-            //{
-            //    // TODO: Check if a column on the left/right is already _parent._currentlyReorderedColumn
-            //    if (Mouse.IsOver(rect.LeftHalf()))
-            //    {
-            //        _parent._guiAction = () =>
-            //        {
-            //            _parent._columns.Remove(_parent._currentlyReorderedColumn);
-            //            int thisColumnIndex = _parent._columns.IndexOf(this);
-            //            _parent._columns.Insert(thisColumnIndex, _parent._currentlyReorderedColumn);
-            //        };
-            //    }
-            //    else if (Mouse.IsOver(rect.RightHalf()))
-            //    {
-            //        _parent._guiAction = () =>
-            //        {
-            //            _parent._columns.Remove(_parent._currentlyReorderedColumn);
-            //            int thisColumnIndex = _parent._columns.IndexOf(this);
-            //            _parent._columns.Insert(thisColumnIndex + 1, _parent._currentlyReorderedColumn);
-            //        };
-            //    }
-            //}
+                if (mouseIsOverLeftHalf)
+                {
+                    _parent._guiAction = () =>
+                    {
+                        int reorderedColumnIndex = _parent._columns.IndexOf(_parent._currentlyReorderedColumn);
+                        bool reorderedColumnIsPinned = reorderedColumnIndex < _parent._leftColumnsCount;
+                        _parent._columns.RemoveAt(reorderedColumnIndex);
+                        if (reorderedColumnIsPinned)
+                        {
+                            _parent._leftColumnsCount--;
+                        }
+
+                        int thisColumnIndex = _parent._columns.IndexOf(this);
+                        bool thisColumnIsPinned = thisColumnIndex < _parent._leftColumnsCount;
+                        _parent._columns.Insert(thisColumnIndex, _parent._currentlyReorderedColumn);
+                        if (thisColumnIsPinned)
+                        {
+                            _parent._leftColumnsCount++;
+                        }
+                    };
+                }
+                else if (mouseIsOverRightHalf)
+                {
+                    _parent._guiAction = () =>
+                    {
+                        int reorderedColumnIndex = _parent._columns.IndexOf(_parent._currentlyReorderedColumn);
+                        bool reorderedColumnIsPinned = reorderedColumnIndex < _parent._leftColumnsCount;
+                        _parent._columns.RemoveAt(reorderedColumnIndex);
+                        if (reorderedColumnIsPinned)
+                        {
+                            _parent._leftColumnsCount--;
+                        }
+
+                        int thisColumnIndex = _parent._columns.IndexOf(this);
+                        bool thisColumnIsPinned = thisColumnIndex < _parent._leftColumnsCount;
+                        _parent._columns.Insert(thisColumnIndex + 1, _parent._currentlyReorderedColumn);
+                        if (thisColumnIsPinned)
+                        {
+                            _parent._leftColumnsCount++;
+                        }
+                    };
+                }
+            }
+            else if (Event.current.rawType == EventType.MouseUp)// Reorder stop
+            {
+                _parent._currentlyReorderedColumn = null;
+            }
 
             // Pinning/Menu
             if (rect.ButtonGhostly())

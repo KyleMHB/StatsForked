@@ -126,14 +126,6 @@ public static class GUIUtils
         return rect.DrawTexture(Verse.Widgets.LightHighlight);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Rect HighlightStrong(this Rect rect, Color color)
-    {
-        Verse.Widgets.DrawStrongHighlight(rect);
-
-        return rect;
-    }
-
     internal static Rect HighlightSelected(this Rect rect)
     {
         return rect.DrawTexture(TexUI.HighlightSelectedTex);
@@ -156,20 +148,7 @@ public static class GUIUtils
             rect.Highlight();
         }
 
-        return GUI.Button(rect, "", Verse.Widgets.EmptyStyle);
-    }
-
-    // This method is not chainable because usually the whole chain is locked behind the same
-    // condition, and usually this condition is Event.current.type == EventType.Repaint, and
-    // mouse-over sounds do not work properly if triggered only on repaint.
-    internal static void DummyButtonGhostly(this Rect rect)
-    {
-        MouseoverSounds.DoRegion(rect);
-
-        if (Event.current.IsRepaint() && Mouse.IsOver(rect))
-        {
-            rect.Highlight();
-        }
+        return GUI.Button(rect, GUIContent.none, GUIStyle.none);
     }
 
     internal static bool ButtonTextSubtle(this Rect rect, string text, Color textColor, float padHor = 0f)
