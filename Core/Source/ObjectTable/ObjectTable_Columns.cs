@@ -146,7 +146,7 @@ internal sealed partial class ObjectTable<TObject>
             {
                 if (Event.current.type == EventType.MouseDrag)// Do resize
                 {
-                    Width = UI.GUIToScreenPoint(Event.current.mousePosition).x - UI.GUIToScreenPoint(rect.position).x + _resizeWidthOffset;
+                    Width = Event.current.mousePosition.x + _resizeWidthOffset;
                     if (Width < RowHeight)
                     {
                         Width = RowHeight;
@@ -158,7 +158,11 @@ internal sealed partial class ObjectTable<TObject>
                 }
             }
             else if (
-                OriginalEventUtility.EventType == EventType.MouseDrag
+                // This check makes it so that unpinned columns that overlap with pinned columns
+                // do not "steal" reordered column.
+                _parent._guiAction == null
+                && OriginalEventUtility.EventType == EventType.MouseDrag
+                // Check if some (other) column is being reordered.
                 && _parent._currentlyReorderedColumn != null
                 && _parent._currentlyReorderedColumn != this
             ) // Do reorder
