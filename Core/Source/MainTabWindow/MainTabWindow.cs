@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Stats.Utils;
 using Stats.Utils.Extensions;
@@ -25,6 +26,8 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     private readonly float _defaultHeight;
     private bool IsExpanded => windowRect.yMin == 0f;
     private bool _isResized;
+    private static readonly MethodInfo _GUI_ReleaseMouseControl = typeof(GUI)
+        .GetMethod("ReleaseMouseControl", BindingFlags.NonPublic | BindingFlags.Static);
 
     public MainTabWindow()
     {
@@ -101,6 +104,20 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         _activeTable?.TableWidget.Draw(tableRect);
 
         Text.WordWrap = wordWrap;
+
+        // If MouseDown happened on a button inside the window,
+        // but MouseUp happened outside the window,
+        // the button will remain active and will "use" MouseDrag events.
+        // So we forcibly deactive all buttons when that happens.
+        // Not that it is a big issue, but i'm not sure what are the consequences
+        // of having a button stuck in active state when it shouldn't,
+        // other than the window remaining active and recieving input events,
+        // and the button "using" MouseDrag events.
+        // It is also just a correct thing to do.
+        if (Event.current.rawType == EventType.MouseUp && Mouse.IsOver(rect) == false)
+        {
+            _GUI_ReleaseMouseControl.Invoke(null, null);
+        }
     }
 
     private void DrawOpenTableButton(Rect rect)
@@ -132,8 +149,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
                 .DrawTextureFitted(texture, 0.7f)
                 .Tip(_expandButtonTooltip);
         }
-
-        if (Event.current.type == EventType.MouseDown && Mouse.IsOver(rect))
+        else if (Event.current.type == EventType.MouseDown && Mouse.IsOver(rect))
         {
             if (Event.current.clickCount > 1)
             {
@@ -144,8 +160,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
                 _isResized = true;
             }
         }
-
-        if (_isResized)
+        else if (_isResized)
         {
             DoResize(rect.height);
         }

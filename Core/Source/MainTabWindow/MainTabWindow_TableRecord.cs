@@ -32,6 +32,7 @@ public sealed partial class MainTabWindow
             _iconScale = tableDef.iconScale;
             _parent = parent;
             List<FloatMenuOption> menuOptions = [
+                // TODO: Although this works (for some reason), we can't just go and modify the collection we are iterating.
                 new FloatMenuOption("Remove", () => parent.RemoveTable(this))
             ];
             _menu = new FloatMenu(menuOptions);

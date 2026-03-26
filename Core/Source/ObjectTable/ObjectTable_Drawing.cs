@@ -119,9 +119,6 @@ internal sealed partial class ObjectTable<TObject>
         }
 
         // Horizontal scrolling
-        // For some reason, when the LMB is being released outside the window during column resizing (probably reordering too),
-        // the window stops recieving EventType.MouseDrag event and Event.current.rawType is being used.
-        // Luckily OriginalEventUtility.EventType still holds the original event type.
         if (OriginalEventUtility.EventType == EventType.MouseDrag && IsAnyColumnBeingDragged == false && Mouse.IsOver(mouseDragScrollAreaRect))
         {
             _scrollPosition.x = Mathf.Max(scrollPosition.x - Event.current.delta.x, 0f);
@@ -302,6 +299,7 @@ internal sealed partial class ObjectTable<TObject>
         if (mouseIsOverRect && Event.current is { control: true, type: EventType.MouseDown })
         {
             HandleRowPin(index);
+            Event.current.Use();
         }
     }
 

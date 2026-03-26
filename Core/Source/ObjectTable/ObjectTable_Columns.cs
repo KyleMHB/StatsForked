@@ -77,7 +77,7 @@ internal sealed partial class ObjectTable<TObject>
         private readonly ObjectTable<TObject> _parent;
         private readonly FloatMenu _menu;
         private bool _isResized;
-        private float _resizeWidthOffset;
+        //private float _resizeWidthOffset;
 
         public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTable<TObject> parent)
         {
@@ -108,9 +108,7 @@ internal sealed partial class ObjectTable<TObject>
                 titleRect.CutMidX(out titleRect, _titleWidgetWidth);
             }
 
-            bool isRepaint = Event.current.IsRepaint();
-
-            if (isRepaint)
+            if (Event.current.IsRepaint())
             {
                 if (_parent._currentlyReorderedColumn == this)
                 {
@@ -119,40 +117,28 @@ internal sealed partial class ObjectTable<TObject>
 
                 _titleWidget.Draw(titleRect);
             }
-
-            if (Event.current.type == EventType.MouseDown && Mouse.IsOver(rect))
+            else if (Event.current.type != EventType.Layout)
             {
-                if (Event.current.shift)
-                {
-                    // Reset size
-                    if (Event.current.clickCount > 1)
-                    {
-                        IsWidthSetManually = false;
-                    }
-                    else // Resize start 
-                    {
-                        _isResized = true;
-                        IsWidthSetManually = true;
-                        _resizeWidthOffset = rect.xMax - Event.current.mousePosition.x;
-                    }
-                }
-                else // Reorder start
-                {
-                    _parent._currentlyReorderedColumn = this;
-                }
+                HandleMouseEvents(rect);
             }
 
-            if (_isResized)
+            rect.ButtonGhostly();
+            rect.Tip(_tooltip);
+        }
+
+        private void HandleMouseEvents(Rect rect)
+        {
+            if (Event.current.type == EventType.MouseDown && Mouse.IsOver(rect))
             {
-                if (Event.current.type == EventType.MouseDrag)// Do resize
+                HandleMouseDown();
+            }
+            else if (_isResized)
+            {
+                if (OriginalEventUtility.EventType == EventType.MouseDrag)// Do resize
                 {
-                    Width = Event.current.mousePosition.x + _resizeWidthOffset;
-                    if (Width < RowHeight)
-                    {
-                        Width = RowHeight;
-                    }
+                    DoResize();
                 }
-                else if (Event.current.rawType == EventType.MouseUp || Event.current.shift == false)// Resize stop
+                else if (Event.current.rawType == EventType.MouseUp || Event.current.shift == false)
                 {
                     _isResized = false;
                 }
@@ -165,80 +151,121 @@ internal sealed partial class ObjectTable<TObject>
                 // Check if some (other) column is being reordered.
                 && _parent._currentlyReorderedColumn != null
                 && _parent._currentlyReorderedColumn != this
-            ) // Do reorder
+            )
             {
-                float mouseScreenX = UI.GUIToScreenPoint(Event.current.mousePosition).x;
-
-                float leftHalfX = UI.GUIToScreenPoint(new Vector2(rect.x, 0f)).x;
-                float leftHalfXmax = UI.GUIToScreenPoint(new Vector2(rect.x + rect.width / 2f, 0f)).x;
-                bool mouseIsOverLeftHalf = mouseScreenX > leftHalfX && mouseScreenX < leftHalfXmax;
-
-                float rightHalfX = UI.GUIToScreenPoint(new Vector2(rect.x + rect.width / 2f, 0f)).x;
-                float rightHalfXmax = UI.GUIToScreenPoint(new Vector2(rect.xMax, 0f)).x;
-                bool mouseIsOverRightHalf = mouseScreenX > rightHalfX && mouseScreenX < rightHalfXmax;
-
-                if (mouseIsOverLeftHalf)
-                {
-                    _parent._guiAction = () =>
-                    {
-                        int reorderedColumnIndex = _parent._columns.IndexOf(_parent._currentlyReorderedColumn);
-                        bool reorderedColumnIsPinned = reorderedColumnIndex < _parent._leftColumnsCount;
-                        _parent._columns.RemoveAt(reorderedColumnIndex);
-                        if (reorderedColumnIsPinned)
-                        {
-                            _parent._leftColumnsCount--;
-                        }
-
-                        int thisColumnIndex = _parent._columns.IndexOf(this);
-                        bool thisColumnIsPinned = thisColumnIndex < _parent._leftColumnsCount;
-                        _parent._columns.Insert(thisColumnIndex, _parent._currentlyReorderedColumn);
-                        if (thisColumnIsPinned)
-                        {
-                            _parent._leftColumnsCount++;
-                        }
-                    };
-                }
-                else if (mouseIsOverRightHalf)
-                {
-                    _parent._guiAction = () =>
-                    {
-                        int reorderedColumnIndex = _parent._columns.IndexOf(_parent._currentlyReorderedColumn);
-                        bool reorderedColumnIsPinned = reorderedColumnIndex < _parent._leftColumnsCount;
-                        _parent._columns.RemoveAt(reorderedColumnIndex);
-                        if (reorderedColumnIsPinned)
-                        {
-                            _parent._leftColumnsCount--;
-                        }
-
-                        int thisColumnIndex = _parent._columns.IndexOf(this);
-                        bool thisColumnIsPinned = thisColumnIndex < _parent._leftColumnsCount;
-                        _parent._columns.Insert(thisColumnIndex + 1, _parent._currentlyReorderedColumn);
-                        if (thisColumnIsPinned)
-                        {
-                            _parent._leftColumnsCount++;
-                        }
-                    };
-                }
+                DoReorder(rect);
             }
-            else if (Event.current.rawType == EventType.MouseUp)// Reorder stop
+            else if (Event.current.rawType == EventType.MouseUp)
             {
                 _parent._currentlyReorderedColumn = null;
             }
+        }
 
-            // Pinning/Menu
-            if (rect.ButtonGhostly())
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void HandleMouseDown()
+        {
+            if (Event.current.IsLMB())
             {
-                if (Event.current.control && Event.current.IsLMB())
+                if (Event.current.control)
                 {
                     HandlePin();
                 }
-                else if (Event.current.IsRMB())
+                else if (Event.current.shift)
                 {
-                    _menu.Open();
+                    // Reset size
+                    if (Event.current.clickCount > 1)
+                    {
+                        IsWidthSetManually = false;
+                    }
+                    else // Resize start 
+                    {
+                        _isResized = true;
+                        IsWidthSetManually = true;
+                        //_resizeWidthOffset = rect.xMax - Event.current.mousePosition.x;
+                    }
+                }
+                else // Reorder start
+                {
+                    _parent._currentlyReorderedColumn = this;
                 }
             }
+            else if (Event.current.IsRMB())
+            {
+                _menu.Open();
+            }
+        }
 
-            rect.Tip(_tooltip);
+        private void DoResize()
+        {
+            //Width = Event.current.mousePosition.x + _resizeWidthOffset;
+            // Simply setting column's width to current mouse position (+starting offset)
+            // feels more "snappy", but has a bug:
+            // When the table is scrolled all the way to the right and we start reducing
+            // the width of a column, it starts pulling its left side to the right, which
+            // results in double width reduction. Using delta.x instead, feels less responsive,
+            // but is more reliable.
+            Width += Event.current.delta.x;
+            if (Width < RowHeight)
+            {
+                Width = RowHeight;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void DoReorder(Rect rect)
+        {
+            float mouseScreenX = UI.GUIToScreenPoint(Event.current.mousePosition).x;
+
+            float leftHalfX = UI.GUIToScreenPoint(new Vector2(rect.x, 0f)).x;
+            float leftHalfXmax = UI.GUIToScreenPoint(new Vector2(rect.x + rect.width / 2f, 0f)).x;
+            bool mouseIsOverLeftHalf = mouseScreenX > leftHalfX && mouseScreenX < leftHalfXmax;
+
+            float rightHalfX = UI.GUIToScreenPoint(new Vector2(rect.x + rect.width / 2f, 0f)).x;
+            float rightHalfXmax = UI.GUIToScreenPoint(new Vector2(rect.xMax, 0f)).x;
+            bool mouseIsOverRightHalf = mouseScreenX > rightHalfX && mouseScreenX < rightHalfXmax;
+
+            if (mouseIsOverLeftHalf)
+            {
+                _parent._guiAction = () =>
+                {
+                    int reorderedColumnIndex = _parent._columns.IndexOf(_parent._currentlyReorderedColumn);
+                    bool reorderedColumnIsPinned = reorderedColumnIndex < _parent._leftColumnsCount;
+                    _parent._columns.RemoveAt(reorderedColumnIndex);
+                    if (reorderedColumnIsPinned)
+                    {
+                        _parent._leftColumnsCount--;
+                    }
+
+                    int thisColumnIndex = _parent._columns.IndexOf(this);
+                    bool thisColumnIsPinned = thisColumnIndex < _parent._leftColumnsCount;
+                    _parent._columns.Insert(thisColumnIndex, _parent._currentlyReorderedColumn);
+                    if (thisColumnIsPinned)
+                    {
+                        _parent._leftColumnsCount++;
+                    }
+                };
+            }
+            else if (mouseIsOverRightHalf)
+            {
+                _parent._guiAction = () =>
+                {
+                    int reorderedColumnIndex = _parent._columns.IndexOf(_parent._currentlyReorderedColumn);
+                    bool reorderedColumnIsPinned = reorderedColumnIndex < _parent._leftColumnsCount;
+                    _parent._columns.RemoveAt(reorderedColumnIndex);
+                    if (reorderedColumnIsPinned)
+                    {
+                        _parent._leftColumnsCount--;
+                    }
+
+                    int thisColumnIndex = _parent._columns.IndexOf(this);
+                    bool thisColumnIsPinned = thisColumnIndex < _parent._leftColumnsCount;
+                    _parent._columns.Insert(thisColumnIndex + 1, _parent._currentlyReorderedColumn);
+                    if (thisColumnIsPinned)
+                    {
+                        _parent._leftColumnsCount++;
+                    }
+                };
+            }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
