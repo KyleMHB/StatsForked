@@ -101,7 +101,7 @@ internal sealed partial class ObjectTable<TObject>
         // Pinned columns
         if (_leftColumnsCount > 0)
         {
-            DrawColumns(leftColumnsRect, LeftColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
+            DrawColumns(leftColumnsRect, Vector2.zero, LeftColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
             // Separator line
             if (Event.current.IsRepaint())
             {
@@ -112,23 +112,24 @@ internal sealed partial class ObjectTable<TObject>
         // Unpinned columns
         if (RightColumnsCount > 0)
         {
-            using (new GUIClipScope(rightColumnsRect))
+            using (new GUIClipScope(rightColumnsRect, new Vector2(-scrollPosition.x, 0f)))
             {
-                DrawColumns(rightColumnsRect with { xMin = -scrollPosition.x, y = 0f }, RightColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
+                DrawColumns(rightColumnsRect with { x = 0f, y = 0f }, scrollPosition, RightColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
             }
         }
 
         // Horizontal scrolling
-        if (OriginalEventUtility.EventType == EventType.MouseDrag && IsAnyColumnBeingDragged == false && Mouse.IsOver(mouseDragScrollAreaRect))
+        if (OriginalEventUtility.EventType == EventType.MouseDrag && Mouse.IsOver(mouseDragScrollAreaRect))
         {
             _scrollPosition.x = Mathf.Max(scrollPosition.x - Event.current.delta.x, 0f);
         }
     }
 
-    private void DrawColumns(Rect rect, ReadOnlyListSegment<Column> columns, Span<int> topRows, Span<int> bottomRows, float bottomRowsY)
+    private void DrawColumns(Rect rect, Vector2 scrollPosition, ReadOnlyListSegment<Column> columns, Span<int> topRows, Span<int> bottomRows, float bottomRowsY)
     {
         bool isRepaint = Event.current.IsRepaint();
-        float rectXmax = rect.xMax;
+        float xMin = rect.xMin + scrollPosition.x;
+        float xMax = rect.xMax + scrollPosition.x;
         ref Rect columnRect = ref rect;
         int columnsCount = columns.Length;
         for (int i = 0; i < columnsCount; i++)
@@ -137,7 +138,7 @@ internal sealed partial class ObjectTable<TObject>
             columnRect.width = column.Width;
             float columnRectXmax = columnRect.xMax;
 
-            if (columnRectXmax > 0f)
+            if (columnRectXmax > xMin)
             {
                 DrawColumn(columnRect, column, topRows, bottomRows, bottomRowsY);
                 if (isRepaint)
@@ -146,7 +147,7 @@ internal sealed partial class ObjectTable<TObject>
                 }
             }
 
-            if (columnRectXmax >= rectXmax)
+            if (columnRectXmax >= xMax)
             {
                 break;
             }
@@ -186,9 +187,9 @@ internal sealed partial class ObjectTable<TObject>
         // Unpinned rows
         if (shouldDrawCellsNow && bottomRows.Length > 0)
         {
-            using (new GUIClipScope(bottomRowsRect))
+            using (new GUIClipScope(bottomRowsRect, new Vector2(0f, bottomRowsY)))
             {
-                DrawColumnCells(bottomRowsRect with { x = 0f, yMin = bottomRowsY }, column.Worker, bottomRows);
+                DrawColumnCells(bottomRowsRect with { x = 0f, y = 0f }, column.Worker, bottomRows);
             }
         }
     }

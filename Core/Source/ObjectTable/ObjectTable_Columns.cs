@@ -146,6 +146,7 @@ internal sealed partial class ObjectTable<TObject>
             else if (
                 // This check makes it so that unpinned columns that overlap with pinned columns
                 // do not "steal" reordered column.
+
                 _parent._guiAction == null
                 && OriginalEventUtility.EventType == EventType.MouseDrag
                 // Check if some (other) column is being reordered.
@@ -214,17 +215,10 @@ internal sealed partial class ObjectTable<TObject>
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void DoReorder(Rect rect)
         {
-            float mouseScreenX = UI.GUIToScreenPoint(Event.current.mousePosition).x;
+            float mouseX = Event.current.mousePosition.x;
+            float xMiddle = rect.x + rect.width / 2f;
 
-            float leftHalfX = UI.GUIToScreenPoint(new Vector2(rect.x, 0f)).x;
-            float leftHalfXmax = UI.GUIToScreenPoint(new Vector2(rect.x + rect.width / 2f, 0f)).x;
-            bool mouseIsOverLeftHalf = mouseScreenX > leftHalfX && mouseScreenX < leftHalfXmax;
-
-            float rightHalfX = UI.GUIToScreenPoint(new Vector2(rect.x + rect.width / 2f, 0f)).x;
-            float rightHalfXmax = UI.GUIToScreenPoint(new Vector2(rect.xMax, 0f)).x;
-            bool mouseIsOverRightHalf = mouseScreenX > rightHalfX && mouseScreenX < rightHalfXmax;
-
-            if (mouseIsOverLeftHalf)
+            if (rect.x < mouseX && mouseX < xMiddle)
             {
                 _parent._guiAction = () =>
                 {
@@ -245,7 +239,7 @@ internal sealed partial class ObjectTable<TObject>
                     }
                 };
             }
-            else if (mouseIsOverRightHalf)
+            else if (xMiddle < mouseX && mouseX < rect.xMax)
             {
                 _parent._guiAction = () =>
                 {
