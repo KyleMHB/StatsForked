@@ -79,7 +79,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     private int RightColumnsCount => _columns.Count - _leftColumnsCount;
     private ReadOnlyListSegment<Column> LeftColumns => new(_columns, 0, _leftColumnsCount);
     private ReadOnlyListSegment<Column> RightColumns => new(_columns, _leftColumnsCount, RightColumnsCount);
-    private Column? _currentlyReorderedColumn;
+    private Column? _reorderedColumn;
 
     // Layout
     private float _topRowsHeight;
@@ -89,7 +89,10 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
     // Drawing
     private Vector2 _scrollPosition;
-    private Action? _guiAction;
+    // A way to defer any code that would otherwise modify
+    // the collection that is currently being iterated over.
+    // Primarily GUI event handlers.
+    private Action? _beforeDraw;
 
     // Toolbar
     private readonly Toolbar _toolbar;

@@ -134,7 +134,7 @@ internal sealed partial class ObjectTable<TObject>
 
             public void NotifyColumnAdded(Column column)
             {
-                ColumnDef columnDef = column.Worker.Def;
+                ColumnDef columnDef = column.Def;
                 int optionsCount = options.Count;
                 for (int i = 0; i < optionsCount; i++)
                 {
@@ -149,7 +149,7 @@ internal sealed partial class ObjectTable<TObject>
 
             public void NotifyColumnRemoved(Column column)
             {
-                ColumnDef columnDef = column.Worker.Def;
+                ColumnDef columnDef = column.Def;
                 int optionsCount = options.Count;
                 for (int i = 0; i < optionsCount; i++)
                 {
@@ -174,7 +174,7 @@ internal sealed partial class ObjectTable<TObject>
                 tooltip = columnDef.description;
                 action = () =>
                 {
-                    if (parent._columns.Find(column => column.Worker.Def == columnDef) != null)
+                    if (parent._columns.Find(column => column.Def == columnDef) != null)
                     {
                         parent.RemoveColumn(columnDef);
                     }
@@ -183,7 +183,7 @@ internal sealed partial class ObjectTable<TObject>
                         parent.AddColumn(columnDef);
                     }
                 };
-                if (parent._columns.Find(column => column.Worker.Def == columnDef) == null)
+                if (parent._columns.Find(column => column.Def == columnDef) == null)
                 {
                     Unselect();
                 }

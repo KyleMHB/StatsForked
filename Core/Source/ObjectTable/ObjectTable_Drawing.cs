@@ -1,5 +1,4 @@
 ﻿using System;
-using Stats.ColumnWorkers;
 using Stats.Utils;
 using Stats.Utils.Extensions;
 using Stats.Utils.GUIScopes;
@@ -13,10 +12,10 @@ internal sealed partial class ObjectTable<TObject>
 {
     internal override void Draw(Rect rect)
     {
-        if (_guiAction != null)
+        if (_beforeDraw != null)
         {
-            _guiAction.Invoke();
-            _guiAction = null;
+            _beforeDraw.Invoke();
+            _beforeDraw = null;
         }
 
         if (Event.current.type == EventType.Layout)
