@@ -5,6 +5,7 @@ using Stats.ColumnWorkers;
 using Stats.TableWorkers;
 using Stats.Utils;
 using Stats.Utils.Extensions;
+using Stats.Utils.GUIScopes;
 using Stats.Utils.Widgets;
 using UnityEngine;
 using Verse;
@@ -95,7 +96,46 @@ internal sealed partial class ObjectTable<TObject>
             ]);
         }
 
-        public void DrawHeaderCell(Rect rect)
+        public void Draw(Rect rect, Span<int> topRows, Span<int> bottomRows, float bottomRowsY, bool mouseXIsInVisibleArea)
+        {
+            ColumnWorker<TObject> worker = Worker;
+            bool shouldDrawCellsNow = worker.ShouldDrawCellsNow;
+
+            // Layout
+            rect
+                .CutTop(out Rect topRect, HeadersRowHeight + _parent._topRowsHeight)
+                .TakeRest(out Rect bottomRowsRect);
+
+            // Header cell and pinned rows
+            using (new GUIClipScope(topRect))
+            {
+                // Layout
+                topRect
+                    .AtZero()
+                    .CutTop(out Rect headerCellRect, HeadersRowHeight)
+                    .TakeRest(out Rect topRowsRect);
+
+                // Header cell
+                DrawHeaderCell(headerCellRect, mouseXIsInVisibleArea);
+
+                // Pinned rows
+                if (shouldDrawCellsNow && topRows.Length > 0)
+                {
+                    DrawCells(topRowsRect, topRows);
+                }
+            }
+
+            // Unpinned rows
+            if (shouldDrawCellsNow && bottomRows.Length > 0)
+            {
+                using (new GUIClipScope(bottomRowsRect, new Vector2(0f, bottomRowsY)))
+                {
+                    DrawCells(bottomRowsRect with { x = 0f, y = 0f }, bottomRows);
+                }
+            }
+        }
+
+        private void DrawHeaderCell(Rect rect, bool mouseXIsInVisibleArea)
         {
             ColumnType columnType = Worker.Type;
             Rect titleRect = rect.ContractedByObjectTableCellPadding();
@@ -119,14 +159,37 @@ internal sealed partial class ObjectTable<TObject>
             }
             else if (Event.current.type != EventType.Layout)
             {
-                HandleMouseEvents(rect);
+                HandleMouseEvents(rect, mouseXIsInVisibleArea);
             }
 
             rect.ButtonGhostly();
             rect.Tip(_tooltip);
         }
 
-        private void HandleMouseEvents(Rect rect)
+        private void DrawCells(Rect rect, Span<int> rows)
+        {
+            ColumnWorker<TObject> worker = Worker;
+            ref Rect cellRect = ref rect;
+            cellRect.height = RowHeight;
+            int rowsCount = rows.Length;
+            for (int i = 0; i < rowsCount; i++)
+            {
+                try
+                {
+                    worker.DrawCell(cellRect, rows[i]);
+                }
+                catch
+                {
+                    // TODO:
+                    // - Add tooltip with exception's message.
+                    // - Make the whole thing into a separate non-inlineable method.
+                    cellRect.Fill(Color.red);
+                }
+                cellRect.y = cellRect.yMax;
+            }
+        }
+
+        private void HandleMouseEvents(Rect rect, bool mouseXIsInVisibleArea)
         {
             if (Event.current.type == EventType.MouseDown && Mouse.IsOver(rect))
             {
@@ -144,10 +207,11 @@ internal sealed partial class ObjectTable<TObject>
                 }
             }
             else if (
-                // This check makes it so that unpinned columns that overlap with pinned columns
+                // This check makes it so that unpinned columns that
+                // overlap with pinned columns due to scroll
                 // do not "steal" reordered column.
-
-                _parent._guiAction == null
+                mouseXIsInVisibleArea
+                && _parent._guiAction == null
                 && OriginalEventUtility.EventType == EventType.MouseDrag
                 // Check if some (other) column is being reordered.
                 && _parent._currentlyReorderedColumn != null

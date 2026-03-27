@@ -114,7 +114,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         // other than the window remaining active and recieving input events,
         // and the button "using" MouseDrag events.
         // It is also just a correct thing to do.
-        if (Event.current.rawType == EventType.MouseUp && Mouse.IsOver(rect) == false)
+        if (Event.current.rawType == EventType.MouseUp && Mouse.IsOver(rect) == false && Find.WindowStack.GetsInput(this))
         {
             _GUI_ReleaseMouseControl.Invoke(null, null);
         }

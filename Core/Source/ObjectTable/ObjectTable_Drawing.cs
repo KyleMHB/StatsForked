@@ -128,8 +128,11 @@ internal sealed partial class ObjectTable<TObject>
     private void DrawColumns(Rect rect, Vector2 scrollPosition, ReadOnlyListSegment<Column> columns, Span<int> topRows, Span<int> bottomRows, float bottomRowsY)
     {
         bool isRepaint = Event.current.IsRepaint();
-        float xMin = rect.xMin + scrollPosition.x;
-        float xMax = rect.xMax + scrollPosition.x;
+        float scrollX = scrollPosition.x;
+        float xMin = rect.xMin + scrollX;
+        float xMax = rect.xMax + scrollX;
+        float mouseX = Event.current.mousePosition.x;
+        bool mouseXIsInVisibleArea = xMin < mouseX && mouseX < xMax;
         ref Rect columnRect = ref rect;
         int columnsCount = columns.Length;
         for (int i = 0; i < columnsCount; i++)
@@ -140,7 +143,7 @@ internal sealed partial class ObjectTable<TObject>
 
             if (columnRectXmax > xMin)
             {
-                DrawColumn(columnRect, column, topRows, bottomRows, bottomRowsY);
+                column.Draw(columnRect, topRows, bottomRows, bottomRowsY, mouseXIsInVisibleArea);
                 if (isRepaint)
                 {
                     columnRect.DrawBorderRight(ColumnSeparatorLineColor);
@@ -153,66 +156,6 @@ internal sealed partial class ObjectTable<TObject>
             }
 
             columnRect.x = columnRectXmax;
-        }
-    }
-
-    private void DrawColumn(Rect rect, Column column, Span<int> topRows, Span<int> bottomRows, float bottomRowsY)
-    {
-        bool shouldDrawCellsNow = column.Worker.ShouldDrawCellsNow;
-
-        // Layout
-        rect
-            .CutTop(out Rect topRect, HeadersRowHeight + _topRowsHeight)
-            .TakeRest(out Rect bottomRowsRect);
-
-        // Header cell and pinned rows
-        using (new GUIClipScope(topRect))
-        {
-            // Layout
-            topRect
-                .AtZero()
-                .CutTop(out Rect headerCellRect, HeadersRowHeight)
-                .TakeRest(out Rect topRowsRect);
-
-            // Header cell
-            column.DrawHeaderCell(headerCellRect);
-
-            // Pinned rows
-            if (shouldDrawCellsNow && topRows.Length > 0)
-            {
-                DrawColumnCells(topRowsRect, column.Worker, topRows);
-            }
-        }
-
-        // Unpinned rows
-        if (shouldDrawCellsNow && bottomRows.Length > 0)
-        {
-            using (new GUIClipScope(bottomRowsRect, new Vector2(0f, bottomRowsY)))
-            {
-                DrawColumnCells(bottomRowsRect with { x = 0f, y = 0f }, column.Worker, bottomRows);
-            }
-        }
-    }
-
-    private void DrawColumnCells(Rect rect, ColumnWorker<TObject> columnWorker, Span<int> rows)
-    {
-        ref Rect cellRect = ref rect;
-        cellRect.height = RowHeight;
-        int rowsCount = rows.Length;
-        for (int i = 0; i < rowsCount; i++)
-        {
-            try
-            {
-                columnWorker.DrawCell(cellRect, rows[i]);
-            }
-            catch
-            {
-                // TODO:
-                // - Add tooltip with exception's message.
-                // - Make the whole thing into a separate non-inlineable method.
-                cellRect.Fill(Color.red);
-            }
-            cellRect.y = cellRect.yMax;
         }
     }
 
