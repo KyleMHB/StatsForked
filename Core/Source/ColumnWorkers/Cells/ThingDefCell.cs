@@ -42,7 +42,7 @@ public readonly struct ThingDefCell : IThingDefCell
                 .CutLeft(ContentSpacing)
                 .TakeRest(out Rect labelRect);
 
-            if (Event.current.IsRepaint())
+            if (Event.current.type == EventType.Repaint)
             {
                 _icon!.Draw(iconRect);
                 Text!.Draw(labelRect, StringNoPad);

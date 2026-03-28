@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using LudeonTK;
-using Stats.Utils.Extensions;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -143,7 +143,7 @@ public static class GUIUtils
     {
         MouseoverSounds.DoRegion(rect);
 
-        if (Event.current.IsRepaint() && Mouse.IsOver(rect))
+        if (Event.current.type == EventType.Repaint && Mouse.IsOver(rect))
         {
             rect.Highlight();
         }
@@ -211,5 +211,14 @@ public static class GUIUtils
         GUI.color = origGUIColor;
 
         return wasClicked;
+    }
+
+    private static readonly MethodInfo _GUI_ReleaseMouseControl = typeof(GUI)
+        .GetMethod("ReleaseMouseControl", BindingFlags.NonPublic | BindingFlags.Static);
+
+    internal static void ReleaseMouseControl()
+    {
+        _GUI_ReleaseMouseControl.Invoke(null, null);
+        Log.Message("ReleaseMouseControl");
     }
 }

@@ -19,7 +19,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
 {
     public override ColumnType Type => ColumnType.String;
     public override ColumnDef Def => columnDef;
-    public override bool ShouldDrawCellsNow => Event.current.IsRepaint() || Event.current.IsLMB();
+    public override bool ShouldDrawCellsNow => Event.current.type == EventType.Repaint || Event.current.IsLMB();
 
     protected override LabelCell MakeCell(DefBasedObject @object)
     {
@@ -117,7 +117,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
                     .CutLeft(ContentSpacing)
                     .TakeRest(out Rect labelRect);
 
-                if (Event.current.IsRepaint())
+                if (Event.current.type == EventType.Repaint)
                 {
                     _icon!.Draw(iconRect);
                     Text!.Draw(labelRect, StringNoPad);

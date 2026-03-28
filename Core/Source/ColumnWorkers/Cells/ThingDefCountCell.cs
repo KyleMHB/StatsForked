@@ -50,7 +50,7 @@ public readonly struct ThingDefCountCell : IThingDefCountCell
                 .CutRight(ContentSpacing)
                 .TakeRest(out Rect labelRect);
 
-            if (Event.current.IsRepaint())
+            if (Event.current.type == EventType.Repaint)
             {
                 _text!.Draw(labelRect, NumberNoPad);
                 _icon!.Draw(iconRect);

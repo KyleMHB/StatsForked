@@ -12,6 +12,8 @@ namespace Stats;
 internal abstract class ObjectTable
 {
     internal abstract void Draw(Rect rect);
+
+    internal abstract void NotifyParentWindowClosed();
 }
 
 // Lack of abstraction/leaking abstractions is (almost) intentional here.
@@ -93,6 +95,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     // the collection that is currently being iterated over.
     // Primarily GUI event handlers.
     private Action? _beforeDraw;
+    private bool _rightPartIsPanned;
 
     // Toolbar
     private readonly Toolbar _toolbar;
@@ -151,5 +154,19 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     private static void WarnIncompatibleColumn(string columnName, string tableName)
     {
         Log.Warning($"Column \"${columnName}\" is not compatible with table \"${tableName}\", because it does not implement \"${typeof(ColumnWorker<TObject>).Name}\".");
+    }
+
+    internal override void NotifyParentWindowClosed()
+    {
+        _rightPartIsPanned = false;
+        _reorderedColumn = null;
+        for (int i = 0; i < _columns.Count; i++)
+        {
+            Column column = _columns[i];
+            if (column.IsResized)
+            {
+                column.IsResized = false;
+            }
+        }
     }
 }

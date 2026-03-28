@@ -50,7 +50,7 @@ internal sealed partial class ObjectTable<TObject>
                 .CutRight(out Rect infoIconRect, rect.height);
 
             // Background
-            if (Event.current.IsRepaint())
+            if (Event.current.type == EventType.Repaint)
             {
                 rect
                     .HighlightLight()
@@ -96,7 +96,7 @@ internal sealed partial class ObjectTable<TObject>
 
             public bool Draw(Rect rect)
             {
-                if (Event.current.IsRepaint())
+                if (Event.current.type == EventType.Repaint)
                 {
                     rect
                         .ContractedBy(ButtonStyle.PadHor, ButtonStyle.PadVer)

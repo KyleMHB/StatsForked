@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Stats.Utils;
 using Stats.Utils.Extensions;
@@ -26,8 +25,6 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     private readonly float _defaultHeight;
     private bool IsExpanded => windowRect.yMin == 0f;
     private bool _isResized;
-    private static readonly MethodInfo _GUI_ReleaseMouseControl = typeof(GUI)
-        .GetMethod("ReleaseMouseControl", BindingFlags.NonPublic | BindingFlags.Static);
 
     public MainTabWindow()
     {
@@ -60,6 +57,8 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
 
     public override void DoWindowContents(Rect rect)
     {
+        Event @event = Event.current;
+
         // TODO: Remove this after you'll explixitly set word wrap for every inner widget.
         bool wordWrap = Text.WordWrap;
         Text.WordWrap = false;
@@ -74,7 +73,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             .TakeRest(out Rect tableListRect);
 
         // Border
-        if (Event.current.IsRepaint())
+        if (@event.type == EventType.Repaint)
         {
             toolbarRect.DrawBorderRight(BorderColor);
         }
@@ -104,25 +103,11 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         _activeTable?.TableWidget.Draw(tableRect);
 
         Text.WordWrap = wordWrap;
-
-        // If MouseDown happened on a button inside the window,
-        // but MouseUp happened outside the window,
-        // the button will remain active and will "use" MouseDrag events.
-        // So we forcibly deactive all buttons when that happens.
-        // Not that it is a big issue, but i'm not sure what are the consequences
-        // of having a button stuck in active state when it shouldn't,
-        // other than the window remaining active and recieving input events,
-        // and the button "using" MouseDrag events.
-        // It is also just a correct thing to do.
-        if (Event.current.rawType == EventType.MouseUp && Mouse.IsOver(rect) == false && Find.WindowStack.GetsInput(this))
-        {
-            _GUI_ReleaseMouseControl.Invoke(null, null);
-        }
     }
 
     private void DrawOpenTableButton(Rect rect)
     {
-        if (Event.current.IsRepaint())
+        if (Event.current.type == EventType.Repaint)
         {
             rect
                 .HighlightLight()
@@ -140,7 +125,9 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
 
     private void DrawExpandButton(Rect rect)
     {
-        if (Event.current.IsRepaint())
+        Event @event = Event.current;
+
+        if (@event.type == EventType.Repaint)
         {
             Texture2D texture = IsExpanded ? TexButton.ReorderDown : TexButton.ReorderUp;
             rect
@@ -149,9 +136,9 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
                 .DrawTextureFitted(texture, 0.7f)
                 .Tip(_expandButtonTooltip);
         }
-        else if (Event.current.type == EventType.MouseDown && Mouse.IsOver(rect))
+        else if (@event.type == EventType.MouseDown && Mouse.IsOver(rect))
         {
-            if (Event.current.clickCount > 1)
+            if (@event.clickCount > 1)
             {
                 ExpandOrReset();
             }
@@ -174,14 +161,16 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     [MethodImpl(MethodImplOptions.NoInlining)]
     private void DoResize(float rectHeight)
     {
+        Event @event = Event.current;
+
         // Something eats the MouseUp event (but not the MouseDrag).
         // So we can use "type/rawType" for MouseDrag event.
         // But we must use "rawType" for MouseUp event.
-        if (Event.current.type == EventType.MouseDrag)
+        if (@event.type == EventType.MouseDrag)
         {
-            windowRect.yMin = UI.GUIToScreenPoint(Event.current.mousePosition).y - rectHeight / 2f;
+            windowRect.yMin = UI.GUIToScreenPoint(@event.mousePosition).y - rectHeight / 2f;
         }
-        else if (Event.current.rawType == EventType.MouseUp)
+        else if (@event.rawType == EventType.MouseUp)
         {
             _isResized = false;
 
@@ -189,6 +178,9 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             {
                 Expand();
             }
+
+            GUIUtils.ReleaseMouseControl();
+            @event.Use();
         }
     }
 
@@ -239,8 +231,9 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
 
     public override void PostClose()
     {
-        // Just in case
         _isResized = false;
+        GUIUtils.ReleaseMouseControl();
+        _activeTable?.TableWidget.NotifyParentWindowClosed();
 
         base.PostClose();
     }

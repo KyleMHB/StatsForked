@@ -59,6 +59,7 @@ internal sealed partial class ObjectTable<TObject>
 
     private void DrawVisibleContent(Rect rect)
     {
+        Event @event = Event.current;
         // O(1) scroll content culling.
         // Since all rows have constant height, we can calculate:
         // - From what row/y to start drawing rows.
@@ -102,7 +103,7 @@ internal sealed partial class ObjectTable<TObject>
         {
             DrawColumns(leftColumnsRect, Vector2.zero, LeftColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
             // Separator line
-            if (Event.current.IsRepaint())
+            if (@event.type == EventType.Repaint)
             {
                 leftColumnsRect.DrawBorderRight(FixedPartSeparatorLineColor);
             }
@@ -118,25 +119,40 @@ internal sealed partial class ObjectTable<TObject>
         }
 
         // Horizontal scrolling
-        if (OriginalEventUtility.EventType == EventType.MouseDrag && Mouse.IsOver(mouseDragScrollAreaRect))
+        if (@event.type == EventType.MouseDown && Mouse.IsOver(mouseDragScrollAreaRect))
         {
-            _scrollPosition.x = Mathf.Max(scrollPosition.x - Event.current.delta.x, 0f);
+            _rightPartIsPanned = true;
+        }
+        else if (_rightPartIsPanned)
+        {
+            if (@event.rawType == EventType.MouseDrag)
+            {
+                _scrollPosition.x = Mathf.Max(scrollPosition.x - @event.delta.x, 0f);
+            }
+            else if (@event.rawType == EventType.MouseUp)
+            {
+                _rightPartIsPanned = false;
+                GUIUtils.ReleaseMouseControl();
+                @event.Use();
+            }
         }
     }
 
     private void DrawColumns(Rect rect, Vector2 scrollPosition, ReadOnlyListSegment<Column> columns, Span<int> topRows, Span<int> bottomRows, float bottomRowsY)
     {
-        bool isRepaint = Event.current.IsRepaint();
+        Event @event = Event.current;
+        bool isRepaint = @event.type == EventType.Repaint;
         float scrollX = scrollPosition.x;
         float xMin = rect.xMin + scrollX;
         float xMax = rect.xMax + scrollX;
-        float mouseX = Event.current.mousePosition.x;
+        float mouseX = @event.mousePosition.x;
         bool mouseXIsInVisibleArea = xMin < mouseX && mouseX < xMax;
         ref Rect columnRect = ref rect;
         int columnsCount = columns.Length;
         for (int i = 0; i < columnsCount; i++)
         {
             Column column = columns[i];
+            bool columnIsResized = column.IsResized;
             columnRect.width = column.Width;
             float columnRectXmax = columnRect.xMax;
 
@@ -148,10 +164,14 @@ internal sealed partial class ObjectTable<TObject>
                     columnRect.DrawBorderRight(ColumnSeparatorLineColor);
                 }
             }
-
-            if (columnRectXmax >= xMax)
+            else if (columnIsResized)
             {
-                break;
+                column.DoResize();
+            }
+
+            if (columnRectXmax >= xMax && columnIsResized)
+            {
+                column.DoResize();
             }
 
             columnRect.x = columnRectXmax;
@@ -226,8 +246,9 @@ internal sealed partial class ObjectTable<TObject>
     private void DrawRow(Rect rect, int index)
     {
         bool mouseIsOverRect = Mouse.IsOver(rect);
+        Event @event = Event.current;
 
-        if (Event.current.IsRepaint())
+        if (@event.type == EventType.Repaint)
         {
             if (mouseIsOverRect)
             {
@@ -239,10 +260,10 @@ internal sealed partial class ObjectTable<TObject>
             }
         }
 
-        if (mouseIsOverRect && Event.current is { control: true, type: EventType.MouseDown })
+        if (mouseIsOverRect && @event is { control: true, type: EventType.MouseDown })
         {
             HandleRowPin(index);
-            Event.current.Use();
+            @event.Use();
         }
     }
 

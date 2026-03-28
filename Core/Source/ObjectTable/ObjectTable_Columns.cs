@@ -71,6 +71,7 @@ internal sealed partial class ObjectTable<TObject>
         public float Width;
         public readonly ColumnDef Def;
         public bool IsWidthSetManually;
+        public bool IsResized;
 
         private readonly ColumnWorker<TObject> _worker;
         private readonly Widget _titleWidget;
@@ -78,7 +79,6 @@ internal sealed partial class ObjectTable<TObject>
         private readonly TipSignal _tooltip;
         private readonly ObjectTable<TObject> _parent;
         private readonly FloatMenu _menu;
-        private bool _isResized;
         //private float _resizeWidthOffset;
 
         public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTable<TObject> parent)
@@ -150,7 +150,8 @@ internal sealed partial class ObjectTable<TObject>
                 titleRect.CutMidX(out titleRect, _titleWidgetWidth);
             }
 
-            if (Event.current.IsRepaint())
+            Event @event = Event.current;
+            if (@event.type == EventType.Repaint)
             {
                 if (_parent._reorderedColumn == this)
                 {
@@ -159,7 +160,7 @@ internal sealed partial class ObjectTable<TObject>
 
                 _titleWidget.Draw(titleRect);
             }
-            else if (Event.current.type != EventType.Layout)
+            else if (@event.type != EventType.Layout)
             {
                 HandleMouseEvents(rect, mouseXIsInVisibleArea);
             }
@@ -194,38 +195,36 @@ internal sealed partial class ObjectTable<TObject>
         private void HandleMouseEvents(Rect rect, bool mouseXIsInVisibleArea)
         {
             Event @event = Event.current;
+            ObjectTable<TObject> parent = _parent;
 
             if (@event.type == EventType.MouseDown && Mouse.IsOver(rect))
             {
                 HandleMouseDown();
             }
-            else if (_isResized)
+            else if (IsResized)
             {
-                if (OriginalEventUtility.EventType == EventType.MouseDrag)// Do resize
-                {
-                    DoResize();
-                }
-                else if (@event.rawType == EventType.MouseUp || @event.shift == false)
-                {
-                    _isResized = false;
-                }
+                DoResize();
             }
-            else if (
-                OriginalEventUtility.EventType == EventType.MouseDrag
-                && _parent._reorderedColumn != null
-                && _parent._reorderedColumn != this
-                && mouseXIsInVisibleArea
-                && rect.x < @event.mousePosition.x && @event.mousePosition.x < rect.xMax
-            )
+            else if (_parent._reorderedColumn != null)
             {
-                // These checks are here to ensure that DoReorder() will not be called in vain.
-                // mouseXIsInVisibleArea check is made so that unpinned columns that
-                // overlap with pinned columns due to scroll do not "steal" reordered column.
-                DoReorder(rect, _parent._reorderedColumn);
-            }
-            else if (@event.rawType == EventType.MouseUp)
-            {
-                _parent._reorderedColumn = null;
+                if (
+                    OriginalEventUtility.EventType == EventType.MouseDrag
+                    && parent._reorderedColumn != this
+                    && mouseXIsInVisibleArea
+                    && rect.x < @event.mousePosition.x && @event.mousePosition.x < rect.xMax
+                )
+                {
+                    // These checks are here to ensure that DoReorder() will not be called in vain.
+                    // mouseXIsInVisibleArea check is made so that unpinned columns that
+                    // overlap with pinned columns due to scroll do not "steal" reordered column.
+                    DoReorder(rect, _parent._reorderedColumn);
+                }
+                else if (@event.rawType == EventType.MouseUp)
+                {
+                    parent._reorderedColumn = null;
+                    GUIUtils.ReleaseMouseControl();
+                    @event.Use();
+                }
             }
         }
 
@@ -249,7 +248,7 @@ internal sealed partial class ObjectTable<TObject>
                     }
                     else // Resize start 
                     {
-                        _isResized = true;
+                        IsResized = true;
                         IsWidthSetManually = true;
                         //_resizeWidthOffset = rect.xMax - @event.mousePosition.x;
                     }
@@ -265,19 +264,30 @@ internal sealed partial class ObjectTable<TObject>
             }
         }
 
-        private void DoResize()
+        public void DoResize()
         {
-            //Width = Event.current.mousePosition.x + _resizeWidthOffset;
-            // Simply setting column's width to current mouse position (+starting offset)
-            // feels more "snappy", but has a bug:
-            // When the table is scrolled all the way to the right and we start reducing
-            // the width of a column, it starts pulling its left side to the right, which
-            // results in double width reduction. Using delta.x instead, feels less responsive,
-            // but is more reliable.
-            Width += Event.current.delta.x;
-            if (Width < RowHeight)
+            Event @event = Event.current;
+
+            if (OriginalEventUtility.EventType == EventType.MouseDrag)
             {
-                Width = RowHeight;
+                //Width = Event.current.mousePosition.x + _resizeWidthOffset;
+                // Simply setting column's width to current mouse position (+starting offset)
+                // feels more "snappy", but has a bug:
+                // When the table is scrolled all the way to the right and we start reducing
+                // the width of a column, it starts pulling its left side to the right, which
+                // results in double width reduction. Using delta.x instead, feels less responsive,
+                // but is more reliable.
+                Width += Event.current.delta.x;
+                if (Width < RowHeight)
+                {
+                    Width = RowHeight;
+                }
+            }
+            else if (@event.rawType == EventType.MouseUp || @event.shift == false)
+            {
+                IsResized = false;
+                GUIUtils.ReleaseMouseControl();
+                @event.Use();
             }
         }
 

@@ -40,7 +40,9 @@ public sealed partial class MainTabWindow
 
         public void Draw(Rect rect)
         {
-            if (Event.current.IsRepaint())
+            Event @event = Event.current;
+
+            if (@event.type == EventType.Repaint)
             {
                 if (_parent._activeTable == this)
                 {
@@ -55,11 +57,11 @@ public sealed partial class MainTabWindow
 
             if (rect.ButtonGhostly())
             {
-                if (Event.current.IsLMB())
+                if (@event.IsLMB())
                 {
                     _parent._activeTable = this;
                 }
-                else if (Event.current.IsRMB())
+                else if (@event.IsRMB())
                 {
                     _menu.Open();
                 }
