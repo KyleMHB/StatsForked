@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Stats.Utils;
 using Stats.Utils.Extensions;
 using Stats.Utils.GUIScopes;
@@ -125,17 +126,12 @@ internal sealed partial class ObjectTable<TObject>
         }
         else if (_rightPartIsPanned)
         {
-            if (@event.rawType == EventType.MouseDrag)
-            {
-                _scrollPosition.x = Mathf.Max(scrollPosition.x - @event.delta.x, 0f);
-            }
-            else if (@event.rawType == EventType.MouseUp)
-            {
-                _rightPartIsPanned = false;
-                GUIUtils.ReleaseMouseControl();
-                @event.Use();
-            }
+            DoHorScroll();
         }
+
+        // This button is here to capture control from whatever
+        // eats the events above horizontal scroll code.
+        GUI.Button(mouseDragScrollAreaRect, GUIContent.none, GUIStyle.none);
     }
 
     private void DrawColumns(Rect rect, Vector2 scrollPosition, ReadOnlyListSegment<Column> columns, Span<int> topRows, Span<int> bottomRows, float bottomRowsY)
@@ -156,7 +152,7 @@ internal sealed partial class ObjectTable<TObject>
             columnRect.width = column.Width;
             float columnRectXmax = columnRect.xMax;
 
-            if (columnRectXmax > xMin)
+            if (xMin < columnRectXmax && columnRect.xMin < xMax)
             {
                 column.Draw(columnRect, topRows, bottomRows, bottomRowsY, mouseXIsInVisibleArea);
                 if (isRepaint)
@@ -165,11 +161,6 @@ internal sealed partial class ObjectTable<TObject>
                 }
             }
             else if (columnIsResized)
-            {
-                column.DoResize();
-            }
-
-            if (columnRectXmax >= xMax && columnIsResized)
             {
                 column.DoResize();
             }
@@ -286,4 +277,21 @@ internal sealed partial class ObjectTable<TObject>
     //    );
     //    rect.xMin += 1f;
     //}
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private void DoHorScroll()
+    {
+        Event @event = Event.current;
+
+        if (OriginalEventUtility.EventType == EventType.MouseDrag)
+        {
+            _scrollPosition.x = Mathf.Max(_scrollPosition.x - @event.delta.x, 0f);
+        }
+        else if (@event.rawType == EventType.MouseUp)
+        {
+            _rightPartIsPanned = false;
+            GUIUtils.ReleaseMouseControl();
+            @event.Use();
+        }
+    }
 }

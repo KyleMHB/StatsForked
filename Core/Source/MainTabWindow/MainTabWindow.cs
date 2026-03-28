@@ -18,13 +18,11 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     private TableRecord? _activeTable;
     private readonly FloatMenu _tableDefsMenu;
     private static readonly TipSignal _openTableButtonTooltip = "Open table";
-    private static readonly TipSignal _expandButtonTooltip =
-        "- Double click to Expand / Reset window\n" +
-        "- Pull to change window height";
     private Vector2 _tableListScrollPosition;
     private readonly float _defaultHeight;
     private bool IsExpanded => windowRect.yMin == 0f;
     private bool _isResized;
+    private float _resizeYOffset;
 
     public MainTabWindow()
     {
@@ -68,9 +66,9 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             .CutLeft(out Rect toolbarRect, ToolbarWidth)
             .TakeRest(out Rect tableRect);
         toolbarRect
-            .CutTop(out Rect expandButtonRect, 20f)
             .CutTop(out Rect openTableButtonRect, ToolbarWidth)
             .TakeRest(out Rect tableListRect);
+        tableRect.CutTop(out Rect expandButtonRect, GUIStyles.TableToolbar.Height);
 
         // Border
         if (@event.type == EventType.Repaint)
@@ -79,7 +77,6 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         }
 
         // Buttons
-        DrawExpandButton(expandButtonRect);
         DrawOpenTableButton(openTableButtonRect);
 
         // Table list
@@ -103,6 +100,8 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         _activeTable?.TableWidget.Draw(tableRect);
 
         Text.WordWrap = wordWrap;
+
+        DoResizeControl(expandButtonRect);
     }
 
     private void DrawOpenTableButton(Rect rect)
@@ -123,20 +122,11 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         }
     }
 
-    private void DrawExpandButton(Rect rect)
+    private void DoResizeControl(Rect rect)
     {
         Event @event = Event.current;
 
-        if (@event.type == EventType.Repaint)
-        {
-            Texture2D texture = IsExpanded ? TexButton.ReorderDown : TexButton.ReorderUp;
-            rect
-                .HighlightLight()
-                .DrawBorderBottom(BorderColor)
-                .DrawTextureFitted(texture, 0.7f)
-                .Tip(_expandButtonTooltip);
-        }
-        else if (@event.type == EventType.MouseDown && Mouse.IsOver(rect))
+        if (@event.type == EventType.MouseDown && Mouse.IsOver(rect))
         {
             if (@event.clickCount > 1)
             {
@@ -145,6 +135,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             else
             {
                 _isResized = true;
+                _resizeYOffset = @event.mousePosition.y;
             }
         }
         else if (_isResized)
@@ -152,10 +143,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             DoResize(rect.height);
         }
 
-        // If the mouse cursor goes outside the window during MouseDrag/Up events (haven't tested the other ones),
-        // the window stops recieving input events. Having a GUI control (which ButtonGhostly uses) drawn after
-        // the code that checks for the aforementioned events, fixes the issue. And it just so happens that we need one here.
-        rect.ButtonGhostly();
+        GUI.Button(rect, GUIContent.none, GUIStyle.none);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -163,24 +151,20 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     {
         Event @event = Event.current;
 
-        // Something eats the MouseUp event (but not the MouseDrag).
-        // So we can use "type/rawType" for MouseDrag event.
-        // But we must use "rawType" for MouseUp event.
-        if (@event.type == EventType.MouseDrag)
+        if (OriginalEventUtility.EventType == EventType.MouseDrag)
         {
-            windowRect.yMin = UI.GUIToScreenPoint(@event.mousePosition).y - rectHeight / 2f;
+            windowRect.yMin = UI.GUIToScreenPoint(@event.mousePosition).y - _resizeYOffset;
         }
         else if (@event.rawType == EventType.MouseUp)
         {
             _isResized = false;
+            GUIUtils.ReleaseMouseControl();
+            @event.Use();
 
             if (windowRect.yMin < 0f)
             {
                 Expand();
             }
-
-            GUIUtils.ReleaseMouseControl();
-            @event.Use();
         }
     }
 

@@ -25,7 +25,9 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         "- Hold [Ctrl] and click on a column's name to pin/unpin it.\n" +
         "- Hold [Ctrl] and click on a row to pin/unpin it.\n" +
         "  - You can pin multiple rows.\n" +
-        "  - Pinned rows are unaffected by filters.";
+        "  - Pinned rows are unaffected by filters.\n" +
+        "- Double click to Expand / Reset window\n" +
+        "- Pull top part of the window to change height";
     // Filtering
     //public override TableFilterMode FilterMode
     //{
@@ -166,6 +168,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
             if (column.IsResized)
             {
                 column.IsResized = false;
+                break;
             }
         }
     }

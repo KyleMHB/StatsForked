@@ -219,6 +219,5 @@ public static class GUIUtils
     internal static void ReleaseMouseControl()
     {
         _GUI_ReleaseMouseControl.Invoke(null, null);
-        Log.Message("ReleaseMouseControl");
     }
 }
