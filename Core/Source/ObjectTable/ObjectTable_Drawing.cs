@@ -182,9 +182,9 @@ internal sealed partial class ObjectTable<TObject>
         // Headers row
         if (isRepaint)
         {
-            headersRowRect
-                .Highlight()
-                .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
+            headersRowRect.Fill(HeadersRowBGColor);
+            //.Highlight();
+            //.DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
         }
 
         // Pinned rows
@@ -196,6 +196,7 @@ internal sealed partial class ObjectTable<TObject>
             {
                 topRowsRect
                     .Fill(PinnedRowsBGColor)
+                    .DrawBorderTop(FixedPartSeparatorLineColor)
                     .DrawBorderBottom(FixedPartSeparatorLineColor);
             }
 

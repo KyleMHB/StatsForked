@@ -40,6 +40,7 @@ public static class GUIStyles
         internal static readonly Color ColumnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
         internal static readonly Color PinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
         internal static readonly Color FixedPartSeparatorLineColor = new(1f, 0.98f, 0.62f, 0.5f);
+        internal static readonly Color HeadersRowBGColor = GenColor.FromBytes(56, 56, 60);
     }
 
     internal static class TableToolbar

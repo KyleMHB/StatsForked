@@ -97,6 +97,13 @@ public static class GUIUtils
         return rect;
     }
 
+    internal static Rect DrawBorderTop(this Rect rect, Color color)
+    {
+        (rect with { height = 1f }).Fill(color);
+
+        return rect;
+    }
+
     internal static Rect DrawBorderBottom(this Rect rect, Color color)
     {
         (rect with { y = rect.yMax - 1f, height = 1f }).Fill(color);

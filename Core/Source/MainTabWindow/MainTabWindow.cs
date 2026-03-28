@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using RimWorld;
 using Stats.Utils;
 using Stats.Utils.Extensions;
 using Stats.Utils.GUIScopes;
@@ -130,7 +131,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         {
             if (@event.clickCount > 1)
             {
-                ExpandOrReset();
+                Reset();
             }
             else
             {
@@ -154,17 +155,20 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         if (OriginalEventUtility.EventType == EventType.MouseDrag)
         {
             windowRect.yMin = UI.GUIToScreenPoint(@event.mousePosition).y - _resizeYOffset;
+            if (windowRect.yMin < 0f)
+            {
+                windowRect.yMin = 0f;
+            }
+            else if (windowRect.height < GUIStyles.TableToolbar.Height)
+            {
+                windowRect.yMin = UI.screenHeight - MainButtonDef.ButtonHeight - GUIStyles.TableToolbar.Height;
+            }
         }
         else if (@event.rawType == EventType.MouseUp)
         {
             _isResized = false;
             GUIUtils.ReleaseMouseControl();
             @event.Use();
-
-            if (windowRect.yMin < 0f)
-            {
-                Expand();
-            }
         }
     }
 
@@ -188,23 +192,6 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             }
         }
         _tables.Remove(table);
-    }
-
-    private void ExpandOrReset()
-    {
-        if (IsExpanded)
-        {
-            Reset();
-        }
-        else
-        {
-            Expand();
-        }
-    }
-
-    private void Expand()
-    {
-        windowRect.yMin = 0f;
     }
 
     private void Reset()
