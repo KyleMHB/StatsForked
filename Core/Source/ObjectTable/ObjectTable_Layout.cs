@@ -16,7 +16,7 @@ internal sealed partial class ObjectTable<TObject>
         for (int i = 0; i < columnsCount; i++)
         {
             Column column = columns[i];
-            if (column.IsWidthSetManually == false)
+            if (column.IsManuallyResized == false)
             {
                 column.RecalcWidth(_rows);
             }

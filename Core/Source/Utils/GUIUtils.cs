@@ -11,8 +11,19 @@ namespace Stats.Utils;
 public static class GUIUtils
 {
     internal static float Opacity = 1f;
+    internal static bool MouseDragInProgress { get; private set; }
 
     private static readonly GUIContent _guiContent = new();
+    private static readonly MethodInfo _GUI_ReleaseMouseControl = typeof(GUI)
+        .GetMethod("ReleaseMouseControl", BindingFlags.NonPublic | BindingFlags.Static);
+
+    internal static void StartMouseDrag() => MouseDragInProgress = true;
+
+    internal static void EndMouseDrag()
+    {
+        MouseDragInProgress = false;
+        _GUI_ReleaseMouseControl.Invoke(null, null);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete]
@@ -218,13 +229,5 @@ public static class GUIUtils
         GUI.color = origGUIColor;
 
         return wasClicked;
-    }
-
-    private static readonly MethodInfo _GUI_ReleaseMouseControl = typeof(GUI)
-        .GetMethod("ReleaseMouseControl", BindingFlags.NonPublic | BindingFlags.Static);
-
-    internal static void ReleaseMouseControl()
-    {
-        _GUI_ReleaseMouseControl.Invoke(null, null);
     }
 }

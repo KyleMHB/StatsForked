@@ -68,10 +68,10 @@ internal sealed partial class ObjectTable<TObject>
 
     private sealed class Column
     {
-        public float Width;
-        public readonly ColumnDef Def;
-        public bool IsWidthSetManually;
-        public bool IsResized;
+        public float Width { get; private set; }
+        public ColumnDef Def { get; }
+        public bool IsManuallyResized { get; private set; }
+        public bool IsResized { get; private set; }
 
         private readonly ColumnWorker<TObject> _worker;
         private readonly Widget _titleWidget;
@@ -94,6 +94,7 @@ internal sealed partial class ObjectTable<TObject>
             _tooltip = $"<i>{def.LabelCap}</i>\n\n{def.description}";
             _parent = parent;
             _menu = new FloatMenu([
+                new FloatMenuOption("Reset width", () => IsManuallyResized = false),
                 new FloatMenuOption("Remove", () => parent.RemoveColumn(this))
             ]);
         }
@@ -162,7 +163,7 @@ internal sealed partial class ObjectTable<TObject>
             }
             else if (@event.type != EventType.Layout)
             {
-                HandleMouseEvents(rect, mouseXIsInVisibleArea);
+                HandleHeaderCellMouseEvents(rect, mouseXIsInVisibleArea);
             }
 
             rect.ButtonGhostly();
@@ -192,103 +193,132 @@ internal sealed partial class ObjectTable<TObject>
             }
         }
 
-        private void HandleMouseEvents(Rect rect, bool mouseXIsInVisibleArea)
+        private void HandleHeaderCellMouseEvents(Rect rect, bool mouseXIsInVisibleArea)
         {
             Event @event = Event.current;
             ObjectTable<TObject> parent = _parent;
 
-            if (@event.type == EventType.MouseDown && Mouse.IsOver(rect))
+            if (OriginalEventUtility.EventType == EventType.MouseDrag)
             {
-                HandleMouseDown();
-            }
-            else if (IsResized)
-            {
-                DoResize();
-            }
-            else if (_parent._reorderedColumn != null)
-            {
-                if (
-                    OriginalEventUtility.EventType == EventType.MouseDrag
-                    && parent._reorderedColumn != this
-                    && mouseXIsInVisibleArea
-                    && rect.x < @event.mousePosition.x && @event.mousePosition.x < rect.xMax
-                )
+                if (GUIUtils.MouseDragInProgress)
                 {
-                    // These checks are here to ensure that DoReorder() will not be called in vain.
-                    // mouseXIsInVisibleArea check is made so that unpinned columns that
-                    // overlap with pinned columns due to scroll do not "steal" reordered column.
-                    DoReorder(rect, _parent._reorderedColumn);
+                    if (IsResized)
+                    {
+                        DoResize();
+                        @event.Use();
+                    }
+                    else if (parent._reorderedColumn != null
+                             && parent._reorderedColumn != this
+                             && mouseXIsInVisibleArea
+                             && rect.x < @event.mousePosition.x && @event.mousePosition.x < rect.xMax)
+                    {
+                        // These checks are here to ensure that DoReorder() will not be called in vain.
+                        // mouseXIsInVisibleArea check is made so that unpinned columns that
+                        // overlap with pinned columns due to scroll do not "steal" reordered column.
+                        DoReorder(rect, parent._reorderedColumn);
+                        @event.Use();
+                    }
                 }
-                else if (@event.rawType == EventType.MouseUp)
+                else if (Mouse.IsOver(rect))
                 {
-                    parent._reorderedColumn = null;
-                    GUIUtils.ReleaseMouseControl();
-                    @event.Use();
+                    if (@event.IsLMB())
+                    {
+                        StartReorder();
+                        @event.Use();
+                    }
+                    else if (@event.IsRMB())
+                    {
+                        StartResize();
+                        @event.Use();
+                    }
+                }
+            }
+            else if (@event.rawType == EventType.MouseUp)
+            {
+                if (GUIUtils.MouseDragInProgress)
+                {
+                    if (IsResized)
+                    {
+                        EndResize();
+                        @event.Use();
+                    }
+                    else if (parent._reorderedColumn != null)
+                    {
+                        EndReorder();
+                        @event.Use();
+                    }
+                }
+                else if (Mouse.IsOver(rect))
+                {
+                    if (@event.IsLMB())
+                    {
+                        if (@event.control)
+                        {
+                            HandlePin();
+                            @event.Use();
+                        }
+                    }
+                    else if (@event.IsRMB())
+                    {
+                        _menu.Open();
+                        @event.Use();
+                    }
                 }
             }
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void HandleMouseDown()
+        private void StartResize()
+        {
+            IsResized = true;
+            //_resizeWidthOffset = rect.xMax - @event.mousePosition.x;
+            IsManuallyResized = true;
+            GUIUtils.StartMouseDrag();
+        }
+
+        private void DoResize()
         {
             Event @event = Event.current;
 
-            if (@event.IsLMB())
+            //Width = Event.current.mousePosition.x + _resizeWidthOffset;
+            // Simply setting column's width to current mouse position (+starting offset)
+            // feels more "snappy", but has a bug:
+            // When the table is scrolled all the way to the right and we start reducing
+            // the width of a column, it starts pulling its left side to the right, which
+            // results in double width reduction. Using delta.x instead, feels less responsive,
+            // but is more reliable.
+            Width += @event.delta.x;
+            if (Width < RowHeight)
             {
-                if (@event.control)
-                {
-                    HandlePin();
-                }
-                else if (@event.shift)
-                {
-                    // Reset size
-                    if (@event.clickCount > 1)
-                    {
-                        IsWidthSetManually = false;
-                    }
-                    else // Resize start 
-                    {
-                        IsResized = true;
-                        IsWidthSetManually = true;
-                        //_resizeWidthOffset = rect.xMax - @event.mousePosition.x;
-                    }
-                }
-                else // Reorder start
-                {
-                    _parent._reorderedColumn = this;
-                }
-            }
-            else if (@event.IsRMB())
-            {
-                _menu.Open();
+                Width = RowHeight;
             }
         }
 
-        public void DoResize()
+        public void DoResizeWhenNotVisible()
         {
             Event @event = Event.current;
 
             if (OriginalEventUtility.EventType == EventType.MouseDrag)
             {
-                //Width = Event.current.mousePosition.x + _resizeWidthOffset;
-                // Simply setting column's width to current mouse position (+starting offset)
-                // feels more "snappy", but has a bug:
-                // When the table is scrolled all the way to the right and we start reducing
-                // the width of a column, it starts pulling its left side to the right, which
-                // results in double width reduction. Using delta.x instead, feels less responsive,
-                // but is more reliable.
-                Width += Event.current.delta.x;
-                if (Width < RowHeight)
-                {
-                    Width = RowHeight;
-                }
-            }
-            else if (@event.rawType == EventType.MouseUp || @event.shift == false)
-            {
-                IsResized = false;
-                GUIUtils.ReleaseMouseControl();
+                DoResize();
                 @event.Use();
             }
+            else if (@event.rawType == EventType.MouseUp)
+            {
+                EndResize();
+                @event.Use();
+            }
+        }
+
+        private void EndResize()
+        {
+            IsResized = false;
+            GUIUtils.EndMouseDrag();
+        }
+
+        private void StartReorder()
+        {
+            _parent._reorderedColumn = this;
+            GUIUtils.StartMouseDrag();
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -332,6 +362,12 @@ internal sealed partial class ObjectTable<TObject>
             }
         }
 
+        private void EndReorder()
+        {
+            _parent._reorderedColumn = null;
+            GUIUtils.EndMouseDrag();
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void HandlePin()
         {
@@ -350,6 +386,14 @@ internal sealed partial class ObjectTable<TObject>
         public void RecalcWidth(List<int> rows)
         {
             Width = Mathf.Max(_titleWidgetWidth, _worker.GetWidth(rows)) + GUIStyles.TableCell.PadHor * 2f;
+        }
+
+        public void NotifyParentWindowClosed()
+        {
+            if (IsResized)
+            {
+                IsResized = false;
+            }
         }
     }
 }

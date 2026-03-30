@@ -165,11 +165,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         for (int i = 0; i < _columns.Count; i++)
         {
             Column column = _columns[i];
-            if (column.IsResized)
-            {
-                column.IsResized = false;
-                break;
-            }
+            column.NotifyParentWindowClosed();
         }
     }
 }

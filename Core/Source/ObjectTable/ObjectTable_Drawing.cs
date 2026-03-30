@@ -119,19 +119,7 @@ internal sealed partial class ObjectTable<TObject>
             }
         }
 
-        // Horizontal scrolling
-        if (@event.type == EventType.MouseDown && Mouse.IsOver(mouseDragScrollAreaRect))
-        {
-            _rightPartIsPanned = true;
-        }
-        else if (_rightPartIsPanned)
-        {
-            DoHorScroll();
-        }
-
-        // This button is here to capture control from whatever
-        // eats the events above horizontal scroll code.
-        GUI.Button(mouseDragScrollAreaRect, GUIContent.none, GUIStyle.none);
+        DoHorScrollControl(mouseDragScrollAreaRect);
     }
 
     private void DrawColumns(Rect rect, Vector2 scrollPosition, ReadOnlyListSegment<Column> columns, Span<int> topRows, Span<int> bottomRows, float bottomRowsY)
@@ -148,7 +136,6 @@ internal sealed partial class ObjectTable<TObject>
         for (int i = 0; i < columnsCount; i++)
         {
             Column column = columns[i];
-            bool columnIsResized = column.IsResized;
             columnRect.width = column.Width;
             float columnRectXmax = columnRect.xMax;
 
@@ -160,9 +147,9 @@ internal sealed partial class ObjectTable<TObject>
                     columnRect.DrawBorderRight(ColumnSeparatorLineColor);
                 }
             }
-            else if (columnIsResized)
+            else if (column.IsResized)
             {
-                column.DoResize();
+                column.DoResizeWhenNotVisible();
             }
 
             columnRect.x = columnRectXmax;
@@ -252,7 +239,9 @@ internal sealed partial class ObjectTable<TObject>
             }
         }
 
-        if (mouseIsOverRect && @event is { control: true, type: EventType.MouseDown })
+        if (mouseIsOverRect
+            && GUIUtils.MouseDragInProgress == false
+            && @event is { control: true, type: EventType.MouseUp })
         {
             HandleRowPin(index);
             @event.Use();
@@ -279,20 +268,45 @@ internal sealed partial class ObjectTable<TObject>
     //    rect.xMin += 1f;
     //}
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private void DoHorScroll()
+    private void DoHorScrollControl(Rect rect)
     {
         Event @event = Event.current;
 
         if (OriginalEventUtility.EventType == EventType.MouseDrag)
         {
-            _scrollPosition.x = Mathf.Max(_scrollPosition.x - @event.delta.x, 0f);
+            if (GUIUtils.MouseDragInProgress)
+            {
+                if (_rightPartIsPanned)
+                {
+                    _scrollPosition.x = Mathf.Max(_scrollPosition.x - @event.delta.x, 0f);
+                    @event.Use();
+                }
+            }
+            else if (Mouse.IsOver(rect))
+            {
+                if (_rightPartIsPanned == false)
+                {
+                    _rightPartIsPanned = true;
+                    GUIUtils.StartMouseDrag();
+                    @event.Use();
+                }
+            }
         }
         else if (@event.rawType == EventType.MouseUp)
         {
-            _rightPartIsPanned = false;
-            GUIUtils.ReleaseMouseControl();
-            @event.Use();
+            if (GUIUtils.MouseDragInProgress)
+            {
+                if (_rightPartIsPanned)
+                {
+                    _rightPartIsPanned = false;
+                    GUIUtils.EndMouseDrag();
+                    @event.Use();
+                }
+            }
         }
+
+        // This button is here to capture control from whatever
+        // eats the events above horizontal scroll code.
+        GUI.Button(rect, GUIContent.none, GUIStyle.none);
     }
 }

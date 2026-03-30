@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using RimWorld;
 using Stats.Utils;
 using Stats.Utils.Extensions;
@@ -21,7 +20,6 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     private static readonly TipSignal _openTableButtonTooltip = "Open table";
     private Vector2 _tableListScrollPosition;
     private readonly float _defaultHeight;
-    private bool IsExpanded => windowRect.yMin == 0f;
     private bool _isResized;
     private float _resizeYOffset;
 
@@ -127,49 +125,71 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     {
         Event @event = Event.current;
 
-        if (@event.type == EventType.MouseDown && Mouse.IsOver(rect))
+        if (OriginalEventUtility.EventType == EventType.MouseDrag)
         {
-            if (@event.clickCount > 1)
+            if (GUIUtils.MouseDragInProgress)
             {
-                Reset();
+                if (_isResized)
+                {
+                    DoResize();
+                    @event.Use();
+                }
             }
-            else
+            else if (Mouse.IsOver(rect))
             {
-                _isResized = true;
-                _resizeYOffset = @event.mousePosition.y;
+                if (_isResized == false)
+                {
+                    StartResize();
+                    @event.Use();
+                }
             }
         }
-        else if (_isResized)
+        else if (@event.rawType == EventType.MouseUp)
         {
-            DoResize(rect.height);
+            if (GUIUtils.MouseDragInProgress)
+            {
+                if (_isResized)
+                {
+                    EndResize();
+                    @event.Use();
+                }
+            }
+        }
+        else if (@event is { type: EventType.MouseDown, clickCount: > 1 } && Mouse.IsOver(rect))
+        {
+            ResetSize();
+            @event.Use();
         }
 
         GUI.Button(rect, GUIContent.none, GUIStyle.none);
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private void DoResize(float rectHeight)
+    private void StartResize()
+    {
+        _isResized = true;
+        _resizeYOffset = Event.current.mousePosition.y;
+        GUIUtils.StartMouseDrag();
+    }
+
+    private void DoResize()
     {
         Event @event = Event.current;
 
-        if (OriginalEventUtility.EventType == EventType.MouseDrag)
+        windowRect.yMin = UI.GUIToScreenPoint(@event.mousePosition).y - _resizeYOffset;
+        if (windowRect.yMin < 0f)
         {
-            windowRect.yMin = UI.GUIToScreenPoint(@event.mousePosition).y - _resizeYOffset;
-            if (windowRect.yMin < 0f)
-            {
-                windowRect.yMin = 0f;
-            }
-            else if (windowRect.height < GUIStyles.TableToolbar.Height)
-            {
-                windowRect.yMin = UI.screenHeight - MainButtonDef.ButtonHeight - GUIStyles.TableToolbar.Height;
-            }
+            windowRect.yMin = 0f;
         }
-        else if (@event.rawType == EventType.MouseUp)
+        else if (windowRect.height < GUIStyles.TableToolbar.Height)
         {
-            _isResized = false;
-            GUIUtils.ReleaseMouseControl();
-            @event.Use();
+            windowRect.yMin = UI.screenHeight - MainButtonDef.ButtonHeight - GUIStyles.TableToolbar.Height;
         }
+    }
+
+    private void EndResize()
+    {
+        _isResized = false;
+        GUIUtils.EndMouseDrag();
     }
 
     private void RemoveTable(TableRecord table)
@@ -194,7 +214,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         _tables.Remove(table);
     }
 
-    private void Reset()
+    private void ResetSize()
     {
         windowRect.height = _defaultHeight;
         SetInitialSizeAndPosition();
@@ -203,7 +223,10 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     public override void PostClose()
     {
         _isResized = false;
-        GUIUtils.ReleaseMouseControl();
+        if (GUIUtils.MouseDragInProgress)
+        {
+            GUIUtils.EndMouseDrag();
+        }
         _activeTable?.TableWidget.NotifyParentWindowClosed();
 
         base.PostClose();
