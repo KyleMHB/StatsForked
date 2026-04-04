@@ -11,19 +11,12 @@ namespace Stats.Utils;
 public static class GUIUtils
 {
     internal static float Opacity = 1f;
-    internal static bool MouseDragInProgress { get; private set; }
 
     private static readonly GUIContent _guiContent = new();
     private static readonly MethodInfo _GUI_ReleaseMouseControl = typeof(GUI)
         .GetMethod("ReleaseMouseControl", BindingFlags.NonPublic | BindingFlags.Static);
 
-    internal static void StartMouseDrag() => MouseDragInProgress = true;
-
-    internal static void EndMouseDrag()
-    {
-        MouseDragInProgress = false;
-        _GUI_ReleaseMouseControl.Invoke(null, null);
-    }
+    internal static void ReleaseMouseControl() => _GUI_ReleaseMouseControl.Invoke(null, null);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete]
@@ -117,14 +110,14 @@ public static class GUIUtils
 
     internal static Rect DrawBorderBottom(this Rect rect, Color color)
     {
-        (rect with { y = rect.yMax - 1f, height = 1f }).Fill(color);
+        (rect with { y = Mathf.Round(rect.yMax) - 1f, height = 1f }).Fill(color);
 
         return rect;
     }
 
     internal static Rect DrawBorderRight(this Rect rect, Color color)
     {
-        (rect with { x = rect.xMax - 1f, width = 1f }).Fill(color);
+        (rect with { x = Mathf.Round(rect.xMax) - 1f, width = 1f }).Fill(color);
 
         return rect;
     }

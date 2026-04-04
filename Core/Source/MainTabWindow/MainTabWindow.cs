@@ -22,6 +22,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     private readonly float _defaultHeight;
     private bool _isResized;
     private float _resizeYOffset;
+    private float _yMax;
 
     public MainTabWindow()
     {
@@ -125,71 +126,35 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     {
         Event @event = Event.current;
 
-        if (OriginalEventUtility.EventType == EventType.MouseDrag)
+        if (@event is { type: EventType.MouseDown, button: 0, modifiers: EventModifiers.None } && Mouse.IsOver(rect))
         {
-            if (GUIUtils.MouseDragInProgress)
+            if (@event.clickCount > 1)
             {
-                if (_isResized)
-                {
-                    DoResize();
-                    @event.Use();
-                }
+                ResetSize();
             }
-            else if (Mouse.IsOver(rect))
+            else
             {
-                if (_isResized == false)
-                {
-                    StartResize();
-                    @event.Use();
-                }
+                _isResized = true;
+                _resizeYOffset = @event.mousePosition.y;
             }
         }
-        else if (@event.rawType == EventType.MouseUp)
+        else if (_isResized)
         {
-            if (GUIUtils.MouseDragInProgress)
+            if (OriginalEventUtility.EventType == EventType.MouseDrag)
             {
-                if (_isResized)
-                {
-                    EndResize();
-                    @event.Use();
-                }
+                float y = UI.GUIToScreenPoint(@event.mousePosition).y - _resizeYOffset;
+                windowRect.yMin = Mathf.Clamp(y, 0f, _yMax);
+                @event.Use();
             }
-        }
-        else if (@event is { type: EventType.MouseDown, clickCount: > 1 } && Mouse.IsOver(rect))
-        {
-            ResetSize();
-            @event.Use();
+            else if (@event.rawType == EventType.MouseUp)
+            {
+                _isResized = false;
+                GUIUtils.ReleaseMouseControl();
+                @event.Use();
+            }
         }
 
         GUI.Button(rect, GUIContent.none, GUIStyle.none);
-    }
-
-    private void StartResize()
-    {
-        _isResized = true;
-        _resizeYOffset = Event.current.mousePosition.y;
-        GUIUtils.StartMouseDrag();
-    }
-
-    private void DoResize()
-    {
-        Event @event = Event.current;
-
-        windowRect.yMin = UI.GUIToScreenPoint(@event.mousePosition).y - _resizeYOffset;
-        if (windowRect.yMin < 0f)
-        {
-            windowRect.yMin = 0f;
-        }
-        else if (windowRect.height < GUIStyles.TableToolbar.Height)
-        {
-            windowRect.yMin = UI.screenHeight - MainButtonDef.ButtonHeight - GUIStyles.TableToolbar.Height;
-        }
-    }
-
-    private void EndResize()
-    {
-        _isResized = false;
-        GUIUtils.EndMouseDrag();
     }
 
     private void RemoveTable(TableRecord table)
@@ -220,13 +185,15 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         SetInitialSizeAndPosition();
     }
 
+    public override void PostOpen()
+    {
+        _yMax = UI.screenHeight - MainButtonDef.ButtonHeight - GUIStyles.TableToolbar.Height;
+        base.PostOpen();
+    }
+
     public override void PostClose()
     {
         _isResized = false;
-        if (GUIUtils.MouseDragInProgress)
-        {
-            GUIUtils.EndMouseDrag();
-        }
         _activeTable?.TableWidget.NotifyParentWindowClosed();
 
         base.PostClose();

@@ -64,10 +64,10 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     //};
 
     // Sorting
-    //private Column SortColumn;
-    //private int SortDirection = SortDirectionAscending;
-    //private const int SortDirectionAscending = 1;
-    //private const int SortDirectionDescending = -1;
+    private Column? _sortColumn;
+    private int _sortDirection = SortDirectionAscending;
+    private const int SortDirectionAscending = 1;
+    private const int SortDirectionDescending = -1;
 
     // Filters tab
 
@@ -148,6 +148,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         if (columns.Count > 0)
         {
             _leftColumnsCount = 1;
+            _sortColumn = columns[0];
         }
         _toolbar = new Toolbar(this);
     }

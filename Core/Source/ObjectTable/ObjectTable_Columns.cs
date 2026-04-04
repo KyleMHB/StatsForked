@@ -9,6 +9,7 @@ using Stats.Utils.GUIScopes;
 using Stats.Utils.Widgets;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 using static Stats.GUIStyles.Table;
 
 namespace Stats;
@@ -79,7 +80,6 @@ internal sealed partial class ObjectTable<TObject>
         private readonly TipSignal _tooltip;
         private readonly ObjectTable<TObject> _parent;
         private readonly FloatMenu _menu;
-        //private float _resizeWidthOffset;
 
         public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTable<TObject> parent)
         {
@@ -94,80 +94,95 @@ internal sealed partial class ObjectTable<TObject>
             _tooltip = $"<i>{def.LabelCap}</i>\n\n{def.description}";
             _parent = parent;
             _menu = new FloatMenu([
+                new FloatMenuOption("Sort Asc", () => {
+                    parent._sortColumn = this;
+                    parent._sortDirection = SortDirectionAscending;
+                }, TexButton.ReorderUp, Color.white),
+                new FloatMenuOption("Sort Desc", () => {
+                    parent._sortColumn = this;
+                    parent._sortDirection = SortDirectionDescending;
+                }, TexButton.ReorderDown, Color.white),
                 new FloatMenuOption("Reset width", () => IsManuallyResized = false),
-                new FloatMenuOption("Remove", () => parent.RemoveColumn(this))
+                new FloatMenuOption("Remove", () => parent.RemoveColumn(this), TexButton.Delete, Color.white)
             ]);
         }
 
         public void Draw(Rect rect, Span<int> topRows, Span<int> bottomRows, float bottomRowsY, bool mouseXIsInVisibleArea)
         {
-            ColumnWorker<TObject> worker = _worker;
-            bool shouldDrawCellsNow = worker.ShouldDrawCellsNow;
-
-            // Layout
+            bool shouldDrawCellsNow = _worker.ShouldDrawCellsNow;
             rect
-                .CutTop(out Rect topRect, HeadersRowHeight + _parent._topRowsHeight)
+                .CutTop(out Rect headerCellRect, HeadersRowHeight)
+                .CutTop(out Rect topRowsRect, _parent._topRowsHeight)
                 .TakeRest(out Rect bottomRowsRect);
 
-            // Header cell and pinned rows
-            using (new GUIClipScope(topRect))
+            DrawHeaderCell(headerCellRect, mouseXIsInVisibleArea);
+
+            if (shouldDrawCellsNow)
             {
-                // Layout
-                topRect
-                    .AtZero()
-                    .CutTop(out Rect headerCellRect, HeadersRowHeight)
-                    .TakeRest(out Rect topRowsRect);
-
-                // Header cell
-                DrawHeaderCell(headerCellRect, mouseXIsInVisibleArea);
-
-                // Pinned rows
-                if (shouldDrawCellsNow && topRows.Length > 0)
+                if (topRows.Length > 0)
                 {
-                    DrawCells(topRowsRect, topRows);
+                    using (new GUIClipScope(topRowsRect))
+                    {
+                        DrawCells(topRowsRect.AtZero(), topRows);
+                    }
                 }
-            }
 
-            // Unpinned rows
-            if (shouldDrawCellsNow && bottomRows.Length > 0)
-            {
-                using (new GUIClipScope(bottomRowsRect, new Vector2(0f, bottomRowsY)))
+                if (bottomRows.Length > 0)
                 {
-                    DrawCells(bottomRowsRect with { x = 0f, y = 0f }, bottomRows);
+                    using (new GUIClipScope(bottomRowsRect, new Vector2(0f, bottomRowsY)))
+                    {
+                        DrawCells(bottomRowsRect with { x = 0f, y = 0f }, bottomRows);
+                    }
                 }
             }
         }
 
         private void DrawHeaderCell(Rect rect, bool mouseXIsInVisibleArea)
         {
-            ColumnType columnType = _worker.Type;
-            Rect titleRect = rect.ContractedByObjectTableCellPadding();
-            if (columnType == ColumnType.Number)
-            {
-                titleRect.CutRight(out titleRect, _titleWidgetWidth);
-            }
-            else if (columnType == ColumnType.Boolean)
-            {
-                titleRect.CutMidX(out titleRect, _titleWidgetWidth);
-            }
-
             Event @event = Event.current;
+            ObjectTable<TObject> parent = _parent;
+            ColumnType columnType = _worker.Type;
+            rect
+                .CutLeft(out Rect sortControlRect, GUIStyles.TableCell.PadHor)
+                .CutRight(out Rect resizeControlRect, GUIStyles.TableCell.PadHor)
+                .TakeRest(out Rect mainControlRect);
+
             if (@event.type == EventType.Repaint)
             {
-                if (_parent._reorderedColumn == this)
+                Rect titleRect = mainControlRect
+                    .AtZero()
+                    .ContractedBy(0f, GUIStyles.TableCell.PadVer);
+                if (columnType == ColumnType.Number)
+                {
+                    titleRect.CutRight(out titleRect, _titleWidgetWidth);
+                }
+                else if (columnType == ColumnType.Boolean)
+                {
+                    titleRect.CutMidX(out titleRect, _titleWidgetWidth);
+                }
+                GUI.BeginClip(mainControlRect);
+                _titleWidget.Draw(titleRect);
+                GUI.EndClip();
+
+                if (parent._reorderedColumn == this)
                 {
                     rect.HighlightSelected();
                 }
+                else if (Mouse.IsOver(rect))
+                {
+                    rect.HighlightLight();
+                }
 
-                _titleWidget.Draw(titleRect);
-            }
-            else if (@event.type != EventType.Layout)
-            {
-                HandleHeaderCellMouseEvents(rect, mouseXIsInVisibleArea);
+                rect.DrawBorderRight(ColumnSeparatorLineColor);
             }
 
-            rect.ButtonGhostly();
-            rect.Tip(_tooltip);
+            MouseoverSounds.DoRegion(rect);
+
+            DoSortControl(sortControlRect);
+            DoMainControl(mainControlRect, mouseXIsInVisibleArea);
+            DoResizeControl(resizeControlRect, mouseXIsInVisibleArea);
+
+            mainControlRect.Tip(_tooltip);
         }
 
         private void DrawCells(Rect rect, Span<int> rows)
@@ -193,24 +208,23 @@ internal sealed partial class ObjectTable<TObject>
             }
         }
 
-        private void HandleHeaderCellMouseEvents(Rect rect, bool mouseXIsInVisibleArea)
+        private void DoMainControl(Rect rect, bool mouseXIsInVisibleArea)
         {
             Event @event = Event.current;
             ObjectTable<TObject> parent = _parent;
+            bool mouseIsOverRect = Mouse.IsOver(rect);
 
-            if (OriginalEventUtility.EventType == EventType.MouseDrag)
+            if (@event is { type: EventType.MouseDown, button: 0, modifiers: EventModifiers.None } && mouseIsOverRect)
             {
-                if (GUIUtils.MouseDragInProgress)
+                parent._reorderedColumn = this;
+            }
+            else if (parent._reorderedColumn != null)
+            {
+                if (OriginalEventUtility.EventType == EventType.MouseDrag)
                 {
-                    if (IsResized)
-                    {
-                        DoResize();
-                        @event.Use();
-                    }
-                    else if (parent._reorderedColumn != null
-                             && parent._reorderedColumn != this
-                             && mouseXIsInVisibleArea
-                             && rect.x < @event.mousePosition.x && @event.mousePosition.x < rect.xMax)
+                    if (parent._reorderedColumn != this
+                        && mouseXIsInVisibleArea
+                        && rect.x < @event.mousePosition.x && @event.mousePosition.x < rect.xMax)
                     {
                         // These checks are here to ensure that DoReorder() will not be called in vain.
                         // mouseXIsInVisibleArea check is made so that unpinned columns that
@@ -219,106 +233,125 @@ internal sealed partial class ObjectTable<TObject>
                         @event.Use();
                     }
                 }
-                else if (Mouse.IsOver(rect))
+                else if (@event.rawType == EventType.MouseUp)
                 {
-                    if (@event.IsLMB())
-                    {
-                        StartReorder();
-                        @event.Use();
-                    }
-                    else if (@event.IsRMB())
-                    {
-                        StartResize();
-                        @event.Use();
-                    }
+                    parent._reorderedColumn = null;
+                    GUIUtils.ReleaseMouseControl();
+                    @event.Use();
                 }
             }
-            else if (@event.rawType == EventType.MouseUp)
+            else if (@event.type == EventType.MouseUp && mouseIsOverRect)
             {
-                if (GUIUtils.MouseDragInProgress)
+                if (@event is { button: 0, modifiers: EventModifiers.Control })
                 {
-                    if (IsResized)
+                    HandlePin();
+                    GUIUtils.ReleaseMouseControl();
+                    @event.Use();
+                }
+                else if (@event is { button: 1, modifiers: EventModifiers.None })
+                {
+                    _menu.Open();
+                    GUIUtils.ReleaseMouseControl();
+                    @event.Use();
+                }
+            }
+
+            GUI.Button(rect, GUIContent.none, GUIStyle.none);
+        }
+
+        private void DoSortControl(Rect rect)
+        {
+            ObjectTable<TObject> parent = _parent;
+            Event @event = Event.current;
+            const float IconPadding = 3f;
+
+            if (@event.type == EventType.Repaint)
+            {
+                if (parent._sortColumn == this)
+                {
+                    if (parent._sortDirection == SortDirectionAscending)
                     {
-                        EndResize();
-                        @event.Use();
+                        rect
+                            .TopHalf()
+                            .ContractedBy(IconPadding)
+                            .DrawTextureFitted(TexButton.ReorderUp);
                     }
-                    else if (parent._reorderedColumn != null)
+                    else
                     {
-                        EndReorder();
-                        @event.Use();
+                        rect
+                            .BottomHalf()
+                            .ContractedBy(IconPadding)
+                            .DrawTextureFitted(TexButton.ReorderDown);
                     }
                 }
-                else if (Mouse.IsOver(rect))
+
+                if (Mouse.IsOver(rect))
                 {
-                    if (@event.IsLMB())
-                    {
-                        if (@event.control)
-                        {
-                            HandlePin();
-                            @event.Use();
-                        }
-                    }
-                    else if (@event.IsRMB())
-                    {
-                        _menu.Open();
-                        @event.Use();
-                    }
+                    rect.Highlight();
+                }
+            }
+
+            bool wasClicked = GUI.Button(rect, GUIContent.none, GUIStyle.none);
+            if (wasClicked && @event is { button: 0, modifiers: EventModifiers.None })
+            {
+                if (parent._sortColumn != this)
+                {
+                    parent._sortColumn = this;
+                }
+                else
+                {
+                    parent._sortDirection *= -1;
                 }
             }
         }
 
-        private void StartResize()
-        {
-            IsResized = true;
-            //_resizeWidthOffset = rect.xMax - @event.mousePosition.x;
-            IsManuallyResized = true;
-            GUIUtils.StartMouseDrag();
-        }
-
-        private void DoResize()
+        private void DoResizeControl(Rect rect, bool mouseXIsInVisibleArea)
         {
             Event @event = Event.current;
+            bool mouseIsOverRect = Mouse.IsOver(rect);
 
-            //Width = Event.current.mousePosition.x + _resizeWidthOffset;
-            // Simply setting column's width to current mouse position (+starting offset)
-            // feels more "snappy", but has a bug:
-            // When the table is scrolled all the way to the right and we start reducing
-            // the width of a column, it starts pulling its left side to the right, which
-            // results in double width reduction. Using delta.x instead, feels less responsive,
-            // but is more reliable.
-            Width += @event.delta.x;
-            if (Width < RowHeight)
+            if (@event is { type: EventType.MouseDown, button: 0, modifiers: EventModifiers.None } && mouseIsOverRect)
             {
-                Width = RowHeight;
+                IsResized = true;
+                IsManuallyResized = true;
             }
+            else if (IsResized)
+            {
+                DoResize();
+                if (mouseXIsInVisibleArea == false)
+                {
+                    _parent._scrollPosition.x++;
+                    Width++;
+                }
+            }
+
+            if (@event.type == EventType.Repaint && (mouseIsOverRect || IsResized))
+            {
+                rect.HighlightSelected();
+            }
+
+            GUI.Button(rect, GUIContent.none, GUIStyle.none);
         }
 
-        public void DoResizeWhenNotVisible()
+        public void DoResize()
         {
             Event @event = Event.current;
 
             if (OriginalEventUtility.EventType == EventType.MouseDrag)
             {
-                DoResize();
+                Width += @event.delta.x;
+                if (Width < RowHeight)
+                {
+                    Width = RowHeight;
+                }
                 @event.Use();
             }
             else if (@event.rawType == EventType.MouseUp)
             {
-                EndResize();
+                IsResized = false;
+                GUIUtils.ReleaseMouseControl();
                 @event.Use();
             }
-        }
-
-        private void EndResize()
-        {
-            IsResized = false;
-            GUIUtils.EndMouseDrag();
-        }
-
-        private void StartReorder()
-        {
-            _parent._reorderedColumn = this;
-            GUIUtils.StartMouseDrag();
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -360,12 +393,6 @@ internal sealed partial class ObjectTable<TObject>
                     parent._beforeDraw = () => columns.MoveAfterElemAt(reorderedColumnIndex, thisColumnIndex);
                 }
             }
-        }
-
-        private void EndReorder()
-        {
-            _parent._reorderedColumn = null;
-            GUIUtils.EndMouseDrag();
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

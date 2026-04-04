@@ -38,8 +38,7 @@ public static class GUIStyles
         internal const float RowHeight = Text.LineHeight + TableCell.PadVer * 2f;
         internal const float HeadersRowHeight = RowHeight;
         internal static readonly Color ColumnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
-        internal static readonly Color PinnedRowsBGColor = Verse.Widgets.HighlightStrongBgColor.ToTransparent(0.1f);
-        internal static readonly Color FixedPartSeparatorLineColor = new(1f, 0.98f, 0.62f, 0.5f);
+        internal static Color FixedPartSeparatorLineColor => HeadersRowBGColor;
         internal static readonly Color HeadersRowBGColor = GenColor.FromBytes(56, 56, 60);
     }
 
@@ -72,7 +71,7 @@ public static class GUIStyles
         public const float PadHor = _PadHor;
         public const float PadVer = _PadVer;
 
-        private const int _PadHor = 12;
+        private const int _PadHor = 16;
         private const int _PadVer = 4;
 
         static TableCell()

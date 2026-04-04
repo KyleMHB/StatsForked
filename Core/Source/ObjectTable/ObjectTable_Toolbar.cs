@@ -49,12 +49,9 @@ internal sealed partial class ObjectTable<TObject>
                 .CutLeft(out Rect columnPresetsButtonRect, _columnPresetsButton.Width)
                 .CutRight(out Rect infoIconRect, rect.height);
 
-            // Background
             if (Event.current.type == EventType.Repaint)
             {
-                rect
-                    .HighlightLight()
-                    .DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
+                rect.DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
             }
 
             // Buttons

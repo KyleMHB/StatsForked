@@ -125,7 +125,6 @@ internal sealed partial class ObjectTable<TObject>
     private void DrawColumns(Rect rect, Vector2 scrollPosition, ReadOnlyListSegment<Column> columns, Span<int> topRows, Span<int> bottomRows, float bottomRowsY)
     {
         Event @event = Event.current;
-        bool isRepaint = @event.type == EventType.Repaint;
         float scrollX = scrollPosition.x;
         float xMin = rect.xMin + scrollX;
         float xMax = rect.xMax + scrollX;
@@ -142,14 +141,10 @@ internal sealed partial class ObjectTable<TObject>
             if (xMin < columnRectXmax && columnRect.xMin < xMax)
             {
                 column.Draw(columnRect, topRows, bottomRows, bottomRowsY, mouseXIsInVisibleArea);
-                if (isRepaint)
-                {
-                    columnRect.DrawBorderRight(ColumnSeparatorLineColor);
-                }
             }
             else if (column.IsResized)
             {
-                column.DoResizeWhenNotVisible();
+                column.DoResize();
             }
 
             columnRect.x = columnRectXmax;
@@ -169,22 +164,18 @@ internal sealed partial class ObjectTable<TObject>
         // Headers row
         if (isRepaint)
         {
-            headersRowRect.Fill(HeadersRowBGColor);
-            //.Highlight();
-            //.DrawBorderBottom(GUIStyles.MainTabWindow.BorderColor);
+            headersRowRect
+                .Fill(HeadersRowBGColor)
+                .DrawBorderBottom(ColumnSeparatorLineColor);
         }
 
         // Pinned rows
         int topRowsCount = _topRowsCount;
         if (topRowsCount > 0)
         {
-            // Background
             if (isRepaint)
             {
-                topRowsRect
-                    .Fill(PinnedRowsBGColor)
-                    .DrawBorderTop(FixedPartSeparatorLineColor)
-                    .DrawBorderBottom(FixedPartSeparatorLineColor);
+                topRowsRect.DrawBorderBottom(FixedPartSeparatorLineColor);
             }
 
             // Rows
@@ -239,11 +230,10 @@ internal sealed partial class ObjectTable<TObject>
             }
         }
 
-        if (mouseIsOverRect
-            && GUIUtils.MouseDragInProgress == false
-            && @event is { control: true, type: EventType.MouseUp })
+        if (mouseIsOverRect && @event is { type: EventType.MouseUp, button: 0, modifiers: EventModifiers.Control })
         {
             HandleRowPin(index);
+            GUIUtils.ReleaseMouseControl();
             @event.Use();
         }
     }
@@ -272,36 +262,22 @@ internal sealed partial class ObjectTable<TObject>
     {
         Event @event = Event.current;
 
-        if (OriginalEventUtility.EventType == EventType.MouseDrag)
+        if (@event is { type: EventType.MouseDown, button: 0, modifiers: EventModifiers.None } && Mouse.IsOver(rect))
         {
-            if (GUIUtils.MouseDragInProgress)
-            {
-                if (_rightPartIsPanned)
-                {
-                    _scrollPosition.x = Mathf.Max(_scrollPosition.x - @event.delta.x, 0f);
-                    @event.Use();
-                }
-            }
-            else if (Mouse.IsOver(rect))
-            {
-                if (_rightPartIsPanned == false)
-                {
-                    _rightPartIsPanned = true;
-                    GUIUtils.StartMouseDrag();
-                    @event.Use();
-                }
-            }
+            _rightPartIsPanned = true;
         }
-        else if (@event.rawType == EventType.MouseUp)
+        else if (_rightPartIsPanned)
         {
-            if (GUIUtils.MouseDragInProgress)
+            if (OriginalEventUtility.EventType == EventType.MouseDrag)
             {
-                if (_rightPartIsPanned)
-                {
-                    _rightPartIsPanned = false;
-                    GUIUtils.EndMouseDrag();
-                    @event.Use();
-                }
+                _scrollPosition.x = Mathf.Max(_scrollPosition.x - @event.delta.x, 0f);
+                @event.Use();
+            }
+            else if (@event.rawType == EventType.MouseUp)
+            {
+                _rightPartIsPanned = false;
+                GUIUtils.ReleaseMouseControl();
+                @event.Use();
             }
         }
 

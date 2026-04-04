@@ -55,13 +55,13 @@ public sealed partial class MainTabWindow
                     .DrawTextureFitted(_icon, _iconColor, _iconScale);
             }
 
-            if (rect.ButtonGhostly())
+            if (rect.ButtonGhostly() && @event.modifiers == EventModifiers.None)
             {
-                if (@event.IsLMB())
+                if (@event.button == 0)
                 {
                     _parent._activeTable = this;
                 }
-                else if (@event.IsRMB())
+                else if (@event.button == 1)
                 {
                     _menu.Open();
                 }
