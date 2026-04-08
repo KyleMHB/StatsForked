@@ -18,20 +18,22 @@ internal sealed partial class ObjectTable<TObject>
 {
     private void PinColumn(int index)
     {
-        List<Column> columns = _columns;
-        Column column = columns[index];
-        columns.RemoveAt(index);
-        columns.Insert(_leftColumnsCount, column);
+        if (index != _leftColumnsCount)
+        {
+            int lastPinnedColumnIndex = _leftColumnsCount - 1;
+            _columns.MoveAfterElemAt(index, lastPinnedColumnIndex);
+        }
         _leftColumnsCount++;
     }
 
     private void UnpinColumn(int index)
     {
-        List<Column> columns = _columns;
-        Column column = columns[index];
-        columns.RemoveAt(index);
+        int lastPinnedColumnIndex = _leftColumnsCount - 1;
+        if (index != lastPinnedColumnIndex)
+        {
+            _columns.MoveAfterElemAt(index, lastPinnedColumnIndex);
+        }
         _leftColumnsCount--;
-        columns.Insert(_leftColumnsCount, column);
     }
 
     private void AddColumn(ColumnDef columnDef)
@@ -76,7 +78,6 @@ internal sealed partial class ObjectTable<TObject>
 
         private readonly ColumnWorker<TObject> _worker;
         private readonly Widget _titleWidget;
-        private readonly float _titleWidgetWidth;
         private readonly TipSignal _tooltip;
         private readonly ObjectTable<TObject> _parent;
         private readonly FloatMenu _menu;
@@ -85,12 +86,10 @@ internal sealed partial class ObjectTable<TObject>
         {
             ColumnDef def = worker.Def;
             Widget titleWidget = def.TitleWidget;
-            Vector2 titleWidgetSize = titleWidget.Size;
 
             _worker = worker;
             Def = worker.Def;
             _titleWidget = titleWidget;
-            _titleWidgetWidth = titleWidgetSize.x;
             _tooltip = $"<i>{def.LabelCap}</i>\n\n{def.description}";
             _parent = parent;
             _menu = new FloatMenu([
@@ -110,8 +109,7 @@ internal sealed partial class ObjectTable<TObject>
         public void Draw(Rect rect, Span<int> topRows, Span<int> bottomRows, float bottomRowsY, bool mouseXIsInVisibleArea)
         {
             bool shouldDrawCellsNow = _worker.ShouldDrawCellsNow;
-            rect
-                .CutTop(out Rect headerCellRect, HeadersRowHeight)
+            rect.CutTop(out Rect headerCellRect, HeadersRowHeight)
                 .CutTop(out Rect topRowsRect, _parent._topRowsHeight)
                 .TakeRest(out Rect bottomRowsRect);
 
@@ -123,7 +121,7 @@ internal sealed partial class ObjectTable<TObject>
                 {
                     using (new GUIClipScope(topRowsRect))
                     {
-                        DrawCells(topRowsRect.AtZero(), topRows);
+                        DrawCells(topRowsRect with { x = 0f, y = 0f }, topRows);
                     }
                 }
 
@@ -142,26 +140,32 @@ internal sealed partial class ObjectTable<TObject>
             Event @event = Event.current;
             ObjectTable<TObject> parent = _parent;
             ColumnType columnType = _worker.Type;
-            rect
-                .CutLeft(out Rect sortControlRect, GUIStyles.TableCell.PadHor)
-                .CutRight(out Rect resizeControlRect, GUIStyles.TableCell.PadHor)
+            const float SideControlMargin = 1f;
+            rect.CutLeft(out Rect sortControlRect, GUIStyles.TableCell.PadHor - SideControlMargin)
+                .CutRight(out Rect resizeControlRect, GUIStyles.TableCell.PadHor - SideControlMargin)
                 .TakeRest(out Rect mainControlRect);
 
             if (@event.type == EventType.Repaint)
             {
-                Rect titleRect = mainControlRect
-                    .AtZero()
-                    .ContractedBy(0f, GUIStyles.TableCell.PadVer);
+                Rect titleClipRect = mainControlRect.ContractedBy(SideControlMargin, GUIStyles.TableCell.PadVer);
+                GUI.BeginClip(titleClipRect);
+
+                float titleWidgetWidth = _titleWidget.Size.x;
+                Rect titleRect = titleClipRect with { x = 0f, y = 0f };
                 if (columnType == ColumnType.Number)
                 {
-                    titleRect.CutRight(out titleRect, _titleWidgetWidth);
+                    titleRect.CutRight(out titleRect, titleWidgetWidth);
                 }
                 else if (columnType == ColumnType.Boolean)
                 {
-                    titleRect.CutMidX(out titleRect, _titleWidgetWidth);
+                    titleRect.CutMidX(out titleRect, titleWidgetWidth);
                 }
-                GUI.BeginClip(mainControlRect);
+                else
+                {
+                    titleRect = titleRect with { width = titleWidgetWidth };
+                }
                 _titleWidget.Draw(titleRect);
+
                 GUI.EndClip();
 
                 if (parent._reorderedColumn == this)
@@ -179,7 +183,7 @@ internal sealed partial class ObjectTable<TObject>
             MouseoverSounds.DoRegion(rect);
 
             DoSortControl(sortControlRect);
-            DoMainControl(mainControlRect, mouseXIsInVisibleArea);
+            DoMainControl(mainControlRect, rect, mouseXIsInVisibleArea);
             DoResizeControl(resizeControlRect, mouseXIsInVisibleArea);
 
             mainControlRect.Tip(_tooltip);
@@ -208,7 +212,7 @@ internal sealed partial class ObjectTable<TObject>
             }
         }
 
-        private void DoMainControl(Rect rect, bool mouseXIsInVisibleArea)
+        private void DoMainControl(Rect rect, Rect cellRect, bool mouseXIsInVisibleArea)
         {
             Event @event = Event.current;
             ObjectTable<TObject> parent = _parent;
@@ -220,25 +224,7 @@ internal sealed partial class ObjectTable<TObject>
             }
             else if (parent._reorderedColumn != null)
             {
-                if (OriginalEventUtility.EventType == EventType.MouseDrag)
-                {
-                    if (parent._reorderedColumn != this
-                        && mouseXIsInVisibleArea
-                        && rect.x < @event.mousePosition.x && @event.mousePosition.x < rect.xMax)
-                    {
-                        // These checks are here to ensure that DoReorder() will not be called in vain.
-                        // mouseXIsInVisibleArea check is made so that unpinned columns that
-                        // overlap with pinned columns due to scroll do not "steal" reordered column.
-                        DoReorder(rect, parent._reorderedColumn);
-                        @event.Use();
-                    }
-                }
-                else if (@event.rawType == EventType.MouseUp)
-                {
-                    parent._reorderedColumn = null;
-                    GUIUtils.ReleaseMouseControl();
-                    @event.Use();
-                }
+                DoReorder(cellRect, parent._reorderedColumn, mouseXIsInVisibleArea);
             }
             else if (@event.type == EventType.MouseUp && mouseIsOverRect)
             {
@@ -271,15 +257,13 @@ internal sealed partial class ObjectTable<TObject>
                 {
                     if (parent._sortDirection == SortDirectionAscending)
                     {
-                        rect
-                            .TopHalf()
+                        rect.TopHalf()
                             .ContractedBy(IconPadding)
                             .DrawTextureFitted(TexButton.ReorderUp);
                     }
                     else
                     {
-                        rect
-                            .BottomHalf()
+                        rect.BottomHalf()
                             .ContractedBy(IconPadding)
                             .DrawTextureFitted(TexButton.ReorderDown);
                     }
@@ -318,6 +302,7 @@ internal sealed partial class ObjectTable<TObject>
             else if (IsResized)
             {
                 DoResize();
+                // TODO: This will work for both left and right.
                 if (mouseXIsInVisibleArea == false)
                 {
                     _parent._scrollPosition.x++;
@@ -339,11 +324,7 @@ internal sealed partial class ObjectTable<TObject>
 
             if (OriginalEventUtility.EventType == EventType.MouseDrag)
             {
-                Width += @event.delta.x;
-                if (Width < RowHeight)
-                {
-                    Width = RowHeight;
-                }
+                Width = Mathf.Clamp(Width + @event.delta.x, HeadersRowHeight, float.MaxValue);
                 @event.Use();
             }
             else if (@event.rawType == EventType.MouseUp)
@@ -355,43 +336,59 @@ internal sealed partial class ObjectTable<TObject>
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void DoReorder(Rect rect, Column reorderedColumn)
+        private void DoReorder(Rect rect, Column reorderedColumn, bool mouseXIsInVisibleArea)
         {
+            Event @event = Event.current;
             ObjectTable<TObject> parent = _parent;
-            List<Column> columns = parent._columns;
-            int leftColumnsCount = parent._leftColumnsCount;
-            int reorderedColumnIndex = columns.IndexOf(reorderedColumn);
-            int thisColumnIndex = columns.IndexOf(this);
 
-            bool reorderedColumnIsPinned = reorderedColumnIndex < leftColumnsCount;
-            bool thisColumnIsPinned = thisColumnIndex < leftColumnsCount;
-            if (reorderedColumnIsPinned && thisColumnIsPinned == false)
+            if (OriginalEventUtility.EventType == EventType.MouseDrag
+                && parent._reorderedColumn != this
+                && mouseXIsInVisibleArea
+                && rect.x < @event.mousePosition.x && @event.mousePosition.x < rect.xMax)
             {
-                parent._leftColumnsCount--;
-            }
-            else if (reorderedColumnIsPinned == false && thisColumnIsPinned)
-            {
-                parent._leftColumnsCount++;
-            }
+                List<Column> columns = parent._columns;
+                int leftColumnsCount = parent._leftColumnsCount;
+                int reorderedColumnIndex = columns.IndexOf(reorderedColumn);
+                int thisColumnIndex = columns.IndexOf(this);
 
-            float xMiddle = rect.x + rect.width / 2f;
-            float mouseX = Event.current.mousePosition.x;
-            if (rect.x < mouseX && mouseX < xMiddle)// Left
-            {
-                if (thisColumnIndex - 1 != reorderedColumnIndex)
+                bool reorderedColumnIsPinned = reorderedColumnIndex < leftColumnsCount;
+                bool thisColumnIsPinned = thisColumnIndex < leftColumnsCount;
+                if (reorderedColumnIsPinned && thisColumnIsPinned == false)
                 {
-                    parent._beforeDraw = () => columns.MoveBeforeElemAt(reorderedColumnIndex, thisColumnIndex);
+                    parent._leftColumnsCount--;
                 }
+                else if (reorderedColumnIsPinned == false && thisColumnIsPinned)
+                {
+                    parent._leftColumnsCount++;
+                }
+
+                float xMiddle = rect.x + rect.width / 2f;
+                float mouseX = @event.mousePosition.x;
+                if (rect.x < mouseX && mouseX < xMiddle)// Left
+                {
+                    if (thisColumnIndex - 1 != reorderedColumnIndex)
+                    {
+                        parent._beforeDraw = () => columns.MoveBeforeElemAt(reorderedColumnIndex, thisColumnIndex);
+                    }
+                }
+                // xMiddle < mouseX && mouseX < rect.xMax check is not necessary here
+                // because we already checked if mouseX is between rect.x and rect.xMax.
+                // So if mouseX is not on the left, it is guaranteed to be on the right.
+                else// Right
+                {
+                    if (thisColumnIndex + 1 != reorderedColumnIndex)
+                    {
+                        parent._beforeDraw = () => columns.MoveAfterElemAt(reorderedColumnIndex, thisColumnIndex);
+                    }
+                }
+
+                @event.Use();
             }
-            // xMiddle < mouseX && mouseX < rect.xMax check is not necessary here
-            // because we're checking if mouseX is between rect.x and rect.xMax before calling the method.
-            // So if mouseX is not on the left, it is guaranteed to be on the right.
-            else// Right
+            else if (@event.rawType == EventType.MouseUp)
             {
-                if (thisColumnIndex + 1 != reorderedColumnIndex)
-                {
-                    parent._beforeDraw = () => columns.MoveAfterElemAt(reorderedColumnIndex, thisColumnIndex);
-                }
+                parent._reorderedColumn = null;
+                GUIUtils.ReleaseMouseControl();
+                @event.Use();
             }
         }
 
@@ -412,7 +409,7 @@ internal sealed partial class ObjectTable<TObject>
 
         public void RecalcWidth(List<int> rows)
         {
-            Width = Mathf.Max(_titleWidgetWidth, _worker.GetWidth(rows)) + GUIStyles.TableCell.PadHor * 2f;
+            Width = Mathf.Max(_titleWidget.Size.x, _worker.GetWidth(rows)) + GUIStyles.TableCell.PadHor * 2f;
         }
 
         public void NotifyParentWindowClosed()
