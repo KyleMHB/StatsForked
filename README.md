@@ -1,9 +1,9 @@
 [Subscribe to the mod on Steam!](https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439)
 
-# Naming convention
+# Stats
 
-The project uses standard C# naming convention for classes, namespaces, etc.
+Stats is a declarative GUI-Table framework mod for the game RimWorld by Ludeon Studios. Additionally, it includes several built-in tables, as well as compatibility patches for some other mods.
 
-There are some exceptions to the rules, which are listed below.
+# License
 
-Widget class names don't use `Widget` suffix, as opposite to, for example, table column workers. That is because, often times, a widget's name is enough to conclude that something is a widget. For example, one can tell with a high degree of certainty, that `Label` or `Button` is a widget. Now if we take for example `StatColumnWorker` and remove the `ColumnWorker` suffix, we'll be left with just `Stat`. `ColumnWorker` suffix provides important context, which makes the name unambiguous.
+[GNU LGPLv3](COPYING.LESSER)
