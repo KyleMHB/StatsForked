@@ -11,8 +11,6 @@ public interface IBooleanCell : ICell
 
 public readonly struct BooleanCell : IBooleanCell
 {
-    private static readonly Texture2D _textureTrue = Verse.Widgets.CheckboxOnTex;
-
     public float Width => 0f;
     public bool IsRefreshable => false;
     public bool Value { get; }
@@ -30,7 +28,7 @@ public readonly struct BooleanCell : IBooleanCell
         {
             rect
                 .ContractedByObjectTableCellPadding()
-                .DrawTextureFitted(_textureTrue);
+                .DrawTextureFitted(Verse.Widgets.CheckboxOnTex);
         }
     }
 }

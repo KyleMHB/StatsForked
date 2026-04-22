@@ -87,6 +87,46 @@
         </tags>
     </Stats.ColumnDef>
 
+    <Stats.ColumnDef>
+        <defName>Weapon_DpsClose</defName>
+        <label>close dps</label>
+        <title>DPS C</title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.CloseDpsColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsRangedWeapon</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Weapon_DpsShort</defName>
+        <label>short dps</label>
+        <title>DPS S</title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.ShortDpsColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsRangedWeapon</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Weapon_DpsMedium</defName>
+        <label>medium dps</label>
+        <title>DPS M</title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.MediumDpsColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsRangedWeapon</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Weapon_DpsLong</defName>
+        <label>long dps</label>
+        <title>DPS L</title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.LongDpsColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsRangedWeapon</li>
+        </tags>
+    </Stats.ColumnDef>
+
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_RangedAccuracyTouch</defName>
         <title><Accuracy/>3</title>

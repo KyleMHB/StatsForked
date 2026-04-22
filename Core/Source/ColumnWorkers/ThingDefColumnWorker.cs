@@ -11,7 +11,7 @@ namespace Stats.ColumnWorkers;
 public abstract class ThingDefColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefCell
 {
     public override ColumnType Type => ColumnType.String;
-    public override bool ShouldDrawCellsNow => Event.current.type == EventType.Repaint || Event.current.IsLMB();
+    public override bool ShouldDrawCellsNow => Event.current.type == EventType.Repaint || Event.current.IsLeftMouseInteraction();
 
     protected abstract IEnumerable<Verse.ThingDef?> GetValueFieldFilterOptions(TableWorker tableWorker);
 

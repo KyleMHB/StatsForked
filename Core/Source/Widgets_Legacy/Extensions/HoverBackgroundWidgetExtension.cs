@@ -18,7 +18,7 @@ public sealed class HoverBackgroundWidgetExtension : WidgetExtension
         if (Event.current.type == EventType.Repaint && Mouse.IsOver(rect))
         {
             GUI.DrawTexture(
-                rect, Texture, ScaleMode.StretchToFill, true, 0f, Color.AdjustedForGUIOpacity(), 0f, 0f
+                rect, Texture, ScaleMode.StretchToFill, true, 0f, Color.WithGuiOpacity(), 0f, 0f
             );
         }
 

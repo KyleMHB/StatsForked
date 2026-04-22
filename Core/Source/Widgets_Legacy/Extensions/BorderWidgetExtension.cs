@@ -32,7 +32,7 @@ public sealed class BorderWidgetExtension : WidgetExtension
     {
         if (Event.current.type == EventType.Repaint)
         {
-            var color = Color.AdjustedForGUIOpacity();
+            var color = Color.WithGuiOpacity();
             // Hor:
             // - Top
             var horRect = rect with { height = Thickness };

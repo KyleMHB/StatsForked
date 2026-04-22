@@ -1,6 +1,6 @@
 ﻿namespace Stats.TableWorkers.ThingDef;
 
-public sealed class MeleeWeaponTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
+public class MeleeWeaponTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
 {
     protected override bool IsValidThingDef(Verse.ThingDef thingDef)
     {

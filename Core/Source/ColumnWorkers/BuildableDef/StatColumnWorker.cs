@@ -114,9 +114,10 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
             if (statValue != 0f)
             {
                 ValueRaw = statValue;
-                _text = stat.Worker.GetStatDrawEntryLabel(stat, statValue, _ToStringNumberSense, statRequest);
-                Width = Text.CalcSize(_text).x;
-                Match match = _numberRegex.Match(_text);
+                string text = stat.Worker.GetStatDrawEntryLabel(stat, statValue, _ToStringNumberSense, statRequest);
+                _text = text;
+                Width = Text.CalcSize(text).x;
+                Match match = _numberRegex.Match(text);
                 if (match.Success)
                 {
                     Value = decimal.Parse(match.Groups[1].Captures[0].Value);
@@ -140,6 +141,11 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void HandleTooltip(Rect rect)
         {
+            if (_stat == null)
+            {
+                return;
+            }
+
             if (_column._cellTooltip == null || _column._cellTooltipOwner != StatRequest)
             {
                 _column._cellTooltip = _stat.Worker.GetExplanationFull(StatRequest, _ToStringNumberSense, ValueRaw);

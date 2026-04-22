@@ -6,7 +6,7 @@ using Verse;
 
 namespace Stats.Filters;
 
-public sealed class BooleanFilter : Filter
+public sealed class BooleanFilter : Filter, IPresettableFilter
 {
     public override bool IsActive => Value != null;
     public override event Action? OnChange;
@@ -42,7 +42,8 @@ public sealed class BooleanFilter : Filter
             GUI.color = GUIStyles.Text.ColorSecondary;
         }
 
-        if (rect.CutByX(rect.width / 2f).ButtonImageSubtle(Verse.Widgets.CheckboxOnTex))
+        rect = rect.CutLeft(out Rect trueButtonRect, rect.width / 2f);
+        if (trueButtonRect.ButtonImageSubtle(Verse.Widgets.CheckboxOnTex))
         {
             Value = Value == true ? null : true;
         }
@@ -72,5 +73,21 @@ public sealed class BooleanFilter : Filter
     public override void NotifyChanged()
     {
         OnChange?.Invoke();
+    }
+
+    public string SerializeState()
+    {
+        return Value?.ToString() ?? "";
+    }
+
+    public void DeserializeState(string state)
+    {
+        if (string.IsNullOrEmpty(state))
+        {
+            Value = null;
+            return;
+        }
+
+        Value = bool.Parse(state);
     }
 }

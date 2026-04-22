@@ -30,6 +30,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         windowRect.height = _defaultHeight;
         List<TableDef> tableDefs = DefDatabase<TableDef>.AllDefsListForReading;
         int tableDefsCount = tableDefs.Count;
+        _tables = new(tableDefsCount);
         List<FloatMenuOption> tableDefsMenuOptions = new(tableDefsCount);
         for (int i = 0; i < tableDefsCount; i++)
         {
@@ -50,7 +51,6 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         tableDefsMenuOptions.SortBy(option => option.Label);
 
         _tableDefsMenu = new FloatMenu(tableDefsMenuOptions);
-        _tables = new(tableDefsCount);
     }
 
     public override void DoWindowContents(Rect rect)

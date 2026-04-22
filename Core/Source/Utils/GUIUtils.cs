@@ -22,6 +22,12 @@ public static class GUIUtils
     [Obsolete]
     internal static Color AdjustedForGUIOpacity(this Color color)
     {
+        return color.WithGuiOpacity();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static Color WithGuiOpacity(this Color color)
+    {
         color.a *= Opacity;
 
         return color;

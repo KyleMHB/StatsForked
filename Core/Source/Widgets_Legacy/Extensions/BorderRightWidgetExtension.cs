@@ -32,7 +32,7 @@ public sealed class BorderRightWidgetExtension : WidgetExtension
         {
             Verse.Widgets.DrawBoxSolid(
                 rect with { x = rect.xMax - Thickness, width = Thickness },
-                Color.AdjustedForGUIOpacity()
+                Color.WithGuiOpacity()
             );
         }
 

@@ -4,7 +4,7 @@ using Verse;
 
 namespace Stats.Filters;
 
-public sealed class NumberFilter : FilterWithInputField<decimal, decimal>
+public sealed class NumberFilter : FilterWithInputField<decimal, decimal>, IPresettableFilter
 {
     public override bool IsActive => _TextFieldText.Length > 0 && InputIsValid;
     private decimal _Value = 0m;
@@ -118,6 +118,35 @@ public sealed class NumberFilter : FilterWithInputField<decimal, decimal>
     public override void NotifyChanged()
     {
         OnChange?.Invoke();
+    }
+
+    public string SerializeState()
+    {
+        return $"{Operator.Symbol}|{_TextFieldText}";
+    }
+
+    public void DeserializeState(string state)
+    {
+        string[] parts = state.Split('|');
+        if (parts.Length > 0)
+        {
+            RelOperator<decimal, decimal>? @operator = parts[0] switch
+            {
+                "==" => Operators.IsEqualTo.Instance,
+                "!=" => Operators.IsNotEqualTo.Instance,
+                ">" => Operators.IsGreaterThan.Instance,
+                "<" => Operators.IsLesserThan.Instance,
+                ">=" => Operators.IsGreaterThanOrEqualTo.Instance,
+                "<=" => Operators.IsLesserThanOrEqualTo.Instance,
+                _ => null,
+            };
+            if (@operator != null)
+            {
+                Operator = @operator;
+            }
+        }
+
+        TextFieldText = parts.Length > 1 ? parts[1] : "";
     }
 
     private static class Operators

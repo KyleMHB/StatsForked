@@ -3,7 +3,7 @@ using Stats.Utils.Extensions;
 
 namespace Stats.TableWorkers.ThingDef;
 
-public sealed class RecreationalBuildingTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
+public class RecreationalBuildingTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
 {
     protected override bool IsValidThingDef(Verse.ThingDef thingDef)
     {

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
 using Stats.ColumnWorkers.Cells;
 using Stats.Filters;
 using Stats.TableWorkers;
@@ -17,9 +19,16 @@ namespace Stats.ColumnWorkers.ThingDef;
 // icon but of different color.
 public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBasedObject, LabelColumnWorker.LabelCell>
 {
+    private enum ResearchStatus
+    {
+        Researched,
+        NotResearched,
+        NoResearchRequired,
+    }
+
     public override ColumnType Type => ColumnType.String;
     public override ColumnDef Def => columnDef;
-    public override bool ShouldDrawCellsNow => Event.current.type == EventType.Repaint || Event.current.IsLMB();
+    public override bool ShouldDrawCellsNow => Event.current.type == EventType.Repaint || Event.current.IsLeftMouseInteraction();
 
     protected override LabelCell MakeCell(DefBasedObject @object)
     {
@@ -34,69 +43,65 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
     public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
         Filter textFieldFilter = new StringFilter((int row) => this[row].Text ?? "");
-        int Compare(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Text, this[row2].Text);
-        CellField textField = new(Def.TitleWidget, textFieldFilter, Compare);
+        int CompareText(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Text, this[row2].Text);
+        CellField textField = new(Def.TitleWidget, textFieldFilter, CompareText);
 
-        return [textField];
+        OTMFilter<ResearchStatus> researchStatusFilter = new(
+            row => GetResearchStatus(this[row].ThingDef),
+            [
+                new(ResearchStatus.Researched, "Researched"),
+                new(ResearchStatus.NotResearched, "Not researched"),
+                new(ResearchStatus.NoResearchRequired, "No research required"),
+            ]
+        );
+        Events.ResearchCompleted += () =>
+        {
+            if (researchStatusFilter.IsActive)
+            {
+                researchStatusFilter.NotifyChanged();
+            }
+        };
+        CellField researchStatusField = new(
+            new Label("Research status"),
+            researchStatusFilter,
+            (row1, row2) => GetResearchStatus(this[row1].ThingDef).CompareTo(GetResearchStatus(this[row2].ThingDef))
+        );
+
+        return [textField, researchStatusField];
     }
 
-    //IEnumerable<ObjectTableWidget.ColumnPart> IColumnWorker<VirtualThing>.GetObjectProps()
-    //{
-    //    yield return new(new Label("Label"), new StringFilter(cell => ((Cell)cell).Text));
+    private static ResearchStatus GetResearchStatus(Verse.ThingDef? thingDef)
+    {
+        if (thingDef == null)
+        {
+            return ResearchStatus.NoResearchRequired;
+        }
 
-    //    var typeFilterOptions = contextObjects
-    //        .Select(@object => @object.Def)
-    //        .Distinct()
-    //        .OrderBy(thingDef => thingDef.label)
-    //        .Select<ThingDef, NTMFilterOption<ThingDef>>(
-    //            thingDef => new(thingDef, thingDef.LabelCap, new ThingDefIcon(thingDef))
-    //        );
-    //    yield return new(new Label("Type"), new OTMFilter<ThingDef>(cell => ((Cell)cell).Def, typeFilterOptions));
+        HashSet<ResearchProjectDef>? researchProjects = thingDef.GetResearchProjectDefs();
+        if (researchProjects == null || researchProjects.Count == 0)
+        {
+            return ResearchStatus.NoResearchRequired;
+        }
 
-    //    var filterWidget_Researched = new BooleanFilter(
-    //        cell => ((Cell)cell).Def.GetResearchProjectDefs()?.All(researchProjectDef => researchProjectDef.IsFinished) is true or null
-    //    );
-    //    Globals.Events.OnResearchCompleted += () =>
-    //    {
-    //        if (filterWidget_Researched.IsActive)
-    //        {
-    //            filterWidget_Researched.NotifyChanged();
-    //        }
-    //    };
-    //    yield return new(new Label("Researched"), filterWidget_Researched);
-
-    //    if (contextObjects.Any(@object => @object.StuffDef != null))
-    //    {
-    //        yield return new(new Label("Distinct"), new StuffedVariantsDisplayModeToggleButton());
-
-    //        var stuffFilterOptions = contextObjects
-    //            .Select(@object => @object.StuffDef)
-    //            .Distinct()
-    //            .OrderBy(thingDef => thingDef?.label)
-    //            .Select<ThingDef?, NTMFilterOption<ThingDef?>>(
-    //                thingDef => thingDef == null
-    //                    ? new()
-    //                    : new(thingDef, thingDef.LabelCap, new ThingDefIcon(thingDef))
-    //            );
-    //        var stuffFilter = new OTMFilter<ThingDef?>(cell => ((Cell)cell).StuffDef, stuffFilterOptions);
-    //        yield return new(new Label("Material"), stuffFilter);
-    //    }
-    //}
+        return researchProjects.All(researchProjectDef => researchProjectDef.IsFinished)
+            ? ResearchStatus.Researched
+            : ResearchStatus.NotResearched;
+    }
 
     public readonly struct LabelCell : ICell
     {
         public float Width { get; }
         public bool IsRefreshable => false;
+        public readonly Verse.ThingDef? ThingDef;
         public readonly string? Text;
 
-        private readonly Verse.ThingDef? _thingDef;
         private readonly Verse.ThingDef? _stuffDef;
         private readonly ThingDefIcon? _icon;
         private readonly float _iconWidth;
 
         public LabelCell(Verse.ThingDef thingDef, Verse.ThingDef? stuffDef = null)
         {
-            _thingDef = thingDef;
+            ThingDef = thingDef;
             _stuffDef = stuffDef;
             Text = stuffDef == null
                 ? thingDef.LabelCap.RawText
@@ -109,7 +114,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
 
         public void Draw(Rect rect)
         {
-            if (_thingDef != null)
+            if (ThingDef != null)
             {
                 rect
                     .ContractedByObjectTableCellPadding()
@@ -126,33 +131,10 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
                 bool iconWasClicked = iconRect.ButtonGhostly();
                 if (iconWasClicked)
                 {
-                    _thingDef.OpenInfoDialog(_stuffDef);
+                    ThingDef.OpenInfoDialog(_stuffDef);
                 }
             }
         }
-
-        //public Cell(VirtualThing thing)
-        //{
-        //    Def = thing.Def;
-        //    StuffDef = thing.StuffDef;
-        //    IsMadeFromDefaultStuff = thing.StuffDef == thing.Def.GetDefaultStuff();
-
-        //    var text = thing.StuffDef == null
-        //        ? thing.Def.LabelCap.RawText
-        //        : $"{thing.StuffDef.LabelAsStuff.CapitalizeFirst()} {thing.Def.label}";
-        //    var widget = new HorizontalContainer([
-        //        new ThingDefIcon(thing.Def, thing.StuffDef)
-        //        .PaddingAbs(2f)
-        //        .SizeAbs(Verse.Text.LineHeight + ObjectTableWidget.CellPadVer * 2f)
-        //        .ToButtonGhostly(() => Draw.DefInfoDialog(thing.Def, thing.StuffDef)),
-        //        new Label(text).PaddingAbs(0f, ObjectTableWidget.CellPadVer),
-        //    ], Globals.GUI.Pad)
-        //    .PaddingAbs(ObjectTableWidget.CellPadHor, 0f)
-        //    .Tooltip(thing.Def.description);
-
-        //    Widget = widget;
-        //    Text = text;
-        //}
     }
 
     /*

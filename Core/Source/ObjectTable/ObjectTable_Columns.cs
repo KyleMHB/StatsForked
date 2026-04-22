@@ -38,12 +38,33 @@ internal sealed partial class ObjectTable<TObject>
 
     private void AddColumn(ColumnDef columnDef)
     {
+        TryAddColumn(columnDef, notifyToolbar: true, applyFilters: true);
+    }
+
+    private bool TryAddColumn(ColumnDef columnDef, bool notifyToolbar, bool applyFilters)
+    {
         Type workerClass = columnDef.workerClass;
+        if (typeof(ColumnWorker<TObject>).IsAssignableFrom(workerClass) == false)
+        {
+            WarnIncompatibleColumn(columnDef.defName, _tableWorker.Def.defName);
+            return false;
+        }
+
         ColumnWorker<TObject> columnWorker = (ColumnWorker<TObject>)Activator.CreateInstance(workerClass, columnDef);
         Column column = new(columnWorker, _tableWorker, this);
         _columns.Add(column);
         columnWorker.NotifyRowAdded(_objects);
-        _toolbar.NotifyColumnAdded(column);
+        RegisterColumnFilters(column, columnWorker.GetCellFields(_tableWorker));
+        if (applyFilters)
+        {
+            ApplyFilters();
+        }
+        if (notifyToolbar)
+        {
+            _toolbar.NotifyColumnAdded(column);
+        }
+
+        return true;
     }
 
     private void RemoveColumn(int index)
@@ -53,8 +74,11 @@ internal sealed partial class ObjectTable<TObject>
             _leftColumnsCount--;
         }
 
-        _toolbar.NotifyColumnRemoved(_columns[index]);
+        Column column = _columns[index];
+        _toolbar.NotifyColumnRemoved(column);
+        UnregisterColumnFilters(column);
         _columns.RemoveAt(index);
+        ApplyFilters();
     }
 
     private void RemoveColumn(Column column)

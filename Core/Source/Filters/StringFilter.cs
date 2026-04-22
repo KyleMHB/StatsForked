@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Stats.Filters;
 
-public sealed class StringFilter : FilterWithInputField<string, string>
+public sealed class StringFilter : FilterWithInputField<string, string>, IPresettableFilter
 {
     public override bool IsActive => Value.Length > 0;
     private string _Value = "";
@@ -70,6 +70,31 @@ public sealed class StringFilter : FilterWithInputField<string, string>
     public override void NotifyChanged()
     {
         OnChange?.Invoke();
+    }
+
+    public string SerializeState()
+    {
+        return $"{Operator.Symbol}|{System.Uri.EscapeDataString(Value)}";
+    }
+
+    public void DeserializeState(string state)
+    {
+        string[] parts = state.Split('|');
+        if (parts.Length > 0)
+        {
+            RelOperator<string, string>? @operator = parts[0] switch
+            {
+                "~=" => Operators.Contains.Instance,
+                "!~=" => Operators.NotContains.Instance,
+                _ => null,
+            };
+            if (@operator != null)
+            {
+                Operator = @operator;
+            }
+        }
+
+        Value = parts.Length > 1 ? System.Uri.UnescapeDataString(parts[1]) : "";
     }
 
     private static class Operators

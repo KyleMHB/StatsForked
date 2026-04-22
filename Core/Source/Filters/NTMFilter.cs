@@ -12,7 +12,7 @@ using Verse.Sound;
 
 namespace Stats.Filters;
 
-public abstract class NTMFilter<TLhs, TRhs> : Filter
+public abstract class NTMFilter<TLhs, TRhs> : Filter, IPresettableFilter
 {
     public override bool IsActive => SelectedOptions.Count > 0;
     // TODO: See if IEnumerable is most fitting type here.
@@ -155,6 +155,46 @@ public abstract class NTMFilter<TLhs, TRhs> : Filter
         OnChange?.Invoke();
     }
 
+    public string SerializeState()
+    {
+        string selectedValues = string.Join(",", OptionsList
+            .Where(option => SelectedOptions.Contains(option.Value))
+            .Select(option => System.Uri.EscapeDataString(option.Label)));
+        return $"{Operator.Symbol}|{selectedValues}";
+    }
+
+    public void DeserializeState(string state)
+    {
+        string[] parts = state.Split('|');
+        if (parts.Length > 0)
+        {
+            RelOperator<TLhs, HashSet<TRhs>>? @operator = Operators.FirstOrDefault(candidate => candidate.Symbol == parts[0]);
+            if (@operator != null)
+            {
+                Operator = @operator;
+            }
+        }
+
+        SelectedOptions.Clear();
+        if (parts.Length > 1 && parts[1].Length > 0)
+        {
+            HashSet<string> labels = parts[1]
+                .Split(',')
+                .Select(System.Uri.UnescapeDataString)
+                .ToHashSet();
+            foreach (NTMFilterOption<TRhs> option in OptionsList)
+            {
+                if (labels.Contains(option.Label))
+                {
+                    SelectedOptions.Add(option.Value);
+                }
+            }
+        }
+
+        Resize();
+        NotifyChanged();
+    }
+
     private sealed class OptionsWindowWidget : Window
     {
         protected override float Margin => 0f;
@@ -289,13 +329,14 @@ public abstract class NTMFilter<TLhs, TRhs> : Filter
 
             DoFadeEffect(rect);
 
-            Verse.Widgets.DrawBoxSolid(rect, BackgroundColor.AdjustedForGUIOpacity());
+            Verse.Widgets.DrawBoxSolid(rect, BackgroundColor.WithGuiOpacity());
 
             var rectSize = rect.size;
 
-            Toolbar.Draw(rect.CutByY(Toolbar.GetSize().y), rectSize);
+            rect = rect.CutTop(out Rect toolbarRect, Toolbar.GetSize().y);
+            Toolbar.Draw(toolbarRect, rectSize);
 
-            var borderColor = BorderColor.AdjustedForGUIOpacity();
+            var borderColor = BorderColor.WithGuiOpacity();
             if (Event.current.type == EventType.Repaint)
             {
                 // Hor:
@@ -355,7 +396,7 @@ public abstract class NTMFilter<TLhs, TRhs> : Filter
                 var mouseDistFromRect = GenUI.DistFromRect(rect, Event.current.mousePosition);
 
                 GUIUtils.Opacity = 1f - mouseDistFromRect / maxAllovedMouseDistFromRect;
-                GUI.color = GUI.color.AdjustedForGUIOpacity();
+                GUI.color = GUI.color.WithGuiOpacity();
 
                 if (mouseDistFromRect > maxAllovedMouseDistFromRect)
                 {
@@ -419,7 +460,7 @@ public readonly record struct NTMFilterOption<TValue>
     public string? Tooltip { get; }
     public NTMFilterOption()
     {
-        Value = default;
+        Value = default!;
         Label = "<i>Undefined</i>";
     }
     public NTMFilterOption(TValue value, string label, Widget? icon = null, string? tooltip = null)

@@ -10,10 +10,8 @@ internal sealed partial class ObjectTable<TObject>
     {
         List<int> rows = _rows;
         int row = rows[index];
-        int firstUnpinnedRowIndex = _topRowsCount;
-        int firstUnpinnedRow = rows[firstUnpinnedRowIndex];
-        rows[firstUnpinnedRowIndex] = row;
-        rows[index] = firstUnpinnedRow;
+        MoveRowToPinnedBlock(rows, index);
+        MoveRowToPinnedBlock(_rowOrder, _rowOrder.IndexOf(row));
         _topRowsCount++;
     }
 
@@ -22,11 +20,10 @@ internal sealed partial class ObjectTable<TObject>
     {
         List<int> rows = _rows;
         int row = rows[index];
-        int lastPinnedRowIndex = _topRowsCount - 1;
-        int lastPinnedRow = rows[lastPinnedRowIndex];
-        rows[lastPinnedRowIndex] = row;
-        rows[index] = lastPinnedRow;
+        MoveRowToUnpinnedBlock(rows, index);
+        MoveRowToUnpinnedBlock(_rowOrder, _rowOrder.IndexOf(row));
         _topRowsCount--;
+        ApplyFilters();
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -40,6 +37,24 @@ internal sealed partial class ObjectTable<TObject>
         {
             PinRow(index);
         }
+    }
+
+    private void MoveRowToPinnedBlock(List<int> rows, int index)
+    {
+        int row = rows[index];
+        int firstUnpinnedRowIndex = _topRowsCount;
+        int firstUnpinnedRow = rows[firstUnpinnedRowIndex];
+        rows[firstUnpinnedRowIndex] = row;
+        rows[index] = firstUnpinnedRow;
+    }
+
+    private void MoveRowToUnpinnedBlock(List<int> rows, int index)
+    {
+        int row = rows[index];
+        int lastPinnedRowIndex = _topRowsCount - 1;
+        int lastPinnedRow = rows[lastPinnedRowIndex];
+        rows[lastPinnedRowIndex] = row;
+        rows[index] = lastPinnedRow;
     }
 
     //private sealed class Row

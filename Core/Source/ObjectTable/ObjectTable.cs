@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Stats.ColumnWorkers;
 using Stats.TableWorkers;
@@ -73,6 +74,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
     // Rows
     private readonly List<TObject> _objects;
+    private readonly List<int> _rowOrder;
     private readonly List<int> _rows;
     private int _topRowsCount;
     private int BottomRowsCount => _rows.Count - _topRowsCount;
@@ -104,53 +106,26 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
     // Misc
     private readonly TableWorker<TObject> _tableWorker;
+    private readonly IVariantTableWorker<TObject>? _variantTableWorker;
+    private bool _showVariants;
+    internal bool SupportsVariants => _variantTableWorker?.SupportsVariants == true;
+    internal bool ShowVariants => _showVariants;
 
     public ObjectTable(TableWorker<TObject> tableWorker)
     {
         //tableWorker.OnObjectAdded += AddObject;
         //tableWorker.OnObjectRemoved += RemoveObject;
 
-        // Rows
-        List<TObject> objects = tableWorker.InitialObjects;
-        int objectsCount = objects.Count;
-        List<int> rows = new(objectsCount);
-        for (int i = 0; i < objectsCount; i++)
-        {
-            rows.Add(i);
-        }
-
-        // Columns
-        List<ColumnDef> columnDefs = tableWorker.Def.columns;
-        int columnDefsCount = columnDefs.Count;
-        List<Column> columns = new(columnDefsCount);
-        for (int i = 0; i < columnDefsCount; i++)
-        {
-            ColumnDef columnDef = columnDefs[i];
-            Type workerClass = columnDef.workerClass;
-            if (typeof(ColumnWorker<TObject>).IsAssignableFrom(workerClass))
-            {
-                ColumnWorker<TObject> columnWorker = (ColumnWorker<TObject>)Activator.CreateInstance(workerClass, columnDef);
-                Column column = new(columnWorker, tableWorker, this);
-                columns.Add(column);
-                columnWorker.NotifyRowAdded(objects);
-            }
-            else
-            {
-                WarnIncompatibleColumn(columnDef.defName, tableWorker.Def.defName);
-            }
-        }
-
         // Finalize
         _tableWorker = tableWorker;
-        _objects = objects;
-        _rows = rows;
-        _columns = columns;
-        if (columns.Count > 0)
-        {
-            _leftColumnsCount = 1;
-            _sortColumn = columns[0];
-        }
+        _variantTableWorker = tableWorker as IVariantTableWorker<TObject>;
+        _showVariants = _variantTableWorker?.ShowVariantsByDefault == true;
+        _objects = [];
+        _rowOrder = [];
+        _rows = [];
+        _columns = [];
         _toolbar = new Toolbar(this);
+        RebuildRowsAndColumns(GetCurrentObjects(), tableWorker.Def.columns.Select(column => column.defName).ToList());
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -163,10 +138,16 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     {
         _rightPartIsPanned = false;
         _reorderedColumn = null;
+        _filtersWindow?.Close(false);
         for (int i = 0; i < _columns.Count; i++)
         {
             Column column = _columns[i];
             column.NotifyParentWindowClosed();
         }
+    }
+
+    private List<TObject> GetCurrentObjects()
+    {
+        return _variantTableWorker?.GetObjects(_showVariants) ?? _tableWorker.InitialObjects;
     }
 }

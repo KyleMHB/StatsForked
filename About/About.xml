@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ModMetaData>
-    <packageId>Azzkiy.Stats</packageId>
-    <name>Stats</name>
-    <author>Azkiy</author>
-    <url>https://github.com/AzzkiyOne/Stats</url>
-    <description>Satisfy your minmaxing needs!</description>
+    <packageId>KyleMHB.StatsForked</packageId>
+    <name>Stats Forked</name>
+    <author>kylohb</author>
+    <url>https://github.com/KyleMHB/Stats-Forked</url>
+    <description>Satisfy your minmaxing needs! Fork of AzzkiyOne/Stats, maintained by kylohb.</description>
     <supportedVersions>
         <li>1.5</li>
         <li>1.6</li>

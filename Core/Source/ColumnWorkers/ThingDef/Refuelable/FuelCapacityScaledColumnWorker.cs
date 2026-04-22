@@ -52,8 +52,11 @@ public sealed class FuelCapacityScaledColumnWorker(ColumnDef columnDef) : ThingD
             decimal fuelCapacity = GetFuelCapacity(cell.RefuelableCompProps);
             if (cell.Count != fuelCapacity)
             {
-                wasStale = true;
-                return new TableCell(cell.ThingDef, fuelCapacity, cell.RefuelableCompProps);
+                if (cell.ThingDef != null)
+                {
+                    wasStale = true;
+                    return new TableCell(cell.ThingDef, fuelCapacity, cell.RefuelableCompProps);
+                }
             }
         }
 
@@ -77,7 +80,7 @@ public sealed class FuelCapacityScaledColumnWorker(ColumnDef columnDef) : ThingD
     public readonly struct TableCell : IThingDefCountCell
     {
         public Verse.ThingDef? ThingDef => _innerCell.ThingDef;
-        public string ThingDefLabel => _innerCell.ThingDefLabel;
+        public string? ThingDefLabel => _innerCell.ThingDefLabel;
         public decimal Count => _innerCell.Count;
         public float Width => _innerCell.Width;
         public bool IsRefreshable => RefuelableCompProps != null;

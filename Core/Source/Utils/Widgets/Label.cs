@@ -5,6 +5,7 @@ namespace Stats.Utils.Widgets;
 public sealed class Label : Widget
 {
     public override Vector2 Size { get; }
+    public string Text => _text;
 
     private readonly string _text;
     private readonly GUIStyle _style;

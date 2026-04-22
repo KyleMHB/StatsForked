@@ -61,7 +61,7 @@ public sealed class TechLevelColumnWorker(ColumnDef columnDef) : ColumnWorker<De
 
         public void Draw(Rect rect)
         {
-            if (Value != TechLevel.Undefined)
+            if (Value != TechLevel.Undefined && _text != null)
             {
                 rect.Label(_text, GUIStyles.TableCell.String);
             }

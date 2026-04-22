@@ -62,7 +62,7 @@ public sealed class ThingDefIcon : Widget
         }
 
         Color color = GUI.color;
-        GUI.color = _color.AdjustedForGUIOpacity();
+        GUI.color = _color.WithGuiOpacity();
 
         rect.position += _offset * rect.size;
         Verse.Widgets.DrawTextureFitted(rect, _texture, _scale, _proportions, _coords, _angle);

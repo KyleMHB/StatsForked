@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.IconDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Wastepack</defName>
+        <path>Things/Item/Resource/Wastepack/Wastepack_c</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>MechRecharger</defName>
+        <path>Things/Building/Production/StandardRecharger_south</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>MechControl</defName>
+        <path>UI/Gizmos/MechControlGroup</path>
+    </Stats.IconDef>
+
+    <Stats.IconDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>MechBandwidth</defName>
+        <path>UI/Gizmos/BandNodeTuning</path>
+    </Stats.IconDef>
+
+</Defs>

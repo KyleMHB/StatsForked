@@ -17,6 +17,7 @@ internal sealed partial class ObjectTable<TObject>
         private readonly Button _filtersButton;
         private readonly Button _columnsMenuButton;
         private readonly Button _columnPresetsButton;
+        private readonly Button _variantsButton;
         private ColumnsFloatMenu ColumnsMenu => field ??= MakeColumnsMenu();
 
         public Toolbar(ObjectTable<TObject> parent)
@@ -24,8 +25,8 @@ internal sealed partial class ObjectTable<TObject>
             _parent = parent;
             _filtersButton = new Button(Assets.TableFiltersTabIcon, "Filters");
             _columnsMenuButton = new Button(Assets.TableColumnsMenuIcon, "Columns");
-            // TODO: Do we really need this feature if plan to save opened tables?
-            _columnPresetsButton = new Button(Verse.TexButton.Paste, "Apply Preset");
+            _columnPresetsButton = new Button(Verse.TexButton.Paste, "Presets");
+            _variantsButton = new Button(Verse.Widgets.CheckboxOffTex, "Variants");
         }
 
         public void NotifyColumnAdded(Column column)
@@ -41,13 +42,22 @@ internal sealed partial class ObjectTable<TObject>
         public void Draw(Rect rect)
         {
             // Layout
-            rect
-                .CutLeft(out Rect filtersTabButtonRect, _filtersButton.Width)
-                .CutLeft(Style.Gap)
-                .CutLeft(out Rect columnsMenuButtonRect, _columnsMenuButton.Width)
-                .CutLeft(Style.Gap)
-                .CutLeft(out Rect columnPresetsButtonRect, _columnPresetsButton.Width)
-                .CutRight(out Rect infoIconRect, rect.height);
+            Rect remainingRect = rect;
+            Rect variantsButtonRect = default;
+            remainingRect = remainingRect.CutLeft(out Rect filtersTabButtonRect, _filtersButton.Width);
+            remainingRect = remainingRect.CutLeft(Style.Gap);
+            remainingRect = remainingRect.CutLeft(out Rect columnsMenuButtonRect, _columnsMenuButton.Width);
+
+            if (_parent.SupportsVariants)
+            {
+                remainingRect = remainingRect.CutLeft(Style.Gap);
+                remainingRect = remainingRect.CutLeft(out variantsButtonRect, _variantsButton.Width);
+            }
+
+            remainingRect = remainingRect.CutLeft(Style.Gap);
+            remainingRect = remainingRect.CutLeft(out Rect columnPresetsButtonRect, _columnPresetsButton.Width);
+
+            remainingRect = remainingRect.CutRight(out Rect infoIconRect, remainingRect.height);
 
             if (Event.current.type == EventType.Repaint)
             {
@@ -57,7 +67,10 @@ internal sealed partial class ObjectTable<TObject>
             // Buttons
             bool filtersTabButtonWasClicked = _filtersButton.Draw(filtersTabButtonRect);
             bool columnsMenuButtonWasClicked = _columnsMenuButton.Draw(columnsMenuButtonRect);
-            _columnPresetsButton.Draw(columnPresetsButtonRect);
+            bool columnPresetsButtonWasClicked = _columnPresetsButton.Draw(columnPresetsButtonRect);
+            bool variantsButtonWasClicked = _parent.SupportsVariants && _variantsButton.Draw(
+                variantsButtonRect,
+                _parent.ShowVariants ? Verse.Widgets.CheckboxOnTex : Verse.Widgets.CheckboxOffTex);
             infoIconRect
                 .ContractedBy(ButtonStyle.PadVer)
                 .DrawTextureFitted(TexButton.Info)
@@ -71,6 +84,14 @@ internal sealed partial class ObjectTable<TObject>
             else if (columnsMenuButtonWasClicked)
             {
                 ColumnsMenu.Open();
+            }
+            else if (columnPresetsButtonWasClicked)
+            {
+                MakePresetsMenu().Open();
+            }
+            else if (variantsButtonWasClicked)
+            {
+                _parent.ToggleVariants();
             }
         }
 
@@ -93,6 +114,11 @@ internal sealed partial class ObjectTable<TObject>
 
             public bool Draw(Rect rect)
             {
+                return Draw(rect, _icon);
+            }
+
+            public bool Draw(Rect rect, Texture2D icon)
+            {
                 if (Event.current.type == EventType.Repaint)
                 {
                     rect
@@ -100,7 +126,7 @@ internal sealed partial class ObjectTable<TObject>
                         .CutLeft(out Rect iconRect, ButtonStyle.IconWidth)
                         .TakeRest(out Rect labelRect);
 
-                    iconRect.DrawTextureFitted(_icon, _iconScale);
+                    iconRect.DrawTextureFitted(icon, _iconScale);
                     labelRect.Label(_label, ButtonStyle.LabelStyle);
                 }
 
@@ -123,6 +149,26 @@ internal sealed partial class ObjectTable<TObject>
             columnsMenuOptions.SortBy(option => option.Label);
 
             return new ColumnsFloatMenu(columnsMenuOptions);
+        }
+
+        private FloatMenu MakePresetsMenu()
+        {
+            List<FloatMenuOption> options =
+            [
+                new FloatMenuOption("Save current...", () =>
+                {
+                    Find.WindowStack.Add(new PresetNameWindow("", _parent.SavePreset));
+                }, TexButton.Save, Color.white)
+            ];
+
+            foreach (TablePreset preset in _parent.GetPresets())
+            {
+                options.Add(new FloatMenuOption($"Apply: {preset.name}", () => _parent.ApplyPreset(preset), Verse.TexButton.Paste, Color.white));
+                options.Add(new FloatMenuOption($"Overwrite: {preset.name}", () => _parent.SavePreset(preset.name), Verse.TexButton.Save, Color.white));
+                options.Add(new FloatMenuOption($"Delete: {preset.name}", () => _parent.DeletePreset(preset), TexButton.Delete, Color.white));
+            }
+
+            return new FloatMenu(options);
         }
 
         private sealed class ColumnsFloatMenu : FloatMenu

@@ -53,7 +53,7 @@ public abstract class FilterWithInputField<TLhs, TRhs> : Filter
     public sealed override void Draw(Rect rect, Vector2 _)
     {
         var origTextAnchor = Text.Anchor;
-        var operatorButtonRect = rect.CutByX(OperatorButtonSize.x);
+        rect = rect.CutLeft(out Rect operatorButtonRect, OperatorButtonSize.x);
         var origGUIColor = GUI.color;
 
         if (IsActive == false)

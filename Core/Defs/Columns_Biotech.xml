@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Apparel_ValidLifeStage</defName>
+        <labelKey>Stat_Thing_Apparel_ValidLifestage</labelKey>
+        <descriptionKey>Stat_Thing_Apparel_ValidLifestage_Desc</descriptionKey>
+        <workerClass>Stats.Compat.Biotech.Apparel_ValidLifeStageColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsApparel</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef" MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Mech_BandwidthCost</defName>
+        <title><MechBandwidth/><Decrease/></title>
+        <stat>BandwidthCost</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef" MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Mech_EnergyLossPerHP</defName>
+        <title><Electricity/><Decrease/><Per/>HP</title>
+        <stat>MechEnergyLossPerHP</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef" MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Mech_ControlTakingTime</defName>
+        <title><Time/><MechControl/></title>
+        <stat>ControlTakingTime</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef" MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Mech_WastepacksPerRecharge</defName>
+        <title><Wastepack/><Per/><Electricity/></title>
+        <stat>WastepacksPerRecharge</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Mech_RechargerNeeded</defName>
+        <labelKey>StatsReport_RechargerNeeded</labelKey>
+        <descriptionKey>StatsReport_RechargerNeeded_Desc</descriptionKey>
+        <title><MechRecharger/>Type</title>
+        <workerClass>Stats.Compat.Biotech.Mech_RechargerNeededColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
+    </Stats.ColumnDef>
+    
+    <Stats.ColumnDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Mech_WeightClass</defName>
+        <labelKey>MechWeightClass</labelKey>
+        <descriptionKey>MechWeightClassExplanation</descriptionKey>
+        <workerClass>Stats.Compat.Biotech.Mech_WeightClassColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Mech_WorkActivities</defName>
+        <labelKey>MechWorkActivities</labelKey>
+        <descriptionKey>MechWorkActivitiesExplanation</descriptionKey>
+        <workerClass>Stats.Compat.Biotech.Mech_WorkActivitiesColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Mech_WorkSkill</defName>
+        <labelKey>MechWorkSkill</labelKey>
+        <descriptionKey>MechWorkSkillDesc</descriptionKey>
+        <workerClass>Stats.Compat.Biotech.Mech_WorkSkillColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Gene_Label</defName>
+        <label>label</label>
+        <workerClass>Stats.Compat.Biotech.Gene_LabelColumnWorker</workerClass>
+        <tags>
+            <li>Gene</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Gene_ContentSource</defName>
+        <labelKey>Stat_Source_Label</labelKey>
+        <workerClass>Stats.Compat.Biotech.Gene_ContentSourceColumnWorker</workerClass>
+        <tags>
+            <li>Gene</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Gene_Complexity</defName>
+        <labelKey>Complexity</labelKey>
+        <descriptionKey>ComplexityDesc</descriptionKey>
+        <workerClass>Stats.Compat.Biotech.Gene_ComplexityColumnWorker</workerClass>
+        <tags>
+            <li>Gene</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Gene_MetabolicEfficiency</defName>
+        <labelKey>Metabolism</labelKey>
+        <descriptionKey>MetabolismDesc</descriptionKey>
+        <workerClass>Stats.Compat.Biotech.Gene_MetabolicEfficiencyColumnWorker</workerClass>
+        <tags>
+            <li>Gene</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef MayRequire="Ludeon.RimWorld.Biotech">
+        <defName>Gene_RequiredArchiteCapsulesAmount</defName>
+        <labelKey>ArchitesRequired</labelKey>
+        <descriptionKey>ArchitesRequiredDesc</descriptionKey>
+        <workerClass>Stats.Compat.Biotech.Gene_RequiredArchiteCapsulesAmountColumnWorker</workerClass>
+        <tags>
+            <li>Gene</li>
+        </tags>
+    </Stats.ColumnDef>
+
+</Defs>
