@@ -91,6 +91,7 @@
         <defName>Weapon_DpsClose</defName>
         <label>close dps</label>
         <title>DPS C</title>
+        <description>Accuracy-adjusted DPS at close range. Uses the close-range accuracy bucket together with projectile damage and the weapon's full firing cycle, including warmup, burst timing, and cooldown. Splash and miss-radius damage are not included.</description>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.CloseDpsColumnWorker</workerClass>
         <tags>
             <li>Thing_IsRangedWeapon</li>
@@ -101,6 +102,7 @@
         <defName>Weapon_DpsShort</defName>
         <label>short dps</label>
         <title>DPS S</title>
+        <description>Accuracy-adjusted DPS at short range. Uses the short-range accuracy bucket together with projectile damage and the weapon's full firing cycle, including warmup, burst timing, and cooldown. Splash and miss-radius damage are not included.</description>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.ShortDpsColumnWorker</workerClass>
         <tags>
             <li>Thing_IsRangedWeapon</li>
@@ -111,6 +113,7 @@
         <defName>Weapon_DpsMedium</defName>
         <label>medium dps</label>
         <title>DPS M</title>
+        <description>Accuracy-adjusted DPS at medium range. Uses the medium-range accuracy bucket together with projectile damage and the weapon's full firing cycle, including warmup, burst timing, and cooldown. Splash and miss-radius damage are not included.</description>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.MediumDpsColumnWorker</workerClass>
         <tags>
             <li>Thing_IsRangedWeapon</li>
@@ -121,6 +124,7 @@
         <defName>Weapon_DpsLong</defName>
         <label>long dps</label>
         <title>DPS L</title>
+        <description>Accuracy-adjusted DPS at long range. Uses the long-range accuracy bucket together with projectile damage and the weapon's full firing cycle, including warmup, burst timing, and cooldown. Splash and miss-radius damage are not included.</description>
         <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.LongDpsColumnWorker</workerClass>
         <tags>
             <li>Thing_IsRangedWeapon</li>
@@ -233,3 +237,4 @@
     </Stats.ColumnDef>
 
 </Defs>
+

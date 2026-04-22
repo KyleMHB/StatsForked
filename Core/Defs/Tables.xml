@@ -434,7 +434,7 @@
     <Stats.TableDef>
         <defName>Bionics</defName>
         <label>Medical / Bionics</label>
-        <iconPath>Things/Item/Health/Medicine/MedicineIndustrial</iconPath>
+        <iconPath>Things/Item/Health/HealthItem</iconPath>
         <workerClass>Stats.Bionics.BionicTableWorker</workerClass>
         <columnTags>
             <li>Bionic</li>
@@ -442,10 +442,11 @@
         <columns>
             <li>Bionic_Label</li>
             <li>Bionic_BodyParts</li>
-            <li>Bionic_Capacities</li>
             <li>Bionic_Efficiency</li>
+            <li>Bionic_Effects</li>
             <li>Bionic_ContentSource</li>
         </columns>
     </Stats.TableDef>
 
 </Defs>
+

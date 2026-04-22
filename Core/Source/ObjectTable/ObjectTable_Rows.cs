@@ -13,6 +13,8 @@ internal sealed partial class ObjectTable<TObject>
         MoveRowToPinnedBlock(rows, index);
         MoveRowToPinnedBlock(_rowOrder, _rowOrder.IndexOf(row));
         _topRowsCount++;
+        SortRows();
+        ApplyFilters();
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -23,6 +25,7 @@ internal sealed partial class ObjectTable<TObject>
         MoveRowToUnpinnedBlock(rows, index);
         MoveRowToUnpinnedBlock(_rowOrder, _rowOrder.IndexOf(row));
         _topRowsCount--;
+        SortRows();
         ApplyFilters();
     }
 

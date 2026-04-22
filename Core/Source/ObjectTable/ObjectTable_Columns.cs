@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Stats.ColumnWorkers;
 using Stats.TableWorkers;
@@ -51,10 +52,16 @@ internal sealed partial class ObjectTable<TObject>
         }
 
         ColumnWorker<TObject> columnWorker = (ColumnWorker<TObject>)Activator.CreateInstance(workerClass, columnDef);
-        Column column = new(columnWorker, _tableWorker, this);
+        ICollection<CellField> cellFields = columnWorker.GetCellFields(_tableWorker);
+        Column column = new(columnWorker, _tableWorker, this, cellFields);
         _columns.Add(column);
         columnWorker.NotifyRowAdded(_objects);
-        RegisterColumnFilters(column, columnWorker.GetCellFields(_tableWorker));
+        RegisterColumnFilters(column, cellFields);
+        if (_sortColumn == null)
+        {
+            _sortColumn = column;
+            SortRows();
+        }
         if (applyFilters)
         {
             ApplyFilters();
@@ -78,6 +85,19 @@ internal sealed partial class ObjectTable<TObject>
         _toolbar.NotifyColumnRemoved(column);
         UnregisterColumnFilters(column);
         _columns.RemoveAt(index);
+        if (_pressedColumn == column)
+        {
+            _pressedColumn = null;
+        }
+        if (_reorderedColumn == column)
+        {
+            _reorderedColumn = null;
+        }
+        if (_sortColumn == column)
+        {
+            _sortColumn = _columns.Count > 0 ? _columns[0] : null;
+        }
+        SortRows();
         ApplyFilters();
     }
 
@@ -99,6 +119,7 @@ internal sealed partial class ObjectTable<TObject>
         public ColumnDef Def { get; }
         public bool IsManuallyResized { get; private set; }
         public bool IsResized { get; private set; }
+        public Comparison<int>? SortComparison { get; }
 
         private readonly ColumnWorker<TObject> _worker;
         private readonly Widget _titleWidget;
@@ -106,7 +127,7 @@ internal sealed partial class ObjectTable<TObject>
         private readonly ObjectTable<TObject> _parent;
         private readonly FloatMenu _menu;
 
-        public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTable<TObject> parent)
+        public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTable<TObject> parent, ICollection<CellField> cellFields)
         {
             ColumnDef def = worker.Def;
             Widget titleWidget = def.TitleWidget;
@@ -116,14 +137,19 @@ internal sealed partial class ObjectTable<TObject>
             _titleWidget = titleWidget;
             _tooltip = $"<i>{def.LabelCap}</i>\n\n{def.description}";
             _parent = parent;
+            SortComparison = cellFields.FirstOrDefault().Compare;
             _menu = new FloatMenu([
                 new FloatMenuOption("Sort Asc", () => {
                     parent._sortColumn = this;
                     parent._sortDirection = SortDirectionAscending;
+                    parent.SortRows();
+                    parent.ApplyFilters();
                 }, TexButton.ReorderUp, Color.white),
                 new FloatMenuOption("Sort Desc", () => {
                     parent._sortColumn = this;
                     parent._sortDirection = SortDirectionDescending;
+                    parent.SortRows();
+                    parent.ApplyFilters();
                 }, TexButton.ReorderDown, Color.white),
                 new FloatMenuOption("Reset width", () => IsManuallyResized = false),
                 new FloatMenuOption("Remove", () => parent.RemoveColumn(this), TexButton.Delete, Color.white)
@@ -244,9 +270,14 @@ internal sealed partial class ObjectTable<TObject>
 
             if (@event is { type: EventType.MouseDown, button: 0, modifiers: EventModifiers.None } && mouseIsOverRect)
             {
+                parent._pressedColumn = this;
+            }
+            else if (parent._pressedColumn == this && OriginalEventUtility.EventType == EventType.MouseDrag)
+            {
                 parent._reorderedColumn = this;
             }
-            else if (parent._reorderedColumn != null)
+
+            if (parent._reorderedColumn != null)
             {
                 DoReorder(cellRect, parent._reorderedColumn, mouseXIsInVisibleArea);
             }
@@ -255,15 +286,28 @@ internal sealed partial class ObjectTable<TObject>
                 if (@event is { button: 0, modifiers: EventModifiers.Control })
                 {
                     HandlePin();
+                    parent._pressedColumn = null;
+                    GUIUtils.ReleaseMouseControl();
+                    @event.Use();
+                }
+                else if (@event is { button: 0, modifiers: EventModifiers.None } && parent._pressedColumn == this)
+                {
+                    parent.HandleSortRequested(this);
+                    parent._pressedColumn = null;
                     GUIUtils.ReleaseMouseControl();
                     @event.Use();
                 }
                 else if (@event is { button: 1, modifiers: EventModifiers.None })
                 {
                     _menu.Open();
+                    parent._pressedColumn = null;
                     GUIUtils.ReleaseMouseControl();
                     @event.Use();
                 }
+            }
+            else if (@event.rawType == EventType.MouseUp && parent._pressedColumn == this)
+            {
+                parent._pressedColumn = null;
             }
 
             GUI.Button(rect, GUIContent.none, GUIStyle.none);
@@ -302,14 +346,10 @@ internal sealed partial class ObjectTable<TObject>
             bool wasClicked = GUI.Button(rect, GUIContent.none, GUIStyle.none);
             if (wasClicked && @event is { button: 0, modifiers: EventModifiers.None })
             {
-                if (parent._sortColumn != this)
-                {
-                    parent._sortColumn = this;
-                }
-                else
-                {
-                    parent._sortDirection *= -1;
-                }
+                parent.HandleSortRequested(this);
+                parent._pressedColumn = null;
+                GUIUtils.ReleaseMouseControl();
+                @event.Use();
             }
         }
 
@@ -411,6 +451,7 @@ internal sealed partial class ObjectTable<TObject>
             else if (@event.rawType == EventType.MouseUp)
             {
                 parent._reorderedColumn = null;
+                parent._pressedColumn = null;
                 GUIUtils.ReleaseMouseControl();
                 @event.Use();
             }
@@ -434,6 +475,11 @@ internal sealed partial class ObjectTable<TObject>
         public void RecalcWidth(List<int> rows)
         {
             Width = Mathf.Max(_titleWidget.Size.x, _worker.GetWidth(rows)) + GUIStyles.TableCell.PadHor * 2f;
+        }
+
+        public int CompareRows(int row1, int row2)
+        {
+            return SortComparison?.Invoke(row1, row2) ?? row1.CompareTo(row2);
         }
 
         public void NotifyParentWindowClosed()

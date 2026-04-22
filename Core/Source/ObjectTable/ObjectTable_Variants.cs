@@ -34,6 +34,8 @@ internal sealed partial class ObjectTable<TObject>
         {
             _sortColumn = _columns.FirstOrDefault(column => column.Def.defName == sortColumnDefName) ?? _sortColumn;
             _sortDirection = sortDirection;
+            SortRows();
+            ApplyFilters();
         }
     }
 
@@ -41,6 +43,7 @@ internal sealed partial class ObjectTable<TObject>
     {
         ResetRows(objects);
         ResetColumns(visibleColumnDefNames);
+        SortRows();
         ApplyFilters();
     }
 
@@ -73,6 +76,7 @@ internal sealed partial class ObjectTable<TObject>
         _leftColumnsCount = 0;
         _sortColumn = null;
         _reorderedColumn = null;
+        _pressedColumn = null;
 
         IEnumerable<ColumnDef> columnDefs = visibleColumnDefNames
             .Select(defName => _tableWorker.Def.columns.FirstOrDefault(column => column.defName == defName))
