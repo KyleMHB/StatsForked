@@ -27,8 +27,10 @@ internal sealed partial class ObjectTable<TObject>
         string? sortColumnDefName = _sortColumn?.Def.defName;
         int sortDirection = _sortDirection;
         List<string> visibleColumnDefNames = CaptureVisibleColumnDefNames();
+        List<FilterPresetState> filterStates = CaptureFilterPresetStates();
 
         RebuildRowsAndColumns(GetCurrentObjects(), visibleColumnDefNames);
+        ApplyFilterPresetStates(filterStates);
 
         if (sortColumnDefName?.Length > 0)
         {
