@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <Excluded>
+    <exclude>.editorconfig</exclude>
+    <exclude>.git</exclude>
+    <exclude>.gitignore</exclude>
+    <exclude>.vs</exclude>
+    <exclude>LICENSE</exclude>
+    <exclude>README.md</exclude>
+    <exclude>Stats.sln</exclude>
+    <exclude>Directory.Build.props</exclude>
+    <exclude>About\PublishedFileId.txt</exclude>
+    <exclude>Core\Source</exclude>
+    <exclude>Core\Assemblies\Core.pdb</exclude>
+    <exclude>Biotech\Source</exclude>
+    <exclude>Biotech\Assemblies\Biotech.pdb</exclude>
+    <exclude>Anomaly\Source</exclude>
+    <exclude>Anomaly\Assemblies\Anomaly.pdb</exclude>
+    <exclude>CE\Source</exclude>
+    <exclude>CE\Assemblies\CE.pdb</exclude>
+    <exclude>CE\CombatExtendedRef.dll</exclude>
+  </Excluded>
+</Configuration>

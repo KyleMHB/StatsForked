@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef>
+        <defName>Thing_Label</defName>
+        <label>thing</label>
+        <workerClass>Stats.ColumnWorkers.ThingDef.LabelColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_MarketValue</defName>
+        <title>$$$</title>
+        <stat>MarketValue</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_MaxHitPoints</defName>
+        <title>HP</title>
+        <stat>MaxHitPoints</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_Flammability</defName>
+        <title><Damage_Heat/></title>
+        <stat>Flammability</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_Mass</defName>
+        <stat>Mass</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Thing_ContentSource</defName>
+        <labelKey>Stat_Source_Label</labelKey>
+        <workerClass>Stats.ColumnWorkers.Def.ModContentPackColumnWorker</workerClass>
+        <tags>
+            <li>Def</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Thing_TechLevel</defName>
+        <label>tech level</label>
+        <workerClass>Stats.ColumnWorkers.ThingDef.TechLevelColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <!-- <Stats.ColumnDef>
+        <defName>Thing_EquippedStatOffsets</defName>
+        <label>Offsets when equipped</label>
+        <title>Offsets</title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.EquippedStatOffsetsColumnWorker</workerClass>
+    </Stats.ColumnDef> -->
+
+    <!-- <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_Nutrition</defName>
+        <stat>Nutrition</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+    </Stats.ColumnDef> -->
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_Beauty</defName>
+        <stat>Beauty</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_ArmorRatingSharp</defName>
+        <title><Armor/><Damage_Sharp/></title>
+        <stat>ArmorRating_Sharp</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasArmor</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_ArmorRatingBlunt</defName>
+        <title><Armor/><Damage_Blunt/></title>
+        <stat>ArmorRating_Blunt</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasArmor</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_ArmorRatingHeat</defName>
+        <title><Armor/><Damage_Heat/></title>
+        <stat>ArmorRating_Heat</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasArmor</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_EnergyShieldCapacity</defName>
+        <title>Shield %</title>
+        <stat>EnergyShieldEnergyMax</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasEnergyShield</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Thing_EnergyShieldRechargeRate</defName>
+        <title>Shield %/s</title>
+        <stat>EnergyShieldRechargeRate</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasEnergyShield</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <!-- <Stats.ColumnDef>
+        <defName>Thing_Recipes</defName>
+        <label>Recipes</label>
+        <workerClass>Stats.ColumnWorkers.ThingDef.RecipesColumnWorker</workerClass>
+    </Stats.ColumnDef> -->
+
+</Defs>

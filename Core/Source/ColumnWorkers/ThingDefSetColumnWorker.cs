@@ -1,0 +1,32 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using Stats.ColumnWorkers.Cells;
+using Stats.Filters;
+using Stats.TableWorkers;
+using Stats.Widgets_Legacy;
+
+namespace Stats.ColumnWorkers;
+
+public abstract class ThingDefSetColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefSetCell
+{
+    public override ColumnType Type => ColumnType.String;
+
+    protected abstract IEnumerable<Verse.ThingDef?> GetValueFieldFilterOptions(TableWorker tableWorker);
+
+    private static readonly HashSet<Verse.ThingDef> _emptyThingDefHashSet = [];
+
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
+    {
+        IEnumerable<NTMFilterOption<Verse.ThingDef?>> valueFieldFilterOptions = GetValueFieldFilterOptions(tableWorker)
+            .OrderBy(def => def?.label)
+            .Select<Verse.ThingDef?, NTMFilterOption<Verse.ThingDef?>>(
+                def => def == null ? new() : new(def, def.LabelCap, new ThingDefIcon(def))
+            );
+        Filter valueFieldFilter = new MTMFilter<Verse.ThingDef?>((int row) => this[row].Value ?? _emptyThingDefHashSet, valueFieldFilterOptions);
+        // TODO: Figure out how to efficiently compare cells so that cells with equal values will be grouped together.
+        int Compare(int row1, int row2) => row1.CompareTo(row2);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
+
+        return [valueField];
+    }
+}

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <!-- <Stats.ColumnDef>
+        <defName>Building_Recipe</defName>
+        <label>recipe</label>
+        <workerClass>Stats.Building_RecipeColumnWorker</workerClass>
+    </Stats.ColumnDef> -->
+
+    <Stats.ColumnDef>
+        <defName>Building_Size</defName>
+        <label>size</label>
+        <workerClass>Stats.ColumnWorkers.ThingDef.SizeColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsBuilding</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Building_JoyGainFactor</defName>
+        <title><Recreation/>Power</title>
+        <stat>JoyGainFactor</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_GivesJoy</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_RecreationType</defName>
+        <labelKey>StatsReport_JoyKind</labelKey>
+        <descriptionKey>Stat_RecreationType_Desc</descriptionKey>
+        <title><Recreation/>Type</title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.Building.RecreationTypeColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsBuilding</li>
+            <li>Thing_GivesJoy</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Building_Comfort</defName>
+        <stat>Comfort</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_GivesComfort</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Building_ImmunityGainSpeedFactor</defName>
+        <title>Immunity *%</title>
+        <stat>ImmunityGainSpeedFactor</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMedical</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Building_MedicalTendQualityOffset</defName>
+        <title>Tend +%</title>
+        <stat>MedicalTendQualityOffset</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMedical</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Building_SurgerySuccessChanceFactor</defName>
+        <title>Surgery *%</title>
+        <stat>SurgerySuccessChanceFactor</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMedical</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_PowerOutput</defName>
+        <label>power output</label>
+        <title><Electricity/></title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.PowerTrader.PowerOutputColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPowerGenerator</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_PowerOutputPerCell</defName>
+        <label>power per cell</label>
+        <title><Electricity/><Per/>Cell</title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.PowerTrader.PowerOutputPerCellColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPowerGenerator</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_PowerOutputPerFuel</defName>
+        <label>power per fuel</label>
+        <description>Measured in watts/unit.</description>
+        <title><Electricity/><Per/><Fuel/></title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.PowerTrader.PowerOutputPerFuelColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPowerGenerator</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_PowerConsumption</defName>
+        <label>power consumption</label>
+        <title><Electricity/><Decrease/></title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.PowerTrader.PowerConsumptionColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPowerConsumer</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_FuelCapacity</defName>
+        <label>fuel capacity</label>
+        <title><Fuel/></title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.Refuelable.FuelCapacityColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsRefuelable</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_FuelConsumptionRate</defName>
+        <label>fuel consumption rate</label>
+        <description>Measured in amount/day.</description>
+        <title><Fuel/><Decrease/><Per/>D</title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.Refuelable.FuelConsumptionRateColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsRefuelable</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_DaysPerRefuel</defName>
+        <label>days per refuel</label>
+        <title>Days<Per/><Reload/></title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.Refuelable.DaysPerRefuelColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsRefuelable</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Building_IsReinstallable</defName>
+        <label>is reinstallable</label>
+        <title><IsBuildingReinstallable/></title>
+        <workerClass>Stats.ColumnWorkers.ThingDef.IsMinifiableColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsBuilding</li>
+        </tags>
+    </Stats.ColumnDef>
+
+</Defs>

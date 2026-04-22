@@ -1,0 +1,34 @@
+﻿using Stats.Utils;
+using Stats.Utils.Extensions;
+using UnityEngine;
+
+namespace Stats.ColumnWorkers.Cells;
+
+public interface IBooleanCell : ICell
+{
+    public bool Value { get; }
+}
+
+public readonly struct BooleanCell : IBooleanCell
+{
+    public float Width => 0f;
+    public bool IsRefreshable => false;
+    public bool Value { get; }
+
+    public BooleanCell(bool value)
+    {
+        Value = value;
+    }
+
+    public void Draw(Rect rect) => Draw(rect, Value);
+
+    public static void Draw(Rect rect, bool value)
+    {
+        if (value)
+        {
+            rect
+                .ContractedByObjectTableCellPadding()
+                .DrawTextureFitted(Verse.Widgets.CheckboxOnTex);
+        }
+    }
+}

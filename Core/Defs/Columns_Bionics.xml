@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Label</defName>
+        <label>label</label>
+        <workerClass>Stats.Bionics.BionicLabelColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_BodyParts</defName>
+        <label>body parts</label>
+        <workerClass>Stats.Bionics.BionicBodyPartsColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Capacities</defName>
+        <label>capacities</label>
+        <workerClass>Stats.Bionics.BionicCapacitiesColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Efficiency</defName>
+        <label>efficiency</label>
+        <title>Eff</title>
+        <workerClass>Stats.Bionics.BionicEfficiencyColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_ContentSource</defName>
+        <label>content source</label>
+        <workerClass>Stats.Bionics.BionicContentSourceColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+</Defs>
