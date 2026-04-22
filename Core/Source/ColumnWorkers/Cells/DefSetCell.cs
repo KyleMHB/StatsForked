@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Stats.Utils;
 using UnityEngine;
+using Verse;
 
 namespace Stats.ColumnWorkers.Cells;
 
@@ -11,7 +12,6 @@ public interface IDefSetCell : ICell
     public string? Text { get; }
 }
 
-// TODO: Since all rows are now of constant height, we need to refactor this cell.
 public readonly struct DefSetCell : IDefSetCell
 {
     public float Width { get; }
@@ -19,12 +19,26 @@ public readonly struct DefSetCell : IDefSetCell
     public IReadOnlyCollection<Verse.Def>? Value { get; }
     public string? Text { get; }
 
+    private readonly TipSignal _tooltip;
+
     public DefSetCell(IReadOnlyCollection<Verse.Def> value)
     {
         Value = value;
-        if (value.Count > 0)
+        Width = 0f;
+        Text = null;
+        _tooltip = default;
+
+        List<Verse.Def> orderedDefs = value
+            .OrderBy(def => def.LabelCap.RawText)
+            .ToList();
+        if (orderedDefs.Count > 0)
         {
-            Text = string.Join("\n", Value.Select(def => def.LabelCap).OrderBy(text => text));
+            Verse.Def firstDef = orderedDefs[0];
+            int hiddenCount = orderedDefs.Count - 1;
+            Text = hiddenCount > 0
+                ? $"{firstDef.LabelCap} +{hiddenCount}"
+                : firstDef.LabelCap;
+            _tooltip = string.Join("\n", orderedDefs.Select(def => def.LabelCap));
             Width = Verse.Text.CalcSize(Text).x;
         }
     }
@@ -33,11 +47,9 @@ public readonly struct DefSetCell : IDefSetCell
     {
         if (Text != null)
         {
-            // TODO:
-            // Because table rows now have a constant height, only the first row of text is visible.
-            // One solution is to show the first row and an indicator if there's more.
-            // And if there's more rows, use tooltip to show all rows.
-            rect.Label(Text, GUIStyles.TableCell.String);
+            rect
+                .Label(Text, GUIStyles.TableCell.String)
+                .Tip(_tooltip);
         }
     }
 }

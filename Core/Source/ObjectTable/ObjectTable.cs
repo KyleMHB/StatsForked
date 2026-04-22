@@ -86,6 +86,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     private ReadOnlyListSegment<Column> LeftColumns => new(_columns, 0, _leftColumnsCount);
     private ReadOnlyListSegment<Column> RightColumns => new(_columns, _leftColumnsCount, RightColumnsCount);
     private Column? _reorderedColumn;
+    private Column? _pressedColumn;
 
     // Layout
     private float _topRowsHeight;
@@ -138,6 +139,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     {
         _rightPartIsPanned = false;
         _reorderedColumn = null;
+        _pressedColumn = null;
         _filtersWindow?.Close(false);
         for (int i = 0; i < _columns.Count; i++)
         {

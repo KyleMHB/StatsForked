@@ -23,16 +23,23 @@ public sealed class BionicTableWorker : TableWorker<BionicOperation>
                 continue;
             }
 
+            IReadOnlyCollection<BodyPartDef> bodyParts = BionicReflection.GetFixedBodyParts(recipe);
+            (IReadOnlyList<BionicEffectValue> effects, IReadOnlyList<string> specialEffects) = BionicReflection.GetEffects(hediffDef, bodyParts);
             operations.Add(new BionicOperation(
                 recipe,
                 hediffDef,
-                BionicReflection.GetFixedBodyParts(recipe),
-                BionicReflection.GetAffectedCapacities(hediffDef),
-                BionicReflection.GetEfficiency(hediffDef)));
+                BionicReflection.GetLinkedThingDef(hediffDef),
+                BionicReflection.GetDisplayLabel(recipe, hediffDef),
+                bodyParts,
+                BionicReflection.GetAffectedCapacities(hediffDef, bodyParts),
+                BionicReflection.GetEfficiency(hediffDef),
+                effects,
+                specialEffects));
         }
 
         InitialObjects = operations
-            .OrderBy(operation => operation.Recipe.label)
+            .OrderBy(operation => operation.DisplayLabel)
+            .ThenBy(operation => operation.Recipe.defName)
             .ToList();
     }
 }

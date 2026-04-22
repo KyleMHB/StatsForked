@@ -3,4 +3,5 @@
 .dotnet
 obj/
 RuntimeOnly/
+Runtime Only/
 *.pdb
