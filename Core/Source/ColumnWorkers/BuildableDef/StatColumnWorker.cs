@@ -6,6 +6,7 @@ using Stats.ColumnWorkers.Cells;
 using Stats.Filters;
 using Stats.TableWorkers;
 using Stats.Utils;
+using Stats.Utils.Extensions;
 using UnityEngine;
 using Verse;
 
@@ -29,7 +30,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
         }
         else if (@object.Def is Verse.BuildableDef buildableDef)
         {
-            statRequest = StatRequest.For(buildableDef, @object.StuffDef);
+            statRequest = buildableDef.GetStatRequest(@object.StuffDef);
         }
         else
         {

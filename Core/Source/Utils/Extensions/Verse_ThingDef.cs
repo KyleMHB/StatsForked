@@ -119,9 +119,24 @@ public static class Verse_ThingDef
         return recipeDefs;
     }
 
+    public static ThingDef? GetStatStuff(this ThingDef thingDef, ThingDef? stuffDef = null)
+    {
+        return stuffDef ?? (thingDef.stuffCategories?.Count > 0 ? thingDef.GetDefaultStuff() : null);
+    }
+
+    public static StatRequest GetStatRequest(this BuildableDef buildableDef, ThingDef? stuffDef = null)
+    {
+        if (buildableDef is ThingDef thingDef)
+        {
+            return StatRequest.For(thingDef, thingDef.GetStatStuff(stuffDef));
+        }
+
+        return StatRequest.For(buildableDef, stuffDef);
+    }
+
     public static float GetStatValuePerceived(this ThingDef thingDef, StatDef statDef, ThingDef? stuffDef = null)
     {
-        StatRequest statRequest = StatRequest.For(thingDef, stuffDef);
+        StatRequest statRequest = thingDef.GetStatRequest(stuffDef);
 
         if (statDef.Worker.ShouldShowFor(statRequest))
         {
