@@ -74,7 +74,10 @@ public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
         _values.ReplaceWithLast(row);
     }
 
-    public override void RefreshCells() { }
+    public override bool RefreshCells()
+    {
+        return false;
+    }
 
     public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {

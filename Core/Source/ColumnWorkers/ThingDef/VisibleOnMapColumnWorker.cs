@@ -13,7 +13,9 @@ public sealed class VisibleOnMapColumnWorker(ColumnDef columnDef) : ColumnWorker
 
     protected override LiveBooleanCell MakeCell(DefBasedObject @object)
     {
-        return new LiveBooleanCell(GetValue(@object));
+        return @object.Def is Verse.ThingDef thingDef
+            ? new LiveBooleanCell(GetValue(thingDef), thingDef)
+            : default;
     }
 
     protected override LiveBooleanCell RefreshCell(LiveBooleanCell cell, out bool wasStale)
@@ -35,9 +37,9 @@ public sealed class VisibleOnMapColumnWorker(ColumnDef columnDef) : ColumnWorker
         return [new CellField(Def.TitleWidget, valueFieldFilter, Compare)];
     }
 
-    private static bool GetValue(DefBasedObject @object)
+    private static bool GetValue(Verse.ThingDef thingDef)
     {
-        return @object.Def is Verse.ThingDef thingDef && InventoryStateTracker.IsVisibleOnPlayerMap(thingDef);
+        return InventoryStateTracker.IsVisibleOnPlayerMap(thingDef);
     }
 
     public readonly struct LiveBooleanCell : IBooleanCell

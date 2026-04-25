@@ -34,7 +34,7 @@ public abstract class DistanceDpsColumnWorker(ColumnDef columnDef, string accura
             return default;
         }
 
-        float accuracy = thingDef.GetStatValuePerceived(accuracyStat, @object.StuffDef);
+        float accuracy = thingDef.GetStatValuePerceived(accuracyStat, @object.StuffDef, @object.Quality);
         if (accuracy <= 0f)
         {
             return default;
@@ -47,7 +47,7 @@ public abstract class DistanceDpsColumnWorker(ColumnDef columnDef, string accura
             : 0f;
         float cycleSeconds =
             verbProps.warmupTime
-            + thingDef.GetStatValuePerceived(cooldownStat, @object.StuffDef)
+            + thingDef.GetStatValuePerceived(cooldownStat, @object.StuffDef, @object.Quality)
             + burstDuration;
         if (cycleSeconds <= 0f)
         {

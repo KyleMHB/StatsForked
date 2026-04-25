@@ -13,7 +13,9 @@ public sealed class OwnedByColonyColumnWorker(ColumnDef columnDef) : ColumnWorke
 
     protected override LiveBooleanCell MakeCell(DefBasedObject @object)
     {
-        return new LiveBooleanCell(GetValue(@object));
+        return @object.Def is Verse.ThingDef thingDef
+            ? new LiveBooleanCell(GetValue(thingDef), thingDef)
+            : default;
     }
 
     protected override LiveBooleanCell RefreshCell(LiveBooleanCell cell, out bool wasStale)
@@ -35,9 +37,9 @@ public sealed class OwnedByColonyColumnWorker(ColumnDef columnDef) : ColumnWorke
         return [new CellField(Def.TitleWidget, valueFieldFilter, Compare)];
     }
 
-    private static bool GetValue(DefBasedObject @object)
+    private static bool GetValue(Verse.ThingDef thingDef)
     {
-        return @object.Def is Verse.ThingDef thingDef && InventoryStateTracker.IsOwnedByPlayer(thingDef);
+        return InventoryStateTracker.IsOwnedByPlayer(thingDef);
     }
 
     public readonly struct LiveBooleanCell : IBooleanCell

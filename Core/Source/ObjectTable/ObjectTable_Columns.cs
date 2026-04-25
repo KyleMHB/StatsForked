@@ -117,6 +117,7 @@ internal sealed partial class ObjectTable<TObject>
     {
         public float Width { get; private set; }
         public ColumnDef Def { get; }
+        public bool IsRefreshable => _worker.IsRefreshable;
         public bool IsManuallyResized { get; private set; }
         public bool IsResized { get; private set; }
         public Comparison<int>? SortComparison { get; }
@@ -480,6 +481,11 @@ internal sealed partial class ObjectTable<TObject>
         public int CompareRows(int row1, int row2)
         {
             return SortComparison?.Invoke(row1, row2) ?? row1.CompareTo(row2);
+        }
+
+        public bool RefreshCells()
+        {
+            return _worker.RefreshCells();
         }
 
         public void NotifyParentWindowClosed()

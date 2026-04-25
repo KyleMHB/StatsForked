@@ -68,12 +68,15 @@
         </tags>
     </Stats.ColumnDef>
 
-    <!-- <Stats.ColumnDef>
+    <Stats.ColumnDef>
         <defName>Thing_EquippedStatOffsets</defName>
         <label>Offsets when equipped</label>
         <title>Offsets</title>
         <workerClass>Stats.ColumnWorkers.ThingDef.EquippedStatOffsetsColumnWorker</workerClass>
-    </Stats.ColumnDef> -->
+        <tags>
+            <li>Thing</li>
+        </tags>
+    </Stats.ColumnDef>
 
     <!-- <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Thing_Nutrition</defName>

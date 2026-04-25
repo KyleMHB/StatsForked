@@ -124,19 +124,19 @@ public static class Verse_ThingDef
         return stuffDef ?? (thingDef.stuffCategories?.Count > 0 ? thingDef.GetDefaultStuff() : null);
     }
 
-    public static StatRequest GetStatRequest(this BuildableDef buildableDef, ThingDef? stuffDef = null)
+    public static StatRequest GetStatRequest(this BuildableDef buildableDef, ThingDef? stuffDef = null, QualityCategory quality = QualityCategory.Normal)
     {
         if (buildableDef is ThingDef thingDef)
         {
-            return StatRequest.For(thingDef, thingDef.GetStatStuff(stuffDef));
+            return StatRequest.For(thingDef, thingDef.GetStatStuff(stuffDef), quality);
         }
 
-        return StatRequest.For(buildableDef, stuffDef);
+        return StatRequest.For(buildableDef, stuffDef, quality);
     }
 
-    public static float GetStatValuePerceived(this ThingDef thingDef, StatDef statDef, ThingDef? stuffDef = null)
+    public static float GetStatValuePerceived(this ThingDef thingDef, StatDef statDef, ThingDef? stuffDef = null, QualityCategory quality = QualityCategory.Normal)
     {
-        StatRequest statRequest = thingDef.GetStatRequest(stuffDef);
+        StatRequest statRequest = thingDef.GetStatRequest(stuffDef, quality);
 
         if (statDef.Worker.ShouldShowFor(statRequest))
         {

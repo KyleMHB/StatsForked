@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using RimWorld;
 using Stats.ColumnWorkers;
 using Stats.TableWorkers;
 using Stats.Utils;
@@ -111,6 +112,10 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     private bool _showVariants;
     internal bool SupportsVariants => _variantTableWorker?.SupportsVariants == true;
     internal bool ShowVariants => _showVariants;
+    private QualityCategory _quality = QualityCategory.Normal;
+    internal bool SupportsQuality => typeof(TObject) == typeof(DefBasedObject)
+        && _tableWorker.CompatibleColumns.Any(column => column is StatColumnDef);
+    internal QualityCategory Quality => _quality;
 
     public ObjectTable(TableWorker<TObject> tableWorker)
     {
@@ -150,6 +155,21 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
     private List<TObject> GetCurrentObjects()
     {
-        return _variantTableWorker?.GetObjects(_showVariants) ?? _tableWorker.InitialObjects;
+        List<TObject> objects = _variantTableWorker?.GetObjects(_showVariants) ?? _tableWorker.InitialObjects;
+        return ApplyQuality(objects);
+    }
+
+    private List<TObject> ApplyQuality(List<TObject> objects)
+    {
+        if (SupportsQuality == false)
+        {
+            return objects;
+        }
+
+        return objects
+            .Cast<DefBasedObject>()
+            .Select(@object => @object.WithQuality(_quality))
+            .Cast<TObject>()
+            .ToList();
     }
 }

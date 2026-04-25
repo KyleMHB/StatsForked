@@ -44,7 +44,7 @@
             <li>Weapon_RangedMissRadius</li>
             <li>Weapon_ProjectileBuildingDamageFactorPassable</li>
             <li>Weapon_ProjectileBuildingDamageFactorImpassable</li>
-            <!-- <li>Thing_EquippedStatOffsets</li> -->
+            <li>Thing_EquippedStatOffsets</li>
             <li>Thing_Mass</li>
             <li MayRequire="CETeam.CombatExtended">Thing_Bulk</li>
             <!-- <li>Thing_Recipes</li> -->
@@ -74,7 +74,7 @@
             <li>Weapon_MeleeArmorPenetration</li>
             <li MayRequire="CETeam.CombatExtended">Weapon_MeleeArmorPenetrationFactor</li>
             <li MayRequire="CETeam.CombatExtended">Weapon_MeleeCounterParryBonus</li>
-            <!-- <li>Thing_EquippedStatOffsets</li> -->
+            <li>Thing_EquippedStatOffsets</li>
             <li MayRequire="CETeam.CombatExtended">Weapon_IsOneHanded</li>
             <li>Thing_MaxHitPoints</li>
             <li>Thing_Mass</li>
@@ -112,7 +112,7 @@
             <li>Apparel_InsulationHeat</li>
             <li>Apparel_OccupiedLayers</li>
             <li>Apparel_CoveredBodyPartGroups</li>
-            <!-- <li>Thing_EquippedStatOffsets</li> -->
+            <li>Thing_EquippedStatOffsets</li>
             <li>Thing_MaxHitPoints</li>
             <li>Thing_Flammability</li>
             <li>Thing_Mass</li>

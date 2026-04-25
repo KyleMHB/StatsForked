@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using RimWorld;
 using Stats.Utils;
 using Stats.Utils.Extensions;
 using UnityEngine;
@@ -18,6 +20,7 @@ internal sealed partial class ObjectTable<TObject>
         private readonly Button _columnsMenuButton;
         private readonly Button _columnPresetsButton;
         private readonly Button _variantsButton;
+        private readonly float _qualityButtonWidth;
         private ColumnsFloatMenu ColumnsMenu => field ??= MakeColumnsMenu();
 
         public Toolbar(ObjectTable<TObject> parent)
@@ -27,6 +30,9 @@ internal sealed partial class ObjectTable<TObject>
             _columnsMenuButton = new Button(Assets.TableColumnsMenuIcon, "Columns");
             _columnPresetsButton = new Button(Verse.TexButton.Paste, "Presets");
             _variantsButton = new Button(Verse.Widgets.CheckboxOffTex, "Variants");
+            _qualityButtonWidth = QualityCategories()
+                .Select(quality => $"Quality: {quality.GetLabel()}")
+                .Max(label => ButtonStyle.PadHor * 2f + label.CalcSize(ButtonStyle.LabelStyle).x);
         }
 
         public void NotifyColumnAdded(Column column)
@@ -44,6 +50,7 @@ internal sealed partial class ObjectTable<TObject>
             // Layout
             Rect remainingRect = rect;
             Rect variantsButtonRect = default;
+            Rect qualityButtonRect = default;
             remainingRect = remainingRect.CutLeft(out Rect filtersTabButtonRect, _filtersButton.Width);
             remainingRect = remainingRect.CutLeft(Style.Gap);
             remainingRect = remainingRect.CutLeft(out Rect columnsMenuButtonRect, _columnsMenuButton.Width);
@@ -52,6 +59,12 @@ internal sealed partial class ObjectTable<TObject>
             {
                 remainingRect = remainingRect.CutLeft(Style.Gap);
                 remainingRect = remainingRect.CutLeft(out variantsButtonRect, _variantsButton.Width);
+            }
+
+            if (_parent.SupportsQuality)
+            {
+                remainingRect = remainingRect.CutLeft(Style.Gap);
+                remainingRect = remainingRect.CutLeft(out qualityButtonRect, _qualityButtonWidth);
             }
 
             remainingRect = remainingRect.CutLeft(Style.Gap);
@@ -71,6 +84,7 @@ internal sealed partial class ObjectTable<TObject>
             bool variantsButtonWasClicked = _parent.SupportsVariants && _variantsButton.Draw(
                 variantsButtonRect,
                 _parent.ShowVariants ? Verse.Widgets.CheckboxOnTex : Verse.Widgets.CheckboxOffTex);
+            bool qualityButtonWasClicked = _parent.SupportsQuality && DrawQualityButton(qualityButtonRect);
             infoIconRect
                 .ContractedBy(ButtonStyle.PadVer)
                 .DrawTextureFitted(TexButton.Info)
@@ -93,6 +107,42 @@ internal sealed partial class ObjectTable<TObject>
             {
                 _parent.ToggleVariants();
             }
+            else if (qualityButtonWasClicked)
+            {
+                MakeQualityMenu().Open();
+            }
+        }
+
+        private bool DrawQualityButton(Rect rect)
+        {
+            if (Event.current.type == EventType.Repaint)
+            {
+                rect
+                    .ContractedBy(ButtonStyle.PadHor, ButtonStyle.PadVer)
+                    .Label($"Quality: {_parent.Quality.GetLabel()}", ButtonStyle.LabelStyle);
+            }
+
+            return rect.ButtonGhostly();
+        }
+
+        private FloatMenu MakeQualityMenu()
+        {
+            List<FloatMenuOption> options = [];
+            foreach (QualityCategory quality in QualityCategories())
+            {
+                options.Add(new FloatMenuOption(
+                    quality.GetLabel(),
+                    () => _parent.SetQuality(quality),
+                    _parent.Quality == quality ? Verse.Widgets.CheckboxOnTex : Verse.Widgets.CheckboxOffTex,
+                    Color.white));
+            }
+
+            return new FloatMenu(options);
+        }
+
+        private static IEnumerable<QualityCategory> QualityCategories()
+        {
+            return System.Enum.GetValues(typeof(QualityCategory)).Cast<QualityCategory>();
         }
 
         private sealed class Button

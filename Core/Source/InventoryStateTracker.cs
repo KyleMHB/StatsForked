@@ -35,7 +35,7 @@ internal static class InventoryStateTracker
     private static void RefreshIfNeeded()
     {
         int currentTick = Find.TickManager?.TicksGame ?? -1;
-        if (_isDirty == false && currentTick == _lastRefreshTick)
+        if (_isDirty == false || currentTick == _lastRefreshTick)
         {
             return;
         }

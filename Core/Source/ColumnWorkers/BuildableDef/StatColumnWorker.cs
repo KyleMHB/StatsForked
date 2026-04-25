@@ -30,7 +30,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
         }
         else if (@object.Def is Verse.BuildableDef buildableDef)
         {
-            statRequest = buildableDef.GetStatRequest(@object.StuffDef);
+            statRequest = buildableDef.GetStatRequest(@object.StuffDef, @object.Quality);
         }
         else
         {

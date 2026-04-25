@@ -21,6 +21,7 @@ internal sealed partial class ObjectTable<TObject>
 
         if (Event.current.type == EventType.Layout)
         {
+            RefreshLiveCells();
             RecalcLayout();
         }
 
@@ -56,6 +57,26 @@ internal sealed partial class ObjectTable<TObject>
         using (new GUIScrollScope(tableRect, ref _scrollPosition, contentRect)) { }
 
         DrawVisibleContent(viewportRect);
+    }
+
+    private void RefreshLiveCells()
+    {
+        bool anyColumnChanged = false;
+        int columnsCount = _columns.Count;
+        for (int i = 0; i < columnsCount; i++)
+        {
+            Column column = _columns[i];
+            if (column.IsRefreshable && column.RefreshCells())
+            {
+                anyColumnChanged = true;
+            }
+        }
+
+        if (anyColumnChanged)
+        {
+            SortRows();
+            ApplyFilters();
+        }
     }
 
     private void DrawVisibleContent(Rect rect)

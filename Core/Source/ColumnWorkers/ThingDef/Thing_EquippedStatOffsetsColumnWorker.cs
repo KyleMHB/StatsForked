@@ -1,113 +1,86 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using RimWorld;
-//using Stats.Widgets;
-//using UnityEngine;
-//using Verse;
+using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
+using Stats.ColumnWorkers.Cells;
+using Stats.Filters;
+using Stats.TableWorkers;
+using Stats.Utils;
+using Stats.Utils.Extensions;
+using UnityEngine;
+using Verse;
 
-// Since cell's set of fields is the same for every cell in a column, but we don't know it in advance
-// for this column, we'll have to use Dictionary to store each stat offset value in each cell, which will result in
-// filtering/sorting being slow(er).
-//
-// Also, if you'll implement comparison by max value in a column (gree/red lines under cell's value), you
-// wouldn't be able to compare stat offset values, or it will be bad UX and very slow.
-//
-// But here's the idea.
-// - Have this column display overall information about stat offsets on a thing (a string with names/values).
-// - Make it filterable by StatDefs and sortable by count.
-// - Generate ColumnDef for every stat offset, so the player can filter/sort/compare by individual stat offsets by adding
-// respected columns to a table. See if we can reuse StatColumnWorker for that.
+namespace Stats.ColumnWorkers.ThingDef;
 
-//namespace Stats;
+public sealed class EquippedStatOffsetsColumnWorker(ColumnDef columnDef)
+    : ColumnWorker<DefBasedObject, EquippedStatOffsetsColumnWorker.OffsetsCell>
+{
+    public override ColumnType Type => ColumnType.String;
+    public override ColumnDef Def => columnDef;
 
-//public sealed class Thing_EquippedStatOffsetsColumnWorker : ColumnWorker<ThingAlike>
-//{
-//    public Thing_EquippedStatOffsetsColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
-//    {
-//    }
-//    private static int GetStatModsCount(ThingDef thingDef)
-//    {
-//        return thingDef.equippedStatOffsets?.Count ?? 0;
-//    }
-//    private static string GetStatModValueString(StatModifier statMod)
-//    {
-//        return statMod.stat.ValueToString(
-//            statMod.value,
-//            ToStringNumberSense.Offset,
-//            statMod.stat.finalizeEquippedStatOffset
-//        );
-//    }
-//    public override Widget? GetTableCellWidget(ThingAlike thing)
-//    {
-//        if (GetStatModsCount(thing.Def) == 0)
-//        {
-//            return null;
-//        }
+    protected override OffsetsCell MakeCell(DefBasedObject @object)
+    {
+        if (@object.Def is not Verse.ThingDef thingDef || thingDef.equippedStatOffsets.NullOrEmpty())
+        {
+            return default;
+        }
 
-//        var labels = new StringBuilder();
-//        var values = new StringBuilder();
+        List<StatModifier> statOffsets = thingDef.equippedStatOffsets
+            .OrderBy(statMod => statMod.stat.LabelCap.RawText)
+            .ToList();
 
-//        foreach (var statMod in thing.Def.equippedStatOffsets.OrderBy(statMod => statMod.stat.label))
-//        {
-//            var statModLabel = $"{statMod.stat.LabelCap}:";
-//            var statModValueStr = GetStatModValueString(statMod);
+        return new OffsetsCell(statOffsets);
+    }
 
-//            labels.AppendInNewLine(statModLabel);
-//            values.AppendInNewLine(statModValueStr);
-//        }
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
+    {
+        Filter textFieldFilter = new StringFilter((int row) => this[row].Text ?? "");
+        int CompareText(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Text, this[row2].Text);
+        CellField textField = new(Def.TitleWidget, textFieldFilter, CompareText);
 
-//        return new HorizontalContainer([
-//            new Label(labels.ToString())
-//            .TextAnchor(TextAnchor.LowerLeft),
+        return [textField];
+    }
 
-//            new Label(values.ToString())
-//            .WidthRel(1f)
-//            .TextAnchor(TextAnchor.LowerRight),
-//        ], Globals.GUI.Pad, true);
-//    }
-//    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<ThingAlike> tableRecords)
-//    {
-//        yield return new(new Label("Has any"), Make.BooleanFilter<ThingAlike>(thing => GetStatModsCount(thing.Def) > 0));
+    public readonly struct OffsetsCell : ICell
+    {
+        public float Width { get; }
+        public bool IsRefreshable => false;
+        public readonly string? Text;
 
-//        var stats =
-//            tableRecords
-//            .Where(thing => thing.Def.equippedStatOffsets?.Count > 0)
-//            .SelectMany(thing => thing.Def.equippedStatOffsets.Select(statMod => statMod.stat))
-//            .Distinct();
+        private readonly TipSignal _tooltip;
 
-//        foreach (var stat in stats.OrderBy(statDef => statDef.label))
-//        {
-//            var GetStatModValue = new Func<ThingDef, decimal>(thingDef =>
-//            {
-//                if (thingDef.equippedStatOffsets?.Count > 0)
-//                {
-//                    foreach (var statMod in thingDef.equippedStatOffsets)
-//                    {
-//                        if (statMod.stat == stat)
-//                        {
-//                            var label = statMod.ValueToStringAsOffset;
-//                            var match = Thing_StatColumnWorker.NumberRegex.Match(label);
+        public OffsetsCell(IReadOnlyList<StatModifier> statOffsets)
+        {
+            Text = null;
+            Width = 0f;
+            _tooltip = default;
 
-//                            if (match.Success)
-//                            {
-//                                return decimal.Parse(match.Groups[1].Captures[0].Value);
-//                            }
-//                        }
-//                    }
-//                }
+            if (statOffsets.Count == 0)
+            {
+                return;
+            }
 
-//                return 0m;
-//            }).Memoized();
+            string firstOffsetText = StatOffsetToString(statOffsets[0]);
+            int hiddenOffsetsCount = statOffsets.Count - 1;
+            Text = hiddenOffsetsCount > 0
+                ? $"{firstOffsetText} +{hiddenOffsetsCount}"
+                : firstOffsetText;
+            Width = Text.CalcSize(GUIStyles.TableCell.StringNoPad).x;
+            _tooltip = string.Join("\n", statOffsets.Select(StatOffsetToString));
+        }
 
-//            var filterWidget = Make.NumberFilter<ThingAlike>(thing => GetStatModValue(thing.Def));
+        public void Draw(Rect rect)
+        {
+            if (Text != null)
+            {
+                rect
+                    .Label(Text, GUIStyles.TableCell.String)
+                    .Tip(_tooltip);
+            }
+        }
 
-//            yield return new(new Label(stat.LabelCap), filterWidget);
-//        }
-//    }
-//    public override int Compare(ThingAlike thing1, ThingAlike thing2)
-//    {
-//        return GetStatModsCount(thing1.Def).CompareTo(GetStatModsCount(thing2.Def));
-//    }
-//}
+        private static string StatOffsetToString(StatModifier statMod)
+        {
+            return $"{statMod.stat.LabelCap}: {statMod.stat.ValueToString(statMod.value, ToStringNumberSense.Offset, statMod.stat.finalizeEquippedStatOffset)}";
+        }
+    }
+}

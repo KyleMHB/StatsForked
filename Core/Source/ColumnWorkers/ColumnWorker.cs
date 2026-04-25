@@ -23,7 +23,7 @@ public abstract class ColumnWorker<TObject>
 
     public abstract void NotifyRowRemoved(int row);
 
-    public abstract void RefreshCells();
+    public abstract bool RefreshCells();
 
     public abstract ICollection<CellField> GetCellFields(TableWorker tableWorker);
 }
@@ -104,13 +104,14 @@ public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where
         return cell;
     }
 
-    public override void RefreshCells()
+    public override bool RefreshCells()
     {
         if (_refreshableCellsCount == 0)
         {
-            return;
+            return false;
         }
 
+        bool anyCellChanged = false;
         List<TCell> cells = _cells;
         int cellsCount = cells.Count;
         for (int i = 0; i < cellsCount; i++)
@@ -122,8 +123,11 @@ public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where
                 if (wasStale)
                 {
                     cells[i] = possiblyNewCell;
+                    anyCellChanged = true;
                 }
             }
         }
+
+        return anyCellChanged;
     }
 }
