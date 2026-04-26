@@ -4,7 +4,7 @@ namespace Stats.Utils.Extensions;
 
 public static class UnityEngine_Event
 {
-    internal static bool IsLeftMouseInteraction(this Event? @event)
+    public static bool IsLeftMouseInteraction(this Event? @event)
     {
         return @event is
         {

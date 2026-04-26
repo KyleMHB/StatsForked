@@ -80,18 +80,18 @@ public static class GUIUtils
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Rect DrawTextureFitted(this Rect rect, Texture2D texture)
+    public static Rect DrawTextureFitted(this Rect rect, Texture2D texture)
     {
         return rect.DrawTexture(texture, Color.white, ScaleMode.ScaleToFit);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Rect DrawTextureFitted(this Rect rect, Texture2D texture, float scale)
+    public static Rect DrawTextureFitted(this Rect rect, Texture2D texture, float scale)
     {
         return rect.DrawTextureFitted(texture, Color.white, scale);
     }
 
-    internal static Rect DrawTextureFitted(this Rect rect, Texture2D texture, Color color, float scale)
+    public static Rect DrawTextureFitted(this Rect rect, Texture2D texture, Color color, float scale)
     {
         Rect scaledRect;
         if (scale != 1f)
@@ -149,14 +149,14 @@ public static class GUIUtils
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Rect Tip(this Rect rect, TipSignal tip)
+    public static Rect Tip(this Rect rect, TipSignal tip)
     {
         TooltipHandler.TipRegion(rect, tip);
 
         return rect;
     }
 
-    internal static bool ButtonGhostly(this Rect rect)
+    public static bool ButtonGhostly(this Rect rect)
     {
         MouseoverSounds.DoRegion(rect);
 

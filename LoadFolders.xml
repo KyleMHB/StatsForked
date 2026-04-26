@@ -5,5 +5,9 @@
     </v1.5>
     <v1.6>
         <li>Core</li>
+        <li IfModActive="Ludeon.RimWorld.Biotech">Biotech</li>
+        <li IfModActive="Ludeon.RimWorld.Anomaly">Anomaly</li>
+        <li IfModActive="Ludeon.RimWorld.Odyssey">Odyssey</li>
+        <li IfModActive="CETeam.CombatExtended">CE</li>
     </v1.6>
 </loadFolders>

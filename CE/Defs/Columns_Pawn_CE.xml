@@ -5,7 +5,7 @@
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_WeaponHandling</defName>
         <stat>ShootingAccuracyPawn</stat>
-        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.Compat.CE.BinaryStatColumnDef">
@@ -28,21 +28,21 @@
         <defName>Pawn_MeleeCritChance</defName>
         <title>Crit %</title>
         <stat>MeleeCritChance</stat>
-        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_MeleeParryChance</defName>
         <title>Parry %</title>
         <stat>MeleeParryChance</stat>
-        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Pawn_NightVisionEfficiency</defName>
         <title>NV %</title>
         <stat>NightVisionEfficiency</stat>
-        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
 </Defs>

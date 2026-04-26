@@ -49,6 +49,11 @@
             <AnomalyPatchFiles Include="$(RepoRoot)Anomaly\Patches\**\*.*" Condition="Exists('$(RepoRoot)Anomaly\Patches')" />
             <AnomalyTextureFiles Include="$(RepoRoot)Anomaly\Textures\**\*.*" Condition="Exists('$(RepoRoot)Anomaly\Textures')" />
 
+            <OdysseyAssemblyFiles Include="$(RepoRoot)Odyssey\Assemblies\*.dll" Condition="Exists('$(RepoRoot)Odyssey\Assemblies')" />
+            <OdysseyDefFiles Include="$(RepoRoot)Odyssey\Defs\**\*.*" Condition="Exists('$(RepoRoot)Odyssey\Defs')" />
+            <OdysseyPatchFiles Include="$(RepoRoot)Odyssey\Patches\**\*.*" Condition="Exists('$(RepoRoot)Odyssey\Patches')" />
+            <OdysseyTextureFiles Include="$(RepoRoot)Odyssey\Textures\**\*.*" Condition="Exists('$(RepoRoot)Odyssey\Textures')" />
+
             <CeAssemblyFiles Include="$(RepoRoot)CE\Assemblies\*.dll" Condition="Exists('$(RepoRoot)CE\Assemblies')" />
             <CeDefFiles Include="$(RepoRoot)CE\Defs\**\*.*" Condition="Exists('$(RepoRoot)CE\Defs')" />
             <CePatchFiles Include="$(RepoRoot)CE\Patches\**\*.*" Condition="Exists('$(RepoRoot)CE\Patches')" />
@@ -135,6 +140,27 @@
             DestinationFiles="@(AnomalyTextureFiles->'$(RuntimeOnlyRoot)\Anomaly\Textures\%(RecursiveDir)%(Filename)%(Extension)')"
             SkipUnchangedFiles="true"
             Condition="'@(AnomalyTextureFiles)' != ''" />
+
+        <Copy
+            SourceFiles="@(OdysseyAssemblyFiles)"
+            DestinationFiles="@(OdysseyAssemblyFiles->'$(RuntimeOnlyRoot)\Odyssey\Assemblies\%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(OdysseyAssemblyFiles)' != ''" />
+        <Copy
+            SourceFiles="@(OdysseyDefFiles)"
+            DestinationFiles="@(OdysseyDefFiles->'$(RuntimeOnlyRoot)\Odyssey\Defs\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(OdysseyDefFiles)' != ''" />
+        <Copy
+            SourceFiles="@(OdysseyPatchFiles)"
+            DestinationFiles="@(OdysseyPatchFiles->'$(RuntimeOnlyRoot)\Odyssey\Patches\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(OdysseyPatchFiles)' != ''" />
+        <Copy
+            SourceFiles="@(OdysseyTextureFiles)"
+            DestinationFiles="@(OdysseyTextureFiles->'$(RuntimeOnlyRoot)\Odyssey\Textures\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(OdysseyTextureFiles)' != ''" />
 
         <Copy
             SourceFiles="@(CeAssemblyFiles)"

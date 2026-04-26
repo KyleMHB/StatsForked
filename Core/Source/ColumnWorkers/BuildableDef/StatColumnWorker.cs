@@ -115,7 +115,12 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
             if (statValue != 0f)
             {
                 ValueRaw = statValue;
-                string text = stat.Worker.GetStatDrawEntryLabel(stat, statValue, _ToStringNumberSense, statRequest);
+                string? text = column.GetStatDrawEntryLabel(stat, statValue, _ToStringNumberSense, statRequest);
+                if (text == null)
+                {
+                    return;
+                }
+
                 _text = text;
                 Width = Text.CalcSize(text).x;
                 Match match = _numberRegex.Match(text);
@@ -154,5 +159,10 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
             }
             rect.Tip(_column._cellTooltip.Value);
         }
+    }
+
+    protected virtual string? GetStatDrawEntryLabel(StatDef stat, float value, ToStringNumberSense numberSense, StatRequest statRequest)
+    {
+        return stat.Worker.GetStatDrawEntryLabel(stat, value, numberSense, statRequest);
     }
 }

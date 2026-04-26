@@ -13,7 +13,7 @@ public class ColumnDef : Def
     public string? labelKey;
     public string? descriptionKey;
     public ColumnTitleXmlNode? title;
-    internal Widget TitleWidget => field ??= title?.ToWidget() ?? new Label(LabelCap);
+    public Widget TitleWidget => field ??= title?.ToWidget() ?? new Label(LabelCap);
 #pragma warning disable CS8618
     public Type workerClass;
 #pragma warning restore CS8618

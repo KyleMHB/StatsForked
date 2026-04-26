@@ -1,88 +1,113 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using Stats.Objects.ThingDef;
-using Stats.Widgets_Legacy;
+using Stats.ColumnWorkers;
+using Stats.ColumnWorkers.Cells;
+using Stats.Filters;
+using Stats.TableWorkers;
+using Stats.Utils;
+using UnityEngine;
 using Verse;
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_CaliberColumnWorker : ColumnWorker<VirtualThing>
+public sealed class Weapon_CaliberColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBasedObject, Weapon_CaliberColumnWorker.CaliberCell>
 {
-    public Weapon_CaliberColumnWorker(ColumnDef columnDef) : base(columnDef, CellStyleType.String, TODO)
+    public override ColumnDef Def => columnDef;
+    public override ColumnType Type => ColumnType.String;
+
+    protected override CaliberCell MakeCell(DefBasedObject @object)
     {
-    }
-    public override ObjectTable.Cell GetCell(VirtualThing thing)
-    {
-        return new Cell(thing, this);
-    }
-    private string? GetCaliberName(StatRequest statRequest)
-    {
-        if (StatDefOf.Caliber.Worker.ShouldShowFor(statRequest))
+        StatRequest statRequest = GetStatRequest(@object);
+        string? caliberName = GetCaliberName(statRequest);
+        if (string.IsNullOrEmpty(caliberName))
         {
-            return StatDefOf.Caliber.Worker.GetStatDrawEntryLabel(
-                StatDefOf.Caliber,
-                StatDefOf.Caliber.Worker.GetValue(statRequest),
-                ToStringNumberSense.Absolute,
-                statRequest
-            );
+            return default;
         }
 
-        return null;
-    }
-    private string? GetCaliberName(VirtualThing thing)
-    {
-        var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
-        var statRequest = StatRequest.For(thingDef, null);
+        TipSignal? tooltip = null;
+        string explanation = StatDefOf.Caliber.Worker.GetExplanationFull(
+            statRequest,
+            ToStringNumberSense.Absolute,
+            StatDefOf.Caliber.Worker.GetValue(statRequest));
+        if (explanation.Length > 0)
+        {
+            tooltip = explanation;
+        }
 
-        return GetCaliberName(statRequest);
+        return new CaliberCell(caliberName!, tooltip);
     }
-    public override IEnumerable<ObjectProp> GetObjectProps(IEnumerable<VirtualThing> contextObjects)
+
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-        var options = contextObjects
-            .Select(GetCaliberName)
+        IEnumerable<NTMFilterOption<string?>> options = ((IRefRecordsProvider<ThingDef>)tableWorker).Records
+            .Select(thingDef => GetCaliberName(GetStatRequest(thingDef)))
             .Distinct()
             .OrderBy(option => option)
-            .Select<string?, NTMFilterOption<string?>>(
-                option => option == null ? new() : new(option, option.ToString())
-            );
-
-        yield return new(Def.Title, new OTMFilter<Cell, string?>(cell => cell.Value, options, this));
+            .Select<string?, NTMFilterOption<string?>>(option => option == null ? new() : new(option, option));
+        Filter filter = new OTMFilter<string?>(row => this[row].Value, options);
+        int Compare(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Value, this[row2].Value);
+        return [new CellField(Def.TitleWidget, filter, Compare)];
     }
 
-    private sealed class Cell : ObjectTable.WidgetCell
+    private static StatRequest GetStatRequest(DefBasedObject @object)
     {
-        protected override Widget? Widget { get; set; }
-        public override event Action? OnChange;
-        public string? Value { get; }
-        public Cell(VirtualThing thing, Weapon_CaliberColumnWorker column)
+        ThingDef thingDef = GetGunDef((ThingDef)@object.Def);
+        return StatRequest.For(thingDef, null, @object.Quality);
+    }
+
+    private static StatRequest GetStatRequest(ThingDef thingDef)
+    {
+        return StatRequest.For(GetGunDef(thingDef), null);
+    }
+
+    private static ThingDef GetGunDef(ThingDef thingDef)
+    {
+        return thingDef.building?.turretGunDef ?? thingDef;
+    }
+
+    private static string? GetCaliberName(StatRequest statRequest)
+    {
+        if (StatDefOf.Caliber.Worker.ShouldShowFor(statRequest) == false)
         {
-            var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
-            var statRequest = StatRequest.For(thingDef, null);
-            var caliberName = column.GetCaliberName(statRequest);
-
-            if (caliberName?.Length > 0)
-            {
-                Widget widget = new Label(caliberName).PaddingAbs(ObjectTable.CellPadHor, ObjectTable.CellPadVer);
-                var tooltip = StatDefOf.Caliber.Worker.GetExplanationFull(
-                    statRequest,
-                    ToStringNumberSense.Absolute,
-                    StatDefOf.Caliber.Worker.GetValue(statRequest)
-                );
-
-                if (tooltip?.Length > 0)
-                {
-                    widget = widget.Tooltip(tooltip);
-                }
-
-                Widget = widget;
-                Value = caliberName;
-            }
+            return null;
         }
-        public override int CompareTo(ObjectTable.Cell cell)
+
+        return StatDefOf.Caliber.Worker.GetStatDrawEntryLabel(
+            StatDefOf.Caliber,
+            StatDefOf.Caliber.Worker.GetValue(statRequest),
+            ToStringNumberSense.Absolute,
+            statRequest);
+    }
+
+    public readonly struct CaliberCell : ICell
+    {
+        public float Width { get; }
+        public bool IsRefreshable => false;
+        public string? Value { get; }
+
+        private readonly TipSignal? _tooltip;
+
+        public CaliberCell(string value, TipSignal? tooltip)
         {
-            return Comparer<string?>.Default.Compare(Value, ((Cell)cell).Value);
+            Value = value;
+            _tooltip = tooltip;
+            Width = Verse.Text.CalcSize(value).x;
+        }
+
+        public void Draw(Rect rect)
+        {
+            if (Value == null)
+            {
+                return;
+            }
+
+            if (_tooltip != null && Mouse.IsOver(rect))
+            {
+                rect.Tip(_tooltip.Value);
+            }
+
+            rect.Label(Value, GUIStyles.TableCell.String);
         }
     }
 }

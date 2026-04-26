@@ -1,21 +1,34 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
-using Stats.Objects.ThingDef;
+using Stats.ColumnWorkers;
+using Stats.ColumnWorkers.Cells;
+using Stats.TableWorkers;
 using Verse;
 
 namespace Stats.Compat.Biotech;
 
-public sealed class Mech_WorkActivitiesColumnWorker : DefSetColumnWorker<VirtualThing, WorkTypeDef>
+public sealed class Mech_WorkActivitiesColumnWorker(ColumnDef columnDef) : DefSetColumnWorker<DefBasedObject, DefSetCell>
 {
-    public Mech_WorkActivitiesColumnWorker(ColumnDef columnDef) : base(columnDef)
+    public override ColumnDef Def => columnDef;
+
+    protected override DefSetCell MakeCell(DefBasedObject @object)
     {
+        if (@object.Def is ThingDef thingDef)
+        {
+            HashSet<Def> workTypes = thingDef.race?.mechEnabledWorkTypes?.Cast<Def>().ToHashSet() ?? [];
+            if (workTypes.Count > 0)
+            {
+                return new DefSetCell(workTypes);
+            }
+        }
+
+        return default;
     }
-    protected override HashSet<WorkTypeDef> GetValue(VirtualThing thing)
+
+    protected override IEnumerable<Def?> GetValueFieldFilterOptions(TableWorker tableWorker)
     {
-        return thing.Def.race?.mechEnabledWorkTypes.ToHashSet() ?? [];
-    }
-    protected override string GetDefLabel(WorkTypeDef def)
-    {
-        return def.gerundLabel.CapitalizeFirst();
+        return ((IRefRecordsProvider<ThingDef>)tableWorker).Records
+            .SelectMany(thingDef => thingDef.race?.mechEnabledWorkTypes?.Cast<Def>() ?? [])
+            .Distinct();
     }
 }

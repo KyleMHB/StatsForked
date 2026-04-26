@@ -1,22 +1,24 @@
-﻿using Stats.Objects.ThingDef;
-using Stats.ObjectTable.ColumnWorkers;
+using Stats.ColumnWorkers;
+using Stats.ColumnWorkers.Cells;
+using Verse;
 
 namespace Stats.Compat.Biotech;
 
-public sealed class Mech_WorkSkillColumnWorker : NumberColumnWorker<VirtualThing>
+public sealed class Mech_WorkSkillColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
-    public Mech_WorkSkillColumnWorker(ColumnDef columndef) : base(columndef)
-    {
-    }
-    protected override decimal GetCellValueSource(VirtualThing thing)
-    {
-        var raceProps = thing.Def.race;
+    public override ColumnDef Def => columnDef;
 
-        if (raceProps != null)
+    protected override NumberCell MakeCell(DefBasedObject @object)
+    {
+        if (@object.Def is ThingDef thingDef)
         {
-            return raceProps.mechFixedSkillLevel;
+            int workSkill = thingDef.race?.mechFixedSkillLevel ?? 0;
+            if (workSkill != 0)
+            {
+                return new NumberCell(workSkill);
+            }
         }
 
-        return 0m;
+        return default;
     }
 }

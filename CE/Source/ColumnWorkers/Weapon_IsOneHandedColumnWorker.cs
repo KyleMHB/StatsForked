@@ -1,15 +1,16 @@
-﻿using CombatExtended;
-using Stats.Objects.ThingDef;
+using CombatExtended;
+using Stats.ColumnWorkers;
+using Stats.Utils.Extensions;
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_IsOneHandedColumnWorker : BooleanColumnWorker<VirtualThing>
+public sealed class Weapon_IsOneHandedColumnWorker(ColumnDef columnDef) : BooleanColumnWorker<DefBasedObject>
 {
-    public Weapon_IsOneHandedColumnWorker(ColumnDef columndef) : base(columndef)
+    public override ColumnDef Def => columnDef;
+
+    protected override bool GetValue(DefBasedObject @object)
     {
-    }
-    protected override bool GetCellValue(VirtualThing thing)
-    {
-        return thing.Def.GetStatValuePerceived(CE_StatDefOf.OneHandedness, thing.StuffDef) > 0f;
+        return @object.Def is Verse.ThingDef thingDef
+            && thingDef.GetStatValuePerceived(CE_StatDefOf.OneHandedness, @object.StuffDef, @object.Quality) > 0f;
     }
 }
