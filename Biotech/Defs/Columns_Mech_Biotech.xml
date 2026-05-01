@@ -7,6 +7,9 @@
         <title><MechBandwidth/><Decrease/></title>
         <stat>BandwidthCost</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -14,6 +17,9 @@
         <title><Electricity/><Decrease/><Per/>HP</title>
         <stat>MechEnergyLossPerHP</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -21,6 +27,9 @@
         <title><Time/><MechControl/></title>
         <stat>ControlTakingTime</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -28,6 +37,9 @@
         <title><Wastepack/><Per/><Electricity/></title>
         <stat>WastepacksPerRecharge</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -36,6 +48,9 @@
         <descriptionKey>StatsReport_RechargerNeeded_Desc</descriptionKey>
         <title><MechRecharger/>Type</title>
         <workerClass>Stats.Compat.Biotech.Mech_RechargerNeededColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
     </Stats.ColumnDef>
     
     <Stats.ColumnDef>
@@ -43,6 +58,9 @@
         <labelKey>MechWeightClass</labelKey>
         <descriptionKey>MechWeightClassExplanation</descriptionKey>
         <workerClass>Stats.Compat.Biotech.Mech_WeightClassColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -50,6 +68,9 @@
         <labelKey>MechWorkActivities</labelKey>
         <descriptionKey>MechWorkActivitiesExplanation</descriptionKey>
         <workerClass>Stats.Compat.Biotech.Mech_WorkActivitiesColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef>
@@ -57,6 +78,9 @@
         <labelKey>MechWorkSkill</labelKey>
         <descriptionKey>MechWorkSkillDesc</descriptionKey>
         <workerClass>Stats.Compat.Biotech.Mech_WorkSkillColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMech</li>
+        </tags>
     </Stats.ColumnDef>
 
 </Defs>

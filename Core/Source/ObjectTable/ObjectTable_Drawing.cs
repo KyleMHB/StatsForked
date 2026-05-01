@@ -62,6 +62,11 @@ internal sealed partial class ObjectTable<TObject>
     private void RefreshLiveCells()
     {
         bool anyColumnChanged = false;
+        if (HasActiveLiveTableFilter() && InventoryStateTracker.RefreshIfNeeded())
+        {
+            anyColumnChanged = true;
+        }
+
         int columnsCount = _columns.Count;
         for (int i = 0; i < columnsCount; i++)
         {

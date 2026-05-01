@@ -127,6 +127,7 @@ internal sealed partial class ObjectTable<TObject>
         private readonly TipSignal _tooltip;
         private readonly ObjectTable<TObject> _parent;
         private readonly FloatMenu _menu;
+        private readonly HashSet<string> _drawExceptionKeys = [];
 
         public Column(ColumnWorker<TObject> worker, TableWorker tableWorker, ObjectTable<TObject> parent, ICollection<CellField> cellFields)
         {
@@ -252,15 +253,24 @@ internal sealed partial class ObjectTable<TObject>
                 {
                     worker.DrawCell(cellRect, rows[i]);
                 }
-                catch
+                catch (Exception exception)
                 {
-                    // TODO:
-                    // - Add tooltip with exception's message.
-                    // - Make the whole thing into a separate non-inlineable method.
+                    LogDrawException(rows[i], exception);
                     cellRect.Fill(Color.red);
                 }
                 cellRect.y = cellRect.yMax;
             }
+        }
+
+        private void LogDrawException(int row, Exception exception)
+        {
+            string key = $"{Def.defName}:{row}:{exception.GetType().FullName}:{exception.Message}";
+            if (_drawExceptionKeys.Add(key) == false)
+            {
+                return;
+            }
+
+            Log.Error($"Stats failed to draw cell for column \"{Def.defName}\" at row {row}: {exception}");
         }
 
         private void DoMainControl(Rect rect, Rect cellRect, bool mouseXIsInVisibleArea)

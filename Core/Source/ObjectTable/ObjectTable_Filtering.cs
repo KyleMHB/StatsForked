@@ -14,8 +14,10 @@ namespace Stats;
 
 internal sealed partial class ObjectTable<TObject>
 {
+    private const string AvailableFilterKey = "__table_filter_available";
     private readonly List<FilterEntry> _filters = [];
     private FiltersWindow? _filtersWindow;
+    private Filter? _availableFilter;
 
     private void ToggleFiltersTab()
     {
@@ -35,8 +37,21 @@ internal sealed partial class ObjectTable<TObject>
         {
             field.FilterWidget.OnChange += ApplyFilters;
             string labelText = field.Label is Label label ? label.Text : field.Label.GetType().Name;
-            _filters.Add(new FilterEntry(column, field.Label, labelText, field.FilterWidget));
+            _filters.Add(new FilterEntry(column.Def.defName, column, field.Label, labelText, field.FilterWidget));
         }
+    }
+
+    private void RegisterTableFilters()
+    {
+        if (typeof(TObject) != typeof(DefBasedObject))
+        {
+            return;
+        }
+
+        BooleanFilter availableFilter = new(IsAvailable);
+        availableFilter.OnChange += ApplyFilters;
+        _availableFilter = availableFilter;
+        _filters.Add(new FilterEntry(AvailableFilterKey, null, new Label("available"), "available", availableFilter));
     }
 
     private void UnregisterColumnFilters(Column column)
@@ -131,7 +146,7 @@ internal sealed partial class ObjectTable<TObject>
 
             states.Add(new FilterPresetState
             {
-                columnDefName = filter.Column.Def.defName,
+                columnDefName = filter.Key,
                 label = filter.LabelText,
                 state = presettableFilter.SerializeState(),
             });
@@ -147,7 +162,7 @@ internal sealed partial class ObjectTable<TObject>
         foreach (FilterPresetState state in states)
         {
             FilterEntry? matchingFilter = _filters.FirstOrDefault(filter =>
-                filter.Column.Def.defName == state.columnDefName
+                filter.Key == state.columnDefName
                 && filter.LabelText == state.label);
 
             if (matchingFilter is { } filterEntry && filterEntry.Widget is IPresettableFilter presettableFilter)
@@ -164,7 +179,22 @@ internal sealed partial class ObjectTable<TObject>
         }
     }
 
-    private readonly record struct FilterEntry(Column Column, FilterLabelWidget Label, string LabelText, Filter Widget);
+    private bool HasActiveLiveTableFilter()
+    {
+        return _availableFilter?.IsActive == true;
+    }
+
+    private bool IsAvailable(int row)
+    {
+        if (_objects[row] is not DefBasedObject { Def: ThingDef thingDef })
+        {
+            return false;
+        }
+
+        return InventoryStateTracker.IsOwnedByPlayer(thingDef);
+    }
+
+    private readonly record struct FilterEntry(string Key, Column? Column, FilterLabelWidget Label, string LabelText, Filter Widget);
 
     private sealed class FiltersWindow : Window
     {

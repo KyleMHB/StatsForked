@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Stats.ColumnWorkers.Cells;
+using System;
 using Stats.TableWorkers;
 using Stats.Utils.Extensions;
 using UnityEngine;
+using Verse;
 
 namespace Stats.ColumnWorkers;
 
@@ -33,6 +35,7 @@ public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where
     public override bool IsRefreshable => _refreshableCellsCount > 0;
 
     private readonly List<TCell> _cells = new(250);
+    private readonly HashSet<string> _makeCellExceptionKeys = [];
     private int _refreshableCellsCount;
 
     protected TCell this[int index] => _cells[index];
@@ -77,8 +80,9 @@ public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where
         {
             cell = MakeCell(row);
         }
-        catch
+        catch (Exception exception)
         {
+            LogMakeCellException(row, exception);
             cell = default;
         }
 
@@ -129,5 +133,26 @@ public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where
         }
 
         return anyCellChanged;
+    }
+
+    private void LogMakeCellException(TObject row, Exception exception)
+    {
+        string key = $"{GetType().FullName}:{exception.GetType().FullName}:{exception.Message}";
+        if (_makeCellExceptionKeys.Add(key) == false)
+        {
+            return;
+        }
+
+        string rowText;
+        try
+        {
+            rowText = row?.ToString() ?? "<null>";
+        }
+        catch
+        {
+            rowText = "<unprintable>";
+        }
+
+        Log.Error($"Stats failed to create cell for worker {GetType().FullName}, column \"{Def.defName}\", row {rowText}: {exception}");
     }
 }

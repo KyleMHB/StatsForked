@@ -109,6 +109,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     // Misc
     private readonly TableWorker<TObject> _tableWorker;
     private readonly IVariantTableWorker<TObject>? _variantTableWorker;
+    private readonly HashSet<string> _missingColumnWarnings = [];
     private bool _showVariants;
     internal bool SupportsVariants => _variantTableWorker?.SupportsVariants == true;
     internal bool ShowVariants => _showVariants;
@@ -131,6 +132,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         _rows = [];
         _columns = [];
         _toolbar = new Toolbar(this);
+        RegisterTableFilters();
         RebuildRowsAndColumns(GetCurrentObjects(), tableWorker.Def.columns.Select(column => column.defName).ToList());
     }
 

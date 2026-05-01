@@ -13,6 +13,7 @@ internal static class InventoryStateTracker
     private static readonly HashSet<ThingDef> _mapVisibleThingDefs = [];
     private static int _lastRefreshTick = -1;
     private static bool _isDirty = true;
+    public static int StateVersion { get; private set; }
 
     static InventoryStateTracker()
     {
@@ -32,22 +33,24 @@ internal static class InventoryStateTracker
         return _mapVisibleThingDefs.Contains(thingDef);
     }
 
-    private static void RefreshIfNeeded()
+    public static bool RefreshIfNeeded()
     {
         int currentTick = Find.TickManager?.TicksGame ?? -1;
         if (_isDirty == false || currentTick == _lastRefreshTick)
         {
-            return;
+            return false;
         }
 
         _isDirty = false;
         _lastRefreshTick = currentTick;
+        HashSet<ThingDef> oldOwnedThingDefs = new(_ownedThingDefs);
+        HashSet<ThingDef> oldMapVisibleThingDefs = new(_mapVisibleThingDefs);
         _ownedThingDefs.Clear();
         _mapVisibleThingDefs.Clear();
 
         foreach (Map map in Find.Maps)
         {
-            if (map.IsPlayerHome == false)
+            if (IsPlayerRelevantMap(map) == false)
             {
                 continue;
             }
@@ -62,6 +65,15 @@ internal static class InventoryStateTracker
                 CountPawnEquipment(pawn);
             }
         }
+
+        bool changed = oldOwnedThingDefs.SetEquals(_ownedThingDefs) == false
+            || oldMapVisibleThingDefs.SetEquals(_mapVisibleThingDefs) == false;
+        if (changed)
+        {
+            StateVersion++;
+        }
+
+        return changed;
     }
 
     private static void CountSpawnedThing(Thing thing)
@@ -72,6 +84,12 @@ internal static class InventoryStateTracker
         {
             _mapVisibleThingDefs.Add(thing.def);
         }
+    }
+
+    private static bool IsPlayerRelevantMap(Map map)
+    {
+        return map.IsPlayerHome
+            || map.mapPawns?.FreeColonistsSpawned?.Count > 0;
     }
 
     private static void CountPawnEquipment(Pawn pawn)

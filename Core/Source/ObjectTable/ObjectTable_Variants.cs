@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Stats.ColumnWorkers;
+using Verse;
 
 namespace Stats;
 
@@ -107,7 +108,7 @@ internal sealed partial class ObjectTable<TObject>
         _pressedColumn = null;
 
         IEnumerable<ColumnDef> columnDefs = visibleColumnDefNames
-            .Select(defName => _tableWorker.Def.columns.FirstOrDefault(column => column.defName == defName))
+            .Select(ResolveVisibleColumnDef)
             .Where(column => column != null)!;
 
         foreach (ColumnDef columnDef in columnDefs)
@@ -120,5 +121,22 @@ internal sealed partial class ObjectTable<TObject>
             _leftColumnsCount = 1;
             _sortColumn = _columns[0];
         }
+    }
+
+    private ColumnDef? ResolveVisibleColumnDef(string defName)
+    {
+        ColumnDef? columnDef = _tableWorker.CompatibleColumns.FirstOrDefault(column => column.defName == defName);
+        if (columnDef != null)
+        {
+            return columnDef;
+        }
+
+        string warningKey = $"{_tableWorker.Def.defName}:{defName}";
+        if (_missingColumnWarnings.Add(warningKey))
+        {
+            Log.Warning($"Stats preset/table \"{_tableWorker.Def.defName}\" references missing or incompatible column \"{defName}\".");
+        }
+
+        return null;
     }
 }

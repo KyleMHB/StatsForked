@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using Stats.ColumnWorkers.Cells;
+using System;
 using Stats.Filters;
 using Stats.TableWorkers;
 using Stats.Utils.Extensions;
 using UnityEngine;
+using Verse;
 
 namespace Stats.ColumnWorkers;
 
@@ -32,6 +34,7 @@ public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
     public override bool IsRefreshable => false;
 
     private readonly List<bool> _values = new(250);
+    private readonly HashSet<string> _getValueExceptionKeys = [];
 
     protected abstract bool GetValue(TObject @object);
 
@@ -61,8 +64,9 @@ public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
         {
             value = GetValue(row);
         }
-        catch
+        catch (Exception exception)
         {
+            LogGetValueException(row, exception);
             value = default;
         }
 
@@ -86,5 +90,26 @@ public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
         CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
         return [valueField];
+    }
+
+    private void LogGetValueException(TObject row, Exception exception)
+    {
+        string key = $"{GetType().FullName}:{exception.GetType().FullName}:{exception.Message}";
+        if (_getValueExceptionKeys.Add(key) == false)
+        {
+            return;
+        }
+
+        string rowText;
+        try
+        {
+            rowText = row?.ToString() ?? "<null>";
+        }
+        catch
+        {
+            rowText = "<unprintable>";
+        }
+
+        Log.Error($"Stats failed to create boolean cell for worker {GetType().FullName}, column \"{Def.defName}\", row {rowText}: {exception}");
     }
 }

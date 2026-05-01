@@ -16,28 +16,21 @@ internal sealed partial class ObjectTable<TObject>
 
     private void ApplyVisibleColumns(List<string> visibleColumnDefNames)
     {
-        HashSet<string> visibleColumnDefNameSet = visibleColumnDefNames.ToHashSet();
+        string? sortColumnDefName = _sortColumn?.Def.defName;
+        int sortDirection = _sortDirection;
 
-        for (int i = _columns.Count - 1; i >= 0; i--)
+        ResetColumns(visibleColumnDefNames);
+        RestoreSort(sortColumnDefName, sortDirection);
+        SortRows();
+        ApplyFilters();
+    }
+
+    private void RestoreSort(string? sortColumnDefName, int sortDirection)
+    {
+        if (sortColumnDefName?.Length > 0)
         {
-            if (visibleColumnDefNameSet.Contains(_columns[i].Def.defName) == false)
-            {
-                RemoveColumn(i);
-            }
-        }
-
-        foreach (string visibleColumnDefName in visibleColumnDefNames)
-        {
-            if (_columns.Any(column => column.Def.defName == visibleColumnDefName))
-            {
-                continue;
-            }
-
-            ColumnDef? columnDef = _tableWorker.CompatibleColumns.FirstOrDefault(column => column.defName == visibleColumnDefName);
-            if (columnDef != null)
-            {
-                AddColumn(columnDef);
-            }
+            _sortColumn = _columns.FirstOrDefault(column => column.Def.defName == sortColumnDefName) ?? _sortColumn;
+            _sortDirection = sortDirection;
         }
     }
 
@@ -69,8 +62,23 @@ internal sealed partial class ObjectTable<TObject>
 
     private void ApplyPreset(TablePreset preset)
     {
-        SetVariantsMode(preset.showVariants);
-        ApplyVisibleColumns(preset.visibleColumnDefNames);
+        if (SupportsVariants && _showVariants != preset.showVariants)
+        {
+            string? sortColumnDefName = _sortColumn?.Def.defName;
+            int sortDirection = _sortDirection;
+
+            _showVariants = preset.showVariants;
+            ResetRows(GetCurrentObjects());
+            ResetColumns(preset.visibleColumnDefNames);
+            RestoreSort(sortColumnDefName, sortDirection);
+            SortRows();
+            ApplyFilters();
+        }
+        else
+        {
+            ApplyVisibleColumns(preset.visibleColumnDefNames);
+        }
+
         ApplyFilterPresetStates(preset.filterStates);
     }
 

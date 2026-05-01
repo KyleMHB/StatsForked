@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using RimWorld;
 using Stats.ColumnWorkers.Cells;
 using Stats.Filters;
@@ -17,7 +16,6 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
     public override ColumnType Type => ColumnType.Number;
     public override ColumnDef Def => columnDef;
 
-    private static readonly Regex _numberRegex = new(@"(-?[0-9]+\.?[0-9]*).*", RegexOptions.Compiled);
     private const ToStringNumberSense _ToStringNumberSense = ToStringNumberSense.Absolute;
     private readonly StatDef _stat = columnDef.stat;
 
@@ -123,11 +121,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
 
                 _text = text;
                 Width = Text.CalcSize(text).x;
-                Match match = _numberRegex.Match(text);
-                if (match.Success)
-                {
-                    Value = decimal.Parse(match.Groups[1].Captures[0].Value);
-                }
+                Value = statValue.ToDecimal(4);
             }
         }
 
