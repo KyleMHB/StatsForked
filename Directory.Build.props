@@ -5,11 +5,13 @@
         <TargetFramework>net48</TargetFramework>
         <AssemblyTitle>$(MSBuildProjectName.Replace(" ", "_"))</AssemblyTitle>
         <OutputPath>..\Assemblies</OutputPath>
-        <Copyright>Copyright © Dmitry "Azzkiy" 2025</Copyright>
-        <LangVersion>latest</LangVersion>
+        <Copyright>Copyright © Dmitry "Azkiy" 2024-2026</Copyright>
+        <LangVersion>preview</LangVersion>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <Nullable>enable</Nullable>
         <WarningLevel>5</WarningLevel>
+        <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</RepoRoot>
+        <RuntimeOnlyRoot>$([System.IO.Path]::Combine('$(RepoRoot)', 'Runtime Only', 'Stats Forked'))</RuntimeOnlyRoot>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DebugType>portable</DebugType>
@@ -22,6 +24,163 @@
         <DebugSymbols>false</DebugSymbols>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.*" />
+        <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.*" />
+        <PackageReference Include="Lib.Harmony" Version="2.4.*" ExcludeAssets="runtime"/>
     </ItemGroup>
+
+    <Target Name="DeployRuntimeOnly" AfterTargets="Build">
+        <ItemGroup>
+            <RootRuntimeFiles Include="$(RepoRoot)LoadFolders.xml" Condition="Exists('$(RepoRoot)LoadFolders.xml')" />
+            <AboutRuntimeFiles Include="$(RepoRoot)About\**\*.*" Condition="Exists('$(RepoRoot)About')" />
+            <LegacyRuntimeFiles Include="$(RepoRoot)1.5\**\*.*" Condition="Exists('$(RepoRoot)1.5')" />
+
+            <CoreAssemblyFiles Include="$(RepoRoot)Core\Assemblies\*.dll" Condition="Exists('$(RepoRoot)Core\Assemblies')" />
+            <CoreDefFiles Include="$(RepoRoot)Core\Defs\**\*.*" Condition="Exists('$(RepoRoot)Core\Defs')" />
+            <CorePatchFiles Include="$(RepoRoot)Core\Patches\**\*.*" Condition="Exists('$(RepoRoot)Core\Patches')" />
+            <CoreTextureFiles Include="$(RepoRoot)Core\Textures\**\*.*" Condition="Exists('$(RepoRoot)Core\Textures')" />
+
+            <BiotechAssemblyFiles Include="$(RepoRoot)Biotech\Assemblies\*.dll" Condition="Exists('$(RepoRoot)Biotech\Assemblies')" />
+            <BiotechDefFiles Include="$(RepoRoot)Biotech\Defs\**\*.*" Condition="Exists('$(RepoRoot)Biotech\Defs')" />
+            <BiotechPatchFiles Include="$(RepoRoot)Biotech\Patches\**\*.*" Condition="Exists('$(RepoRoot)Biotech\Patches')" />
+            <BiotechTextureFiles Include="$(RepoRoot)Biotech\Textures\**\*.*" Condition="Exists('$(RepoRoot)Biotech\Textures')" />
+
+            <AnomalyAssemblyFiles Include="$(RepoRoot)Anomaly\Assemblies\*.dll" Condition="Exists('$(RepoRoot)Anomaly\Assemblies')" />
+            <AnomalyDefFiles Include="$(RepoRoot)Anomaly\Defs\**\*.*" Condition="Exists('$(RepoRoot)Anomaly\Defs')" />
+            <AnomalyPatchFiles Include="$(RepoRoot)Anomaly\Patches\**\*.*" Condition="Exists('$(RepoRoot)Anomaly\Patches')" />
+            <AnomalyTextureFiles Include="$(RepoRoot)Anomaly\Textures\**\*.*" Condition="Exists('$(RepoRoot)Anomaly\Textures')" />
+
+            <OdysseyAssemblyFiles Include="$(RepoRoot)Odyssey\Assemblies\*.dll" Condition="Exists('$(RepoRoot)Odyssey\Assemblies')" />
+            <OdysseyDefFiles Include="$(RepoRoot)Odyssey\Defs\**\*.*" Condition="Exists('$(RepoRoot)Odyssey\Defs')" />
+            <OdysseyPatchFiles Include="$(RepoRoot)Odyssey\Patches\**\*.*" Condition="Exists('$(RepoRoot)Odyssey\Patches')" />
+            <OdysseyTextureFiles Include="$(RepoRoot)Odyssey\Textures\**\*.*" Condition="Exists('$(RepoRoot)Odyssey\Textures')" />
+
+            <CeAssemblyFiles Include="$(RepoRoot)CE\Assemblies\*.dll" Condition="Exists('$(RepoRoot)CE\Assemblies')" />
+            <CeDefFiles Include="$(RepoRoot)CE\Defs\**\*.*" Condition="Exists('$(RepoRoot)CE\Defs')" />
+            <CePatchFiles Include="$(RepoRoot)CE\Patches\**\*.*" Condition="Exists('$(RepoRoot)CE\Patches')" />
+            <CeTextureFiles Include="$(RepoRoot)CE\Textures\**\*.*" Condition="Exists('$(RepoRoot)CE\Textures')" />
+        </ItemGroup>
+
+        <RemoveDir Directories="$(RuntimeOnlyRoot)" Condition="Exists('$(RuntimeOnlyRoot)')" />
+        <MakeDir Directories="$(RuntimeOnlyRoot)" />
+
+        <Copy
+            SourceFiles="@(RootRuntimeFiles)"
+            DestinationFiles="@(RootRuntimeFiles->'$(RuntimeOnlyRoot)\%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true" />
+        <Copy
+            SourceFiles="@(AboutRuntimeFiles)"
+            DestinationFiles="@(AboutRuntimeFiles->'$(RuntimeOnlyRoot)\About\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(AboutRuntimeFiles)' != ''" />
+        <Copy
+            SourceFiles="@(LegacyRuntimeFiles)"
+            DestinationFiles="@(LegacyRuntimeFiles->'$(RuntimeOnlyRoot)\1.5\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(LegacyRuntimeFiles)' != ''" />
+
+        <Copy
+            SourceFiles="@(CoreAssemblyFiles)"
+            DestinationFiles="@(CoreAssemblyFiles->'$(RuntimeOnlyRoot)\Core\Assemblies\%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(CoreAssemblyFiles)' != ''" />
+        <Copy
+            SourceFiles="@(CoreDefFiles)"
+            DestinationFiles="@(CoreDefFiles->'$(RuntimeOnlyRoot)\Core\Defs\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(CoreDefFiles)' != ''" />
+        <Copy
+            SourceFiles="@(CorePatchFiles)"
+            DestinationFiles="@(CorePatchFiles->'$(RuntimeOnlyRoot)\Core\Patches\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(CorePatchFiles)' != ''" />
+        <Copy
+            SourceFiles="@(CoreTextureFiles)"
+            DestinationFiles="@(CoreTextureFiles->'$(RuntimeOnlyRoot)\Core\Textures\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(CoreTextureFiles)' != ''" />
+
+        <Copy
+            SourceFiles="@(BiotechAssemblyFiles)"
+            DestinationFiles="@(BiotechAssemblyFiles->'$(RuntimeOnlyRoot)\Biotech\Assemblies\%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(BiotechAssemblyFiles)' != ''" />
+        <Copy
+            SourceFiles="@(BiotechDefFiles)"
+            DestinationFiles="@(BiotechDefFiles->'$(RuntimeOnlyRoot)\Biotech\Defs\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(BiotechDefFiles)' != ''" />
+        <Copy
+            SourceFiles="@(BiotechPatchFiles)"
+            DestinationFiles="@(BiotechPatchFiles->'$(RuntimeOnlyRoot)\Biotech\Patches\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(BiotechPatchFiles)' != ''" />
+        <Copy
+            SourceFiles="@(BiotechTextureFiles)"
+            DestinationFiles="@(BiotechTextureFiles->'$(RuntimeOnlyRoot)\Biotech\Textures\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(BiotechTextureFiles)' != ''" />
+
+        <Copy
+            SourceFiles="@(AnomalyAssemblyFiles)"
+            DestinationFiles="@(AnomalyAssemblyFiles->'$(RuntimeOnlyRoot)\Anomaly\Assemblies\%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(AnomalyAssemblyFiles)' != ''" />
+        <Copy
+            SourceFiles="@(AnomalyDefFiles)"
+            DestinationFiles="@(AnomalyDefFiles->'$(RuntimeOnlyRoot)\Anomaly\Defs\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(AnomalyDefFiles)' != ''" />
+        <Copy
+            SourceFiles="@(AnomalyPatchFiles)"
+            DestinationFiles="@(AnomalyPatchFiles->'$(RuntimeOnlyRoot)\Anomaly\Patches\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(AnomalyPatchFiles)' != ''" />
+        <Copy
+            SourceFiles="@(AnomalyTextureFiles)"
+            DestinationFiles="@(AnomalyTextureFiles->'$(RuntimeOnlyRoot)\Anomaly\Textures\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(AnomalyTextureFiles)' != ''" />
+
+        <Copy
+            SourceFiles="@(OdysseyAssemblyFiles)"
+            DestinationFiles="@(OdysseyAssemblyFiles->'$(RuntimeOnlyRoot)\Odyssey\Assemblies\%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(OdysseyAssemblyFiles)' != ''" />
+        <Copy
+            SourceFiles="@(OdysseyDefFiles)"
+            DestinationFiles="@(OdysseyDefFiles->'$(RuntimeOnlyRoot)\Odyssey\Defs\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(OdysseyDefFiles)' != ''" />
+        <Copy
+            SourceFiles="@(OdysseyPatchFiles)"
+            DestinationFiles="@(OdysseyPatchFiles->'$(RuntimeOnlyRoot)\Odyssey\Patches\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(OdysseyPatchFiles)' != ''" />
+        <Copy
+            SourceFiles="@(OdysseyTextureFiles)"
+            DestinationFiles="@(OdysseyTextureFiles->'$(RuntimeOnlyRoot)\Odyssey\Textures\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(OdysseyTextureFiles)' != ''" />
+
+        <Copy
+            SourceFiles="@(CeAssemblyFiles)"
+            DestinationFiles="@(CeAssemblyFiles->'$(RuntimeOnlyRoot)\CE\Assemblies\%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(CeAssemblyFiles)' != ''" />
+        <Copy
+            SourceFiles="@(CeDefFiles)"
+            DestinationFiles="@(CeDefFiles->'$(RuntimeOnlyRoot)\CE\Defs\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(CeDefFiles)' != ''" />
+        <Copy
+            SourceFiles="@(CePatchFiles)"
+            DestinationFiles="@(CePatchFiles->'$(RuntimeOnlyRoot)\CE\Patches\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(CePatchFiles)' != ''" />
+        <Copy
+            SourceFiles="@(CeTextureFiles)"
+            DestinationFiles="@(CeTextureFiles->'$(RuntimeOnlyRoot)\CE\Textures\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(CeTextureFiles)' != ''" />
+    </Target>
 </Project>

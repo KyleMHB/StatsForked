@@ -1,19 +1,24 @@
-﻿namespace Stats.Compat.Biotech;
+using Stats.ColumnWorkers;
+using Stats.ColumnWorkers.Cells;
+using Verse;
 
-public sealed class Mech_WorkSkillColumnWorker : NumberColumnWorker<ThingAlike>
+namespace Stats.Compat.Biotech;
+
+public sealed class Mech_WorkSkillColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
-    public Mech_WorkSkillColumnWorker(ColumnDef columndef) : base(columndef)
-    {
-    }
-    protected override decimal GetValue(ThingAlike thing)
-    {
-        var raceProps = thing.Def.race;
+    public override ColumnDef Def => columnDef;
 
-        if (raceProps != null)
+    protected override NumberCell MakeCell(DefBasedObject @object)
+    {
+        if (@object.Def is ThingDef thingDef)
         {
-            return raceProps.mechFixedSkillLevel;
+            int workSkill = thingDef.race?.mechFixedSkillLevel ?? 0;
+            if (workSkill != 0)
+            {
+                return new NumberCell(workSkill);
+            }
         }
 
-        return 0m;
+        return default;
     }
 }

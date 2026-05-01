@@ -7,6 +7,9 @@
         <label>genes</label>
         <iconPath>UI/Gizmos/ViewGenes</iconPath>
         <workerClass>Stats.Compat.Biotech.GeneTableWorker</workerClass>
+        <columnTags>
+            <li>Gene</li>
+        </columnTags>
         <columns>
             <li>Gene_Label</li>
             <li>Gene_Complexity</li>
@@ -21,6 +24,15 @@
         <label>Creatures / Mechanoids / Labor</label>
         <iconPath>Things/Pawn/Mechanoid/Agrihand_east</iconPath>
         <workerClass>Stats.Compat.Biotech.LaborMechanoidsTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsMech</li>
+            <li>Thing_IsPawn</li>
+            <li>Thing_HasArmor</li>
+            <li>Thing_HasEnergyShield</li>
+            <li>Thing_CanUseWeapons</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
             <!-- Labor -->
@@ -33,7 +45,6 @@
             <li>Mech_ControlTakingTime</li>
             <li>Mech_WastepacksPerRecharge</li>
             <li>Mech_RechargerNeeded</li>
-            <li>Thing_Recipes</li>
             <!-- Misc -->
             <li>Pawn_MoveSpeed</li>
             <li>Thing_ContentSource</li>

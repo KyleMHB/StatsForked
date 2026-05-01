@@ -6,7 +6,7 @@
         <defName>Apparel_WornBulk</defName>
         <title>Bulk<IncreaseNegative/></title>
         <stat>WornBulk</stat>
-        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
 </Defs>

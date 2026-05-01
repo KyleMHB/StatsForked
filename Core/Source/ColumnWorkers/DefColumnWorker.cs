@@ -1,43 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using Stats.Widgets;
-using Verse;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Stats.ColumnWorkers.Cells;
+using Stats.Filters;
+using Stats.TableWorkers;
 
-namespace Stats;
+namespace Stats.ColumnWorkers;
 
-public abstract class DefColumnWorker<TObject, TValue> : ColumnWorker<TObject> where TValue : Def?
+public abstract class DefColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IDefCell
 {
-    protected DefColumnWorker(ColumnDef columnDef, bool cached = true) : base(columnDef, ColumnCellStyle.String)
-    {
-        GetCachedValue = GetValue;
+    public override ColumnType Type => ColumnType.String;
 
-        if (cached)
-        {
-            GetCachedValue = GetCachedValue.Memoized();
-        }
-    }
-    protected readonly Func<TObject, TValue> GetCachedValue;
-    protected abstract TValue GetValue(TObject @object);
-    public override Widget? GetTableCellWidget(TObject @object)
-    {
-        var def = GetCachedValue(@object);
+    protected abstract IEnumerable<Verse.Def?> GetValueFieldFilterOptions(TableWorker tableWorker);
 
-        if (def == null)
-        {
-            return null;
-        }
-
-        return new Label(def.LabelCap);
-    }
-    public override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords)
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-        return Make.OTMDefFilter(GetCachedValue, tableRecords);
-    }
-    public sealed override int Compare(TObject object1, TObject object2)
-    {
-        var defLabel1 = GetCachedValue(object1)?.label;
-        var defLabel2 = GetCachedValue(object2)?.label;
+        IEnumerable<NTMFilterOption<Verse.Def?>> valueFieldFilterOptions = GetValueFieldFilterOptions(tableWorker)
+            .OrderBy(def => def?.label)
+            .Select<Verse.Def?, NTMFilterOption<Verse.Def?>>(
+                def => def == null ? new() : new(def, def.LabelCap)
+            );
+        Filter valueFieldFilter = new OTMFilter<Verse.Def?>((int row) => this[row].Value, valueFieldFilterOptions);
+        int CompareByDefLabel(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Text, this[row2].Text);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, CompareByDefLabel);
 
-        return Comparer<string?>.Default.Compare(defLabel1, defLabel2);
+        return [valueField];
     }
 }

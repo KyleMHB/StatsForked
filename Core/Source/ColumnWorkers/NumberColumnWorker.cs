@@ -1,64 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using Stats.Widgets;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using Stats.ColumnWorkers.Cells;
+using Stats.Filters;
+using Stats.TableWorkers;
 
-namespace Stats;
+namespace Stats.ColumnWorkers;
 
-public abstract class NumberColumnWorker<TObject> : ColumnWorker<TObject>
+public abstract class NumberColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, INumberCell
 {
-    private readonly Texture2D? Icon = null;
-    private readonly Func<TObject, decimal> GetCachedValue;
-    private readonly string FormatString;
-    protected NumberColumnWorker(
-        ColumnDef columndef,
-        bool cached = true,
-        Texture2D? icon = null,
-        string formatString = ""
-    ) : base(columndef, ColumnCellStyle.Number)
+    public override ColumnType Type => ColumnType.Number;
+
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-        GetCachedValue = GetValue;
+        Filter valueFieldFilter = new NumberFilter((int row) => this[row].Value);
+        int Compare(int row1, int row2) => this[row1].Value.CompareTo(this[row2].Value);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
-        if (cached)
-        {
-            GetCachedValue = GetCachedValue.Memoized();
-        }
-
-        Icon = icon;
-        FormatString = formatString;
-    }
-    protected abstract decimal GetValue(TObject @object);
-    public sealed override Widget? GetTableCellWidget(TObject @object)
-    {
-        var value = GetValue(@object);
-
-        if (value == 0m)
-        {
-            return null;
-        }
-
-        var label = new Label(value.ToString(FormatString));
-
-        if (Icon != null)
-        {
-            return new HorizontalContainer(
-                [
-                    label.WidthRel(1f),
-                    new Icon(Icon)
-                ],
-                Globals.GUI.PadSm,
-                true
-            );
-        }
-
-        return label;
-    }
-    public sealed override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> _)
-    {
-        return Make.NumberFilter(GetCachedValue);
-    }
-    public sealed override int Compare(TObject object1, TObject object2)
-    {
-        return GetCachedValue(object1).CompareTo(GetCachedValue(object2));
+        return [valueField];
     }
 }

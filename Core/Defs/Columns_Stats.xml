@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef>
+        <defName>Thing_OwnedByColony</defName>
+        <label>owned by colony</label>
+        <title>Own</title>
+        <description>Whether the colony currently possesses at least one instance of this item.</description>
+        <workerClass>Stats.ColumnWorkers.ThingDef.OwnedByColonyColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+            <li>Def</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Thing_AppearsOnMap</defName>
+        <label>appears on map</label>
+        <title>Map</title>
+        <description>Whether at least one instance of this item is currently spawned and not forbidden on a player home map.</description>
+        <workerClass>Stats.ColumnWorkers.ThingDef.VisibleOnMapColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+            <li>Def</li>
+        </tags>
+    </Stats.ColumnDef>
+
+</Defs>

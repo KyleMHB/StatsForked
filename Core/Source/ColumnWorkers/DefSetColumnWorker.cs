@@ -1,70 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Stats.Widgets;
-using Verse;
+using Stats.ColumnWorkers.Cells;
+using Stats.Filters;
+using Stats.TableWorkers;
 
-namespace Stats;
+namespace Stats.ColumnWorkers;
 
-public abstract class DefSetColumnWorker<TObject, TValue> : ColumnWorker<TObject> where TValue : Def
+public abstract class DefSetColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IDefSetCell
 {
-    protected DefSetColumnWorker(ColumnDef columnDef, bool cached = true) : base(columnDef, ColumnCellStyle.String)
+    public override ColumnType Type => ColumnType.String;
+
+    protected abstract IEnumerable<Verse.Def?> GetValueFieldFilterOptions(TableWorker tableWorker);
+
+    private static readonly HashSet<Verse.Def> _emptyDefHashSet = [];
+
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-        GetCachedValue = GetValue;
-
-        if (cached)
-        {
-            GetCachedValue = GetCachedValue.Memoized();
-        }
-
-        GetDefLabels = FunctionExtensions.Memoized((TObject @object) =>
-        {
-            var defs = GetCachedValue(@object);
-
-            if (defs.Count == 0)
-            {
-                return "";
-            }
-
-            var defLabels = defs
-                .OrderBy(GetDefLabel)
-                .Select(GetDefLabel);
-
-            return string.Join("\n", defLabels);
-        });
-    }
-    protected readonly Func<TObject, HashSet<TValue>> GetCachedValue;
-    protected abstract HashSet<TValue> GetValue(TObject @object);
-    private readonly Func<TObject, string> GetDefLabels;
-    protected virtual string GetDefLabel(TValue def)
-    {
-        return def.LabelCap;
-    }
-    public override Widget? GetTableCellWidget(TObject @object)
-    {
-        var defLabels = GetDefLabels(@object);
-
-        if (defLabels.Length == 0)
-        {
-            return null;
-        }
-
-        return new Label(defLabels);
-    }
-    public override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords)
-    {
-        var filterOptions = tableRecords
-            .SelectMany(GetCachedValue)
-            .Distinct()
-            .OrderBy(GetDefLabel)
-            .Select<TValue, NTMFilterOption<TValue>>(
-                def => def == null ? new() : new(def, GetDefLabel(def))
+        IEnumerable<NTMFilterOption<Verse.Def?>> valueFieldFilterOptions = GetValueFieldFilterOptions(tableWorker)
+            .OrderBy(def => def?.label)
+            .Select<Verse.Def?, NTMFilterOption<Verse.Def?>>(
+                def => def == null ? new() : new(def, def.LabelCap)
             );
+        Filter valueFieldFilter = new MTMFilter<Verse.Def?>((int row) => this[row].Value ?? _emptyDefHashSet, valueFieldFilterOptions);
+        int CompareByCellText(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Text, this[row2].Text);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, CompareByCellText);
 
-        return Make.MTMFilter(GetCachedValue, filterOptions);
-    }
-    public sealed override int Compare(TObject object1, TObject object2)
-    {
-        return GetDefLabels(object1).CompareTo(GetDefLabels(object2));
+        return [valueField];
     }
 }

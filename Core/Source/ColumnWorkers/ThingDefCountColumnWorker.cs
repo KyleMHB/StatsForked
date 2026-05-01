@@ -1,66 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using Stats.Widgets;
-using Verse;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Stats.ColumnWorkers.Cells;
+using Stats.Filters;
+using Stats.TableWorkers;
+using Stats.Utils.Extensions;
+using Stats.Utils.Widgets;
+using UnityEngine;
 
-namespace Stats;
+namespace Stats.ColumnWorkers;
 
-public abstract class ThingDefCountColumnWorker<TObject> : ColumnWorker<TObject>
+public abstract class ThingDefCountColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefCountCell
 {
-    protected ThingDefCountColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.Number)
+    public override ColumnType Type => ColumnType.Number;
+    public override bool ShouldDrawCellsNow => Event.current.type == EventType.Repaint || Event.current.IsLeftMouseInteraction();
+
+    protected abstract IEnumerable<Verse.ThingDef?> GetTypeFieldFilterOptions(TableWorker tableWorker);
+
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-        GetCachedValue = (TObject @object) =>
-        {
-            var value = GetValue(@object);
+        Widget countFieldLabel = new Label("Amount");
+        Filter countFilter = new NumberFilter((int row) => this[row].Count);
+        int CompareByCount(int row1, int row2) => this[row1].Count.CompareTo(this[row2].Count);
+        CellField countField = new(countFieldLabel, countFilter, CompareByCount);
 
-            if (value?.Count == 0m)
-            {
-                return null;
-            }
+        Widget thingDefFieldLabel = new Label("Type");
+        IEnumerable<NTMFilterOption<Verse.ThingDef?>> thingDefFilterOptions = GetTypeFieldFilterOptions(tableWorker)
+            .OrderBy(thingDef => thingDef?.label)
+            .Select<Verse.ThingDef?, NTMFilterOption<Verse.ThingDef?>>(
+                thingDef => thingDef == null
+                    ? new()
+                    : new(thingDef, thingDef.LabelCap, new Widgets_Legacy.ThingDefIcon(thingDef))
+            );
+        Filter thingDefFilter = new OTMFilter<Verse.ThingDef?>((int row) => this[row].ThingDef, thingDefFilterOptions);
+        int CompareByThingDefLabel(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].ThingDefLabel, this[row2].ThingDefLabel);
+        CellField thingDefField = new(thingDefFieldLabel, thingDefFilter, CompareByThingDefLabel);
 
-            return value;
-        };
-        GetCachedValue = GetCachedValue.Memoized();
+        return [countField, thingDefField];
     }
-    protected readonly Func<TObject, ThingDefCount?> GetCachedValue;
-    protected abstract ThingDefCount? GetValue(TObject @object);
-    public sealed override Widget? GetTableCellWidget(TObject @object)
-    {
-        var thingDefCount = GetCachedValue(@object);
-
-        if (thingDefCount == null)
-        {
-            return null;
-        }
-
-        var count = thingDefCount.Value.Count;
-        var thingDef = thingDefCount.Value.Def;
-
-        return new HorizontalContainer(
-            [
-                new Label(count.ToString()).PaddingRel(1f, 0f, 0f, 0f),
-                new ThingIcon(thingDef).ToButtonGhostly(() => Draw.DefInfoDialog(thingDef), thingDef.LabelCap),
-            ],
-            Globals.GUI.PadSm,
-            true
-        );
-    }
-    public override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords)
-    {
-        var countFilter = Make.NumberFilter<TObject>(@object => GetCachedValue(@object)?.Count ?? 0m, "0-9")
-            .Tooltip("Filter by amount");
-        var typeFilter = Make.OTMThingDefFilter(@object => GetCachedValue(@object)?.Def, tableRecords, "T")
-            .Tooltip("Filter by type");
-
-        return Make.CompositeFilter<TObject>([countFilter, typeFilter], true);
-    }
-    public sealed override int Compare(TObject object1, TObject object2)
-    {
-        var count1 = GetCachedValue(object1)?.Count;
-        var count2 = GetCachedValue(object2)?.Count;
-
-        return Comparer<decimal?>.Default.Compare(count1, count2);
-    }
-
-    protected readonly record struct ThingDefCount(ThingDef Def, decimal Count);
 }

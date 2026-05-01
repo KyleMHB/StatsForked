@@ -1,33 +1,31 @@
 ﻿using System.Collections.Generic;
-using Stats.Widgets;
-using Verse;
+using System.Linq;
+using Stats.ColumnWorkers.Cells;
+using Stats.Filters;
+using Stats.TableWorkers;
+using Stats.Utils.Extensions;
+using UnityEngine;
 
-namespace Stats;
+namespace Stats.ColumnWorkers;
 
-public abstract class ThingDefColumnWorker<TObject, TValue> : DefColumnWorker<TObject, TValue> where TValue : ThingDef?
+public abstract class ThingDefColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefCell
 {
-    protected ThingDefColumnWorker(ColumnDef columnDef, bool cached = true) : base(columnDef, cached)
-    {
-    }
-    public sealed override Widget? GetTableCellWidget(TObject @object)
-    {
-        var thingDef = GetCachedValue(@object);
+    public override ColumnType Type => ColumnType.String;
+    public override bool ShouldDrawCellsNow => Event.current.type == EventType.Repaint || Event.current.IsLeftMouseInteraction();
 
-        if (thingDef == null)
-        {
-            return null;
-        }
+    protected abstract IEnumerable<Verse.ThingDef?> GetValueFieldFilterOptions(TableWorker tableWorker);
 
-        return new HorizontalContainer(
-            [
-                new ThingIcon(thingDef).ToButtonGhostly(() => Draw.DefInfoDialog(thingDef)),
-                new Label(thingDef.LabelCap),
-            ],
-            Globals.GUI.PadSm
-        );
-    }
-    public sealed override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords)
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-        return Make.OTMThingDefFilter(GetCachedValue, tableRecords);
+        IEnumerable<NTMFilterOption<Verse.ThingDef?>> valueFieldFilterOptions = GetValueFieldFilterOptions(tableWorker)
+            .OrderBy(def => def?.label)
+            .Select<Verse.ThingDef?, NTMFilterOption<Verse.ThingDef?>>(
+                def => def == null ? new() : new(def, def.LabelCap)
+            );
+        Filter valueFieldFilter = new OTMFilter<Verse.ThingDef?>((int row) => this[row].Value, valueFieldFilterOptions);
+        int CompareByCellText(int row1, int row2) => Comparer<string?>.Default.Compare(this[row1].Text, this[row2].Text);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, CompareByCellText);
+
+        return [valueField];
     }
 }

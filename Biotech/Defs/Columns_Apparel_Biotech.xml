@@ -7,6 +7,9 @@
         <labelKey>Stat_Thing_Apparel_ValidLifestage</labelKey>
         <descriptionKey>Stat_Thing_Apparel_ValidLifestage_Desc</descriptionKey>
         <workerClass>Stats.Compat.Biotech.Apparel_ValidLifeStageColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsApparel</li>
+        </tags>
     </Stats.ColumnDef>
 
 </Defs>

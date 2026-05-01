@@ -1,3 +1,7 @@
-Assemblies/
+/*/Assemblies/
 .vs
+.dotnet
 obj/
+RuntimeOnly/
+Runtime Only/
+*.pdb

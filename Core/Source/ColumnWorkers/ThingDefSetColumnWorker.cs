@@ -1,37 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Stats.Widgets;
-using Verse;
+using Stats.ColumnWorkers.Cells;
+using Stats.Filters;
+using Stats.TableWorkers;
+using Stats.Widgets_Legacy;
 
-namespace Stats;
+namespace Stats.ColumnWorkers;
 
-public abstract class ThingDefSetColumnWorker<TObject, TValue> : DefSetColumnWorker<TObject, TValue> where TValue : ThingDef
+public abstract class ThingDefSetColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IThingDefSetCell
 {
-    protected ThingDefSetColumnWorker(ColumnDef columnDef, bool cached = true) : base(columnDef, cached)
+    public override ColumnType Type => ColumnType.String;
+
+    protected abstract IEnumerable<Verse.ThingDef?> GetValueFieldFilterOptions(TableWorker tableWorker);
+
+    private static readonly HashSet<Verse.ThingDef> _emptyThingDefHashSet = [];
+
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-    }
-    public override Widget? GetTableCellWidget(TObject @object)
-    {
-        var thingDefs = GetCachedValue(@object);
+        IEnumerable<NTMFilterOption<Verse.ThingDef?>> valueFieldFilterOptions = GetValueFieldFilterOptions(tableWorker)
+            .OrderBy(def => def?.label)
+            .Select<Verse.ThingDef?, NTMFilterOption<Verse.ThingDef?>>(
+                def => def == null ? new() : new(def, def.LabelCap, new ThingDefIcon(def))
+            );
+        Filter valueFieldFilter = new MTMFilter<Verse.ThingDef?>((int row) => this[row].Value ?? _emptyThingDefHashSet, valueFieldFilterOptions);
+        // TODO: Figure out how to efficiently compare cells so that cells with equal values will be grouped together.
+        int Compare(int row1, int row2) => row1.CompareTo(row2);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
 
-        if (thingDefs.Count == 0)
-        {
-            return null;
-        }
-
-        var icons = new List<Widget>(thingDefs.Count);
-
-        foreach (var thingDef in thingDefs.OrderBy(thingDef => thingDef.label))
-        {
-            var icon = new ThingIcon(thingDef).ToButtonGhostly(() => Draw.DefInfoDialog(thingDef), thingDef.LabelCap);
-
-            icons.Add(icon);
-        }
-
-        return new HorizontalContainer(icons, Globals.GUI.PadSm);
-    }
-    public override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords)
-    {
-        return Make.MTMThingDefFilter(GetCachedValue, tableRecords);
+        return [valueField];
     }
 }

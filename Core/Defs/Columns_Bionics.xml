@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Label</defName>
+        <label>label</label>
+        <description>The installed bionic or implant itself. Uses the item or hediff name instead of the surgery operation name when possible.</description>
+        <workerClass>Stats.Bionics.BionicLabelColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_BodyParts</defName>
+        <label>body part</label>
+        <description>The body part this operation installs into.</description>
+        <workerClass>Stats.Bionics.BionicBodyPartsColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Capacities</defName>
+        <label>capacities</label>
+        <description>The pawn capacities this bionic most directly affects.</description>
+        <workerClass>Stats.Bionics.BionicCapacitiesColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Efficiency</defName>
+        <label>efficiency</label>
+        <title>Eff</title>
+        <description>Raw installed-part efficiency. A natural body part is usually 1.00. Higher values mean a stronger replacement part, while lower values mean a weaker one.</description>
+        <workerClass>Stats.Bionics.BionicEfficiencyColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Effects</defName>
+        <label>effects</label>
+        <description>A compact summary of the effects this bionic applies. Only effects relevant to this row are shown.</description>
+        <workerClass>Stats.Bionics.BionicEffectsColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Consciousness</defName>
+        <label>consciousness</label>
+        <description>The practical part-based change this bionic applies to consciousness. Blank when the bionic does not affect it.</description>
+        <workerClass>Stats.Bionics.BionicConsciousnessColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Moving</defName>
+        <label>moving</label>
+        <description>The practical part-based change this bionic applies to moving. Blank when the bionic does not affect it.</description>
+        <workerClass>Stats.Bionics.BionicMovingColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Manipulation</defName>
+        <label>manipulation</label>
+        <description>The practical part-based change this bionic applies to manipulation. Blank when the bionic does not affect it.</description>
+        <workerClass>Stats.Bionics.BionicManipulationColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Talking</defName>
+        <label>talking</label>
+        <description>The practical part-based change this bionic applies to talking. Blank when the bionic does not affect it.</description>
+        <workerClass>Stats.Bionics.BionicTalkingColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Sight</defName>
+        <label>sight</label>
+        <description>The practical part-based change this bionic applies to sight. Blank when the bionic does not affect it.</description>
+        <workerClass>Stats.Bionics.BionicSightColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Hearing</defName>
+        <label>hearing</label>
+        <description>The practical part-based change this bionic applies to hearing. Blank when the bionic does not affect it.</description>
+        <workerClass>Stats.Bionics.BionicHearingColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Breathing</defName>
+        <label>breathing</label>
+        <description>The practical part-based change this bionic applies to breathing. Blank when the bionic does not affect it.</description>
+        <workerClass>Stats.Bionics.BionicBreathingColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_BloodFiltration</defName>
+        <label>blood filtration</label>
+        <description>The practical part-based change this bionic applies to blood filtration. Blank when the bionic does not affect it.</description>
+        <workerClass>Stats.Bionics.BionicBloodFiltrationColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_BloodPumping</defName>
+        <label>blood pumping</label>
+        <description>The practical part-based change this bionic applies to blood pumping. Blank when the bionic does not affect it.</description>
+        <workerClass>Stats.Bionics.BionicBloodPumpingColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Metabolism</defName>
+        <label>digestion</label>
+        <description>The practical part-based change this bionic applies to digestion. Blank when the bionic does not affect it.</description>
+        <workerClass>Stats.Bionics.BionicMetabolismColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Beauty</defName>
+        <label>beauty</label>
+        <description>The direct beauty offset this bionic applies. Blank when the bionic does not affect beauty.</description>
+        <workerClass>Stats.Bionics.BionicBeautyColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_Special</defName>
+        <label>special</label>
+        <description>Meaningful effects that do not fit a dedicated numeric effect column cleanly, such as immunities, abilities, or unusual modifiers.</description>
+        <workerClass>Stats.Bionics.BionicSpecialColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Bionic_ContentSource</defName>
+        <label>content source</label>
+        <description>The mod or DLC that provides this bionic.</description>
+        <workerClass>Stats.Bionics.BionicContentSourceColumnWorker</workerClass>
+        <tags>
+            <li>Bionic</li>
+        </tags>
+    </Stats.ColumnDef>
+
+</Defs>

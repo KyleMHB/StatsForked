@@ -1,22 +1,16 @@
-﻿using Verse;
+using Stats.TableWorkers.ThingDef;
 
 namespace Stats.Compat.Biotech;
 
-public sealed class LaborMechanoidsTableWorker : ThingTableWorker
+public sealed class LaborMechanoidsTableWorker(TableDef tableDef) : ThingDefTableWorker(tableDef)
 {
-    public LaborMechanoidsTableWorker(TableDef tableDef) : base(tableDef)
-    {
-    }
-    protected override bool IsValidThingDef(ThingDef thingDef)
+    protected override bool IsValidThingDef(Verse.ThingDef thingDef)
     {
         return thingDef is
         {
-            race:
-            {
-                IsMechanoid: true,
-                mechEnabledWorkTypes.Count: > 0
-            },
+            race.IsMechanoid: true,
             IsCorpse: false
-        };
+        }
+        && thingDef.race?.mechEnabledWorkTypes?.Count > 0;
     }
 }

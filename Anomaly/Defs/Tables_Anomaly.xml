@@ -4,9 +4,18 @@
 
     <Stats.TableDef>
         <defName>Entities</defName>
-        <label>Creatures / Entites</label>
+        <label>Creatures / Entities</label>
         <iconPath>Things/Pawn/Noctol/Noctol_east</iconPath>
-        <workerClass>Stats.Compat.Anomaly.EntitiesTableWorker</workerClass>
+        <workerClass>Stats.Compat.Anomaly.EntityDefTableWorker</workerClass>
+        <columnTags>
+            <li>Thing_IsPawn</li>
+            <li>Thing_HasMeat</li>
+            <li>Thing_HasSkin</li>
+            <li>Thing_HasArmor</li>
+            <li>Thing_ConsumesFood</li>
+            <li>Thing</li>
+            <li>Def</li>
+        </columnTags>
         <columns>
             <li>Thing_Label</li>
             <!-- Combat: Offense -->

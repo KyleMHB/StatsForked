@@ -1,39 +1,49 @@
-﻿using System.Collections.Generic;
-using Stats.Widgets;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Stats.ColumnWorkers;
+using Verse;
 
-namespace Stats;
+namespace Stats.TableWorkers;
 
 public abstract class TableWorker
 {
-    public TableDef TableDef { get; }
+    public TableDef Def { get; }
     internal abstract ObjectTable TableWidget { get; }
-    protected TableWorker(TableDef tableDef)
+
+    protected TableWorker(TableDef def)
     {
-        TableDef = tableDef;
+        Def = def;
     }
 }
 
 public abstract class TableWorker<TObject> : TableWorker
 {
-    private ObjectTable? _TableWidget;
-    // We don't want to create every table widget on the start of the game.
-    internal sealed override ObjectTable TableWidget => _TableWidget ??= MakeTableWidget();
-    protected abstract IEnumerable<TObject> Records { get; }
-    protected TableWorker(TableDef tableDef) : base(tableDef)
-    {
-    }
-    private ObjectTable MakeTableWidget()
-    {
-        var columnWorkers = new List<ColumnWorker<TObject>>(TableDef.columns.Count);
+    internal sealed override ObjectTable TableWidget => new ObjectTable<TObject>(this);
+    internal readonly List<ColumnDef> CompatibleColumns;
+    public abstract List<TObject> InitialObjects { get; }
 
-        foreach (var columnDef in TableDef.columns)
+    public abstract event Action<TObject> OnObjectAdded;
+    public abstract event Action<TObject> OnObjectRemoved;
+
+    protected TableWorker(TableDef def) : base(def)
+    {
+        List<ColumnDef> compatibleColumns = [];
+        List<ColumnDef> columnDefs = DefDatabase<ColumnDef>.AllDefsListForReading;
+        int columnDefsCount = columnDefs.Count;
+        for (int i = 0; i < columnDefsCount; i++)
         {
-            if (columnDef.Worker is ColumnWorker<TObject> columnWorker)
+            ColumnDef columnDef = columnDefs[i];
+            Type workerClass = columnDef.workerClass;
+            if (
+                typeof(ColumnWorker<TObject>).IsAssignableFrom(workerClass)
+                && columnDef.tags.Count != 0
+                && columnDef.tags.All(Def.columnTags.Contains)// Is table's column tags is superset of column's tags.
+            )
             {
-                columnWorkers.Add(columnWorker);
+                compatibleColumns.Add(columnDef);
             }
         }
-
-        return new ObjectTable<TObject>(columnWorkers, Records);
+        CompatibleColumns = compatibleColumns;
     }
 }

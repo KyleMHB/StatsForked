@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using RimWorld;
-using Stats.Widgets;
+using Stats.Utils.Widgets;
 using Verse;
 
 namespace Stats;
@@ -12,13 +12,13 @@ public class ColumnDef : Def
 {
     public string? labelKey;
     public string? descriptionKey;
-    public string Description => description;
     public ColumnTitleXmlNode? title;
-    public Widget Title => title?.ToWidget() ?? new Label(LabelCap);
+    public Widget TitleWidget => field ??= title?.ToWidget() ?? new Label(LabelCap);
 #pragma warning disable CS8618
     public Type workerClass;
-    public ColumnWorker Worker { get; private set; }
 #pragma warning restore CS8618
+    public List<string> tags = [];
+
     public override void ResolveReferences()
     {
         base.ResolveReferences();
@@ -32,85 +32,91 @@ public class ColumnDef : Def
         {
             description = descriptionKey.Translate();
         }
+    }
 
-        LongEventHandler.ExecuteWhenFinished(() =>
+    public override IEnumerable<string> ConfigErrors()
+    {
+        foreach (string item in base.ConfigErrors())
         {
-            Worker = (ColumnWorker)Activator.CreateInstance(workerClass, this);
-        });
+            yield return item;
+        }
+
+        if (tags.Count == 0)
+        {
+            yield return "no tags.";
+        }
     }
 }
 
 public sealed class ColumnTitleXmlNode
 {
-    private readonly List<Element> elements = [];
+    private readonly List<Element> _elements = [];
+
     public void LoadDataFromXmlCustom(XmlNode xmlRoot)
     {
-        foreach (var node in xmlRoot.ChildNodes)
+        foreach (object? node in xmlRoot.ChildNodes)
         {
             if (node is XmlText textNode)
             {
-                var text = textNode.InnerText.Trim();
-
+                string text = textNode.InnerText.Trim();
                 if (text.Length > 0)
                 {
-                    var element = new TextElement(text);
-
-                    elements.Add(element);
+                    TextElement element = new(text);
+                    _elements.Add(element);
                 }
             }
             else if (node is XmlElement elementNode)
             {
-                var element = new IconElement(elementNode);
-
-                elements.Add(element);
+                IconElement element = new(elementNode);
+                _elements.Add(element);
             }
         }
     }
-    public Widget ToWidget()
+
+    internal Widget ToWidget()
     {
-        if (elements.Count == 1)
+        if (_elements.Count == 1)
         {
-            return elements[0].ToWidget();
+            return _elements[0].ToWidget();
         }
 
-        return new HorizontalContainer(elements.Select(elem => elem.ToWidget()).ToList(), 2f);
+        return new HorContainer(_elements.Select(elem => elem.ToWidget()).ToArray(), 2f);
     }
 
     private abstract class Element
     {
-        public abstract Widget ToWidget();
+        internal abstract Widget ToWidget();
     }
 
     private sealed class TextElement : Element
     {
-        private readonly string Text;
+        private readonly string _text;
+
         public TextElement(string text)
         {
-            Text = text;
+            _text = text;
         }
-        public override Widget ToWidget()
+
+        internal override Widget ToWidget()
         {
-            return new Label(Text);
+            return new Label(_text);
         }
     }
 
     private sealed class IconElement : Element
     {
         public IconDef Def;
+
+#pragma warning disable CS8618
         public IconElement(XmlNode xmlRoot)
         {
             DirectXmlCrossRefLoader.RegisterObjectWantsCrossRef(this, nameof(Def), xmlRoot.Name);
         }
-        public override Widget ToWidget()
+#pragma warning restore CS8618
+
+        internal override Widget ToWidget()
         {
-            Widget widget = new InlineTexture(Def.Texture, Def.scale);
-
-            if (Def.color != null)
-            {
-                widget = widget.Color(Def.color.Value);
-            }
-
-            return widget;
+            return new InlineIcon(Def.Texture, Def.color, Def.scale);
         }
     }
 }

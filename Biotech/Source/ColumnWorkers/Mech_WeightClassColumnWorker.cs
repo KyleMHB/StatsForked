@@ -1,41 +1,35 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using Stats.Widgets;
+using Stats.ColumnWorkers;
+using Stats.ColumnWorkers.Cells;
+using Stats.TableWorkers;
 using Verse;
 
 namespace Stats.Compat.Biotech;
 
-public sealed class Mech_WeightClassColumnWorker : ColumnWorker<ThingAlike>
+public sealed class Mech_WeightClassColumnWorker(ColumnDef columnDef) : DefColumnWorker<DefBasedObject, DefCell>
 {
-    public Mech_WeightClassColumnWorker(ColumnDef columnDef) : base(columnDef, ColumnCellStyle.String)
-    {
-    }
-    public override Widget? GetTableCellWidget(ThingAlike thing)
-    {
-        var raceProps = thing.Def.race;
+    public override ColumnDef Def => columnDef;
 
-        if (raceProps == null)
+    protected override DefCell MakeCell(DefBasedObject @object)
+    {
+        if (@object.Def is ThingDef thingDef)
         {
-            return null;
+            MechWeightClassDef? mechWeightClass = thingDef.race?.mechWeightClass;
+            if (mechWeightClass != null)
+            {
+                return new DefCell(mechWeightClass);
+            }
         }
 
-        return new Label(raceProps.mechWeightClass.ToStringHuman().CapitalizeFirst());
+        return default;
     }
-    public override FilterWidget<ThingAlike> GetFilterWidget(IEnumerable<ThingAlike> tableRecords)
-    {
-        var filterOptions = tableRecords
-            .Select(thing => thing.Def.race?.mechWeightClass)
-            .Distinct()
-            .OrderBy(option => option)
-            .Select<MechWeightClass?, NTMFilterOption<MechWeightClass?>>(
-                mechWeightClass => mechWeightClass == null ? new() : new(mechWeightClass, ((MechWeightClass)mechWeightClass).ToStringHuman().CapitalizeFirst())
-            );
 
-        return Make.OTMFilter<ThingAlike, MechWeightClass?>(thing => thing.Def.race?.mechWeightClass, filterOptions);
-    }
-    public override int Compare(ThingAlike thing1, ThingAlike thing2)
+    protected override IEnumerable<Def?> GetValueFieldFilterOptions(TableWorker tableWorker)
     {
-        return Comparer<MechWeightClass?>.Default.Compare(thing1.Def.race?.mechWeightClass, thing2.Def.race?.mechWeightClass);
+        return ((IRefRecordsProvider<ThingDef>)tableWorker).Records
+            .Select(thingDef => (Def?)thingDef.race?.mechWeightClass)
+            .Distinct();
     }
 }

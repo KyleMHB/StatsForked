@@ -13,7 +13,6 @@
         <defName>Weapon_MeleeArmorPenetrationSharp</defName>
         <title>AP<Damage_Sharp/></title>
         <stat>MeleeWeapon_AverageArmorPenetration</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>,</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Left</workerClass>
     </Stats.ColumnDef>
@@ -22,7 +21,6 @@
         <defName>Weapon_MeleeArmorPenetrationBlunt</defName>
         <title>AP<Damage_Blunt/></title>
         <stat>MeleeWeapon_AverageArmorPenetration</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>,</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Right</workerClass>
     </Stats.ColumnDef>
@@ -31,22 +29,20 @@
         <defName>Weapon_MeleeArmorPenetrationFactor</defName>
         <title>AP %</title>
         <stat>MeleePenetrationFactor</stat>
-        <statValueExplanationType>FinalizePart</statValueExplanationType>
-        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_MeleeCounterParryBonus</defName>
         <title>Parry X</title>
         <stat>MeleeCounterParryBonus</stat>
-        <workerClass>Stats.Thing_StatColumnWorker</workerClass>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.Compat.CE.BinaryStatColumnDef">
         <defName>Weapon_MeleeDamageMin</defName>
         <title><MeleeWeaponDamage/>Min.</title>
         <stat>MeleeDamage</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>-</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Left</workerClass>
     </Stats.ColumnDef>
@@ -55,7 +51,6 @@
         <defName>Weapon_MeleeDamageMax</defName>
         <title><MeleeWeaponDamage/>Max.</title>
         <stat>MeleeDamage</stat>
-        <statValueExplanationType>Full</statValueExplanationType>
         <statValueSeparator>-</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Right</workerClass>
     </Stats.ColumnDef>
@@ -69,28 +64,28 @@
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_ShotSpread</defName>
         <stat>ShotSpread</stat>
-        <workerClass>Stats.Thing_GunStatColumnWorker</workerClass>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.GunStatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_SwayFactor</defName>
         <title>Sway</title>
         <stat>SwayFactor</stat>
-        <workerClass>Stats.Thing_GunStatColumnWorker</workerClass>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.GunStatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_Recoil</defName>
         <title>Recoil</title>
         <stat>Recoil</stat>
-        <workerClass>Stats.Thing_GunStatColumnWorker</workerClass>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.GunStatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_SightsEfficiency</defName>
         <title>Sights</title>
         <stat>SightsEfficiency</stat>
-        <workerClass>Stats.Thing_GunStatColumnWorker</workerClass>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.GunStatColumnWorker</workerClass>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">

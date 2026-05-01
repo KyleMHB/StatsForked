@@ -7,7 +7,7 @@ public class StatColumnDef : ColumnDef
 #pragma warning disable CS8618
     public StatDef stat;
 #pragma warning restore CS8618
-    public StatValueExplanationType statValueExplanationType;
+
     public override void ResolveReferences()
     {
         if (string.IsNullOrEmpty(label))
@@ -22,12 +22,4 @@ public class StatColumnDef : ColumnDef
 
         base.ResolveReferences();
     }
-}
-
-public enum StatValueExplanationType
-{
-    None,
-    Full,
-    Unfinalized,
-    FinalizePart,
 }

@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ModMetaData>
-    <packageId>Azzkiy.Stats</packageId>
-    <name>Stats</name>
-    <author>Azzkiy</author>
-    <url>https://github.com/AzzkiyOne/Stats</url>
-    <description>Satisfy your minmaxing needs!</description>
+    <packageId>KyleMHB.StatsForked</packageId>
+    <name>Stats Forked</name>
+    <author>kylohb</author>
+    <url>https://github.com/KyleMHB/Stats-Forked</url>
+    <description>A maintained fork of Stats for RimWorld 1.5 and 1.6, with inventory-aware filters, saved presets, bionics support, distance-based ranged DPS, and better handling for stuffable item variants.</description>
     <supportedVersions>
         <li>1.5</li>
+        <li>1.6</li>
     </supportedVersions>
+    <modDependencies>
+        <li>
+            <packageId>brrainz.harmony</packageId>
+            <displayName>Harmony</displayName>
+            <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+            <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+        </li>
+    </modDependencies>
 </ModMetaData>

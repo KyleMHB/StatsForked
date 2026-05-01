@@ -1,24 +1,23 @@
-﻿using CombatExtended;
-using RimWorld;
+using CombatExtended;
+using Stats.ColumnWorkers;
+using Stats.ColumnWorkers.Cells;
+using Stats.Utils.Extensions;
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_MagazineCapacityColumnWorker : NumberColumnWorker<ThingAlike>
+public sealed class Weapon_MagazineCapacityColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
 {
-    public Weapon_MagazineCapacityColumnWorker(ColumnDef columndef) : base(columndef)
-    {
-    }
-    protected override decimal GetValue(ThingAlike thing)
-    {
-        var thingDef = thing.Def.building?.turretGunDef ?? thing.Def;
-        var statRequest = StatRequest.For(thingDef, null);
-        var worker = CE_StatDefOf.MagazineCapacity.Worker;
+    public override ColumnDef Def => columnDef;
 
-        if (worker.ShouldShowFor(statRequest))
+    protected override NumberCell MakeCell(DefBasedObject @object)
+    {
+        if (@object.Def is not Verse.ThingDef thingDef)
         {
-            return worker.GetValue(statRequest).ToDecimal(0);
+            return default;
         }
 
-        return 0m;
+        Verse.ThingDef gunDef = thingDef.building?.turretGunDef ?? thingDef;
+        decimal value = gunDef.GetStatValuePerceived(CE_StatDefOf.MagazineCapacity, quality: @object.Quality).ToDecimal(0);
+        return value == 0m ? default : new NumberCell(value, "0");
     }
 }

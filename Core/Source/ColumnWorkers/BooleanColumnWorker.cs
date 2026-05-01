@@ -1,42 +1,115 @@
-﻿using System;
-using System.Collections.Generic;
-using Stats.Widgets;
+﻿using System.Collections.Generic;
+using Stats.ColumnWorkers.Cells;
+using System;
+using Stats.Filters;
+using Stats.TableWorkers;
+using Stats.Utils.Extensions;
+using UnityEngine;
+using Verse;
 
-namespace Stats;
+namespace Stats.ColumnWorkers;
+
+public abstract class BooleanColumnWorker<TObject, TCell> : ColumnWorker<TObject, TCell> where TCell : struct, IBooleanCell
+{
+    public override ColumnType Type => ColumnType.Boolean;
+
+    public override float GetWidth(List<int> rows)
+    {
+        return Verse.Text.LineHeight;
+    }
+
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
+    {
+        Filter valueFieldFilter = new BooleanFilter((int row) => this[row].Value);
+        int Compare(int row1, int row2) => this[row1].Value.CompareTo(this[row2]);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
+
+        return [valueField];
+    }
+}
 
 public abstract class BooleanColumnWorker<TObject> : ColumnWorker<TObject>
 {
-    private readonly Func<TObject, bool> GetCachedValue;
-    protected BooleanColumnWorker(ColumnDef columndef, bool cached = true) : base(columndef, ColumnCellStyle.Boolean)
-    {
-        GetCachedValue = GetValue;
+    public override ColumnType Type => ColumnType.Boolean;
+    public override bool IsRefreshable => false;
 
-        if (cached)
-        {
-            GetCachedValue = GetCachedValue.Memoized();
-        }
-    }
+    private readonly List<bool> _values = new(250);
+    private readonly HashSet<string> _getValueExceptionKeys = [];
+
     protected abstract bool GetValue(TObject @object);
-    public sealed override Widget? GetTableCellWidget(TObject @object)
-    {
-        var value = GetValue(@object);
 
-        if (value == false)
+    public override void DrawCell(Rect rect, int row)
+    {
+        BooleanCell.Draw(rect, _values[row]);
+    }
+
+    public override float GetWidth(List<int> rows)
+    {
+        return Verse.Text.LineHeight;
+    }
+
+    public override void NotifyRowAdded(List<TObject> rows)
+    {
+        int rowsCount = rows.Count;
+        for (int i = 0; i < rowsCount; i++)
         {
-            return null;
+            NotifyRowAdded(rows[i]);
+        }
+    }
+
+    public override void NotifyRowAdded(TObject row)
+    {
+        bool value;
+        try
+        {
+            value = GetValue(row);
+        }
+        catch (Exception exception)
+        {
+            LogGetValueException(row, exception);
+            value = default;
         }
 
-        return new SingleElementContainer(
-            new Icon(Verse.Widgets.CheckboxOnTex)
-                .PaddingRel(0.5f, 0f)
-        );
+        _values.Add(value);
     }
-    public sealed override FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> _)
+
+    public override void NotifyRowRemoved(int row)
     {
-        return Make.BooleanFilter(GetCachedValue);
+        _values.ReplaceWithLast(row);
     }
-    public sealed override int Compare(TObject object1, TObject object2)
+
+    public override bool RefreshCells()
     {
-        return GetCachedValue(object1).CompareTo(GetCachedValue(object2));
+        return false;
+    }
+
+    public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
+    {
+        Filter valueFieldFilter = new BooleanFilter((int row) => _values[row]);
+        int Compare(int row1, int row2) => _values[row1].CompareTo(_values[row2]);
+        CellField valueField = new(Def.TitleWidget, valueFieldFilter, Compare);
+
+        return [valueField];
+    }
+
+    private void LogGetValueException(TObject row, Exception exception)
+    {
+        string key = $"{GetType().FullName}:{exception.GetType().FullName}:{exception.Message}";
+        if (_getValueExceptionKeys.Add(key) == false)
+        {
+            return;
+        }
+
+        string rowText;
+        try
+        {
+            rowText = row?.ToString() ?? "<null>";
+        }
+        catch
+        {
+            rowText = "<unprintable>";
+        }
+
+        Log.Error($"Stats failed to create boolean cell for worker {GetType().FullName}, column \"{Def.defName}\", row {rowText}: {exception}");
     }
 }

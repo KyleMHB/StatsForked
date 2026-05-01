@@ -1,48 +1,158 @@
 ﻿using System.Collections.Generic;
-using Stats.Widgets;
+using Stats.ColumnWorkers.Cells;
+using System;
+using Stats.TableWorkers;
+using Stats.Utils.Extensions;
 using UnityEngine;
+using Verse;
 
-namespace Stats;
+namespace Stats.ColumnWorkers;
 
-// Column worker encapsulates a virtual property of a TObject (ThingAlike/GeneDef/etc).
-//
-// Column worker provides following abstractions:
-// - GetTableCellWidget: how to display values of the property.
-// - GetFilterWidget: what filter widget to use to filter by this property.
-// - Compare: how to compare two property values.
-
-public abstract class ColumnWorker
+public abstract class ColumnWorker<TObject>
 {
-    // Why is this not in ColumnDef?
-    //
-    // This part of a column representation is governed by column worker,
-    // because only column worker knows what type of data it encapsulates.
-    public ColumnCellStyle CellStyle { get; }
-    public ColumnDef ColumnDef { get; }
-    protected ColumnWorker(ColumnDef columnDef, ColumnCellStyle cellStyle)
-    {
-        ColumnDef = columnDef;
-        CellStyle = cellStyle;
-    }
+    public abstract ColumnDef Def { get; }
+    public abstract ColumnType Type { get; }
+    public abstract bool IsRefreshable { get; }
+    public virtual bool ShouldDrawCellsNow => Event.current.type == EventType.Repaint;
+
+    public abstract void DrawCell(Rect rect, int row);
+
+    public abstract float GetWidth(List<int> rows);
+
+    public abstract void NotifyRowAdded(List<TObject> rows);
+
+    public abstract void NotifyRowAdded(TObject row);
+
+    public abstract void NotifyRowRemoved(int row);
+
+    public abstract bool RefreshCells();
+
+    public abstract ICollection<CellField> GetCellFields(TableWorker tableWorker);
 }
 
-public abstract class ColumnWorker<TObject> : ColumnWorker
+public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where TCell : struct, ICell
 {
-    protected ColumnWorker(ColumnDef columnDef, ColumnCellStyle cellStyle) : base(columnDef, cellStyle)
-    {
-    }
-    // "Widget?" is so the table can decide itself how to store/draw empty cells.
-    public abstract Widget? GetTableCellWidget(TObject @object);
-    // We pass IEnumerable<TObject> to this method, mainly so that if a column worker returns
-    // one/many-to-many filter widget, it can generate a superset of all possible distinct
-    // options for it.
-    public abstract FilterWidget<TObject> GetFilterWidget(IEnumerable<TObject> tableRecords);
-    public abstract int Compare(TObject object1, TObject object2);
-}
+    public override bool IsRefreshable => _refreshableCellsCount > 0;
 
-public enum ColumnCellStyle
-{
-    Number = TextAnchor.LowerRight,
-    String = TextAnchor.LowerLeft,
-    Boolean = TextAnchor.LowerCenter,
+    private readonly List<TCell> _cells = new(250);
+    private readonly HashSet<string> _makeCellExceptionKeys = [];
+    private int _refreshableCellsCount;
+
+    protected TCell this[int index] => _cells[index];
+
+    protected abstract TCell MakeCell(TObject @object);
+
+    public override void DrawCell(Rect rect, int row)
+    {
+        _cells[row].Draw(rect);
+    }
+
+    public override float GetWidth(List<int> rows)
+    {
+        float width = 0f;
+        int rowsCount = rows.Count;
+        for (int i = 0; i < rowsCount; i++)
+        {
+            int rowIndex = rows[i];
+            float cellWidth = _cells[rowIndex].Width;
+            if (width < cellWidth)
+            {
+                width = cellWidth;
+            }
+        }
+
+        return width;
+    }
+
+    public override void NotifyRowAdded(List<TObject> rows)
+    {
+        int rowsCount = rows.Count;
+        for (int i = 0; i < rowsCount; i++)
+        {
+            NotifyRowAdded(rows[i]);
+        }
+    }
+
+    public override void NotifyRowAdded(TObject row)
+    {
+        TCell cell;
+        try
+        {
+            cell = MakeCell(row);
+        }
+        catch (Exception exception)
+        {
+            LogMakeCellException(row, exception);
+            cell = default;
+        }
+
+        _cells.Add(cell);
+        if (cell.IsRefreshable)
+        {
+            _refreshableCellsCount++;
+        }
+    }
+
+    public override void NotifyRowRemoved(int row)
+    {
+        if (_cells[row].IsRefreshable)
+        {
+            _refreshableCellsCount--;
+        }
+        _cells.ReplaceWithLast(row);
+    }
+
+    protected virtual TCell RefreshCell(TCell cell, out bool wasStale)
+    {
+        wasStale = false;
+        return cell;
+    }
+
+    public override bool RefreshCells()
+    {
+        if (_refreshableCellsCount == 0)
+        {
+            return false;
+        }
+
+        bool anyCellChanged = false;
+        List<TCell> cells = _cells;
+        int cellsCount = cells.Count;
+        for (int i = 0; i < cellsCount; i++)
+        {
+            TCell originalCell = cells[i];
+            if (originalCell.IsRefreshable)
+            {
+                TCell possiblyNewCell = RefreshCell(originalCell, out bool wasStale);
+                if (wasStale)
+                {
+                    cells[i] = possiblyNewCell;
+                    anyCellChanged = true;
+                }
+            }
+        }
+
+        return anyCellChanged;
+    }
+
+    private void LogMakeCellException(TObject row, Exception exception)
+    {
+        string key = $"{GetType().FullName}:{exception.GetType().FullName}:{exception.Message}";
+        if (_makeCellExceptionKeys.Add(key) == false)
+        {
+            return;
+        }
+
+        string rowText;
+        try
+        {
+            rowText = row?.ToString() ?? "<null>";
+        }
+        catch
+        {
+            rowText = "<unprintable>";
+        }
+
+        Log.Error($"Stats failed to create cell for worker {GetType().FullName}, column \"{Def.defName}\", row {rowText}: {exception}");
+    }
 }
