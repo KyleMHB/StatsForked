@@ -32,7 +32,6 @@
         <ItemGroup>
             <RootRuntimeFiles Include="$(RepoRoot)LoadFolders.xml" Condition="Exists('$(RepoRoot)LoadFolders.xml')" />
             <AboutRuntimeFiles Include="$(RepoRoot)About\**\*.*" Condition="Exists('$(RepoRoot)About')" />
-            <LegacyRuntimeFiles Include="$(RepoRoot)1.5\**\*.*" Condition="Exists('$(RepoRoot)1.5')" />
 
             <CoreAssemblyFiles Include="$(RepoRoot)Core\Assemblies\*.dll" Condition="Exists('$(RepoRoot)Core\Assemblies')" />
             <CoreDefFiles Include="$(RepoRoot)Core\Defs\**\*.*" Condition="Exists('$(RepoRoot)Core\Defs')" />
@@ -72,11 +71,6 @@
             DestinationFiles="@(AboutRuntimeFiles->'$(RuntimeOnlyRoot)\About\%(RecursiveDir)%(Filename)%(Extension)')"
             SkipUnchangedFiles="true"
             Condition="'@(AboutRuntimeFiles)' != ''" />
-        <Copy
-            SourceFiles="@(LegacyRuntimeFiles)"
-            DestinationFiles="@(LegacyRuntimeFiles->'$(RuntimeOnlyRoot)\1.5\%(RecursiveDir)%(Filename)%(Extension)')"
-            SkipUnchangedFiles="true"
-            Condition="'@(LegacyRuntimeFiles)' != ''" />
 
         <Copy
             SourceFiles="@(CoreAssemblyFiles)"

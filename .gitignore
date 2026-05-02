@@ -1,7 +1,13 @@
 /*/Assemblies/
-.vs
-.dotnet
+.vs/
+.dotnet/
+bin/
 obj/
 RuntimeOnly/
 Runtime Only/
 *.pdb
+*.user
+*.suo
+*.cache
+*.tmp
+*.bak
