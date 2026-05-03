@@ -1,5 +1,5 @@
 [h1]Description of Mod[/h1]
-[i]A maintained fork of Stats for RimWorld 1.5 and 1.6, with inventory-aware filters, saved presets, bionics support, distance-based ranged DPS, and better handling for stuffable item variants.[/i]
+[i]A maintained fork of Stats for RimWorld 1.6, with inventory-aware filters, saved presets, bionics support, distance-based ranged DPS, and better handling for stuffable item variants.[/i]
 
 Stats Forked keeps the original sortable stats-table framework while updating it for modern RimWorld content and larger modlists.
 
@@ -19,7 +19,7 @@ Open the Stats table from RimWorld's in-game main tab, choose a table, sort the 
 
 [h1]Compatibilities[/h1]
 [list]
-[*][b]Supported RimWorld versions:[/b] 1.5 and 1.6.
+[*][b]Supported RimWorld versions:[/b] 1.6.
 [*][b]Required mod:[/b] Harmony.
 [*][b]Optional content:[/b] Biotech, Anomaly, Odyssey, and Combat Extended modules load when present.
 [*][b]Load order:[/b] Load Harmony before Stats Forked.

@@ -1,6 +1,6 @@
 # Stats Forked
 
-Stats Forked is a maintained fork of [Stats](https://github.com/AzzkiyOne/Stats) for RimWorld 1.5 and 1.6. It keeps the original sortable stats-table framework while adding modern compatibility modules, inventory-aware filtering, saved presets, bionics comparison, distance-based ranged DPS, and better handling for stuffable item variants.
+Stats Forked is a maintained fork of [Stats](https://github.com/AzzkiyOne/Stats) for RimWorld 1.6. It keeps the original sortable stats-table framework while adding modern compatibility modules, inventory-aware filtering, saved presets, bionics comparison, distance-based ranged DPS, and better handling for stuffable item variants.
 
 The fork exists to keep the Stats table framework usable with current RimWorld content and larger modlists while preserving the original mod's data-driven approach.
 
@@ -54,7 +54,6 @@ Stats Forked stores table presets in the mod settings data managed by RimWorld. 
 
 Supported RimWorld versions:
 
-- RimWorld 1.5
 - RimWorld 1.6
 
 Optional compatibility content loads when these expansions or mods are active:

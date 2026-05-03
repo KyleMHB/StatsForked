@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-05-03
+
+### Changed
+
+- Updated README and Steam Workshop description support text to state that Stats Forked supports RimWorld 1.6 only.
+- Clarified the project history now that RimWorld 1.5 support is no longer maintained.
+
 ## 2026-05-02
 
 ### Added
@@ -47,4 +54,4 @@
 
 - Added shared MSBuild configuration in `Directory.Build.props`.
 - Added Odyssey, CE, Biotech, Anomaly, and Core projects to the solution/build layout.
-- Preserved tracked legacy RimWorld 1.5 assemblies and the tracked Combat Extended reference DLL needed by the project.
+- Preserved the tracked Combat Extended reference DLL needed by the project.
