@@ -2,6 +2,10 @@
 
 ## 2026-05-03
 
+### Added
+
+- Added completed Odyssey gameplay table support for books, fish, gravship systems, orbital infrastructure, unique weapons, and fishing outcomes.
+
 ### Changed
 
 - Updated README and Steam Workshop description support text to state that Stats Forked supports RimWorld 1.6 only.

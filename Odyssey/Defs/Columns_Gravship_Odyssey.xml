@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef>
+        <defName>Odyssey_ThingDescription</defName>
+        <label>description</label>
+        <title>Desc</title>
+        <workerClass>Stats.Compat.Odyssey.OdysseyThingDescriptionColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Odyssey_WorkToBuild</defName>
+        <label>work to build</label>
+        <title>Work</title>
+        <stat>WorkToBuild</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsBuilding</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Gravship_ComponentType</defName>
+        <label>component type</label>
+        <title>Type</title>
+        <workerClass>Stats.Compat.Odyssey.GravshipComponentTypeColumnWorker</workerClass>
+        <tags>
+            <li>Gravship</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Gravship_Range</defName>
+        <label>gravship range</label>
+        <title>Range</title>
+        <workerClass>Stats.Compat.Odyssey.GravshipRangeColumnWorker</workerClass>
+        <tags>
+            <li>Gravship</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Gravship_SubstructureSupport</defName>
+        <label>substructure support</label>
+        <title>Support</title>
+        <workerClass>Stats.Compat.Odyssey.GravshipSubstructureSupportColumnWorker</workerClass>
+        <tags>
+            <li>Gravship</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Gravship_FuelSavings</defName>
+        <label>fuel savings</label>
+        <title>Fuel Save</title>
+        <workerClass>Stats.Compat.Odyssey.GravshipFuelSavingsColumnWorker</workerClass>
+        <tags>
+            <li>Gravship</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Gravship_MaxSimultaneous</defName>
+        <label>maximum simultaneous</label>
+        <title>Max</title>
+        <workerClass>Stats.Compat.Odyssey.GravshipMaxSimultaneousColumnWorker</workerClass>
+        <tags>
+            <li>Gravship</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Gravship_MaxDistance</defName>
+        <label>maximum distance</label>
+        <title>Distance</title>
+        <workerClass>Stats.Compat.Odyssey.GravshipMaxDistanceColumnWorker</workerClass>
+        <tags>
+            <li>Gravship</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Gravship_DirectionInfluence</defName>
+        <label>direction influence</label>
+        <title>Direction</title>
+        <workerClass>Stats.Compat.Odyssey.GravshipDirectionInfluenceColumnWorker</workerClass>
+        <tags>
+            <li>Gravship</li>
+        </tags>
+    </Stats.ColumnDef>
+
+</Defs>

@@ -11,7 +11,7 @@ Stats Forked keeps the original sortable stats-table framework while updating it
 [*][b]Stuffable item variants[/b] so material-specific versions can be compared.
 [*][b]Bionics comparison[/b] with body part, capacity, efficiency, special effect, and capacity change columns.
 [*][b]Distance-based ranged DPS[/b] for close, short, medium, and long range weapon comparison.
-[*][b]Compatibility modules[/b] for Biotech, Anomaly, Odyssey, and Combat Extended.
+[*][b]Compatibility modules[/b] for Biotech, Anomaly, Odyssey, and Combat Extended, including Odyssey gameplay tables for books, fish, gravship systems, orbital infrastructure, unique weapons, and fishing outcomes.
 [/list]
 
 [h1]How to Use[/h1]
@@ -21,7 +21,7 @@ Open the Stats table from RimWorld's in-game main tab, choose a table, sort the 
 [list]
 [*][b]Supported RimWorld versions:[/b] 1.6.
 [*][b]Required mod:[/b] Harmony.
-[*][b]Optional content:[/b] Biotech, Anomaly, Odyssey, and Combat Extended modules load when present.
+[*][b]Optional content:[/b] Biotech, Anomaly, Odyssey, and Combat Extended modules load when present. Odyssey support includes books, fish, gravship systems, orbital infrastructure, unique weapons, and fishing outcomes.
 [*][b]Load order:[/b] Load Harmony before Stats Forked.
 [/list]
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef>
+        <defName>Book_Outcomes</defName>
+        <label>book outcomes</label>
+        <title>Outcomes</title>
+        <workerClass>Stats.Compat.Odyssey.BookOutcomesColumnWorker</workerClass>
+        <tags>
+            <li>Book</li>
+        </tags>
+    </Stats.ColumnDef>
+
+</Defs>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef>
+        <defName>UniqueWeapon_Traits</defName>
+        <label>unique traits</label>
+        <title>Traits</title>
+        <workerClass>Stats.Compat.Odyssey.UniqueWeaponTraitsColumnWorker</workerClass>
+        <tags>
+            <li>UniqueWeapon</li>
+        </tags>
+    </Stats.ColumnDef>
+
+</Defs>

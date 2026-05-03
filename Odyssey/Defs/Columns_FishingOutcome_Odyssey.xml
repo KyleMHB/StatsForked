@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef>
+        <defName>FishingOutcome_Label</defName>
+        <label>outcome</label>
+        <workerClass>Stats.Compat.Odyssey.FishingOutcomeLabelColumnWorker</workerClass>
+        <tags>
+            <li>FishingOutcome</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>FishingOutcome_FishType</defName>
+        <label>fish</label>
+        <workerClass>Stats.Compat.Odyssey.FishingOutcomeFishTypeColumnWorker</workerClass>
+        <tags>
+            <li>FishingOutcome</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>FishingOutcome_Letter</defName>
+        <label>letter</label>
+        <workerClass>Stats.Compat.Odyssey.FishingOutcomeLetterColumnWorker</workerClass>
+        <tags>
+            <li>FishingOutcome</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>FishingOutcome_Damage</defName>
+        <label>damage</label>
+        <workerClass>Stats.Compat.Odyssey.FishingOutcomeDamageColumnWorker</workerClass>
+        <tags>
+            <li>FishingOutcome</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>FishingOutcome_Hediff</defName>
+        <label>hediff</label>
+        <workerClass>Stats.Compat.Odyssey.FishingOutcomeHediffColumnWorker</workerClass>
+        <tags>
+            <li>FishingOutcome</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>FishingOutcome_Severity</defName>
+        <label>severity</label>
+        <workerClass>Stats.Compat.Odyssey.FishingOutcomeSeverityColumnWorker</workerClass>
+        <tags>
+            <li>FishingOutcome</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>FishingOutcome_ContentSource</defName>
+        <labelKey>Stat_Source_Label</labelKey>
+        <workerClass>Stats.Compat.Odyssey.FishingOutcomeContentSourceColumnWorker</workerClass>
+        <tags>
+            <li>FishingOutcome</li>
+        </tags>
+    </Stats.ColumnDef>
+
+</Defs>

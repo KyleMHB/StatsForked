@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef>
+        <defName>OrbitalInfrastructure_Function</defName>
+        <label>function</label>
+        <workerClass>Stats.Compat.Odyssey.OrbitalInfrastructureFunctionColumnWorker</workerClass>
+        <tags>
+            <li>OrbitalInfrastructure</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>OrbitalInfrastructure_LowPowerFactor</defName>
+        <label>low power factor</label>
+        <title>Low Power</title>
+        <workerClass>Stats.Compat.Odyssey.OrbitalInfrastructureLowPowerFactorColumnWorker</workerClass>
+        <tags>
+            <li>OrbitalInfrastructure</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>OrbitalInfrastructure_AirPerSecond</defName>
+        <label>air per second per hundred cells</label>
+        <title>Air/s</title>
+        <workerClass>Stats.Compat.Odyssey.OrbitalInfrastructureAirPerSecondColumnWorker</workerClass>
+        <tags>
+            <li>OrbitalInfrastructure</li>
+        </tags>
+    </Stats.ColumnDef>
+
+</Defs>

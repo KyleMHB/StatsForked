@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Fish_Nutrition</defName>
+        <label>nutrition</label>
+        <stat>Nutrition</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Fish</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef Class="Stats.StatColumnDef">
+        <defName>Fish_FoodPoisonChance</defName>
+        <label>food poisoning chance</label>
+        <title>Food Poison</title>
+        <stat>FoodPoisonChanceFixedHuman</stat>
+        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Fish</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Fish_Categories</defName>
+        <label>categories</label>
+        <workerClass>Stats.Compat.Odyssey.FishCategoriesColumnWorker</workerClass>
+        <tags>
+            <li>Fish</li>
+        </tags>
+    </Stats.ColumnDef>
+
+</Defs>

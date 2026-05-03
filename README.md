@@ -13,7 +13,7 @@ The fork exists to keep the Stats table framework usable with current RimWorld c
 - **Bionics comparison table** covering affected body parts, capacities, efficiency, special effects, and capacity changes.
 - **Distance-based ranged DPS** columns for close, short, medium, and long range weapon comparison.
 - **Quality-aware stat handling** and default-stuff stat resolution for more useful apparel and equipment data.
-- **Compatibility modules** for Biotech, Anomaly, Odyssey, and Combat Extended where those mods or expansions are active.
+- **Compatibility modules** for Biotech, Anomaly, Odyssey, and Combat Extended where those mods or expansions are active, including Odyssey gameplay tables for books, fish, gravship systems, orbital infrastructure, unique weapons, and fishing outcomes.
 - **Runtime packaging on build** into `Runtime Only/Stats Forked`.
 
 ## Installation
@@ -43,6 +43,7 @@ Useful workflows include:
 - Save table presets for repeated comparisons.
 - Toggle variants for stuffable items when you need material-specific stat values.
 - Compare bionics by affected body part, capacity impact, efficiency, and special effects.
+- Review Odyssey books, fish, gravship systems, orbital infrastructure, unique weapons, and fishing outcomes when Odyssey is active.
 
 ## Configuration
 
@@ -60,7 +61,7 @@ Optional compatibility content loads when these expansions or mods are active:
 
 - Biotech
 - Anomaly
-- Odyssey
+- Odyssey, including books, fish, gravship systems, orbital infrastructure, unique weapons, and fishing outcomes
 - Combat Extended
 
 ## Building from Source

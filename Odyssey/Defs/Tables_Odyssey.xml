@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Defs>
+
+    <Stats.TableDef>
+        <defName>OdysseyBooks</defName>
+        <label>Odyssey / Books</label>
+        <iconPath>Things/Item/Resource/Book/Book</iconPath>
+        <workerClass>Stats.Compat.Odyssey.BookTableWorker</workerClass>
+        <columnTags>
+            <li>Thing</li>
+            <li>Def</li>
+            <li>Book</li>
+        </columnTags>
+        <columns>
+            <li>Thing_Label</li>
+            <li>Odyssey_ThingDescription</li>
+            <li>Thing_MarketValue</li>
+            <li>Thing_Mass</li>
+            <li>Book_Outcomes</li>
+            <li>Thing_ContentSource</li>
+        </columns>
+    </Stats.TableDef>
+
+    <Stats.TableDef>
+        <defName>OdysseyFish</defName>
+        <label>Odyssey / Fish</label>
+        <iconPath>Things/Item/Resource/Meat/Fish_Meat</iconPath>
+        <workerClass>Stats.Compat.Odyssey.FishTableWorker</workerClass>
+        <columnTags>
+            <li>Thing</li>
+            <li>Def</li>
+            <li>Fish</li>
+        </columnTags>
+        <columns>
+            <li>Thing_Label</li>
+            <li>Odyssey_ThingDescription</li>
+            <li>Fish_Nutrition</li>
+            <li>Thing_MarketValue</li>
+            <li>Thing_Mass</li>
+            <li>Fish_FoodPoisonChance</li>
+            <li>Thing_Flammability</li>
+            <li>Fish_Categories</li>
+            <li>Thing_ContentSource</li>
+        </columns>
+    </Stats.TableDef>
+
+    <Stats.TableDef>
+        <defName>OdysseyGravshipSystems</defName>
+        <label>Odyssey / Gravship Systems</label>
+        <iconPath>Things/Building/GravEngine/GravEngine</iconPath>
+        <workerClass>Stats.Compat.Odyssey.GravshipSystemTableWorker</workerClass>
+        <columnTags>
+            <li>Thing</li>
+            <li>Def</li>
+            <li>Thing_IsBuilding</li>
+            <li>Thing_IsPowerConsumer</li>
+            <li>Thing_IsPowerGenerator</li>
+            <li>Thing_IsRefuelable</li>
+            <li>Gravship</li>
+        </columnTags>
+        <columns>
+            <li>Thing_Label</li>
+            <li>Odyssey_ThingDescription</li>
+            <li>Gravship_ComponentType</li>
+            <li>Gravship_Range</li>
+            <li>Gravship_SubstructureSupport</li>
+            <li>Gravship_FuelSavings</li>
+            <li>Gravship_MaxSimultaneous</li>
+            <li>Gravship_MaxDistance</li>
+            <li>Gravship_DirectionInfluence</li>
+            <li>Building_PowerOutput</li>
+            <li>Building_PowerConsumption</li>
+            <li>Building_FuelCapacity</li>
+            <li>Building_Size</li>
+            <li>Thing_Mass</li>
+            <li>Odyssey_WorkToBuild</li>
+            <li>Thing_MarketValue</li>
+            <li>Thing_ContentSource</li>
+        </columns>
+    </Stats.TableDef>
+
+    <Stats.TableDef>
+        <defName>OdysseyOrbitalInfrastructure</defName>
+        <label>Odyssey / Orbital Infrastructure</label>
+        <iconPath>Things/Building/OrbitalScanner/OrbitalScanner</iconPath>
+        <workerClass>Stats.Compat.Odyssey.OrbitalInfrastructureTableWorker</workerClass>
+        <columnTags>
+            <li>Thing</li>
+            <li>Def</li>
+            <li>Thing_IsBuilding</li>
+            <li>Thing_IsPowerConsumer</li>
+            <li>OrbitalInfrastructure</li>
+        </columnTags>
+        <columns>
+            <li>Thing_Label</li>
+            <li>Odyssey_ThingDescription</li>
+            <li>OrbitalInfrastructure_Function</li>
+            <li>Building_PowerConsumption</li>
+            <li>OrbitalInfrastructure_LowPowerFactor</li>
+            <li>OrbitalInfrastructure_AirPerSecond</li>
+            <li>Building_Size</li>
+            <li>Odyssey_WorkToBuild</li>
+            <li>Thing_MarketValue</li>
+            <li>Thing_ContentSource</li>
+        </columns>
+    </Stats.TableDef>
+
+    <Stats.TableDef>
+        <defName>OdysseyUniqueWeapons</defName>
+        <label>Odyssey / Unique Weapons</label>
+        <iconPath>Things/Item/Equipment/WeaponRanged/UniqueWeapons/Lightstorm</iconPath>
+        <workerClass>Stats.Compat.Odyssey.UniqueWeaponTableWorker</workerClass>
+        <columnTags>
+            <li>Thing</li>
+            <li>Def</li>
+            <li>Thing_IsRangedWeapon</li>
+            <li>Thing_IsMeleeWeapon</li>
+            <li>UniqueWeapon</li>
+        </columnTags>
+        <columns>
+            <li>Thing_Label</li>
+            <li>Odyssey_ThingDescription</li>
+            <li>UniqueWeapon_Traits</li>
+            <li>Weapon_ProjectileDamage</li>
+            <li>Weapon_Range</li>
+            <li>Weapon_RangedCooldown</li>
+            <li>Weapon_MeleeDPS</li>
+            <li>Weapon_MeleeArmorPenetration</li>
+            <li>Thing_EquippedStatOffsets</li>
+            <li>Thing_Mass</li>
+            <li>Thing_MarketValue</li>
+            <li>Thing_ContentSource</li>
+        </columns>
+    </Stats.TableDef>
+
+    <Stats.TableDef>
+        <defName>OdysseyNegativeFishingOutcomes</defName>
+        <label>Odyssey / Fishing Outcomes</label>
+        <iconPath>Things/Item/Resource/Meat/Fish_Meat</iconPath>
+        <workerClass>Stats.Compat.Odyssey.NegativeFishingOutcomeTableWorker</workerClass>
+        <columnTags>
+            <li>FishingOutcome</li>
+        </columnTags>
+        <columns>
+            <li>FishingOutcome_Label</li>
+            <li>FishingOutcome_FishType</li>
+            <li>FishingOutcome_Letter</li>
+            <li>FishingOutcome_Damage</li>
+            <li>FishingOutcome_Hediff</li>
+            <li>FishingOutcome_Severity</li>
+            <li>FishingOutcome_ContentSource</li>
+        </columns>
+    </Stats.TableDef>
+
+</Defs>
