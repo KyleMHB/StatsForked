@@ -1,90 +1,120 @@
-[Subscribe to the mod on Steam!](https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439)
-
 # Stats Forked
 
-*A maintained fork of Stats for RimWorld 1.5 and 1.6, with inventory-aware filters, saved presets, bionics support, distance-based ranged DPS, and better handling for stuffable item variants.*
+Stats Forked is a maintained fork of [Stats](https://github.com/AzzkiyOne/Stats) for RimWorld 1.5 and 1.6. It keeps the original sortable stats-table framework while adding modern compatibility modules, inventory-aware filtering, saved presets, bionics comparison, distance-based ranged DPS, and better handling for stuffable item variants.
 
-Stats Forked is a declarative stats-table framework mod for RimWorld that lets you compare game content in sortable, filterable tables.
+The fork exists to keep the Stats table framework usable with current RimWorld content and larger modlists while preserving the original mod's data-driven approach.
 
-You can use it to compare things like:
+## Features
 
-- weapons
-- apparel
-- animals
-- plants
-- beds
-- buildings
-- turrets
-- mech-related content
-- Biotech-compatible content
+- **Sortable stats tables** for weapons, apparel, animals, plants, beds, buildings, turrets, mechs, bionics, and general stats.
+- **Inventory-aware filters** for items owned by the colony and items visible on the current player map.
+- **Saved table presets** for restoring filter states, visible columns, and variant display mode.
+- **Stuffable item variants** so material-specific versions can be compared when a table supports variants.
+- **Bionics comparison table** covering affected body parts, capacities, efficiency, special effects, and capacity changes.
+- **Distance-based ranged DPS** columns for close, short, medium, and long range weapon comparison.
+- **Quality-aware stat handling** and default-stuff stat resolution for more useful apparel and equipment data.
+- **Compatibility modules** for Biotech, Anomaly, Odyssey, and Combat Extended where those mods or expansions are active.
+- **Runtime packaging on build** into `Runtime Only/Stats Forked`.
 
-The goal is simple: make it easier to inspect game data, compare options, and answer min-maxing questions quickly.
+## Installation
 
-## What This Fork Adds
+### Steam Workshop
 
-This fork keeps the original Stats framework intact while extending it with several practical features for modern playthroughs and larger modlists.
+Subscribe on Steam:
 
-This fork adds:
+- [Stats Forked Steam Workshop page](https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439)
 
-- inventory-aware columns and filters such as whether an item is owned by the colony
-- map-visibility checks so you can filter for things that currently appear on the map
-- saved table presets for restoring filter and column setups
-- a bionics table for comparing implants and prosthetics
-- distance-based ranged DPS columns for close, short, medium, and long range
-- a variants toggle for stuffable items so you can switch between base-item view and material variants
-- support for built-in tables and compatibility patches that can pick up modded content using standard RimWorld defs
-- UI fixes, cleanup, and ongoing maintenance
+Enable **Harmony** and **Stats Forked** in RimWorld's mod list. Harmony is required.
 
-## Why This Fork Exists
+### Manual Installation
 
-This fork exists to keep Stats usable, actively maintained, and more convenient for real in-game decision making.
+1. Download or clone this repository.
+2. Place the `Stats Forked` mod folder in your RimWorld `Mods` directory.
+3. Enable **Harmony** and **Stats Forked** in the RimWorld mod list.
 
-The original mod already provided a strong table framework. This fork focuses on:
+## Usage
 
-- better usability
-- more practical filtering
-- more comparison data for weapons and gear
-- support for newer content and workflows
-- general fixes and cleanup
+Open the Stats table from the in-game main tab. Choose a table, sort by the columns you care about, and use filters to narrow the displayed defs.
 
-## Important Notes
+Useful workflows include:
 
-This is still the same core Stats-style table framework, not a redesign into a different mod.
+- Compare ranged weapons by accuracy, damage, warmup, cooldown, and DPS at specific distance bands.
+- Filter thing-based tables to colony-owned or currently visible items.
+- Save table presets for repeated comparisons.
+- Toggle variants for stuffable items when you need material-specific stat values.
+- Compare bionics by affected body part, capacity impact, efficiency, and special effects.
 
-The fork focuses on making the existing system more useful and easier to work with, especially when comparing:
+## Configuration
 
-- stuffable items
-- live inventory state
-- bionics
-- ranged weapons across distance bands
+Stats Forked stores table presets in the mod settings data managed by RimWorld. Presets can include:
 
-## Fork History / Credits
+- active filters
+- visible columns
+- variant display mode
 
-This is a fork of [Stats](https://github.com/AzzkiyOne/Stats).
-
-Original project by AzzkiyOne:
-
-- [Stats](https://github.com/AzzkiyOne/Stats)
-
-Current fork maintained by kylohb:
-
-- [Stats Forked](https://github.com/KyleMHB/StatsFork)
-
-## Issues / Bug Reports
-
-If you hit a bug or want to report a compatibility problem, please use GitHub:
-
-- [Issue Tracker](https://github.com/KyleMHB/StatsFork/issues)
-
-## Requirements
-
-- Harmony
-
-## Supported Versions
+Supported RimWorld versions:
 
 - RimWorld 1.5
 - RimWorld 1.6
 
+Optional compatibility content loads when these expansions or mods are active:
+
+- Biotech
+- Anomaly
+- Odyssey
+- Combat Extended
+
+## Building from Source
+
+Prerequisites:
+
+- .NET SDK compatible with the project build
+- RimWorld reference packages resolved through the project package references
+
+Build the full solution:
+
+```powershell
+dotnet build Stats.sln -c Debug -m:1 /p:UseSharedCompilation=false
+```
+
+The shared build configuration is in `Directory.Build.props`. Build output and runtime packaging are generated under ignored build folders, including `Runtime Only/Stats Forked`.
+
+## Testing and Validation
+
+The primary validation workflow is a solution build:
+
+```powershell
+dotnet build Stats.sln -c Debug -m:1 /p:UseSharedCompilation=false
+```
+
+This checks that the Core, Biotech, Anomaly, CE, and Odyssey projects compile against their configured references.
+
+## Contributing & Forking Policy
+
+> Contributions, issues, and feature requests are welcome.
+>
+> **Forking Policy:** If your fork primarily consists of bug fixes or feature additions that align with the core vision of this project, I reserve the right to request that your changes be submitted as a Pull Request to this existing codebase rather than being published as a completely separate standalone release, package, listing, or distribution.
+
+## Links
+
+- **Steam Workshop:** [Stats Forked](https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439)
+- **Source Repository:** [KyleMHB/Stats-Forked](https://github.com/KyleMHB/Stats-Forked)
+- **Issue Tracker:** [GitHub Issues](https://github.com/KyleMHB/Stats-Forked/issues)
+- **Original Project:** [AzzkiyOne/Stats](https://github.com/AzzkiyOne/Stats)
+- **Harmony:** [Harmony for RimWorld](https://github.com/pardeike/HarmonyRimWorld/releases/latest)
+
 ## License
 
-[GNU LGPLv3](COPYING.LESSER)
+> This project is a fork of **Stats** and inherits the original project's license. See the original project and this repository's license files for license terms.
+
+This repository includes GNU LGPL license files:
+
+- [COPYING](COPYING)
+- [COPYING.LESSER](COPYING.LESSER)
+
+## Credits
+
+- Original Stats project by [AzzkiyOne](https://github.com/AzzkiyOne).
+- Stats Forked maintained by [kylohb](https://github.com/KyleMHB).
+- Harmony by the Harmony/RimWorld modding community.
+- Compatibility support references RimWorld expansion and mod content where available.

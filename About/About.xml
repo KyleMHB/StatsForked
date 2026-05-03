@@ -3,11 +3,10 @@
 <ModMetaData>
     <packageId>KyleMHB.StatsForked</packageId>
     <name>Stats Forked</name>
-    <author>kylohb</author>
+    <author>KyleMHB</author>
     <url>https://github.com/KyleMHB/Stats-Forked</url>
-    <description>A maintained fork of Stats for RimWorld 1.5 and 1.6, with inventory-aware filters, saved presets, bionics support, distance-based ranged DPS, and better handling for stuffable item variants.</description>
+    <description>Sortable RimWorld 1.6 stats tables with filters, presets, bionics, and compatibility modules.</description>
     <supportedVersions>
-        <li>1.5</li>
         <li>1.6</li>
     </supportedVersions>
     <modDependencies>
