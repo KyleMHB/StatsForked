@@ -2,6 +2,10 @@
 
 ## 2026-05-03
 
+### Fixed
+
+- Fixed missing table icon paths logging RimWorld load errors by falling back to the default bad texture.
+
 ### Added
 
 - Added completed Odyssey gameplay table support for books, fish, gravship systems, orbital infrastructure, unique weapons, and fishing outcomes.

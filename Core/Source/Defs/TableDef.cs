@@ -30,7 +30,7 @@ public class TableDef : Def
     {
         if (iconPath?.Length > 0)
         {
-            Icon = ContentFinder<Texture2D>.Get(iconPath);
+            Icon = ContentFinder<Texture2D>.Get(iconPath, false) ?? BaseContent.BadTex;
         }
     }
 
