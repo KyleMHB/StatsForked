@@ -12,6 +12,39 @@
         </tags>
     </Stats.ColumnDef>
 
+    <Stats.ColumnDef>
+        <defName>Weapon_MeleeDpsArmorPenetration</defName>
+        <label>armor penetration adjusted melee dps</label>
+        <title>DPS AP</title>
+        <description>Melee DPS adjusted by average armor penetration. Calculated as melee DPS multiplied by one plus average melee armor penetration.</description>
+        <workerClass>Stats.ColumnWorkers.ThingDef.MeleeWeapon.DpsArmorPenetrationColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMeleeWeapon</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Weapon_MeleeDpsBlunt</defName>
+        <label>blunt melee dps</label>
+        <title>DPS<Damage_Blunt/></title>
+        <description>Average melee DPS contribution from blunt melee tools.</description>
+        <workerClass>Stats.ColumnWorkers.ThingDef.MeleeWeapon.BluntDpsColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMeleeWeapon</li>
+        </tags>
+    </Stats.ColumnDef>
+
+    <Stats.ColumnDef>
+        <defName>Weapon_MeleeDpsSharp</defName>
+        <label>sharp melee dps</label>
+        <title>DPS<Damage_Sharp/></title>
+        <description>Average melee DPS contribution from melee tools whose damage uses sharp armor.</description>
+        <workerClass>Stats.ColumnWorkers.ThingDef.MeleeWeapon.SharpDpsColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsMeleeWeapon</li>
+        </tags>
+    </Stats.ColumnDef>
+
     <Stats.ColumnDef Class="Stats.StatColumnDef">
         <defName>Weapon_MeleeArmorPenetration</defName>
         <title>AP</title>

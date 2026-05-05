@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-05-05
+
+### Added
+
+- Added melee weapon columns for armor penetration-adjusted DPS, blunt DPS, and sharp DPS.
+
 ## 2026-05-03
 
 ### Fixed

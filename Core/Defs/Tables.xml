@@ -71,6 +71,9 @@
             <li MayRequire="CETeam.CombatExtended">Weapon_MeleeDamageMin</li>
             <li MayRequire="CETeam.CombatExtended">Weapon_MeleeDamageMax</li>
             <li>Weapon_MeleeDPS</li>
+            <li>Weapon_MeleeDpsArmorPenetration</li>
+            <li>Weapon_MeleeDpsBlunt</li>
+            <li>Weapon_MeleeDpsSharp</li>
             <li>Weapon_MeleeArmorPenetration</li>
             <li MayRequire="CETeam.CombatExtended">Weapon_MeleeArmorPenetrationFactor</li>
             <li MayRequire="CETeam.CombatExtended">Weapon_MeleeCounterParryBonus</li>
