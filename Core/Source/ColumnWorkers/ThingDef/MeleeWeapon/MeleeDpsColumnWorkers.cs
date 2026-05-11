@@ -17,15 +17,13 @@ public sealed class DpsArmorPenetrationColumnWorker(ColumnDef columnDef) : Numbe
             return default;
         }
 
-        StatDef? dpsStat = DefDatabase<StatDef>.GetNamedSilentFail("MeleeWeapon_AverageDPS");
         StatDef? armorPenetrationStat = DefDatabase<StatDef>.GetNamedSilentFail("MeleeWeapon_AverageArmorPenetration");
-        if (dpsStat == null || armorPenetrationStat == null)
+        if (armorPenetrationStat == null)
         {
             return default;
         }
 
-        float dps = thingDef.GetStatValuePerceived(dpsStat, @object.StuffDef, @object.Quality);
-        if (dps <= 0f)
+        if (MeleeDpsCalculator.TryCalculate(@object, _ => true, out float dps) == false)
         {
             return default;
         }
@@ -33,6 +31,14 @@ public sealed class DpsArmorPenetrationColumnWorker(ColumnDef columnDef) : Numbe
         float armorPenetration = thingDef.GetStatValuePerceived(armorPenetrationStat, @object.StuffDef, @object.Quality);
         decimal cellValue = (dps * (1f + Math.Max(0f, armorPenetration))).ToDecimal(2);
         return new NumberCell(cellValue, "0.00");
+    }
+}
+
+public sealed class DpsColumnWorker(ColumnDef columnDef) : TypedDpsColumnWorker(columnDef)
+{
+    protected override bool MatchesDamageDef(DamageDef damageDef)
+    {
+        return true;
     }
 }
 
@@ -60,9 +66,25 @@ public abstract class TypedDpsColumnWorker(ColumnDef columnDef) : NumberColumnWo
 
     protected override NumberCell MakeCell(DefBasedObject @object)
     {
-        if (@object.Def is not Verse.ThingDef thingDef || thingDef.tools == null)
+        if (MeleeDpsCalculator.TryCalculate(@object, MatchesDamageDef, out float dps) == false)
         {
             return default;
+        }
+
+        decimal cellValue = dps.ToDecimal(2);
+        return new NumberCell(cellValue, "0.00");
+    }
+}
+
+internal static class MeleeDpsCalculator
+{
+    public static bool TryCalculate(DefBasedObject @object, Func<DamageDef, bool> matchesDamageDef, out float dps)
+    {
+        dps = 0f;
+
+        if (@object.Def is not Verse.ThingDef thingDef || thingDef.tools == null)
+        {
+            return false;
         }
 
         float weightedDps = 0f;
@@ -83,7 +105,7 @@ public abstract class TypedDpsColumnWorker(ColumnDef columnDef) : NumberColumnWo
             }
 
             totalChanceFactor += chanceFactor;
-            if (TryGetMatchingDamageDef(tool, out DamageDef? damageDef) == false || damageDef == null)
+            if (TryGetMatchingDamageDef(tool, matchesDamageDef, out DamageDef? damageDef) == false || damageDef == null)
             {
                 continue;
             }
@@ -106,19 +128,19 @@ public abstract class TypedDpsColumnWorker(ColumnDef columnDef) : NumberColumnWo
 
         if (matchingChanceFactor <= 0f || totalChanceFactor <= 0f)
         {
-            return default;
+            return false;
         }
 
-        decimal cellValue = (weightedDps / totalChanceFactor).ToDecimal(2);
-        return new NumberCell(cellValue, "0.00");
+        dps = weightedDps / totalChanceFactor;
+        return true;
     }
 
-    private bool TryGetMatchingDamageDef(Tool tool, out DamageDef? damageDef)
+    private static bool TryGetMatchingDamageDef(Tool tool, Func<DamageDef, bool> matchesDamageDef, out DamageDef? damageDef)
     {
         foreach (ManeuverDef maneuverDef in tool.Maneuvers)
         {
             DamageDef? maneuverDamageDef = maneuverDef.verb?.meleeDamageDef;
-            if (maneuverDamageDef != null && MatchesDamageDef(maneuverDamageDef))
+            if (maneuverDamageDef != null && matchesDamageDef(maneuverDamageDef))
             {
                 damageDef = maneuverDamageDef;
                 return true;
@@ -141,7 +163,11 @@ public abstract class TypedDpsColumnWorker(ColumnDef columnDef) : NumberColumnWo
         StatDef? damageMultiplierStat = DefDatabase<StatDef>.GetNamedSilentFail("MeleeWeapon_DamageMultiplier");
         if (damageMultiplierStat != null && @object.Quality != QualityCategory.Normal)
         {
-            damage *= thingDef.GetStatValuePerceived(damageMultiplierStat, @object.StuffDef, @object.Quality);
+            float damageMultiplier = damageMultiplierStat.Worker.GetValue(thingDef.GetStatRequest(@object.StuffDef, @object.Quality));
+            if (damageMultiplier > 0f)
+            {
+                damage *= damageMultiplier;
+            }
         }
 
         return damage;

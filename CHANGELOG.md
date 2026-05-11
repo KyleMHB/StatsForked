@@ -9,8 +9,17 @@
 
 ### Fixed
 
+- Fixed Odyssey table dropdown icons that were showing the missing-texture placeholder.
+- Fixed the main melee DPS column so it responds to selected quality.
+- Fixed melee DPS quality scaling when RimWorld hides the melee damage multiplier stat.
+- Fixed melee weapon damage and DPS cells blanking for non-normal quality selections.
 - Fixed quality selection consistency for quality-aware custom weapon columns across eligible tables.
 - Fixed a Searchable Menus compatibility crash when table column menu entries were updated.
+
+### Changed
+
+- Removed the Odyssey fishing outcomes table.
+- Removed the default description column from Odyssey tables.
 
 ## 2026-05-05
 

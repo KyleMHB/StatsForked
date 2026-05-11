@@ -114,10 +114,7 @@ public class StatColumnWorker(StatColumnDef columnDef) : ColumnWorker<DefBasedOb
             {
                 ValueRaw = statValue;
                 string? text = column.GetStatDrawEntryLabel(stat, statValue, _ToStringNumberSense, statRequest);
-                if (text == null)
-                {
-                    return;
-                }
+                text ??= stat.ValueToString(statValue, _ToStringNumberSense);
 
                 _text = text;
                 Width = Text.CalcSize(text).x;

@@ -2,11 +2,10 @@
 
 <Defs>
 
-    <Stats.ColumnDef Class="Stats.StatColumnDef">
+    <Stats.ColumnDef>
         <defName>Weapon_MeleeDPS</defName>
         <title>DPS</title>
-        <stat>MeleeWeapon_AverageDPS</stat>
-        <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <workerClass>Stats.ColumnWorkers.ThingDef.MeleeWeapon.DpsColumnWorker</workerClass>
         <tags>
             <li>Thing_IsMeleeWeapon</li>
         </tags>
