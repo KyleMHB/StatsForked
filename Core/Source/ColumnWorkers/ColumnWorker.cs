@@ -30,6 +30,8 @@ public abstract class ColumnWorker<TObject>
     public abstract ICollection<CellField> GetCellFields(TableWorker tableWorker);
 }
 
+public interface IQualityAwareColumnWorker;
+
 public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where TCell : struct, ICell
 {
     public override bool IsRefreshable => _refreshableCellsCount > 0;

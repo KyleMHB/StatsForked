@@ -11,7 +11,7 @@ using Verse;
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_CaliberColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBasedObject, Weapon_CaliberColumnWorker.CaliberCell>
+public sealed class Weapon_CaliberColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBasedObject, Weapon_CaliberColumnWorker.CaliberCell>, IQualityAwareColumnWorker
 {
     public override ColumnDef Def => columnDef;
     public override ColumnType Type => ColumnType.String;

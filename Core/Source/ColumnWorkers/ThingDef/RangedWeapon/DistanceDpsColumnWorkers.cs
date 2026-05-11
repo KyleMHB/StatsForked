@@ -10,7 +10,7 @@ public sealed class ShortDpsColumnWorker(ColumnDef columnDef) : DistanceDpsColum
 public sealed class MediumDpsColumnWorker(ColumnDef columnDef) : DistanceDpsColumnWorker(columnDef, "AccuracyMedium");
 public sealed class LongDpsColumnWorker(ColumnDef columnDef) : DistanceDpsColumnWorker(columnDef, "AccuracyLong");
 
-public abstract class DistanceDpsColumnWorker(ColumnDef columnDef, string accuracyStatName) : NumberColumnWorker<DefBasedObject, NumberCell>
+public abstract class DistanceDpsColumnWorker(ColumnDef columnDef, string accuracyStatName) : NumberColumnWorker<DefBasedObject, NumberCell>, IQualityAwareColumnWorker
 {
     public override ColumnDef Def => columnDef;
 

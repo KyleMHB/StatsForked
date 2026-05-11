@@ -9,6 +9,7 @@
 
 ### Fixed
 
+- Fixed quality selection consistency for quality-aware custom weapon columns across eligible tables.
 - Fixed a Searchable Menus compatibility crash when table column menu entries were updated.
 
 ## 2026-05-05

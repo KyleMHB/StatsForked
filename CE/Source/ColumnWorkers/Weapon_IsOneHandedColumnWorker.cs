@@ -4,7 +4,7 @@ using Stats.Utils.Extensions;
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_IsOneHandedColumnWorker(ColumnDef columnDef) : BooleanColumnWorker<DefBasedObject>
+public sealed class Weapon_IsOneHandedColumnWorker(ColumnDef columnDef) : BooleanColumnWorker<DefBasedObject>, IQualityAwareColumnWorker
 {
     public override ColumnDef Def => columnDef;
 

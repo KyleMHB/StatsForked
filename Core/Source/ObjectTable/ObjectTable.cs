@@ -115,7 +115,9 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     internal bool ShowVariants => _showVariants;
     private QualityCategory _quality = QualityCategory.Normal;
     internal bool SupportsQuality => typeof(TObject) == typeof(DefBasedObject)
-        && _tableWorker.CompatibleColumns.Any(column => column is StatColumnDef);
+        && _tableWorker.CompatibleColumns.Any(column =>
+            column is StatColumnDef
+            || typeof(IQualityAwareColumnWorker).IsAssignableFrom(column.workerClass));
     internal QualityCategory Quality => _quality;
 
     public ObjectTable(TableWorker<TObject> tableWorker)

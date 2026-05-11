@@ -7,7 +7,7 @@ using Verse;
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_ReloadTimeColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
+public sealed class Weapon_ReloadTimeColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>, IQualityAwareColumnWorker
 {
     public override ColumnDef Def => columnDef;
 

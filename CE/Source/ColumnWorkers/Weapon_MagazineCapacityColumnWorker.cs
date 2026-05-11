@@ -5,7 +5,7 @@ using Stats.Utils.Extensions;
 
 namespace Stats.Compat.CE;
 
-public sealed class Weapon_MagazineCapacityColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
+public sealed class Weapon_MagazineCapacityColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>, IQualityAwareColumnWorker
 {
     public override ColumnDef Def => columnDef;
 

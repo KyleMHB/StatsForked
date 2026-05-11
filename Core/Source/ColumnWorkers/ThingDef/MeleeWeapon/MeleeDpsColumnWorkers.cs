@@ -6,7 +6,7 @@ using Verse;
 
 namespace Stats.ColumnWorkers.ThingDef.MeleeWeapon;
 
-public sealed class DpsArmorPenetrationColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
+public sealed class DpsArmorPenetrationColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>, IQualityAwareColumnWorker
 {
     public override ColumnDef Def => columnDef;
 
@@ -52,7 +52,7 @@ public sealed class SharpDpsColumnWorker(ColumnDef columnDef) : TypedDpsColumnWo
     }
 }
 
-public abstract class TypedDpsColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>
+public abstract class TypedDpsColumnWorker(ColumnDef columnDef) : NumberColumnWorker<DefBasedObject, NumberCell>, IQualityAwareColumnWorker
 {
     public override ColumnDef Def => columnDef;
 
@@ -149,8 +149,20 @@ public abstract class TypedDpsColumnWorker(ColumnDef columnDef) : NumberColumnWo
 
     private static float GetCooldown(Tool tool, Verse.ThingDef thingDef, DefBasedObject @object)
     {
-        return @object.Thing != null
+        float cooldown = @object.Thing != null
             ? tool.AdjustedCooldown(@object.Thing)
             : tool.AdjustedCooldown(thingDef, thingDef.GetStatStuff(@object.StuffDef));
+
+        StatDef? cooldownMultiplierStat = DefDatabase<StatDef>.GetNamedSilentFail("MeleeWeapon_CooldownMultiplier");
+        if (cooldownMultiplierStat != null && @object.Quality != QualityCategory.Normal)
+        {
+            float cooldownMultiplier = thingDef.GetStatValuePerceived(cooldownMultiplierStat, @object.StuffDef, @object.Quality);
+            if (cooldownMultiplier > 0f)
+            {
+                cooldown *= cooldownMultiplier;
+            }
+        }
+
+        return cooldown;
     }
 }
