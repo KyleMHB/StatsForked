@@ -7,6 +7,7 @@ Stats Forked keeps the original sortable stats-table framework while updating it
 [list]
 [*][b]Sortable stats tables[/b] for weapons, apparel, animals, plants, beds, buildings, turrets, mechs, bionics, and general stats.
 [*][b]Inventory-aware filters[/b] for colony-owned and map-visible items.
+[*][b]Equipment recipe filters[/b] for apparel and weapons, including recipe presence, ingredients, benches, and material/stuff.
 [*][b]Saved presets[/b] for filters, visible columns, and variant display mode.
 [*][b]Stuffable item variants[/b] so material-specific versions can be compared.
 [*][b]Bionics comparison[/b] with body part, capacity, efficiency, special effect, and capacity change columns.
@@ -21,6 +22,7 @@ Open the Stats table from RimWorld's in-game main tab, choose a table, sort the 
 [list]
 [*][b]Supported RimWorld versions:[/b] 1.6.
 [*][b]Required mod:[/b] Harmony.
+[*][b]Original Stats mod:[/b] Not required. Do not enable it alongside Stats Forked unless deliberately testing compatibility.
 [*][b]Optional content:[/b] Biotech, Anomaly, Odyssey, and Combat Extended modules load when present. Odyssey support includes books, fish, gravship systems, orbital infrastructure, unique weapons, and fishing outcomes.
 [*][b]Load order:[/b] Load Harmony before Stats Forked.
 [/list]

@@ -189,7 +189,7 @@ internal sealed partial class ObjectTable<TObject>
         {
             List<ColumnDef> compatibleColumns = _parent._tableWorker.CompatibleColumns;
             int compatibleColumnsCount = compatibleColumns.Count;
-            List<FloatMenuOption> columnsMenuOptions = new(compatibleColumnsCount);
+            List<ColumnsFloatMenuOption> columnsMenuOptions = new(compatibleColumnsCount);
             for (int i = 0; i < compatibleColumnsCount; i++)
             {
                 ColumnDef columnDef = compatibleColumns[i];
@@ -223,15 +223,20 @@ internal sealed partial class ObjectTable<TObject>
 
         private sealed class ColumnsFloatMenu : FloatMenu
         {
-            public ColumnsFloatMenu(List<FloatMenuOption> options) : base(options) { }
+            private readonly List<ColumnsFloatMenuOption> _columnOptions;
+
+            public ColumnsFloatMenu(List<ColumnsFloatMenuOption> options) : base(options.Cast<FloatMenuOption>().ToList())
+            {
+                _columnOptions = options;
+            }
 
             public void NotifyColumnAdded(Column column)
             {
                 ColumnDef columnDef = column.Def;
-                int optionsCount = options.Count;
+                int optionsCount = _columnOptions.Count;
                 for (int i = 0; i < optionsCount; i++)
                 {
-                    ColumnsFloatMenuOption option = (ColumnsFloatMenuOption)options[i];
+                    ColumnsFloatMenuOption option = _columnOptions[i];
                     if (option.ColumnDef == columnDef)
                     {
                         option.Select();
@@ -243,10 +248,10 @@ internal sealed partial class ObjectTable<TObject>
             public void NotifyColumnRemoved(Column column)
             {
                 ColumnDef columnDef = column.Def;
-                int optionsCount = options.Count;
+                int optionsCount = _columnOptions.Count;
                 for (int i = 0; i < optionsCount; i++)
                 {
-                    ColumnsFloatMenuOption option = (ColumnsFloatMenuOption)options[i];
+                    ColumnsFloatMenuOption option = _columnOptions[i];
                     if (option.ColumnDef == columnDef)
                     {
                         option.Unselect();

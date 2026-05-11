@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-05-11
+
+### Added
+
+- Added apparel and weapon filters for recipe presence, recipe ingredients, recipe benches, and material/stuff.
+- Clarified that Stats Forked does not require the original Stats mod.
+
+### Fixed
+
+- Fixed a Searchable Menus compatibility crash when table column menu entries were updated.
+
 ## 2026-05-05
 
 ### Added

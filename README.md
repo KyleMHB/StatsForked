@@ -8,6 +8,7 @@ The fork exists to keep the Stats table framework usable with current RimWorld c
 
 - **Sortable stats tables** for weapons, apparel, animals, plants, beds, buildings, turrets, mechs, bionics, and general stats.
 - **Inventory-aware filters** for items owned by the colony and items visible on the current player map.
+- **Equipment recipe filters** for apparel and weapons, including recipe presence, ingredients, benches, and material/stuff.
 - **Saved table presets** for restoring filter states, visible columns, and variant display mode.
 - **Stuffable item variants** so material-specific versions can be compared when a table supports variants.
 - **Bionics comparison table** covering affected body parts, capacities, efficiency, special effects, and capacity changes.
@@ -24,13 +25,14 @@ Subscribe on Steam:
 
 - [Stats Forked Steam Workshop page](https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439)
 
-Enable **Harmony** and **Stats Forked** in RimWorld's mod list. Harmony is required.
+Enable **Harmony** and **Stats Forked** in RimWorld's mod list. Harmony is required. The original Stats mod is not required.
 
 ### Manual Installation
 
 1. Download or clone this repository.
 2. Place the `Stats Forked` mod folder in your RimWorld `Mods` directory.
 3. Enable **Harmony** and **Stats Forked** in the RimWorld mod list.
+4. Do not enable the original Stats mod alongside Stats Forked unless you are deliberately testing compatibility.
 
 ## Usage
 
@@ -40,6 +42,7 @@ Useful workflows include:
 
 - Compare ranged weapons by accuracy, damage, warmup, cooldown, and DPS at specific distance bands.
 - Filter thing-based tables to colony-owned or currently visible items.
+- Filter apparel and weapons by whether they have recipes, which ingredients they use, which benches make them, and which material variants apply.
 - Save table presets for repeated comparisons.
 - Toggle variants for stuffable items when you need material-specific stat values.
 - Compare bionics by affected body part, capacity impact, efficiency, and special effects.

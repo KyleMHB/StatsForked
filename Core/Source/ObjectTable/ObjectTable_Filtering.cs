@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RimWorld;
 using Stats.ColumnWorkers;
 using Stats.Filters;
 using Stats.Utils.Extensions;
@@ -9,15 +10,21 @@ using Stats.Utils.Widgets;
 using UnityEngine;
 using Verse;
 using FilterLabelWidget = Stats.Utils.Widgets.Widget;
+using LegacyThingDefIcon = Stats.Widgets_Legacy.ThingDefIcon;
 
 namespace Stats;
 
 internal sealed partial class ObjectTable<TObject>
 {
     private const string AvailableFilterKey = "__table_filter_available";
+    private const string HasRecipeFilterKey = "__table_filter_has_recipe";
+    private const string MaterialFilterKey = "__table_filter_material";
+    private const string RecipeIngredientsFilterKey = "__table_filter_recipe_ingredients";
+    private const string RecipeBenchFilterKey = "__table_filter_recipe_bench";
     private readonly List<FilterEntry> _filters = [];
     private FiltersWindow? _filtersWindow;
     private Filter? _availableFilter;
+    private static readonly HashSet<ThingDef?> _emptyThingDefSet = [];
 
     private void ToggleFiltersTab()
     {
@@ -52,6 +59,11 @@ internal sealed partial class ObjectTable<TObject>
         availableFilter.OnChange += ApplyFilters;
         _availableFilter = availableFilter;
         _filters.Add(new FilterEntry(AvailableFilterKey, null, new Label("available"), "available", availableFilter));
+
+        if (SupportsEquipmentRecipeFilters())
+        {
+            RegisterEquipmentRecipeFilters();
+        }
     }
 
     private void UnregisterColumnFilters(Column column)
@@ -192,6 +204,169 @@ internal sealed partial class ObjectTable<TObject>
         }
 
         return InventoryStateTracker.IsOwnedByPlayer(thingDef);
+    }
+
+    private bool SupportsEquipmentRecipeFilters()
+    {
+        List<string> columnTags = _tableWorker.Def.columnTags;
+        return columnTags.Contains("Thing_IsApparel")
+            || columnTags.Contains("Thing_IsRangedWeapon")
+            || columnTags.Contains("Thing_IsMeleeWeapon");
+    }
+
+    private void RegisterEquipmentRecipeFilters()
+    {
+        BooleanFilter hasRecipeFilter = new(HasRecipe);
+        hasRecipeFilter.OnChange += ApplyFilters;
+        _filters.Add(new FilterEntry(HasRecipeFilterKey, null, new Label("has recipe"), "has recipe", hasRecipeFilter));
+
+        Filter materialFilter = new MTMFilter<ThingDef?>(
+            GetMaterialFilterValue,
+            MakeThingDefFilterOptions(GetMaterialFilterOptions()));
+        materialFilter.OnChange += ApplyFilters;
+        _filters.Add(new FilterEntry(MaterialFilterKey, null, new Label("material"), "material", materialFilter));
+
+        Filter recipeIngredientsFilter = new MTMFilter<ThingDef?>(
+            GetRecipeIngredientsFilterValue,
+            MakeThingDefFilterOptions(GetRecipeIngredientFilterOptions()));
+        recipeIngredientsFilter.OnChange += ApplyFilters;
+        _filters.Add(new FilterEntry(RecipeIngredientsFilterKey, null, new Label("recipe ingredients"), "recipe ingredients", recipeIngredientsFilter));
+
+        Filter recipeBenchFilter = new MTMFilter<ThingDef?>(
+            GetRecipeBenchFilterValue,
+            MakeThingDefFilterOptions(GetRecipeBenchFilterOptions()));
+        recipeBenchFilter.OnChange += ApplyFilters;
+        _filters.Add(new FilterEntry(RecipeBenchFilterKey, null, new Label("recipe bench"), "recipe bench", recipeBenchFilter));
+    }
+
+    private bool HasRecipe(int row)
+    {
+        return _objects[row] is DefBasedObject { Def: ThingDef thingDef }
+            && thingDef.GetRecipeDefs()?.Count > 0;
+    }
+
+    private IEnumerable<ThingDef?> GetMaterialFilterValue(int row)
+    {
+        if (_objects[row] is not DefBasedObject { Def: ThingDef thingDef } @object)
+        {
+            return _emptyThingDefSet;
+        }
+
+        if (@object.StuffDef != null)
+        {
+            return [@object.StuffDef];
+        }
+
+        return thingDef.GetAllowedStuffs()?.Cast<ThingDef?>() ?? _emptyThingDefSet;
+    }
+
+    private IEnumerable<ThingDef?> GetRecipeIngredientsFilterValue(int row)
+    {
+        if (_objects[row] is not DefBasedObject { Def: ThingDef thingDef } @object)
+        {
+            return _emptyThingDefSet;
+        }
+
+        return GetRecipeIngredients(thingDef, @object.StuffDef);
+    }
+
+    private IEnumerable<ThingDef?> GetRecipeBenchFilterValue(int row)
+    {
+        if (_objects[row] is not DefBasedObject { Def: ThingDef thingDef })
+        {
+            return _emptyThingDefSet;
+        }
+
+        HashSet<RecipeDef>? recipes = thingDef.GetRecipeDefs();
+        if (recipes == null || recipes.Count == 0)
+        {
+            return _emptyThingDefSet;
+        }
+
+        HashSet<ThingDef?> benches = [];
+        foreach (RecipeDef recipe in recipes)
+        {
+            HashSet<ThingDef>? recipeUsers = recipe.GetAllRecipeUsers();
+            if (recipeUsers != null)
+            {
+                foreach (ThingDef recipeUser in recipeUsers)
+                {
+                    benches.Add(recipeUser);
+                }
+            }
+        }
+
+        return benches;
+    }
+
+    private IEnumerable<ThingDef?> GetMaterialFilterOptions()
+    {
+        return GetEquipmentThingDefs()
+            .SelectMany(thingDef => thingDef.GetAllowedStuffs() ?? [])
+            .Distinct();
+    }
+
+    private IEnumerable<ThingDef?> GetRecipeIngredientFilterOptions()
+    {
+        return GetEquipmentThingDefs()
+            .SelectMany(thingDef => GetRecipeIngredients(thingDef, null))
+            .Distinct();
+    }
+
+    private IEnumerable<ThingDef?> GetRecipeBenchFilterOptions()
+    {
+        return GetEquipmentThingDefs()
+            .SelectMany(thingDef => thingDef.GetRecipeDefs() ?? [])
+            .SelectMany(recipe => recipe.GetAllRecipeUsers() ?? [])
+            .Distinct();
+    }
+
+    private IEnumerable<ThingDef> GetEquipmentThingDefs()
+    {
+        return _objects
+            .OfType<DefBasedObject>()
+            .Select(@object => @object.Def)
+            .OfType<ThingDef>()
+            .Distinct();
+    }
+
+    private static IEnumerable<ThingDef?> GetRecipeIngredients(ThingDef thingDef, ThingDef? stuffDef)
+    {
+        HashSet<RecipeDef>? recipes = thingDef.GetRecipeDefs();
+        if (recipes == null || recipes.Count == 0)
+        {
+            return _emptyThingDefSet;
+        }
+
+        HashSet<ThingDef?> ingredients = [];
+        foreach (RecipeDef recipe in recipes)
+        {
+            foreach (IngredientCount ingredient in recipe.ingredients)
+            {
+                if (stuffDef != null && ingredient.filter.Allows(stuffDef))
+                {
+                    ingredients.Add(stuffDef);
+                    continue;
+                }
+
+                foreach (ThingDef ingredientThingDef in ingredient.filter.AllowedThingDefs)
+                {
+                    ingredients.Add(ingredientThingDef);
+                }
+            }
+        }
+
+        return ingredients;
+    }
+
+    private static IEnumerable<NTMFilterOption<ThingDef?>> MakeThingDefFilterOptions(IEnumerable<ThingDef?> thingDefs)
+    {
+        return thingDefs
+            .OrderBy(thingDef => thingDef?.LabelCap.RawText)
+            .Select<ThingDef?, NTMFilterOption<ThingDef?>>(
+                thingDef => thingDef == null
+                    ? new NTMFilterOption<ThingDef?>()
+                    : new NTMFilterOption<ThingDef?>(thingDef, thingDef.LabelCap, new LegacyThingDefIcon(thingDef)));
     }
 
     private readonly record struct FilterEntry(string Key, Column? Column, FilterLabelWidget Label, string LabelText, Filter Widget);
