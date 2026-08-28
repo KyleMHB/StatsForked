@@ -534,7 +534,13 @@ internal sealed partial class ObjectTable<TObject>
         {
             if (filter.Column != null && _parent._columns.Contains(filter.Column) == false)
             {
-                return new Label($"{filter.LabelText} ({Localization.Get(Localization.Hidden)})");
+                string columnLabel = filter.Column.Def.LabelCap;
+                string filterLabel = filter.LabelText;
+                string displayLabel = columnLabel.Length == 0
+                    || string.Equals(columnLabel, filterLabel, StringComparison.OrdinalIgnoreCase)
+                    ? filterLabel
+                    : $"{columnLabel}: {filterLabel}";
+                return new Label($"{displayLabel} ({Localization.Get(Localization.Hidden)})");
             }
 
             return filter.Label;
