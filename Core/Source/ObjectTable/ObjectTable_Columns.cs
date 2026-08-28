@@ -52,6 +52,11 @@ internal sealed partial class ObjectTable<TObject>
         if (_filterColumns.Remove(columnDef, out Column? hiddenColumn))
         {
             _columns.Add(hiddenColumn);
+            if (_columns.Count == 1)
+            {
+                _leftColumnsCount = 1;
+                _sortColumn = hiddenColumn;
+            }
             if (notifyToolbar)
             {
                 _toolbar.NotifyColumnAdded(hiddenColumn);
