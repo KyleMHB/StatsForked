@@ -8,6 +8,7 @@
 - Added restoration of open tables and the active table between sessions.
 - Added filters that remain active when their columns are hidden.
 - Added translation keys for the table UI and filter labels.
+- Added localized filter operator descriptions, option controls, and table interaction help.
 - Added an optional fixed-height expanded display for multi-value cells.
 
 ### Changed
@@ -20,6 +21,7 @@
 
 - Added missing Combat Extended column tags to remove configuration errors and restore compatible columns to the column menu.
 - Fixed table-window resizing so drag calculations use a stable screen-space anchor and cannot produce invalid geometry.
+- Fixed the Add column filter action so a new hidden filter remains available while it is being configured.
 - Fixed compatibility assembly collisions with other mods that use generic assembly names such as `Odyssey.dll`.
 
 ## 2026-05-11

@@ -39,42 +39,42 @@ public sealed class MTMFilter<TOption> : NTMFilter<IEnumerable<TOption>, TOption
     {
         public sealed class IsEqualTo : RelOperator<IEnumerable<TOption>, HashSet<TOption>>
         {
-            private IsEqualTo() : base("==", "Is equal to") { }
+            private IsEqualTo() : base("==", Localization.Get(Localization.FilterIsEqualTo)) { }
             public override bool Eval(IEnumerable<TOption> lhs, HashSet<TOption> rhs) => rhs.SetEquals(lhs);
             public static IsEqualTo Instance { get; } = new();
         }
 
         public sealed class IsNotEqualTo : RelOperator<IEnumerable<TOption>, HashSet<TOption>>
         {
-            private IsNotEqualTo() : base("!=", "Is not equal to") { }
+            private IsNotEqualTo() : base("!=", Localization.Get(Localization.FilterIsNotEqualTo)) { }
             public override bool Eval(IEnumerable<TOption> lhs, HashSet<TOption> rhs) => rhs.SetEquals(lhs) == false;
             public static IsNotEqualTo Instance { get; } = new();
         }
 
         public sealed class IntersectsWith : RelOperator<IEnumerable<TOption>, HashSet<TOption>>
         {
-            private IntersectsWith() : base("∩", "Contains at least one of") { }
+            private IntersectsWith() : base("∩", Localization.Get(Localization.FilterContainsAtLeastOne)) { }
             public override bool Eval(IEnumerable<TOption> lhs, HashSet<TOption> rhs) => rhs.Any(lhs.Contains);
             public static IntersectsWith Instance { get; } = new();
         }
 
         public sealed class NotIntersectsWith : RelOperator<IEnumerable<TOption>, HashSet<TOption>>
         {
-            private NotIntersectsWith() : base("!∩", "Does not contain any of") { }
+            private NotIntersectsWith() : base("!∩", Localization.Get(Localization.FilterDoesNotContainAny)) { }
             public override bool Eval(IEnumerable<TOption> lhs, HashSet<TOption> rhs) => rhs.Any(lhs.Contains) == false;
             public static NotIntersectsWith Instance { get; } = new();
         }
 
         public sealed class IsSubsetOf : RelOperator<IEnumerable<TOption>, HashSet<TOption>>
         {
-            private IsSubsetOf() : base("⊆", "Is subset of") { }
+            private IsSubsetOf() : base("⊆", Localization.Get(Localization.FilterIsSubsetOf)) { }
             public override bool Eval(IEnumerable<TOption> lhs, HashSet<TOption> rhs) => rhs.IsSupersetOf(lhs);
             public static IsSubsetOf Instance { get; } = new();
         }
 
         public sealed class IsSupersetOf : RelOperator<IEnumerable<TOption>, HashSet<TOption>>
         {
-            private IsSupersetOf() : base("⊇", "Is superset of") { }
+            private IsSupersetOf() : base("⊇", Localization.Get(Localization.FilterIsSupersetOf)) { }
             public override bool Eval(IEnumerable<TOption> lhs, HashSet<TOption> rhs) => rhs.IsSubsetOf(lhs);
             public static IsSupersetOf Instance { get; } = new();
         }

@@ -238,7 +238,7 @@ public abstract class NTMFilter<TLhs, TRhs> : Filter, IPresettableFilter
                         .Tooltip(@operator.Description)
                     ),
 
-                    new Label("Clear")
+                    new Label(Localization.Get(Localization.ClearOptions))
                     .TextAnchor(TextAnchor.MiddleLeft)
                     .PaddingAbs(GUIStyles.Global.PadSm, 0f)
                     .WidthIncRel(1f)
@@ -247,7 +247,7 @@ public abstract class NTMFilter<TLhs, TRhs> : Filter, IPresettableFilter
                 ], shareFreeSpace: true)
                 .WidthRel(1f),
 
-                new Label("<i>Hold [Ctrl] to select multiple options.</i>")
+                new Label(Localization.Get(Localization.MultiSelectHint))
                 .PaddingAbs(GUIStyles.Global.PadSm, 0f)
                 .BorderLeft(BorderColor)
                 .BorderRight(BorderColor)
@@ -461,7 +461,7 @@ public readonly record struct NTMFilterOption<TValue>
     public NTMFilterOption()
     {
         Value = default!;
-        Label = "<i>Undefined</i>";
+        Label = $"<i>{Localization.Get(Localization.Undefined)}</i>";
     }
     public NTMFilterOption(TValue value, string label, Widget? icon = null, string? tooltip = null)
     {

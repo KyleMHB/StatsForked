@@ -40,4 +40,24 @@
     <StatsForked_Expanded>Expanded</StatsForked_Expanded>
     <StatsForked_Compact>Compact</StatsForked_Compact>
     <StatsForked_More>more</StatsForked_More>
+    <StatsForked_ClearOptions>Clear</StatsForked_ClearOptions>
+    <StatsForked_MultiSelectHint>&lt;i&gt;Hold [Ctrl] to select multiple options.&lt;/i&gt;</StatsForked_MultiSelectHint>
+    <StatsForked_Undefined>Undefined</StatsForked_Undefined>
+    <StatsForked_FilterContains>Contains</StatsForked_FilterContains>
+    <StatsForked_FilterDoesNotContain>Does not contain</StatsForked_FilterDoesNotContain>
+    <StatsForked_FilterIsOneOf>Is one of</StatsForked_FilterIsOneOf>
+    <StatsForked_FilterIsNotOneOf>Is not one of</StatsForked_FilterIsNotOneOf>
+    <StatsForked_FilterIsEqualTo>Is equal to</StatsForked_FilterIsEqualTo>
+    <StatsForked_FilterIsNotEqualTo>Is not equal to</StatsForked_FilterIsNotEqualTo>
+    <StatsForked_FilterContainsAtLeastOne>Contains at least one of</StatsForked_FilterContainsAtLeastOne>
+    <StatsForked_FilterDoesNotContainAny>Does not contain any of</StatsForked_FilterDoesNotContainAny>
+    <StatsForked_FilterIsSubsetOf>Is subset of</StatsForked_FilterIsSubsetOf>
+    <StatsForked_FilterIsSupersetOf>Is superset of</StatsForked_FilterIsSupersetOf>
+    <StatsForked_ManualScroll>Hold (LMB) and move mouse cursor to scroll horizontally.</StatsForked_ManualScroll>
+    <StatsForked_ManualPinColumn>Hold [Ctrl] and click on a column's name to pin/unpin it.</StatsForked_ManualPinColumn>
+    <StatsForked_ManualPinRow>Hold [Ctrl] and click on a row to pin/unpin it.</StatsForked_ManualPinRow>
+    <StatsForked_ManualPinMultipleRows>You can pin multiple rows.</StatsForked_ManualPinMultipleRows>
+    <StatsForked_ManualPinnedRowsUnaffected>Pinned rows are unaffected by filters.</StatsForked_ManualPinnedRowsUnaffected>
+    <StatsForked_ManualResize>Pull top part of the window to change height.</StatsForked_ManualResize>
+    <StatsForked_ManualResetResize>Double click to reset window height.</StatsForked_ManualResetResize>
 </LanguageData>

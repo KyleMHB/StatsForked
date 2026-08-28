@@ -129,10 +129,11 @@ internal sealed partial class ObjectTable<TObject>
 
     private void AddColumnFilter(ColumnDef columnDef)
     {
-        if (EnsureFilterColumn(columnDef) != null)
-        {
-            ApplyFilters();
-        }
+        // Keep the newly created hidden column alive until the user can configure
+        // its filter. Applying the current filters is unnecessary here because
+        // the new filter is inactive, and a later filter reset may release it
+        // before the Filters window has rendered it.
+        EnsureFilterColumn(columnDef);
     }
 
     private void RemoveColumn(int index)

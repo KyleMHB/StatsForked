@@ -25,13 +25,13 @@ internal abstract class ObjectTable
 internal sealed partial class ObjectTable<TObject> : ObjectTable
 {
     private static readonly TipSignal _manual =
-        "- Hold (LMB) and move mouse cursor to scroll horizontally.\n" +
-        "- Hold [Ctrl] and click on a column's name to pin/unpin it.\n" +
-        "- Hold [Ctrl] and click on a row to pin/unpin it.\n" +
-        "  - You can pin multiple rows.\n" +
-        "  - Pinned rows are unaffected by filters.\n" +
-        "- Pull top part of the window to change height.\n" +
-        "- Double click to reset window height.";
+        $"- {Localization.Get(Localization.ManualScroll)}\n" +
+        $"- {Localization.Get(Localization.ManualPinColumn)}\n" +
+        $"- {Localization.Get(Localization.ManualPinRow)}\n" +
+        $"  - {Localization.Get(Localization.ManualPinMultipleRows)}\n" +
+        $"  - {Localization.Get(Localization.ManualPinnedRowsUnaffected)}\n" +
+        $"- {Localization.Get(Localization.ManualResize)}\n" +
+        $"- {Localization.Get(Localization.ManualResetResize)}";
     // Filtering
     //public override TableFilterMode FilterMode
     //{

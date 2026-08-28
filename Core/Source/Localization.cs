@@ -43,6 +43,26 @@ internal static class Localization
     internal const string Expanded = "StatsForked_Expanded";
     internal const string Compact = "StatsForked_Compact";
     internal const string More = "StatsForked_More";
+    internal const string ClearOptions = "StatsForked_ClearOptions";
+    internal const string MultiSelectHint = "StatsForked_MultiSelectHint";
+    internal const string Undefined = "StatsForked_Undefined";
+    internal const string FilterContains = "StatsForked_FilterContains";
+    internal const string FilterDoesNotContain = "StatsForked_FilterDoesNotContain";
+    internal const string FilterIsOneOf = "StatsForked_FilterIsOneOf";
+    internal const string FilterIsNotOneOf = "StatsForked_FilterIsNotOneOf";
+    internal const string FilterIsEqualTo = "StatsForked_FilterIsEqualTo";
+    internal const string FilterIsNotEqualTo = "StatsForked_FilterIsNotEqualTo";
+    internal const string FilterContainsAtLeastOne = "StatsForked_FilterContainsAtLeastOne";
+    internal const string FilterDoesNotContainAny = "StatsForked_FilterDoesNotContainAny";
+    internal const string FilterIsSubsetOf = "StatsForked_FilterIsSubsetOf";
+    internal const string FilterIsSupersetOf = "StatsForked_FilterIsSupersetOf";
+    internal const string ManualScroll = "StatsForked_ManualScroll";
+    internal const string ManualPinColumn = "StatsForked_ManualPinColumn";
+    internal const string ManualPinRow = "StatsForked_ManualPinRow";
+    internal const string ManualPinMultipleRows = "StatsForked_ManualPinMultipleRows";
+    internal const string ManualPinnedRowsUnaffected = "StatsForked_ManualPinnedRowsUnaffected";
+    internal const string ManualResize = "StatsForked_ManualResize";
+    internal const string ManualResetResize = "StatsForked_ManualResetResize";
 
     internal static string Get(string key)
     {

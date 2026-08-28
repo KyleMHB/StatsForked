@@ -49,8 +49,8 @@ This project inherits the original mod's license.
 
 [h1]Reference links to other mods[/h1]
 [list]
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439]Stats Forked on Steam Workshop[/url]
-[*][url=https://github.com/KyleMHB/Stats-Forked]Source Repository[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439]Original Stats mod on Steam Workshop[/url]
+[*][url=https://github.com/KyleMHB/StatsFork]Stats Forked source repository[/url]
 [*][url=https://github.com/AzzkiyOne/Stats]Original Stats[/url]
 [*][url=https://github.com/pardeike/HarmonyRimWorld/releases/latest]Harmony[/url]
 [/list]

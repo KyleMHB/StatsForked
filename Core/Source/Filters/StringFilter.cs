@@ -103,7 +103,7 @@ public sealed class StringFilter : FilterWithInputField<string, string>, IPreset
 
         public sealed class Contains : RelOperator<string, string>
         {
-            public Contains() : base("~=", "Contains") { }
+            public Contains() : base("~=", Localization.Get(Localization.FilterContains)) { }
             public override bool Eval(string lhs, string rhs) =>
                 lhs.Contains(rhs, StringComparison.CurrentCultureIgnoreCase);
             public static Contains Instance { get; } = new();
@@ -111,7 +111,7 @@ public sealed class StringFilter : FilterWithInputField<string, string>, IPreset
 
         public sealed class NotContains : RelOperator<string, string>
         {
-            public NotContains() : base("!~=", "Does not contains") { }
+            public NotContains() : base("!~=", Localization.Get(Localization.FilterDoesNotContain)) { }
             public override bool Eval(string lhs, string rhs) =>
                 lhs.Contains(rhs, StringComparison.CurrentCultureIgnoreCase) == false;
             public static NotContains Instance { get; } = new();
