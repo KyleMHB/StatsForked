@@ -40,11 +40,13 @@ internal sealed partial class ObjectTable<TObject>
 
     private void RegisterColumnFilters(Column column, ICollection<CellField> fields)
     {
+        int fieldIndex = 0;
         foreach (CellField field in fields)
         {
             field.FilterWidget.OnChange += ApplyFilters;
             string labelText = field.Label is Label label ? label.Text : field.Label.GetType().Name;
-            _filters.Add(new FilterEntry(column.Def.defName, column, field.Label, labelText, field.FilterWidget));
+            _filters.Add(new FilterEntry(column.Def.defName, column, field.Label, labelText, field.FilterWidget, $"{column.Def.defName}:{fieldIndex}"));
+            fieldIndex++;
         }
     }
 
@@ -58,7 +60,8 @@ internal sealed partial class ObjectTable<TObject>
         BooleanFilter availableFilter = new(IsAvailable);
         availableFilter.OnChange += ApplyFilters;
         _availableFilter = availableFilter;
-        _filters.Add(new FilterEntry(AvailableFilterKey, null, new Label("available"), "available", availableFilter));
+        string availableLabel = Localization.Get(Localization.Available);
+        _filters.Add(new FilterEntry(AvailableFilterKey, null, new Label(availableLabel), availableLabel, availableFilter, AvailableFilterKey));
 
         if (SupportsEquipmentRecipeFilters())
         {
@@ -78,6 +81,30 @@ internal sealed partial class ObjectTable<TObject>
 
             filter.Widget.OnChange -= ApplyFilters;
             _filters.RemoveAt(i);
+        }
+    }
+
+    private bool HasActiveFilter(Column column)
+    {
+        return _filters.Any(filter => filter.Column == column && filter.Widget.IsActive);
+    }
+
+    private bool HasRegisteredColumnFilter(string columnDefName)
+    {
+        return _filters.Any(filter => filter.Key == columnDefName);
+    }
+
+    private void ReleaseUnusedFilterColumns()
+    {
+        foreach (Column column in _filterColumns.Values.ToList())
+        {
+            if (HasActiveFilter(column))
+            {
+                continue;
+            }
+
+            _filterColumns.Remove(column.Def);
+            UnregisterColumnFilters(column);
         }
     }
 
@@ -144,6 +171,7 @@ internal sealed partial class ObjectTable<TObject>
                 filter.Widget.Reset();
             }
         }
+        ReleaseUnusedFilterColumns();
     }
 
     private List<FilterPresetState> CaptureFilterPresetStates()
@@ -158,7 +186,8 @@ internal sealed partial class ObjectTable<TObject>
 
             states.Add(new FilterPresetState
             {
-                columnDefName = filter.Key,
+                columnDefName = filter.Column?.Def.defName ?? filter.Key,
+                filterId = filter.FilterId,
                 label = filter.LabelText,
                 state = presettableFilter.SerializeState(),
             });
@@ -173,9 +202,19 @@ internal sealed partial class ObjectTable<TObject>
 
         foreach (FilterPresetState state in states)
         {
-            FilterEntry? matchingFilter = _filters.FirstOrDefault(filter =>
-                filter.Key == state.columnDefName
-                && filter.LabelText == state.label);
+            if (state.columnDefName.StartsWith("__", StringComparison.Ordinal) == false
+                && HasRegisteredColumnFilter(state.columnDefName) == false)
+            {
+                ColumnDef? columnDef = _tableWorker.CompatibleColumns.FirstOrDefault(column => column.defName == state.columnDefName);
+                if (columnDef != null)
+                {
+                    EnsureFilterColumn(columnDef);
+                }
+            }
+
+            FilterEntry? matchingFilter = state.filterId.Length > 0
+                ? _filters.FirstOrDefault(filter => filter.FilterId == state.filterId)
+                : _filters.FirstOrDefault(filter => filter.Key == state.columnDefName && filter.LabelText == state.label);
 
             if (matchingFilter is { } filterEntry && filterEntry.Widget is IPresettableFilter presettableFilter)
             {
@@ -189,6 +228,8 @@ internal sealed partial class ObjectTable<TObject>
                 }
             }
         }
+
+        ApplyFilters();
     }
 
     private bool HasActiveLiveTableFilter()
@@ -218,25 +259,29 @@ internal sealed partial class ObjectTable<TObject>
     {
         BooleanFilter hasRecipeFilter = new(HasRecipe);
         hasRecipeFilter.OnChange += ApplyFilters;
-        _filters.Add(new FilterEntry(HasRecipeFilterKey, null, new Label("has recipe"), "has recipe", hasRecipeFilter));
+        string hasRecipeLabel = Localization.Get(Localization.HasRecipe);
+        _filters.Add(new FilterEntry(HasRecipeFilterKey, null, new Label(hasRecipeLabel), hasRecipeLabel, hasRecipeFilter, HasRecipeFilterKey));
 
         Filter materialFilter = new MTMFilter<ThingDef?>(
             GetMaterialFilterValue,
             MakeThingDefFilterOptions(GetMaterialFilterOptions()));
         materialFilter.OnChange += ApplyFilters;
-        _filters.Add(new FilterEntry(MaterialFilterKey, null, new Label("material"), "material", materialFilter));
+        string materialLabel = Localization.Get(Localization.Material);
+        _filters.Add(new FilterEntry(MaterialFilterKey, null, new Label(materialLabel), materialLabel, materialFilter, MaterialFilterKey));
 
         Filter recipeIngredientsFilter = new MTMFilter<ThingDef?>(
             GetRecipeIngredientsFilterValue,
             MakeThingDefFilterOptions(GetRecipeIngredientFilterOptions()));
         recipeIngredientsFilter.OnChange += ApplyFilters;
-        _filters.Add(new FilterEntry(RecipeIngredientsFilterKey, null, new Label("recipe ingredients"), "recipe ingredients", recipeIngredientsFilter));
+        string recipeIngredientsLabel = Localization.Get(Localization.RecipeIngredients);
+        _filters.Add(new FilterEntry(RecipeIngredientsFilterKey, null, new Label(recipeIngredientsLabel), recipeIngredientsLabel, recipeIngredientsFilter, RecipeIngredientsFilterKey));
 
         Filter recipeBenchFilter = new MTMFilter<ThingDef?>(
             GetRecipeBenchFilterValue,
             MakeThingDefFilterOptions(GetRecipeBenchFilterOptions()));
         recipeBenchFilter.OnChange += ApplyFilters;
-        _filters.Add(new FilterEntry(RecipeBenchFilterKey, null, new Label("recipe bench"), "recipe bench", recipeBenchFilter));
+        string recipeBenchLabel = Localization.Get(Localization.RecipeBench);
+        _filters.Add(new FilterEntry(RecipeBenchFilterKey, null, new Label(recipeBenchLabel), recipeBenchLabel, recipeBenchFilter, RecipeBenchFilterKey));
     }
 
     private bool HasRecipe(int row)
@@ -369,7 +414,24 @@ internal sealed partial class ObjectTable<TObject>
                     : new NTMFilterOption<ThingDef?>(thingDef, thingDef.LabelCap, new LegacyThingDefIcon(thingDef)));
     }
 
-    private readonly record struct FilterEntry(string Key, Column? Column, FilterLabelWidget Label, string LabelText, Filter Widget);
+    private FloatMenu MakeAddFilterMenu()
+    {
+        List<FloatMenuOption> options = _tableWorker.CompatibleColumns
+            .Where(columnDef => HasRegisteredColumnFilter(columnDef.defName) == false)
+            .Select(columnDef => new FloatMenuOption(
+                columnDef.LabelCap,
+                () => AddColumnFilter(columnDef)))
+            .ToList();
+
+        if (options.Count == 0)
+        {
+            options.Add(new FloatMenuOption(Localization.Get(Localization.NoFilters), null));
+        }
+
+        return new FloatMenu(options);
+    }
+
+    private readonly record struct FilterEntry(string Key, Column? Column, FilterLabelWidget Label, string LabelText, Filter Widget, string FilterId);
 
     private sealed class FiltersWindow : Window
     {
@@ -384,7 +446,7 @@ internal sealed partial class ObjectTable<TObject>
             closeOnClickedOutside = true;
             doCloseX = true;
             draggable = true;
-            optionalTitle = "Filters";
+            optionalTitle = Localization.Get(Localization.Filters);
         }
 
         public override void DoWindowContents(Rect rect)
@@ -397,11 +459,13 @@ internal sealed partial class ObjectTable<TObject>
 
             if (_parent._filters.Count == 0)
             {
-                Widgets.Label(filtersRect, "No filters available.");
+                Widgets.Label(filtersRect, Localization.Get(Localization.NoFilters));
                 return;
             }
 
-            float labelWidth = _parent._filters.Max(filter => filter.Label.Size.x);
+            float labelWidth = _parent._filters
+                .Select(GetDisplayLabel)
+                .Max(filter => filter.Size.x);
             float rowGap = GUIStyles.Global.PadSm;
             float contentHeight = 0f;
             float filterWidth = Mathf.Max(filtersRect.width - labelWidth - GUIStyles.Global.Pad - GenUI.ScrollBarWidth, 160f);
@@ -454,22 +518,39 @@ internal sealed partial class ObjectTable<TObject>
         private void DrawControls(Rect rect)
         {
             rect.CutLeft(out Rect resetButtonRect, 90f);
-            if (Widgets.ButtonText(resetButtonRect, "Reset"))
+            if (Widgets.ButtonText(resetButtonRect, Localization.Get(Localization.Reset)))
             {
                 _parent.ResetFilters();
             }
+
+            rect.CutLeft(GUIStyles.Global.PadSm).CutLeft(out Rect addFilterButtonRect, 140f);
+            if (Widgets.ButtonText(addFilterButtonRect, Localization.Get(Localization.AddFilter)))
+            {
+                _parent.MakeAddFilterMenu().Open();
+            }
         }
 
-        private static void DrawFilterRow(Rect rect, FilterEntry filter, float labelWidth)
+        private Widget GetDisplayLabel(FilterEntry filter)
+        {
+            if (filter.Column != null && _parent._columns.Contains(filter.Column) == false)
+            {
+                return new Label($"{filter.LabelText} ({Localization.Get(Localization.Hidden)})");
+            }
+
+            return filter.Label;
+        }
+
+        private void DrawFilterRow(Rect rect, FilterEntry filter, float labelWidth)
         {
             rect
                 .CutLeft(out Rect labelRect, labelWidth)
                 .CutLeft(GUIStyles.Global.Pad)
                 .TakeRest(out Rect filterRect);
 
-            labelRect.y += (labelRect.height - filter.Label.Size.y) / 2f;
-            labelRect.height = filter.Label.Size.y;
-            filter.Label.Draw(labelRect);
+            Widget label = GetDisplayLabel(filter);
+            labelRect.y += (labelRect.height - label.Size.y) / 2f;
+            labelRect.height = label.Size.y;
+            label.Draw(labelRect);
 
             Vector2 filterSize = filter.Widget.GetSize(filterRect.size);
             filterRect.y += (filterRect.height - filterSize.y) / 2f;

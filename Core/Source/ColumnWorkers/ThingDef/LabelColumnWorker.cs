@@ -49,9 +49,9 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
         OTMFilter<ResearchStatus> researchStatusFilter = new(
             row => GetResearchStatus(this[row].ThingDef),
             [
-                new(ResearchStatus.Researched, "Researched"),
-                new(ResearchStatus.NotResearched, "Not researched"),
-                new(ResearchStatus.NoResearchRequired, "No research required"),
+                new(ResearchStatus.Researched, Localization.Get(Localization.Researched)),
+                new(ResearchStatus.NotResearched, Localization.Get(Localization.NotResearched)),
+                new(ResearchStatus.NoResearchRequired, Localization.Get(Localization.NoResearchRequired)),
             ]
         );
         Events.ResearchCompleted += () =>
@@ -62,7 +62,7 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
             }
         };
         CellField researchStatusField = new(
-            new Label("Research status"),
+            new Label(Localization.Get(Localization.ResearchStatus)),
             researchStatusFilter,
             (row1, row2) => GetResearchStatus(this[row1].ThingDef).CompareTo(GetResearchStatus(this[row2].ThingDef))
         );

@@ -15,6 +15,8 @@ internal abstract class ObjectTable
 {
     internal abstract void Draw(Rect rect);
 
+    internal abstract void ApplyDefaultPreset();
+
     internal abstract void NotifyParentWindowClosed();
 }
 
@@ -82,6 +84,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
 
     // Columns
     private readonly List<Column> _columns;
+    private readonly Dictionary<ColumnDef, Column> _filterColumns;
     private int _leftColumnsCount;
     private int RightColumnsCount => _columns.Count - _leftColumnsCount;
     private ReadOnlyListSegment<Column> LeftColumns => new(_columns, 0, _leftColumnsCount);
@@ -111,8 +114,11 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     private readonly IVariantTableWorker<TObject>? _variantTableWorker;
     private readonly HashSet<string> _missingColumnWarnings = [];
     private bool _showVariants;
+    private bool _expandMultiValueCells;
+    private float RowHeight => _expandMultiValueCells ? GUIStyles.Table.ExpandedRowHeight : GUIStyles.Table.RowHeight;
     internal bool SupportsVariants => _variantTableWorker?.SupportsVariants == true;
     internal bool ShowVariants => _showVariants;
+    internal bool ExpandMultiValueCells => _expandMultiValueCells;
     private QualityCategory _quality = QualityCategory.Normal;
     internal bool SupportsQuality => typeof(TObject) == typeof(DefBasedObject)
         && _tableWorker.CompatibleColumns.Any(column =>
@@ -129,10 +135,12 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         _tableWorker = tableWorker;
         _variantTableWorker = tableWorker as IVariantTableWorker<TObject>;
         _showVariants = _variantTableWorker?.ShowVariantsByDefault == true;
+        _expandMultiValueCells = StatsMod.Instance.Settings.expandedMultiValueCells;
         _objects = [];
         _rowOrder = [];
         _rows = [];
         _columns = [];
+        _filterColumns = [];
         _toolbar = new Toolbar(this);
         RegisterTableFilters();
         RebuildRowsAndColumns(GetCurrentObjects(), tableWorker.Def.columns.Select(column => column.defName).ToList());

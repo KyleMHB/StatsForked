@@ -13,6 +13,7 @@ internal sealed partial class ObjectTable<TObject>
 {
     internal override void Draw(Rect rect)
     {
+        using MultiValueDisplay.Scope displayScope = MultiValueDisplay.Enter(_expandMultiValueCells);
         if (_beforeDraw != null)
         {
             _beforeDraw.Invoke();
@@ -71,6 +72,14 @@ internal sealed partial class ObjectTable<TObject>
         for (int i = 0; i < columnsCount; i++)
         {
             Column column = _columns[i];
+            if (column.IsRefreshable && column.RefreshCells())
+            {
+                anyColumnChanged = true;
+            }
+        }
+
+        foreach (Column column in _filterColumns.Values)
+        {
             if (column.IsRefreshable && column.RefreshCells())
             {
                 anyColumnChanged = true;

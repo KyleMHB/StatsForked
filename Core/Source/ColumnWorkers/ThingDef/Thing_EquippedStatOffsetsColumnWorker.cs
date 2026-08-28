@@ -47,12 +47,14 @@ public sealed class EquippedStatOffsetsColumnWorker(ColumnDef columnDef)
         public readonly string? Text;
 
         private readonly TipSignal _tooltip;
+        private readonly string? _expandedText;
 
         public OffsetsCell(IReadOnlyList<StatModifier> statOffsets)
         {
             Text = null;
             Width = 0f;
             _tooltip = default;
+            _expandedText = null;
 
             if (statOffsets.Count == 0)
             {
@@ -66,6 +68,16 @@ public sealed class EquippedStatOffsetsColumnWorker(ColumnDef columnDef)
                 : firstOffsetText;
             Width = Text.CalcSize(GUIStyles.TableCell.StringNoPad).x;
             _tooltip = string.Join("\n", statOffsets.Select(StatOffsetToString));
+            List<string> expandedLines = statOffsets
+                .Take(2)
+                .Select(StatOffsetToString)
+                .ToList();
+            if (statOffsets.Count > expandedLines.Count)
+            {
+                expandedLines.Add($"+{statOffsets.Count - expandedLines.Count} {Localization.Get(Localization.More)}");
+            }
+            _expandedText = string.Join("\n", expandedLines);
+            Width = expandedLines.Max(line => line.CalcSize(GUIStyles.TableCell.StringNoPad).x);
         }
 
         public void Draw(Rect rect)
@@ -73,7 +85,7 @@ public sealed class EquippedStatOffsetsColumnWorker(ColumnDef columnDef)
             if (Text != null)
             {
                 rect
-                    .Label(Text, GUIStyles.TableCell.String)
+                    .Label(MultiValueDisplay.IsExpanded ? _expandedText ?? Text : Text, GUIStyles.TableCell.String)
                     .Tip(_tooltip);
             }
         }

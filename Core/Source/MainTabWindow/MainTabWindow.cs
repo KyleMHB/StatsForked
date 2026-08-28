@@ -17,12 +17,14 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     private readonly List<TableRecord> _tables;
     private TableRecord? _activeTable;
     private readonly FloatMenu _tableDefsMenu;
-    private static readonly TipSignal _openTableButtonTooltip = "Open table";
+    private static readonly TipSignal _openTableButtonTooltip = Localization.Get(Localization.OpenTable);
     private Vector2 _tableListScrollPosition;
     private readonly float _defaultHeight;
     private bool _isResized;
-    private float _resizeYOffset;
-    private float _yMax;
+    private float _resizeStartMouseScreenY;
+    private float _resizeStartHeight;
+    private float _resizeBottomY;
+    private const float MinimumHeight = GUIStyles.TableToolbar.Height * 2f;
 
     public MainTabWindow()
     {
@@ -41,7 +43,8 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
                 {
                     TableRecord tableRecord = new(tableDef, this);
                     _tables.Insert(0, tableRecord);
-                    _activeTable = tableRecord;
+                    SetActiveTable(tableRecord);
+                    SaveTableSession();
                 },
                 tableDef.Icon,
                 tableDef.iconColor
@@ -51,10 +54,12 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         tableDefsMenuOptions.SortBy(option => option.Label);
 
         _tableDefsMenu = new FloatMenu(tableDefsMenuOptions);
+        RestoreTableSession();
     }
 
     public override void DoWindowContents(Rect rect)
     {
+        NormalizeWindowGeometry();
         Event @event = Event.current;
 
         // TODO: Remove this after you'll explixitly set word wrap for every inner widget.
@@ -135,15 +140,21 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             else
             {
                 _isResized = true;
-                _resizeYOffset = @event.mousePosition.y;
+                _resizeStartMouseScreenY = UI.GUIToScreenPoint(@event.mousePosition).y;
+                _resizeStartHeight = windowRect.height;
+                _resizeBottomY = Mathf.Min(windowRect.yMax, GetWindowBottomLimit());
             }
         }
         else if (_isResized)
         {
             if (OriginalEventUtility.EventType == EventType.MouseDrag)
             {
-                float y = UI.GUIToScreenPoint(@event.mousePosition).y - _resizeYOffset;
-                windowRect.yMin = Mathf.Clamp(y, 0f, _yMax);
+                float mouseScreenY = UI.GUIToScreenPoint(@event.mousePosition).y;
+                float height = _resizeStartHeight + _resizeStartMouseScreenY - mouseScreenY;
+                float maxHeight = Mathf.Max(MinimumHeight, _resizeBottomY);
+                height = Mathf.Clamp(height, MinimumHeight, maxHeight);
+                windowRect.height = height;
+                windowRect.y = _resizeBottomY - height;
                 @event.Use();
             }
             else if (@event.rawType == EventType.MouseUp)
@@ -177,17 +188,81 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             }
         }
         _tables.Remove(table);
+        SaveTableSession();
+    }
+
+    private void SetActiveTable(TableRecord? table)
+    {
+        _activeTable = table;
+        if (table != null)
+        {
+            SaveTableSession();
+        }
+    }
+
+    private void RestoreTableSession()
+    {
+        StatsSettings settings = StatsMod.Instance.Settings;
+        for (int i = 0; i < settings.openTableDefNames.Count; i++)
+        {
+            TableDef? tableDef = DefDatabase<TableDef>.GetNamedSilentFail(settings.openTableDefNames[i]);
+            if (tableDef != null)
+            {
+                _tables.Add(new TableRecord(tableDef, this));
+            }
+        }
+
+        if (_tables.Count == 0)
+        {
+            settings.openTableDefNames.Clear();
+            settings.activeTableIndex = -1;
+            StatsMod.Instance.WriteSettings();
+            return;
+        }
+
+        int activeTableIndex = Mathf.Clamp(settings.activeTableIndex, 0, _tables.Count - 1);
+        _activeTable = _tables[activeTableIndex];
+        if (settings.activeTableIndex != activeTableIndex || settings.openTableDefNames.Count != _tables.Count)
+        {
+            SaveTableSession();
+        }
+    }
+
+    private void SaveTableSession()
+    {
+        StatsSettings settings = StatsMod.Instance.Settings;
+        settings.openTableDefNames.Clear();
+        for (int i = 0; i < _tables.Count; i++)
+        {
+            settings.openTableDefNames.Add(_tables[i].DefName);
+        }
+        settings.activeTableIndex = _activeTable == null ? -1 : _tables.IndexOf(_activeTable);
+        StatsMod.Instance.WriteSettings();
+    }
+
+    private static float GetWindowBottomLimit()
+    {
+        return Mathf.Max(MinimumHeight, UI.screenHeight - MainButtonDef.ButtonHeight);
+    }
+
+    private void NormalizeWindowGeometry()
+    {
+        float bottomLimit = GetWindowBottomLimit();
+        float height = Mathf.Clamp(windowRect.height, MinimumHeight, bottomLimit);
+        float y = Mathf.Clamp(windowRect.y, 0f, bottomLimit - height);
+        windowRect = new Rect(windowRect.x, y, windowRect.width, height);
     }
 
     private void ResetSize()
     {
-        windowRect.height = _defaultHeight;
+        windowRect.height = Mathf.Min(_defaultHeight, GetWindowBottomLimit());
         SetInitialSizeAndPosition();
+        NormalizeWindowGeometry();
     }
 
     public override void PostOpen()
     {
-        _yMax = UI.screenHeight - MainButtonDef.ButtonHeight - GUIStyles.TableToolbar.Height;
+        NormalizeWindowGeometry();
         base.PostOpen();
     }
 
@@ -195,6 +270,7 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     {
         _isResized = false;
         _activeTable?.TableWidget.NotifyParentWindowClosed();
+        SaveTableSession();
 
         base.PostClose();
     }

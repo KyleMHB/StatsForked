@@ -11,6 +11,7 @@ public sealed partial class MainTabWindow
     private sealed class TableRecord
     {
         public readonly ObjectTable TableWidget;
+        public string DefName { get; }
 
         private readonly TipSignal _tooltip;
         private readonly Texture2D _icon;
@@ -21,7 +22,9 @@ public sealed partial class MainTabWindow
 
         public TableRecord(TableDef tableDef, MainTabWindow parent)
         {
+            DefName = tableDef.defName;
             TableWidget = tableDef.Worker.TableWidget;
+            TableWidget.ApplyDefaultPreset();
             _tooltip = tableDef.LabelCap;
             if (tableDef.description?.Length > 0)
             {
@@ -33,7 +36,7 @@ public sealed partial class MainTabWindow
             _parent = parent;
             List<FloatMenuOption> menuOptions = [
                 // TODO: Although this works (for some reason), we can't just go and modify the collection we are iterating.
-                new FloatMenuOption("Remove", () => parent.RemoveTable(this))
+                new FloatMenuOption(Localization.Get(Localization.Remove), () => parent.RemoveTable(this))
             ];
             _menu = new FloatMenu(menuOptions);
         }
@@ -59,7 +62,7 @@ public sealed partial class MainTabWindow
             {
                 if (@event.button == 0)
                 {
-                    _parent._activeTable = this;
+                    _parent.SetActiveTable(this);
                 }
                 else if (@event.button == 1)
                 {

@@ -44,6 +44,26 @@ internal sealed partial class ObjectTable<TObject>
 
     private bool TryAddColumn(ColumnDef columnDef, bool notifyToolbar, bool applyFilters)
     {
+        if (_columns.Any(column => column.Def == columnDef))
+        {
+            return false;
+        }
+
+        if (_filterColumns.Remove(columnDef, out Column? hiddenColumn))
+        {
+            _columns.Add(hiddenColumn);
+            if (notifyToolbar)
+            {
+                _toolbar.NotifyColumnAdded(hiddenColumn);
+            }
+            if (applyFilters)
+            {
+                SortRows();
+                ApplyFilters();
+            }
+            return true;
+        }
+
         Type workerClass = columnDef.workerClass;
         if (typeof(ColumnWorker<TObject>).IsAssignableFrom(workerClass) == false)
         {
@@ -74,6 +94,42 @@ internal sealed partial class ObjectTable<TObject>
         return true;
     }
 
+    private Column? EnsureFilterColumn(ColumnDef columnDef)
+    {
+        if (_columns.FirstOrDefault(column => column.Def == columnDef) is { } visibleColumn)
+        {
+            return visibleColumn;
+        }
+
+        if (_filterColumns.TryGetValue(columnDef, out Column? hiddenColumn))
+        {
+            return hiddenColumn;
+        }
+
+        Type workerClass = columnDef.workerClass;
+        if (typeof(ColumnWorker<TObject>).IsAssignableFrom(workerClass) == false)
+        {
+            WarnIncompatibleColumn(columnDef.defName, _tableWorker.Def.defName);
+            return null;
+        }
+
+        ColumnWorker<TObject> columnWorker = (ColumnWorker<TObject>)Activator.CreateInstance(workerClass, columnDef);
+        ICollection<CellField> cellFields = columnWorker.GetCellFields(_tableWorker);
+        Column column = new(columnWorker, _tableWorker, this, cellFields);
+        columnWorker.NotifyRowAdded(_objects);
+        _filterColumns.Add(columnDef, column);
+        RegisterColumnFilters(column, cellFields);
+        return column;
+    }
+
+    private void AddColumnFilter(ColumnDef columnDef)
+    {
+        if (EnsureFilterColumn(columnDef) != null)
+        {
+            ApplyFilters();
+        }
+    }
+
     private void RemoveColumn(int index)
     {
         if (index < _leftColumnsCount)
@@ -82,9 +138,16 @@ internal sealed partial class ObjectTable<TObject>
         }
 
         Column column = _columns[index];
-        _toolbar.NotifyColumnRemoved(column);
-        UnregisterColumnFilters(column);
         _columns.RemoveAt(index);
+        _toolbar.NotifyColumnRemoved(column);
+        if (HasActiveFilter(column))
+        {
+            _filterColumns[column.Def] = column;
+        }
+        else
+        {
+            UnregisterColumnFilters(column);
+        }
         if (_pressedColumn == column)
         {
             _pressedColumn = null;
@@ -141,20 +204,20 @@ internal sealed partial class ObjectTable<TObject>
             _parent = parent;
             SortComparison = cellFields.FirstOrDefault().Compare;
             _menu = new FloatMenu([
-                new FloatMenuOption("Sort Asc", () => {
+                new FloatMenuOption(Localization.Get(Localization.SortAscending), () => {
                     parent._sortColumn = this;
                     parent._sortDirection = SortDirectionAscending;
                     parent.SortRows();
                     parent.ApplyFilters();
                 }, TexButton.ReorderUp, Color.white),
-                new FloatMenuOption("Sort Desc", () => {
+                new FloatMenuOption(Localization.Get(Localization.SortDescending), () => {
                     parent._sortColumn = this;
                     parent._sortDirection = SortDirectionDescending;
                     parent.SortRows();
                     parent.ApplyFilters();
                 }, TexButton.ReorderDown, Color.white),
-                new FloatMenuOption("Reset width", () => IsManuallyResized = false),
-                new FloatMenuOption("Remove", () => parent.RemoveColumn(this), TexButton.Delete, Color.white)
+                new FloatMenuOption(Localization.Get(Localization.ResetWidth), () => IsManuallyResized = false),
+                new FloatMenuOption(Localization.Get(Localization.Remove), () => parent.RemoveColumn(this), TexButton.Delete, Color.white)
             ]);
         }
 
@@ -245,7 +308,7 @@ internal sealed partial class ObjectTable<TObject>
         {
             ColumnWorker<TObject> worker = _worker;
             ref Rect cellRect = ref rect;
-            cellRect.height = RowHeight;
+            cellRect.height = _parent.RowHeight;
             int rowsCount = rows.Length;
             for (int i = 0; i < rowsCount; i++)
             {

@@ -20,18 +20,20 @@ internal sealed partial class ObjectTable<TObject>
         private readonly Button _columnsMenuButton;
         private readonly Button _columnPresetsButton;
         private readonly Button _variantsButton;
+        private readonly Button _valuesButton;
         private readonly float _qualityButtonWidth;
         private ColumnsFloatMenu ColumnsMenu => field ??= MakeColumnsMenu();
 
         public Toolbar(ObjectTable<TObject> parent)
         {
             _parent = parent;
-            _filtersButton = new Button(Assets.TableFiltersTabIcon, "Filters");
-            _columnsMenuButton = new Button(Assets.TableColumnsMenuIcon, "Columns");
-            _columnPresetsButton = new Button(Verse.TexButton.Paste, "Presets");
-            _variantsButton = new Button(Verse.Widgets.CheckboxOffTex, "Variants");
+            _filtersButton = new Button(Assets.TableFiltersTabIcon, Localization.Get(Localization.Filters));
+            _columnsMenuButton = new Button(Assets.TableColumnsMenuIcon, Localization.Get(Localization.Columns));
+            _columnPresetsButton = new Button(Verse.TexButton.Paste, Localization.Get(Localization.Presets));
+            _variantsButton = new Button(Verse.Widgets.CheckboxOffTex, Localization.Get(Localization.Variants));
+            _valuesButton = new Button(TexButton.Info, Localization.Get(Localization.Values));
             _qualityButtonWidth = QualityCategories()
-                .Select(quality => $"Quality: {quality.GetLabel()}")
+                .Select(quality => $"{Localization.Get(Localization.Quality)}: {quality.GetLabel()}")
                 .Max(label => ButtonStyle.PadHor * 2f + label.CalcSize(ButtonStyle.LabelStyle).x);
         }
 
@@ -61,6 +63,9 @@ internal sealed partial class ObjectTable<TObject>
                 remainingRect = remainingRect.CutLeft(out variantsButtonRect, _variantsButton.Width);
             }
 
+            remainingRect = remainingRect.CutLeft(Style.Gap);
+            remainingRect = remainingRect.CutLeft(out Rect valuesButtonRect, _valuesButton.Width);
+
             if (_parent.SupportsQuality)
             {
                 remainingRect = remainingRect.CutLeft(Style.Gap);
@@ -84,6 +89,9 @@ internal sealed partial class ObjectTable<TObject>
             bool variantsButtonWasClicked = _parent.SupportsVariants && _variantsButton.Draw(
                 variantsButtonRect,
                 _parent.ShowVariants ? Verse.Widgets.CheckboxOnTex : Verse.Widgets.CheckboxOffTex);
+            bool valuesButtonWasClicked = _valuesButton.Draw(
+                valuesButtonRect,
+                _parent.ExpandMultiValueCells ? Verse.Widgets.CheckboxOnTex : Verse.Widgets.CheckboxOffTex);
             bool qualityButtonWasClicked = _parent.SupportsQuality && DrawQualityButton(qualityButtonRect);
             infoIconRect
                 .ContractedBy(ButtonStyle.PadVer)
@@ -111,6 +119,10 @@ internal sealed partial class ObjectTable<TObject>
             {
                 MakeQualityMenu().Open();
             }
+            else if (valuesButtonWasClicked)
+            {
+                _parent.SetExpandedMultiValueCells(!_parent.ExpandMultiValueCells);
+            }
         }
 
         private bool DrawQualityButton(Rect rect)
@@ -119,7 +131,7 @@ internal sealed partial class ObjectTable<TObject>
             {
                 rect
                     .ContractedBy(ButtonStyle.PadHor, ButtonStyle.PadVer)
-                    .Label($"Quality: {_parent.Quality.GetLabel()}", ButtonStyle.LabelStyle);
+                    .Label($"{Localization.Get(Localization.Quality)}: {_parent.Quality.GetLabel()}", ButtonStyle.LabelStyle);
             }
 
             return rect.ButtonGhostly();
@@ -205,7 +217,7 @@ internal sealed partial class ObjectTable<TObject>
         {
             List<FloatMenuOption> options =
             [
-                new FloatMenuOption("Save current...", () =>
+                new FloatMenuOption(Localization.Get(Localization.SaveCurrent), () =>
                 {
                     Find.WindowStack.Add(new PresetNameWindow("", _parent.SavePreset));
                 }, TexButton.Save, Color.white)
@@ -213,9 +225,22 @@ internal sealed partial class ObjectTable<TObject>
 
             foreach (TablePreset preset in _parent.GetPresets())
             {
-                options.Add(new FloatMenuOption($"Apply: {preset.name}", () => _parent.ApplyPreset(preset), Verse.TexButton.Paste, Color.white));
-                options.Add(new FloatMenuOption($"Overwrite: {preset.name}", () => _parent.SavePreset(preset.name), Verse.TexButton.Save, Color.white));
-                options.Add(new FloatMenuOption($"Delete: {preset.name}", () => _parent.DeletePreset(preset), TexButton.Delete, Color.white));
+                options.Add(new FloatMenuOption($"{Localization.Get(Localization.Apply)}: {preset.name}", () => _parent.ApplyPreset(preset), Verse.TexButton.Paste, Color.white));
+                options.Add(new FloatMenuOption($"{Localization.Get(Localization.Overwrite)}: {preset.name}", () => _parent.SavePreset(preset.name), Verse.TexButton.Save, Color.white));
+                options.Add(new FloatMenuOption(
+                    preset.isDefault ? $"{Localization.Get(Localization.ClearDefault)}: {preset.name}" : $"{Localization.Get(Localization.SetDefault)}: {preset.name}",
+                    () =>
+                    {
+                        if (preset.isDefault)
+                        {
+                            _parent.ClearDefaultPreset(preset);
+                        }
+                        else
+                        {
+                            _parent.SetDefaultPreset(preset);
+                        }
+                    }));
+                options.Add(new FloatMenuOption($"{Localization.Get(Localization.Delete)}: {preset.name}", () => _parent.DeletePreset(preset), TexButton.Delete, Color.white));
             }
 
             return new FloatMenu(options);

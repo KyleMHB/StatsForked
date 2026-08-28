@@ -55,13 +55,58 @@ internal sealed partial class ObjectTable<TObject>
         preset.tableDefName = _tableWorker.Def.defName;
         preset.name = presetName;
         preset.showVariants = _showVariants;
+        preset.expandMultiValueCells = _expandMultiValueCells;
         preset.visibleColumnDefNames = CaptureVisibleColumnDefNames();
         preset.filterStates = CaptureFilterPresetStates();
         StatsMod.Instance.WriteSettings();
     }
 
+    internal override void ApplyDefaultPreset()
+    {
+        TablePreset? preset = StatsMod.Instance.Settings.presets.FirstOrDefault(existingPreset =>
+            existingPreset.tableDefName == _tableWorker.Def.defName && existingPreset.isDefault);
+        if (preset != null)
+        {
+            ApplyPreset(preset);
+        }
+    }
+
+    private void SetExpandedMultiValueCells(bool expanded)
+    {
+        if (_expandMultiValueCells == expanded)
+        {
+            return;
+        }
+
+        _expandMultiValueCells = expanded;
+        StatsMod.Instance.Settings.expandedMultiValueCells = expanded;
+        StatsMod.Instance.WriteSettings();
+    }
+
+    private void SetDefaultPreset(TablePreset preset)
+    {
+        foreach (TablePreset existingPreset in StatsMod.Instance.Settings.presets)
+        {
+            if (existingPreset.tableDefName == _tableWorker.Def.defName)
+            {
+                existingPreset.isDefault = existingPreset == preset;
+            }
+        }
+        StatsMod.Instance.WriteSettings();
+    }
+
+    private void ClearDefaultPreset(TablePreset preset)
+    {
+        if (preset.tableDefName == _tableWorker.Def.defName)
+        {
+            preset.isDefault = false;
+            StatsMod.Instance.WriteSettings();
+        }
+    }
+
     private void ApplyPreset(TablePreset preset)
     {
+        SetExpandedMultiValueCells(preset.expandMultiValueCells);
         if (SupportsVariants && _showVariants != preset.showVariants)
         {
             string? sortColumnDefName = _sortColumn?.Def.defName;
@@ -109,7 +154,7 @@ internal sealed partial class ObjectTable<TObject>
             doCloseX = true;
             draggable = true;
             closeOnClickedOutside = true;
-            optionalTitle = "Save Preset";
+            optionalTitle = Localization.Get(Localization.SavePreset);
         }
 
         public override void DoWindowContents(Rect rect)
@@ -121,13 +166,13 @@ internal sealed partial class ObjectTable<TObject>
             rect.CutLeft(out Rect saveRect, 110f).CutLeft(GUIStyles.Global.PadSm);
             Rect cancelRect = new(saveRect.xMax + GUIStyles.Global.PadSm, saveRect.y, 110f, saveRect.height);
 
-            if (Widgets.ButtonText(saveRect, "Save"))
+            if (Widgets.ButtonText(saveRect, Localization.Get(Localization.Save)))
             {
                 _onConfirm(_name.Trim());
                 Close();
             }
 
-            if (Widgets.ButtonText(cancelRect, "Cancel"))
+            if (Widgets.ButtonText(cancelRect, Localization.Get(Localization.Cancel)))
             {
                 Close();
             }

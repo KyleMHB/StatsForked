@@ -25,6 +25,7 @@ public readonly struct ThingDefSetCell : IThingDefSetCell
     private readonly ThingDefIcon? _icon;
     private readonly float _iconWidth;
     private readonly TipSignal _tooltip;
+    private readonly string? _expandedText;
 
     public ThingDefSetCell(IReadOnlyCollection<Verse.ThingDef?> value)
     {
@@ -35,6 +36,7 @@ public readonly struct ThingDefSetCell : IThingDefSetCell
         _icon = null;
         _iconWidth = 0f;
         _tooltip = default;
+        _expandedText = null;
 
         List<Verse.ThingDef> orderedDefs = value
             .Where(thingDef => thingDef != null)
@@ -50,10 +52,18 @@ public readonly struct ThingDefSetCell : IThingDefSetCell
                 ? $"{_firstThingDef.LabelCap} +{hiddenCount}"
                 : _firstThingDef.LabelCap;
             _tooltip = string.Join("\n", orderedDefs.Select(thingDef => thingDef.LabelCap));
+            List<string> expandedLines = orderedDefs
+                .Take(2)
+                .Select(thingDef => thingDef.LabelCap.ToString())
+                .ToList();
+            if (orderedDefs.Count > expandedLines.Count)
+            {
+                expandedLines.Add($"+{orderedDefs.Count - expandedLines.Count} {Localization.Get(Localization.More)}");
+            }
+            _expandedText = string.Join("\n", expandedLines);
             _icon = new ThingDefIcon(_firstThingDef);
             _iconWidth = _icon.Size.x;
-            float textWidth = _previewText.CalcSize(StringNoPad).x;
-            Width = _iconWidth + ContentSpacing + textWidth;
+            Width = _iconWidth + ContentSpacing + expandedLines.Max(line => line.CalcSize(StringNoPad).x);
         }
     }
 
@@ -70,7 +80,7 @@ public readonly struct ThingDefSetCell : IThingDefSetCell
             if (Event.current.type == EventType.Repaint)
             {
                 _icon!.Draw(iconRect);
-                _previewText.Draw(labelRect, StringNoPad);
+                (MultiValueDisplay.IsExpanded ? _expandedText ?? _previewText : _previewText).Draw(labelRect, StringNoPad);
                 rect.Tip(_tooltip);
             }
 

@@ -1,0 +1,51 @@
+using Verse;
+
+namespace Stats;
+
+internal static class Localization
+{
+    internal const string OpenTable = "StatsForked_OpenTable";
+    internal const string Remove = "StatsForked_Remove";
+    internal const string Filters = "StatsForked_Filters";
+    internal const string Columns = "StatsForked_Columns";
+    internal const string Presets = "StatsForked_Presets";
+    internal const string Variants = "StatsForked_Variants";
+    internal const string Values = "StatsForked_Values";
+    internal const string Quality = "StatsForked_Quality";
+    internal const string SaveCurrent = "StatsForked_SaveCurrent";
+    internal const string SavePreset = "StatsForked_SavePreset";
+    internal const string Save = "StatsForked_Save";
+    internal const string Cancel = "StatsForked_Cancel";
+    internal const string Apply = "StatsForked_Apply";
+    internal const string Overwrite = "StatsForked_Overwrite";
+    internal const string Delete = "StatsForked_Delete";
+    internal const string SetDefault = "StatsForked_SetDefault";
+    internal const string ClearDefault = "StatsForked_ClearDefault";
+    internal const string Default = "StatsForked_Default";
+    internal const string Hidden = "StatsForked_Hidden";
+    internal const string AddFilter = "StatsForked_AddFilter";
+    internal const string NoFilters = "StatsForked_NoFilters";
+    internal const string Reset = "StatsForked_Reset";
+    internal const string SortAscending = "StatsForked_SortAscending";
+    internal const string SortDescending = "StatsForked_SortDescending";
+    internal const string ResetWidth = "StatsForked_ResetWidth";
+    internal const string Available = "StatsForked_Available";
+    internal const string HasRecipe = "StatsForked_HasRecipe";
+    internal const string Material = "StatsForked_Material";
+    internal const string RecipeIngredients = "StatsForked_RecipeIngredients";
+    internal const string RecipeBench = "StatsForked_RecipeBench";
+    internal const string Amount = "StatsForked_Amount";
+    internal const string Type = "StatsForked_Type";
+    internal const string ResearchStatus = "StatsForked_ResearchStatus";
+    internal const string Researched = "StatsForked_Researched";
+    internal const string NotResearched = "StatsForked_NotResearched";
+    internal const string NoResearchRequired = "StatsForked_NoResearchRequired";
+    internal const string Expanded = "StatsForked_Expanded";
+    internal const string Compact = "StatsForked_Compact";
+    internal const string More = "StatsForked_More";
+
+    internal static string Get(string key)
+    {
+        return key.Translate().ToString();
+    }
+}

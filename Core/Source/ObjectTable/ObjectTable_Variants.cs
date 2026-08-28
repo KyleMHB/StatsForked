@@ -101,6 +101,12 @@ internal sealed partial class ObjectTable<TObject>
             _toolbar.NotifyColumnRemoved(column);
         }
 
+        foreach (Column column in _filterColumns.Values)
+        {
+            UnregisterColumnFilters(column);
+        }
+        _filterColumns.Clear();
+
         _columns.Clear();
         _leftColumnsCount = 0;
         _sortColumn = null;

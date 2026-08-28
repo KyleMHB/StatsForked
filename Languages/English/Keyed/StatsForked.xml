@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LanguageData>
+    <StatsForked_OpenTable>Open table</StatsForked_OpenTable>
+    <StatsForked_Remove>Remove</StatsForked_Remove>
+    <StatsForked_Filters>Filters</StatsForked_Filters>
+    <StatsForked_Columns>Columns</StatsForked_Columns>
+    <StatsForked_Presets>Presets</StatsForked_Presets>
+    <StatsForked_Variants>Variants</StatsForked_Variants>
+    <StatsForked_Values>Values</StatsForked_Values>
+    <StatsForked_Quality>Quality</StatsForked_Quality>
+    <StatsForked_SaveCurrent>Save current...</StatsForked_SaveCurrent>
+    <StatsForked_SavePreset>Save preset</StatsForked_SavePreset>
+    <StatsForked_Save>Save</StatsForked_Save>
+    <StatsForked_Cancel>Cancel</StatsForked_Cancel>
+    <StatsForked_Apply>Apply</StatsForked_Apply>
+    <StatsForked_Overwrite>Overwrite</StatsForked_Overwrite>
+    <StatsForked_Delete>Delete</StatsForked_Delete>
+    <StatsForked_SetDefault>Set as default</StatsForked_SetDefault>
+    <StatsForked_ClearDefault>Clear default</StatsForked_ClearDefault>
+    <StatsForked_Default>default</StatsForked_Default>
+    <StatsForked_Hidden>hidden</StatsForked_Hidden>
+    <StatsForked_AddFilter>Add column filter</StatsForked_AddFilter>
+    <StatsForked_NoFilters>No filters available.</StatsForked_NoFilters>
+    <StatsForked_Reset>Reset</StatsForked_Reset>
+    <StatsForked_SortAscending>Sort ascending</StatsForked_SortAscending>
+    <StatsForked_SortDescending>Sort descending</StatsForked_SortDescending>
+    <StatsForked_ResetWidth>Reset width</StatsForked_ResetWidth>
+    <StatsForked_Available>available</StatsForked_Available>
+    <StatsForked_HasRecipe>has recipe</StatsForked_HasRecipe>
+    <StatsForked_Material>material</StatsForked_Material>
+    <StatsForked_RecipeIngredients>recipe ingredients</StatsForked_RecipeIngredients>
+    <StatsForked_RecipeBench>recipe bench</StatsForked_RecipeBench>
+    <StatsForked_Amount>Amount</StatsForked_Amount>
+    <StatsForked_Type>Type</StatsForked_Type>
+    <StatsForked_ResearchStatus>Research status</StatsForked_ResearchStatus>
+    <StatsForked_Researched>Researched</StatsForked_Researched>
+    <StatsForked_NotResearched>Not researched</StatsForked_NotResearched>
+    <StatsForked_NoResearchRequired>No research required</StatsForked_NoResearchRequired>
+    <StatsForked_Expanded>Expanded</StatsForked_Expanded>
+    <StatsForked_Compact>Compact</StatsForked_Compact>
+    <StatsForked_More>more</StatsForked_More>
+</LanguageData>

@@ -20,6 +20,7 @@ public readonly struct DefSetCell : IDefSetCell
     public string? Text { get; }
 
     private readonly TipSignal _tooltip;
+    private readonly string? _expandedText;
 
     public DefSetCell(IReadOnlyCollection<Verse.Def> value)
     {
@@ -27,6 +28,7 @@ public readonly struct DefSetCell : IDefSetCell
         Width = 0f;
         Text = null;
         _tooltip = default;
+        _expandedText = null;
 
         List<Verse.Def> orderedDefs = value
             .OrderBy(def => def.LabelCap.RawText)
@@ -39,7 +41,16 @@ public readonly struct DefSetCell : IDefSetCell
                 ? $"{firstDef.LabelCap} +{hiddenCount}"
                 : firstDef.LabelCap;
             _tooltip = string.Join("\n", orderedDefs.Select(def => def.LabelCap));
-            Width = Verse.Text.CalcSize(Text).x;
+            List<string> expandedLines = orderedDefs
+                .Take(2)
+                .Select(def => def.LabelCap.ToString())
+                .ToList();
+            if (orderedDefs.Count > expandedLines.Count)
+            {
+                expandedLines.Add($"+{orderedDefs.Count - expandedLines.Count} {Localization.Get(Localization.More)}");
+            }
+            _expandedText = string.Join("\n", expandedLines);
+            Width = expandedLines.Max(line => Verse.Text.CalcSize(line).x);
         }
     }
 
@@ -47,8 +58,9 @@ public readonly struct DefSetCell : IDefSetCell
     {
         if (Text != null)
         {
+            string displayText = MultiValueDisplay.IsExpanded ? _expandedText ?? Text : Text;
             rect
-                .Label(Text, GUIStyles.TableCell.String)
+                .Label(displayText, GUIStyles.TableCell.String)
                 .Tip(_tooltip);
         }
     }

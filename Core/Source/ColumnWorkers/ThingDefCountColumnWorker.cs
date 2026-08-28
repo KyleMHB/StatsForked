@@ -18,12 +18,12 @@ public abstract class ThingDefCountColumnWorker<TObject, TCell> : ColumnWorker<T
 
     public override ICollection<CellField> GetCellFields(TableWorker tableWorker)
     {
-        Widget countFieldLabel = new Label("Amount");
+        Widget countFieldLabel = new Label(Localization.Get(Localization.Amount));
         Filter countFilter = new NumberFilter((int row) => this[row].Count);
         int CompareByCount(int row1, int row2) => this[row1].Count.CompareTo(this[row2].Count);
         CellField countField = new(countFieldLabel, countFilter, CompareByCount);
 
-        Widget thingDefFieldLabel = new Label("Type");
+        Widget thingDefFieldLabel = new Label(Localization.Get(Localization.Type));
         IEnumerable<NTMFilterOption<Verse.ThingDef?>> thingDefFilterOptions = GetTypeFieldFilterOptions(tableWorker)
             .OrderBy(thingDef => thingDef?.label)
             .Select<Verse.ThingDef?, NTMFilterOption<Verse.ThingDef?>>(

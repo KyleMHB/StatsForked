@@ -36,6 +36,7 @@ public static class GUIStyles
     internal static class Table
     {
         internal const float RowHeight = Text.LineHeight + TableCell.PadVer * 2f;
+        internal const float ExpandedRowHeight = Text.LineHeight * 3f + TableCell.PadVer * 2f;
         internal const float HeadersRowHeight = RowHeight;
         internal static readonly Color ColumnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
         internal static Color FixedPartSeparatorLineColor => HeadersRowBGColor;
