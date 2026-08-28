@@ -9,26 +9,33 @@ Stats Forked keeps the original sortable stats-table framework while updating it
 [*][b]Inventory-aware filters[/b] for colony-owned and map-visible items.
 [*][b]Equipment recipe filters[/b] for apparel and weapons, including recipe presence, ingredients, benches, and material/stuff.
 [*][b]Saved presets[/b] for filters, visible columns, and variant display mode.
+[*][b]Default presets[/b] that apply automatically when a table is opened.
+[*][b]Session restoration[/b] for open tables, their order, and the active table.
+[*][b]Hidden-column filters[/b] that continue filtering without displaying the source column.
 [*][b]Stuffable item variants[/b] so material-specific versions can be compared.
+[*][b]Expanded multi-value cells[/b] with a fixed three-line row mode, while retaining compact display.
+[*][b]Translation-ready interface text[/b] for the table toolbar, menus, and filters.
 [*][b]Bionics comparison[/b] with body part, capacity, efficiency, special effect, and capacity change columns.
 [*][b]Distance-based ranged DPS[/b] for close, short, medium, and long range weapon comparison.
-[*][b]Compatibility modules[/b] for Biotech, Anomaly, Odyssey, and Combat Extended, including Odyssey gameplay tables for books, fish, gravship systems, orbital infrastructure, unique weapons, and fishing outcomes.
+[*][b]Compatibility modules[/b] for Biotech, Anomaly, Odyssey, and Combat Extended, including Odyssey gameplay tables for books, fish, gravship systems, orbital infrastructure, and unique weapons.
 [/list]
 
 [h1]How to Use[/h1]
-Open the Stats table from RimWorld's in-game main tab, choose a table, sort the columns you care about, and use filters to narrow the displayed defs.
+Open the Stats table from RimWorld's in-game main tab, choose a table, sort the columns you care about, and use filters to narrow the displayed defs. Use the Values button to switch between compact and expanded multi-value cells.
 
 [h1]Compatibilities[/h1]
 [list]
 [*][b]Supported RimWorld versions:[/b] 1.6.
 [*][b]Required mod:[/b] Harmony.
 [*][b]Original Stats mod:[/b] Not required. Do not enable it alongside Stats Forked unless deliberately testing compatibility.
-[*][b]Optional content:[/b] Biotech, Anomaly, Odyssey, and Combat Extended modules load when present. Odyssey support includes books, fish, gravship systems, orbital infrastructure, unique weapons, and fishing outcomes.
+[*][b]Optional content:[/b] Biotech, Anomaly, Odyssey, and Combat Extended modules load when present. Odyssey support includes books, fish, gravship systems, orbital infrastructure, and unique weapons.
 [*][b]Load order:[/b] Load Harmony before Stats Forked.
+[*][b]Compatibility assemblies:[/b] Restart RimWorld completely after updating because optional assembly filenames are now unique.
+[*][b]Settings:[/b] Default presets, open-table restoration, and the expanded display preference are stored in global mod settings.
 [/list]
 
 [h1]Settings / Setup Instructions[/h1]
-Presets are stored in RimWorld's mod settings data. Use the mod settings and the table UI to control filters, visible columns, and variant display mode.
+Presets are stored in RimWorld's mod settings data. Use the mod settings and the table UI to control filters, visible columns, variant display mode, and the expanded multi-value display. A filter remains active when its source column is hidden, and its label is marked as hidden in the Filters window.
 
 [hr][/hr]
 

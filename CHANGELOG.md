@@ -2,9 +2,25 @@
 
 ## 2026-08-28
 
+### Added
+
+- Added a default preset action for each table.
+- Added restoration of open tables and the active table between sessions.
+- Added filters that remain active when their columns are hidden.
+- Added translation keys for the table UI and filter labels.
+- Added an optional fixed-height expanded display for multi-value cells.
+
+### Changed
+
+- Compatibility assemblies now use globally unique names: `Stats.Compat.Odyssey.dll`, `Stats.Compat.CE.dll`, `Stats.Compat.Biotech.dll`, and `Stats.Compat.Anomaly.dll`.
+- Presets now persist the expanded multi-value display mode and stable filter identifiers.
+- Runtime-only deployment now includes the English keyed language files.
+
 ### Fixed
 
 - Added missing Combat Extended column tags to remove configuration errors and restore compatible columns to the column menu.
+- Fixed table-window resizing so drag calculations use a stable screen-space anchor and cannot produce invalid geometry.
+- Fixed compatibility assembly collisions with other mods that use generic assembly names such as `Odyssey.dll`.
 
 ## 2026-05-11
 
