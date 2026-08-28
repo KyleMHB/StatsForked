@@ -6,6 +6,9 @@
         <defName>Pawn_WeaponHandling</defName>
         <stat>ShootingAccuracyPawn</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.Compat.CE.BinaryStatColumnDef">
@@ -14,6 +17,9 @@
         <stat>MeleeArmorPenetration</stat>
         <statValueSeparator>,</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Left</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.Compat.CE.BinaryStatColumnDef">
@@ -22,6 +28,9 @@
         <stat>MeleeArmorPenetration</stat>
         <statValueSeparator>,</statValueSeparator>
         <workerClass>Stats.Compat.CE.Thing_BinaryStatColumnWorker_Right</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -29,6 +38,9 @@
         <title>Crit %</title>
         <stat>MeleeCritChance</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -36,6 +48,9 @@
         <title>Parry %</title>
         <stat>MeleeParryChance</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -43,6 +58,9 @@
         <title>NV %</title>
         <stat>NightVisionEfficiency</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsPawn</li>
+        </tags>
     </Stats.ColumnDef>
 
 </Defs>

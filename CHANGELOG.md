@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-08-28
+
+### Fixed
+
+- Added missing Combat Extended column tags to remove configuration errors and restore compatible columns to the column menu.
+
 ## 2026-05-11
 
 ### Added

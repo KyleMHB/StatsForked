@@ -7,6 +7,9 @@
         <title>Bulk<IncreaseNegative/></title>
         <stat>WornBulk</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_IsApparel</li>
+        </tags>
     </Stats.ColumnDef>
 
 </Defs>

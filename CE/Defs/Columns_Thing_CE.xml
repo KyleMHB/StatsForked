@@ -6,6 +6,9 @@
         <defName>Thing_Bulk</defName>
         <stat>Bulk</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing</li>
+        </tags>
     </Stats.ColumnDef>
 
     <Stats.ColumnDef Class="Stats.StatColumnDef">
@@ -13,6 +16,9 @@
         <title><Armor/><Electricity/></title>
         <stat>ArmorRating_Electric</stat>
         <workerClass>Stats.ColumnWorkers.BuildableDef.StatColumnWorker</workerClass>
+        <tags>
+            <li>Thing_HasArmor</li>
+        </tags>
     </Stats.ColumnDef>
 
 </Defs>
