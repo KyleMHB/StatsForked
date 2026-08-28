@@ -20,7 +20,18 @@
     <StatsForked_ClearDefault>Clear default</StatsForked_ClearDefault>
     <StatsForked_Default>default</StatsForked_Default>
     <StatsForked_Hidden>hidden</StatsForked_Hidden>
-    <StatsForked_AddFilter>Add column filter</StatsForked_AddFilter>
+    <StatsForked_AddFilter>+ Add filter</StatsForked_AddFilter>
+    <StatsForked_SearchFilters>Search filters</StatsForked_SearchFilters>
+    <StatsForked_TableFilters>Table filters</StatsForked_TableFilters>
+    <StatsForked_VisibleColumns>Visible columns</StatsForked_VisibleColumns>
+    <StatsForked_HiddenColumns>Hidden columns</StatsForked_HiddenColumns>
+    <StatsForked_HiddenColumn>Hidden column</StatsForked_HiddenColumn>
+    <StatsForked_NoFiltersApplied>No filters applied. Add a filter using any visible or hidden column.</StatsForked_NoFiltersApplied>
+    <StatsForked_NoFilterResults>No matching filters.</StatsForked_NoFilterResults>
+    <StatsForked_RemoveFilter>Remove filter</StatsForked_RemoveFilter>
+    <StatsForked_ResetAll>Reset all</StatsForked_ResetAll>
+    <StatsForked_ValuesExpandTip>Show more values in each cell</StatsForked_ValuesExpandTip>
+    <StatsForked_ValuesCompactTip>Use compact values</StatsForked_ValuesCompactTip>
     <StatsForked_NoFilters>No filters available.</StatsForked_NoFilters>
     <StatsForked_Reset>Reset</StatsForked_Reset>
     <StatsForked_SortAscending>Sort ascending</StatsForked_SortAscending>

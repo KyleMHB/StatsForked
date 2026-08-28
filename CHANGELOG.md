@@ -15,13 +15,17 @@
 
 - Compatibility assemblies now use globally unique names: `Stats.Compat.Odyssey.dll`, `Stats.Compat.CE.dll`, `Stats.Compat.Biotech.dll`, and `Stats.Compat.Anomaly.dll`.
 - Presets now persist the expanded multi-value display mode and stable filter identifiers.
-- Runtime-only deployment now includes the English keyed language files.
+- The Filters window now shows active filters and the filter being configured, with a searchable picker grouped into table, visible-column, and hidden-column filters.
+- Expanded multi-value cells now use denser two-line rows with the full value list retained in tooltips.
+- Runtime-only deployment now packages the English keyed language files beneath the always-loaded Core folder.
 
 ### Fixed
 
 - Added missing Combat Extended column tags to remove configuration errors and restore compatible columns to the column menu.
 - Fixed table-window resizing so drag calculations use a stable screen-space anchor and cannot produce invalid geometry.
 - Fixed the Add column filter action so a new hidden filter remains available while it is being configured.
+- Fixed table toolbar and filter controls displaying raw translation keys instead of English labels.
+- Fixed inactive hidden filter drafts remaining registered after the Filters window closes.
 - Fixed compatibility assembly collisions with other mods that use generic assembly names such as `Odyssey.dll`.
 
 ## 2026-05-11

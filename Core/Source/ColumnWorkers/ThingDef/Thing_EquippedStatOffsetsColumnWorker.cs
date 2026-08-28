@@ -69,7 +69,7 @@ public sealed class EquippedStatOffsetsColumnWorker(ColumnDef columnDef)
             Width = Text.CalcSize(GUIStyles.TableCell.StringNoPad).x;
             _tooltip = string.Join("\n", statOffsets.Select(StatOffsetToString));
             List<string> expandedLines = statOffsets
-                .Take(2)
+                .Take(1)
                 .Select(StatOffsetToString)
                 .ToList();
             if (statOffsets.Count > expandedLines.Count)

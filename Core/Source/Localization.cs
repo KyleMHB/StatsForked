@@ -24,6 +24,17 @@ internal static class Localization
     internal const string Default = "StatsForked_Default";
     internal const string Hidden = "StatsForked_Hidden";
     internal const string AddFilter = "StatsForked_AddFilter";
+    internal const string SearchFilters = "StatsForked_SearchFilters";
+    internal const string TableFilters = "StatsForked_TableFilters";
+    internal const string VisibleColumns = "StatsForked_VisibleColumns";
+    internal const string HiddenColumns = "StatsForked_HiddenColumns";
+    internal const string HiddenColumn = "StatsForked_HiddenColumn";
+    internal const string NoFiltersApplied = "StatsForked_NoFiltersApplied";
+    internal const string NoFilterResults = "StatsForked_NoFilterResults";
+    internal const string RemoveFilter = "StatsForked_RemoveFilter";
+    internal const string ResetAll = "StatsForked_ResetAll";
+    internal const string ValuesExpandTip = "StatsForked_ValuesExpandTip";
+    internal const string ValuesCompactTip = "StatsForked_ValuesCompactTip";
     internal const string NoFilters = "StatsForked_NoFilters";
     internal const string Reset = "StatsForked_Reset";
     internal const string SortAscending = "StatsForked_SortAscending";

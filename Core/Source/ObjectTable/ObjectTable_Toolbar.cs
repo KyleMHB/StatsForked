@@ -92,6 +92,10 @@ internal sealed partial class ObjectTable<TObject>
             bool valuesButtonWasClicked = _valuesButton.Draw(
                 valuesButtonRect,
                 _parent.ExpandMultiValueCells ? Verse.Widgets.CheckboxOnTex : Verse.Widgets.CheckboxOffTex);
+            valuesButtonRect.Tip(Localization.Get(
+                _parent.ExpandMultiValueCells
+                    ? Localization.ValuesCompactTip
+                    : Localization.ValuesExpandTip));
             bool qualityButtonWasClicked = _parent.SupportsQuality && DrawQualityButton(qualityButtonRect);
             infoIconRect
                 .ContractedBy(ButtonStyle.PadVer)

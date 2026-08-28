@@ -4,6 +4,7 @@ using System.Linq;
 using RimWorld;
 using Stats.ColumnWorkers;
 using Stats.Filters;
+using Stats.Utils;
 using Stats.Utils.Extensions;
 using Stats.Utils.GUIScopes;
 using Stats.Utils.Widgets;
@@ -414,31 +415,37 @@ internal sealed partial class ObjectTable<TObject>
                     : new NTMFilterOption<ThingDef?>(thingDef, thingDef.LabelCap, new LegacyThingDefIcon(thingDef)));
     }
 
-    private FloatMenu MakeAddFilterMenu()
+    private readonly record struct FilterEntry(string Key, Column? Column, FilterLabelWidget Label, string LabelText, Filter Widget, string FilterId);
+
+    private enum FilterPickerGroup
     {
-        List<FloatMenuOption> options = _tableWorker.CompatibleColumns
-            .Where(columnDef => HasRegisteredColumnFilter(columnDef.defName) == false)
-            .Select(columnDef => new FloatMenuOption(
-                columnDef.LabelCap,
-                () => AddColumnFilter(columnDef)))
-            .ToList();
-
-        if (options.Count == 0)
-        {
-            options.Add(new FloatMenuOption(Localization.Get(Localization.NoFilters), null));
-        }
-
-        return new FloatMenu(options);
+        Table,
+        Visible,
+        Hidden,
     }
 
-    private readonly record struct FilterEntry(string Key, Column? Column, FilterLabelWidget Label, string LabelText, Filter Widget, string FilterId);
+    private readonly record struct FilterPickerOption(
+        string Label,
+        FilterPickerGroup Group,
+        FilterEntry? TableFilter,
+        ColumnDef? ColumnDef);
 
     private sealed class FiltersWindow : Window
     {
         protected override float Margin => GUIStyles.Global.Pad;
 
+        private const string SearchControlName = "StatsForked_FilterSearch";
+        private const float ControlHeight = 30f;
+        private const float PickerRowHeight = 30f;
+        private const float RemoveButtonSize = 28f;
+
         private readonly ObjectTable<TObject> _parent;
+        private readonly HashSet<string> _draftFilterIds = [];
         private Vector2 _scrollPosition;
+        private Vector2 _pickerScrollPosition;
+        private bool _showPicker;
+        private bool _focusSearchField;
+        private string _filterSearch = "";
 
         public FiltersWindow(ObjectTable<TObject> parent)
         {
@@ -451,27 +458,43 @@ internal sealed partial class ObjectTable<TObject>
 
         public override void DoWindowContents(Rect rect)
         {
+            if (_showPicker && Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
+            {
+                ClosePicker();
+                Event.current.Use();
+            }
+
             rect
-                .CutTop(out Rect controlsRect, 30f)
+                .CutTop(out Rect controlsRect, ControlHeight)
                 .TakeRest(out Rect filtersRect);
 
             DrawControls(controlsRect);
+            filtersRect.yMin += GUIStyles.Global.Pad;
 
-            if (_parent._filters.Count == 0)
+            if (_showPicker)
             {
-                Widgets.Label(filtersRect, Localization.Get(Localization.NoFilters));
+                DrawPicker(filtersRect);
                 return;
             }
 
-            float labelWidth = _parent._filters
-                .Select(GetDisplayLabel)
-                .Max(filter => filter.Size.x);
+            List<FilterEntry> displayedFilters = GetDisplayedFilters();
+            if (displayedFilters.Count == 0)
+            {
+                Widgets.Label(filtersRect, Localization.Get(Localization.NoFiltersApplied));
+                return;
+            }
+
+            float labelWidth = Mathf.Min(displayedFilters
+                .Select(filter => GetDisplayLabel(filter).Size.x)
+                .Max(), 240f);
             float rowGap = GUIStyles.Global.PadSm;
             float contentHeight = 0f;
-            float filterWidth = Mathf.Max(filtersRect.width - labelWidth - GUIStyles.Global.Pad - GenUI.ScrollBarWidth, 160f);
+            float filterWidth = Mathf.Max(
+                filtersRect.width - labelWidth - GUIStyles.Global.Pad - RemoveButtonSize - GUIStyles.Global.PadSm - GenUI.ScrollBarWidth,
+                160f);
             Vector2 filterContainerSize = new(filterWidth, filtersRect.height);
 
-            foreach (FilterEntry filter in _parent._filters)
+            foreach (FilterEntry filter in displayedFilters)
             {
                 contentHeight += Mathf.Max(filter.Label.Size.y, filter.Widget.GetSize(filterContainerSize).y) + rowGap;
             }
@@ -480,10 +503,13 @@ internal sealed partial class ObjectTable<TObject>
             using (new GUIScrollScope(filtersRect, ref _scrollPosition, viewRect))
             {
                 Rect rowRect = new(0f, 0f, viewRect.width, 0f);
-                foreach (FilterEntry filter in _parent._filters)
+                foreach (FilterEntry filter in displayedFilters)
                 {
                     rowRect.height = Mathf.Max(filter.Label.Size.y, filter.Widget.GetSize(filterContainerSize).y);
-                    DrawFilterRow(rowRect, filter, labelWidth);
+                    if (DrawFilterRow(rowRect, filter, labelWidth))
+                    {
+                        break;
+                    }
                     rowRect.y = rowRect.yMax + rowGap;
                 }
             }
@@ -491,13 +517,14 @@ internal sealed partial class ObjectTable<TObject>
 
         public override void PostClose()
         {
+            _parent.ReleaseUnusedFilterColumns();
             _parent._filtersWindow = null;
             base.PostClose();
         }
 
         protected override void SetInitialSizeAndPosition()
         {
-            Vector2 size = new(Mathf.Min(UI.screenWidth * 0.45f, 520f), Mathf.Min(UI.screenHeight * 0.6f, 420f));
+            Vector2 size = new(Mathf.Min(UI.screenWidth * 0.55f, 640f), Mathf.Min(UI.screenHeight * 0.65f, 500f));
             Vector2 position = UI.MousePositionOnUIInverted;
 
             if (position.x + size.x > UI.screenWidth)
@@ -517,51 +544,273 @@ internal sealed partial class ObjectTable<TObject>
 
         private void DrawControls(Rect rect)
         {
-            rect.CutLeft(out Rect resetButtonRect, 90f);
-            if (Widgets.ButtonText(resetButtonRect, Localization.Get(Localization.Reset)))
-            {
-                _parent.ResetFilters();
-            }
-
-            rect.CutLeft(GUIStyles.Global.PadSm).CutLeft(out Rect addFilterButtonRect, 140f);
+            rect.CutLeft(out Rect addFilterButtonRect, 130f);
             if (Widgets.ButtonText(addFilterButtonRect, Localization.Get(Localization.AddFilter)))
             {
-                _parent.MakeAddFilterMenu().Open();
+                if (_showPicker)
+                {
+                    ClosePicker();
+                }
+                else
+                {
+                    _showPicker = true;
+                    _filterSearch = "";
+                    _pickerScrollPosition = Vector2.zero;
+                    _focusSearchField = true;
+                }
             }
+
+            rect.CutRight(out Rect resetButtonRect, 100f);
+            bool hasActiveFilters = _parent._filters.Any(filter => filter.Widget.IsActive);
+            bool guiEnabled = GUI.enabled;
+            GUI.enabled = guiEnabled && hasActiveFilters;
+            if (Widgets.ButtonText(resetButtonRect, Localization.Get(Localization.ResetAll)))
+            {
+                _parent.ResetFilters();
+                _draftFilterIds.Clear();
+            }
+            GUI.enabled = guiEnabled;
         }
 
         private Widget GetDisplayLabel(FilterEntry filter)
         {
-            if (filter.Column != null && _parent._columns.Contains(filter.Column) == false)
+            if (filter.Column != null)
             {
                 string columnLabel = filter.Column.Def.LabelCap;
                 string filterLabel = filter.LabelText;
                 string displayLabel = columnLabel.Length == 0
+                    || filter.Label is not Label
                     || string.Equals(columnLabel, filterLabel, StringComparison.OrdinalIgnoreCase)
-                    ? filterLabel
+                    ? columnLabel.Length > 0 ? columnLabel : filterLabel
                     : $"{columnLabel}: {filterLabel}";
-                return new Label($"{displayLabel} ({Localization.Get(Localization.Hidden)})");
+
+                if (_parent._columns.Contains(filter.Column) == false)
+                {
+                    displayLabel = $"{displayLabel} [{Localization.Get(Localization.HiddenColumn)}]";
+                }
+
+                return new Label(displayLabel);
             }
 
             return filter.Label;
         }
 
-        private void DrawFilterRow(Rect rect, FilterEntry filter, float labelWidth)
+        private bool DrawFilterRow(Rect rect, FilterEntry filter, float labelWidth)
         {
             rect
                 .CutLeft(out Rect labelRect, labelWidth)
                 .CutLeft(GUIStyles.Global.Pad)
+                .CutRight(out Rect removeButtonRect, RemoveButtonSize)
+                .CutRight(GUIStyles.Global.PadSm)
                 .TakeRest(out Rect filterRect);
 
             Widget label = GetDisplayLabel(filter);
             labelRect.y += (labelRect.height - label.Size.y) / 2f;
             labelRect.height = label.Size.y;
             label.Draw(labelRect);
+            if (label is Label textLabel)
+            {
+                labelRect.Tip(textLabel.Text);
+            }
 
             Vector2 filterSize = filter.Widget.GetSize(filterRect.size);
             filterRect.y += (filterRect.height - filterSize.y) / 2f;
             filterRect.height = filterSize.y;
             filter.Widget.Draw(filterRect, filterRect.size);
+
+            removeButtonRect.y += (removeButtonRect.height - RemoveButtonSize) / 2f;
+            removeButtonRect.height = RemoveButtonSize;
+            removeButtonRect.Tip(Localization.Get(Localization.RemoveFilter));
+            if (removeButtonRect.ButtonImageSubtle(TexButton.Delete))
+            {
+                RemoveFilter(filter);
+                return true;
+            }
+
+            return false;
+        }
+
+        private List<FilterEntry> GetDisplayedFilters()
+        {
+            HashSet<string> activeColumnKeys = _parent._filters
+                .Where(filter => filter.Column != null && filter.Widget.IsActive)
+                .Select(filter => filter.Key)
+                .ToHashSet();
+
+            return _parent._filters
+                .Where(filter => filter.Widget.IsActive
+                    || _draftFilterIds.Contains(filter.FilterId)
+                    || filter.Column != null && activeColumnKeys.Contains(filter.Key))
+                .ToList();
+        }
+
+        private void RemoveFilter(FilterEntry filter)
+        {
+            if (filter.Column == null)
+            {
+                if (filter.Widget.IsActive)
+                {
+                    filter.Widget.Reset();
+                }
+                _draftFilterIds.Remove(filter.FilterId);
+                return;
+            }
+
+            List<FilterEntry> group = _parent._filters
+                .Where(candidate => candidate.Key == filter.Key)
+                .ToList();
+            foreach (FilterEntry groupFilter in group)
+            {
+                if (groupFilter.Widget.IsActive)
+                {
+                    groupFilter.Widget.Reset();
+                }
+                _draftFilterIds.Remove(groupFilter.FilterId);
+            }
+            _parent.ReleaseUnusedFilterColumns();
+        }
+
+        private void DrawPicker(Rect rect)
+        {
+            rect.CutTop(out Rect searchRowRect, ControlHeight);
+            searchRowRect.CutLeft(out Rect searchLabelRect, 110f).CutLeft(GUIStyles.Global.PadSm).TakeRest(out Rect searchFieldRect);
+            Widgets.Label(searchLabelRect, Localization.Get(Localization.SearchFilters));
+
+            GUI.SetNextControlName(SearchControlName);
+            _filterSearch = Widgets.TextField(searchFieldRect, _filterSearch);
+            if (_focusSearchField && Event.current.type == EventType.Repaint)
+            {
+                GUI.FocusControl(SearchControlName);
+                _focusSearchField = false;
+            }
+
+            rect.yMin = searchRowRect.yMax + GUIStyles.Global.Pad;
+            List<FilterPickerOption> options = GetPickerOptions();
+            if (options.Count == 0)
+            {
+                Widgets.Label(rect, Localization.Get(Localization.NoFilterResults));
+                return;
+            }
+
+            float contentHeight = 0f;
+            foreach (FilterPickerGroup group in Enum.GetValues(typeof(FilterPickerGroup)))
+            {
+                if (options.Any(option => option.Group == group))
+                {
+                    contentHeight += Text.LineHeight + GUIStyles.Global.PadSm;
+                    contentHeight += options.Count(option => option.Group == group) * PickerRowHeight;
+                    contentHeight += GUIStyles.Global.Pad;
+                }
+            }
+
+            Rect viewRect = new(0f, 0f, Mathf.Max(rect.width - GenUI.ScrollBarWidth, 1f), Mathf.Max(rect.height, contentHeight));
+            using (new GUIScrollScope(rect, ref _pickerScrollPosition, viewRect))
+            {
+                float y = 0f;
+                foreach (FilterPickerGroup group in Enum.GetValues(typeof(FilterPickerGroup)))
+                {
+                    List<FilterPickerOption> groupOptions = options.Where(option => option.Group == group).ToList();
+                    if (groupOptions.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    Rect headingRect = new(0f, y, viewRect.width, Text.LineHeight);
+                    Widgets.Label(headingRect, GetPickerGroupLabel(group));
+                    y = headingRect.yMax + GUIStyles.Global.PadSm;
+
+                    foreach (FilterPickerOption option in groupOptions)
+                    {
+                        Rect optionRect = new(0f, y, viewRect.width, PickerRowHeight);
+                        if (Widgets.ButtonText(optionRect, option.Label))
+                        {
+                            SelectPickerOption(option);
+                            return;
+                        }
+                        y = optionRect.yMax;
+                    }
+
+                    y += GUIStyles.Global.Pad;
+                }
+            }
+        }
+
+        private List<FilterPickerOption> GetPickerOptions()
+        {
+            HashSet<string> displayedFilterIds = GetDisplayedFilters()
+                .Select(filter => filter.FilterId)
+                .ToHashSet();
+            List<FilterPickerOption> options = [];
+
+            foreach (FilterEntry tableFilter in _parent._filters
+                         .Where(filter => filter.Column == null && displayedFilterIds.Contains(filter.FilterId) == false)
+                         .OrderBy(filter => filter.LabelText))
+            {
+                options.Add(new FilterPickerOption(tableFilter.LabelText, FilterPickerGroup.Table, tableFilter, null));
+            }
+
+            foreach (ColumnDef columnDef in _parent._tableWorker.CompatibleColumns.OrderBy(column => column.LabelCap.RawText))
+            {
+                bool alreadyDisplayed = _parent._filters.Any(filter =>
+                    filter.Key == columnDef.defName && displayedFilterIds.Contains(filter.FilterId));
+                if (alreadyDisplayed)
+                {
+                    continue;
+                }
+
+                bool isVisible = _parent._columns.Any(column => column.Def == columnDef);
+                options.Add(new FilterPickerOption(
+                    columnDef.LabelCap,
+                    isVisible ? FilterPickerGroup.Visible : FilterPickerGroup.Hidden,
+                    null,
+                    columnDef));
+            }
+
+            if (_filterSearch.Length > 0)
+            {
+                options = options
+                    .Where(option => option.Label.IndexOf(_filterSearch, StringComparison.OrdinalIgnoreCase) >= 0)
+                    .ToList();
+            }
+
+            return options;
+        }
+
+        private static string GetPickerGroupLabel(FilterPickerGroup group)
+        {
+            return group switch
+            {
+                FilterPickerGroup.Table => Localization.Get(Localization.TableFilters),
+                FilterPickerGroup.Visible => Localization.Get(Localization.VisibleColumns),
+                FilterPickerGroup.Hidden => Localization.Get(Localization.HiddenColumns),
+                _ => "",
+            };
+        }
+
+        private void SelectPickerOption(FilterPickerOption option)
+        {
+            if (option.TableFilter is { } tableFilter)
+            {
+                _draftFilterIds.Add(tableFilter.FilterId);
+            }
+            else if (option.ColumnDef != null)
+            {
+                _parent.AddColumnFilter(option.ColumnDef);
+                foreach (FilterEntry filter in _parent._filters.Where(filter => filter.Key == option.ColumnDef.defName))
+                {
+                    _draftFilterIds.Add(filter.FilterId);
+                }
+            }
+
+            ClosePicker();
+        }
+
+        private void ClosePicker()
+        {
+            _showPicker = false;
+            _filterSearch = "";
+            _pickerScrollPosition = Vector2.zero;
+            GUI.FocusControl(null);
         }
     }
 }

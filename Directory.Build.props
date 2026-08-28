@@ -32,7 +32,7 @@
         <ItemGroup>
             <RootRuntimeFiles Include="$(RepoRoot)LoadFolders.xml" Condition="Exists('$(RepoRoot)LoadFolders.xml')" />
             <AboutRuntimeFiles Include="$(RepoRoot)About\**\*.*" Condition="Exists('$(RepoRoot)About')" />
-            <LanguageRuntimeFiles Include="$(RepoRoot)Languages\**\*.*" Condition="Exists('$(RepoRoot)Languages')" />
+            <CoreLanguageRuntimeFiles Include="$(RepoRoot)Core\Languages\**\*.*" Condition="Exists('$(RepoRoot)Core\Languages')" />
 
             <CoreAssemblyFiles Include="$(RepoRoot)Core\Assemblies\*.dll" Condition="Exists('$(RepoRoot)Core\Assemblies')" />
             <CoreDefFiles Include="$(RepoRoot)Core\Defs\**\*.*" Condition="Exists('$(RepoRoot)Core\Defs')" />
@@ -73,10 +73,10 @@
             SkipUnchangedFiles="true"
             Condition="'@(AboutRuntimeFiles)' != ''" />
         <Copy
-            SourceFiles="@(LanguageRuntimeFiles)"
-            DestinationFiles="@(LanguageRuntimeFiles->'$(RuntimeOnlyRoot)\Languages\%(RecursiveDir)%(Filename)%(Extension)')"
+            SourceFiles="@(CoreLanguageRuntimeFiles)"
+            DestinationFiles="@(CoreLanguageRuntimeFiles->'$(RuntimeOnlyRoot)\Core\Languages\%(RecursiveDir)%(Filename)%(Extension)')"
             SkipUnchangedFiles="true"
-            Condition="'@(LanguageRuntimeFiles)' != ''" />
+            Condition="'@(CoreLanguageRuntimeFiles)' != ''" />
 
         <Copy
             SourceFiles="@(CoreAssemblyFiles)"

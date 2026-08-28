@@ -12,6 +12,6 @@ Invoke-RimWorldModDeploy `
     -Configuration "Release" `
     -DotNetHome (Join-Path $PSScriptRoot ".dotnet") `
     -BuildArguments @("-m:1", "/p:UseSharedCompilation=false") `
-    -Folders @("About", "Languages", "Core", "Biotech", "Anomaly", "Odyssey", "CE") `
+    -Folders @("About", "Core", "Biotech", "Anomaly", "Odyssey", "CE") `
     -Files @("LoadFolders.xml") `
     -RemoveFilePatterns @("*.pdb", "Odyssey.dll", "CE.dll", "Biotech.dll", "Anomaly.dll")

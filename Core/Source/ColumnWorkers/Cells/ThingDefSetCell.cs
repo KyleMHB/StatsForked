@@ -53,7 +53,7 @@ public readonly struct ThingDefSetCell : IThingDefSetCell
                 : _firstThingDef.LabelCap;
             _tooltip = string.Join("\n", orderedDefs.Select(thingDef => thingDef.LabelCap));
             List<string> expandedLines = orderedDefs
-                .Take(2)
+                .Take(1)
                 .Select(thingDef => thingDef.LabelCap.ToString())
                 .ToList();
             if (orderedDefs.Count > expandedLines.Count)
