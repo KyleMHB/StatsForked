@@ -41,8 +41,11 @@ public readonly struct DefSetCell : IDefSetCell
                 ? $"{firstDef.LabelCap} +{hiddenCount}"
                 : firstDef.LabelCap;
             _tooltip = string.Join("\n", orderedDefs.Select(def => def.LabelCap));
+            int visibleValueCount = orderedDefs.Count > MultiValueDisplay.MaxLines
+                ? MultiValueDisplay.MaxLines - 1
+                : MultiValueDisplay.MaxLines;
             List<string> expandedLines = orderedDefs
-                .Take(1)
+                .Take(visibleValueCount)
                 .Select(def => def.LabelCap.ToString())
                 .ToList();
             if (orderedDefs.Count > expandedLines.Count)

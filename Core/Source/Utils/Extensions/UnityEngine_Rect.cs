@@ -54,6 +54,13 @@ public static class UnityEngine_Rect
         return result = rect;
     }
 
+    public static Rect Centered(this Rect rect, Vector2 size)
+    {
+        rect.position += (rect.size - size) / 2f;
+        rect.size = size;
+        return rect;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Obsolete]
     internal static Rect CutByY(ref this Rect rect, float amount)

@@ -50,10 +50,12 @@ public readonly struct ThingDefCountCell : IThingDefCountCell
                 .CutRight(ContentSpacing)
                 .TakeRest(out Rect labelRect);
 
+            iconRect = iconRect.Centered(_icon!.Size);
+
             if (Event.current.type == EventType.Repaint)
             {
                 _text!.Draw(labelRect, NumberNoPad);
-                _icon!.Draw(iconRect);
+                _icon.Draw(iconRect);
                 iconRect.Tip(_tooltip);
             }
 

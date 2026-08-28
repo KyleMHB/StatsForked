@@ -74,6 +74,8 @@ public sealed class BionicLabelColumnWorker(ColumnDef columnDef) : ColumnWorker<
                 .CutLeft(GUIStyles.TableCell.ContentSpacing)
                 .TakeRest(out Rect labelRect);
 
+            iconRect = iconRect.Centered(_icon.Size);
+
             if (Event.current.type == EventType.Repaint)
             {
                 _icon.Draw(iconRect);

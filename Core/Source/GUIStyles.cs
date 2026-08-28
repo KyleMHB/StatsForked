@@ -36,7 +36,7 @@ public static class GUIStyles
     internal static class Table
     {
         internal const float RowHeight = Text.LineHeight + TableCell.PadVer * 2f;
-        internal const float ExpandedRowHeight = Text.LineHeight * 2f + TableCell.PadVer * 2f;
+        internal const float ExpandedRowHeight = Text.LineHeight * MultiValueDisplay.MaxLines + TableCell.PadVer * 2f;
         internal const float HeadersRowHeight = RowHeight;
         internal static readonly Color ColumnSeparatorLineColor = new(1f, 1f, 1f, 0.05f);
         internal static Color FixedPartSeparatorLineColor => HeadersRowBGColor;
@@ -80,17 +80,17 @@ public static class GUIStyles
             RectOffset padding = new(_PadHor, _PadHor, _PadVer, _PadVer);
 
             StringNoPad = new GUIStyle(_baseStyle);
-            StringNoPad.alignment = TextAnchor.LowerLeft;
+            StringNoPad.alignment = TextAnchor.MiddleLeft;
             String = new GUIStyle(StringNoPad);
             String.padding = padding;
 
             NumberNoPad = new GUIStyle(_baseStyle);
-            NumberNoPad.alignment = TextAnchor.LowerRight;
+            NumberNoPad.alignment = TextAnchor.MiddleRight;
             Number = new GUIStyle(NumberNoPad);
             Number.padding = padding;
 
             BooleanNoPad = new GUIStyle(_baseStyle);
-            BooleanNoPad.alignment = TextAnchor.LowerCenter;
+            BooleanNoPad.alignment = TextAnchor.MiddleCenter;
             Boolean = new GUIStyle(BooleanNoPad);
             Boolean.padding = padding;
         }

@@ -52,8 +52,11 @@ public readonly struct ThingDefSetCell : IThingDefSetCell
                 ? $"{_firstThingDef.LabelCap} +{hiddenCount}"
                 : _firstThingDef.LabelCap;
             _tooltip = string.Join("\n", orderedDefs.Select(thingDef => thingDef.LabelCap));
+            int visibleValueCount = orderedDefs.Count > MultiValueDisplay.MaxLines
+                ? MultiValueDisplay.MaxLines - 1
+                : MultiValueDisplay.MaxLines;
             List<string> expandedLines = orderedDefs
-                .Take(1)
+                .Take(visibleValueCount)
                 .Select(thingDef => thingDef.LabelCap.ToString())
                 .ToList();
             if (orderedDefs.Count > expandedLines.Count)
@@ -77,9 +80,11 @@ public readonly struct ThingDefSetCell : IThingDefSetCell
                 .CutLeft(ContentSpacing)
                 .TakeRest(out Rect labelRect);
 
+            iconRect = iconRect.Centered(_icon!.Size);
+
             if (Event.current.type == EventType.Repaint)
             {
-                _icon!.Draw(iconRect);
+                _icon.Draw(iconRect);
                 (MultiValueDisplay.IsExpanded ? _expandedText ?? _previewText : _previewText).Draw(labelRect, StringNoPad);
                 rect.Tip(_tooltip);
             }

@@ -122,9 +122,11 @@ public sealed class LabelColumnWorker(ColumnDef columnDef) : ColumnWorker<DefBas
                     .CutLeft(ContentSpacing)
                     .TakeRest(out Rect labelRect);
 
+                iconRect = iconRect.Centered(_icon!.Size);
+
                 if (Event.current.type == EventType.Repaint)
                 {
-                    _icon!.Draw(iconRect);
+                    _icon.Draw(iconRect);
                     Text!.Draw(labelRect, StringNoPad);
                 }
 

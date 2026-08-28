@@ -4,6 +4,8 @@ namespace Stats;
 
 internal static class MultiValueDisplay
 {
+    internal const int MaxLines = 10;
+
     [ThreadStatic]
     private static bool _isExpanded;
 

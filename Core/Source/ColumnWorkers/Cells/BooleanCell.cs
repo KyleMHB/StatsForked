@@ -28,6 +28,7 @@ public readonly struct BooleanCell : IBooleanCell
         {
             rect
                 .ContractedByObjectTableCellPadding()
+                .Centered(new Vector2(GUIStyles.Text.LineHeight, GUIStyles.Text.LineHeight))
                 .DrawTextureFitted(Verse.Widgets.CheckboxOnTex);
         }
     }

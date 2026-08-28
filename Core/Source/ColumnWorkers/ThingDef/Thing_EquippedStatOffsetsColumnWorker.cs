@@ -68,8 +68,11 @@ public sealed class EquippedStatOffsetsColumnWorker(ColumnDef columnDef)
                 : firstOffsetText;
             Width = Text.CalcSize(GUIStyles.TableCell.StringNoPad).x;
             _tooltip = string.Join("\n", statOffsets.Select(StatOffsetToString));
+            int visibleValueCount = statOffsets.Count > MultiValueDisplay.MaxLines
+                ? MultiValueDisplay.MaxLines - 1
+                : MultiValueDisplay.MaxLines;
             List<string> expandedLines = statOffsets
-                .Take(1)
+                .Take(visibleValueCount)
                 .Select(StatOffsetToString)
                 .ToList();
             if (statOffsets.Count > expandedLines.Count)
