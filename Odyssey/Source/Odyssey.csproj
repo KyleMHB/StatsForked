@@ -3,6 +3,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <RootNamespace>Stats.Compat.Odyssey</RootNamespace>
+        <AssemblyName>Stats.Compat.Odyssey</AssemblyName>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\Core\Source\Core.csproj">

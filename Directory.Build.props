@@ -32,6 +32,7 @@
         <ItemGroup>
             <RootRuntimeFiles Include="$(RepoRoot)LoadFolders.xml" Condition="Exists('$(RepoRoot)LoadFolders.xml')" />
             <AboutRuntimeFiles Include="$(RepoRoot)About\**\*.*" Condition="Exists('$(RepoRoot)About')" />
+            <LanguageRuntimeFiles Include="$(RepoRoot)Languages\**\*.*" Condition="Exists('$(RepoRoot)Languages')" />
 
             <CoreAssemblyFiles Include="$(RepoRoot)Core\Assemblies\*.dll" Condition="Exists('$(RepoRoot)Core\Assemblies')" />
             <CoreDefFiles Include="$(RepoRoot)Core\Defs\**\*.*" Condition="Exists('$(RepoRoot)Core\Defs')" />
@@ -71,6 +72,11 @@
             DestinationFiles="@(AboutRuntimeFiles->'$(RuntimeOnlyRoot)\About\%(RecursiveDir)%(Filename)%(Extension)')"
             SkipUnchangedFiles="true"
             Condition="'@(AboutRuntimeFiles)' != ''" />
+        <Copy
+            SourceFiles="@(LanguageRuntimeFiles)"
+            DestinationFiles="@(LanguageRuntimeFiles->'$(RuntimeOnlyRoot)\Languages\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+            Condition="'@(LanguageRuntimeFiles)' != ''" />
 
         <Copy
             SourceFiles="@(CoreAssemblyFiles)"
@@ -176,5 +182,9 @@
             DestinationFiles="@(CeTextureFiles->'$(RuntimeOnlyRoot)\CE\Textures\%(RecursiveDir)%(Filename)%(Extension)')"
             SkipUnchangedFiles="true"
             Condition="'@(CeTextureFiles)' != ''" />
+    </Target>
+
+    <Target Name="RemoveObsoleteCompatibilityAssemblies" BeforeTargets="Build">
+        <Delete Files="$(RepoRoot)Odyssey\Assemblies\Odyssey.dll;$(RepoRoot)CE\Assemblies\CE.dll;$(RepoRoot)Biotech\Assemblies\Biotech.dll;$(RepoRoot)Anomaly\Assemblies\Anomaly.dll" />
     </Target>
 </Project>

@@ -3,6 +3,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <RootNamespace>Stats.Compat.CE</RootNamespace>
+        <AssemblyName>Stats.Compat.CE</AssemblyName>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\Core\Source\Core.csproj">

@@ -3,6 +3,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <RootNamespace>Stats.Compat.Anomaly</RootNamespace>
+        <AssemblyName>Stats.Compat.Anomaly</AssemblyName>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\Core\Source\Core.csproj">

@@ -3,6 +3,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <RootNamespace>Stats.Compat.Biotech</RootNamespace>
+        <AssemblyName>Stats.Compat.Biotech</AssemblyName>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\Core\Source\Core.csproj">
