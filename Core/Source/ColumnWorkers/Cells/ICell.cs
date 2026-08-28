@@ -9,3 +9,8 @@ public interface ICell
 
     public void Draw(Rect rect);
 }
+
+public interface IExpandableCell
+{
+    public int ExpandedLineCount { get; }
+}

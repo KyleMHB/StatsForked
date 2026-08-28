@@ -95,6 +95,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     // Layout
     private float _topRowsHeight;
     private float _bottomRowsHeight;
+    private readonly List<float> _rowHeights;
     private float _leftColumnsWidth;
     private Vector2 _contentSize;
 
@@ -115,7 +116,6 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
     private readonly HashSet<string> _missingColumnWarnings = [];
     private bool _showVariants;
     private bool _expandMultiValueCells;
-    private float RowHeight => _expandMultiValueCells ? GUIStyles.Table.ExpandedRowHeight : GUIStyles.Table.RowHeight;
     internal bool SupportsVariants => _variantTableWorker?.SupportsVariants == true;
     internal bool ShowVariants => _showVariants;
     internal bool ExpandMultiValueCells => _expandMultiValueCells;
@@ -139,6 +139,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         _objects = [];
         _rowOrder = [];
         _rows = [];
+        _rowHeights = [];
         _columns = [];
         _filterColumns = [];
         _toolbar = new Toolbar(this);

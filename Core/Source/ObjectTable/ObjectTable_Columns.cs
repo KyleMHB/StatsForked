@@ -227,7 +227,7 @@ internal sealed partial class ObjectTable<TObject>
             ]);
         }
 
-        public void Draw(Rect rect, Span<int> topRows, Span<int> bottomRows, float bottomRowsY, bool mouseXIsInVisibleArea)
+        public void Draw(Rect rect, Span<int> topRows, Span<int> bottomRows, int bottomRowsStart, float bottomRowsY, bool mouseXIsInVisibleArea)
         {
             bool shouldDrawCellsNow = _worker.ShouldDrawCellsNow;
             rect.CutTop(out Rect headerCellRect, HeadersRowHeight)
@@ -242,7 +242,7 @@ internal sealed partial class ObjectTable<TObject>
                 {
                     using (new GUIClipScope(topRowsRect))
                     {
-                        DrawCells(topRowsRect with { x = 0f, y = 0f }, topRows);
+                        DrawCells(topRowsRect with { x = 0f, y = 0f }, topRows, 0);
                     }
                 }
 
@@ -250,7 +250,7 @@ internal sealed partial class ObjectTable<TObject>
                 {
                     using (new GUIClipScope(bottomRowsRect, new Vector2(0f, bottomRowsY)))
                     {
-                        DrawCells(bottomRowsRect with { x = 0f, y = 0f }, bottomRows);
+                        DrawCells(bottomRowsRect with { x = 0f, y = 0f }, bottomRows, bottomRowsStart);
                     }
                 }
             }
@@ -310,14 +310,14 @@ internal sealed partial class ObjectTable<TObject>
             mainControlRect.Tip(_tooltip);
         }
 
-        private void DrawCells(Rect rect, Span<int> rows)
+        private void DrawCells(Rect rect, Span<int> rows, int displayedRowStart)
         {
             ColumnWorker<TObject> worker = _worker;
             ref Rect cellRect = ref rect;
-            cellRect.height = _parent.RowHeight;
             int rowsCount = rows.Length;
             for (int i = 0; i < rowsCount; i++)
             {
+                cellRect.height = _parent.GetRowHeight(displayedRowStart + i);
                 try
                 {
                     worker.DrawCell(cellRect, rows[i]);
@@ -560,6 +560,11 @@ internal sealed partial class ObjectTable<TObject>
         public int CompareRows(int row1, int row2)
         {
             return SortComparison?.Invoke(row1, row2) ?? row1.CompareTo(row2);
+        }
+
+        public int GetExpandedLineCount(int row)
+        {
+            return _worker.GetExpandedLineCount(row);
         }
 
         public bool RefreshCells()

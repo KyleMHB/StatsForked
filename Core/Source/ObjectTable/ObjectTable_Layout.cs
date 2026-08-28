@@ -32,13 +32,48 @@ internal sealed partial class ObjectTable<TObject>
         }
 
         float contentWidth = leftColumnsWidth + rightColumnsWidth;
-        float topRowsHeight = _topRowsCount * RowHeight;
-        float bottomRowsHeight = BottomRowsCount * RowHeight;
+        RecalcRowHeights();
+        float topRowsHeight = 0f;
+        for (int i = 0; i < _topRowsCount; i++)
+        {
+            topRowsHeight += _rowHeights[i];
+        }
+        float bottomRowsHeight = 0f;
+        for (int i = _topRowsCount; i < _rowHeights.Count; i++)
+        {
+            bottomRowsHeight += _rowHeights[i];
+        }
         float contentHeight = HeadersRowHeight + topRowsHeight + bottomRowsHeight;
 
         _topRowsHeight = topRowsHeight;
         _bottomRowsHeight = bottomRowsHeight;
         _leftColumnsWidth = leftColumnsWidth;
         _contentSize = new Vector2(contentWidth, contentHeight);
+    }
+
+    private void RecalcRowHeights()
+    {
+        _rowHeights.Clear();
+        int rowsCount = _rows.Count;
+        for (int rowPosition = 0; rowPosition < rowsCount; rowPosition++)
+        {
+            int lineCount = 1;
+            if (_expandMultiValueCells)
+            {
+                int row = _rows[rowPosition];
+                for (int columnIndex = 0; columnIndex < _columns.Count; columnIndex++)
+                {
+                    lineCount = Mathf.Max(lineCount, _columns[columnIndex].GetExpandedLineCount(row));
+                }
+                lineCount = Mathf.Min(lineCount, MultiValueDisplay.MaxLines);
+            }
+
+            _rowHeights.Add(GUIStyles.Text.LineHeight * lineCount + GUIStyles.TableCell.PadVer * 2f);
+        }
+    }
+
+    private float GetRowHeight(int rowPosition)
+    {
+        return _rowHeights[rowPosition];
     }
 }

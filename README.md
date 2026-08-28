@@ -92,7 +92,7 @@ dotnet build Stats.sln -c Debug -m:1 /p:UseSharedCompilation=false
 
 This checks that the Core, Biotech, Anomaly, CE, and Odyssey projects compile against their configured references.
 
-## Contributing & Forking Policy
+## Contributing and Forking Policy
 
 > Contributions, issues, and feature requests are welcome.
 >
@@ -100,9 +100,14 @@ This checks that the Core, Biotech, Anomaly, CE, and Odyssey projects compile ag
 
 ## Links
 
+
+Support me on Ko-fi. This does not imply endorsement by the original authors.
+
+[![Support me on Ko-fi](https://img.shields.io/badge/Support_me_on_Ko--fi-72a4f2?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/I7L525WMJ6)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KyleMHB/StatsForked)
 - **Steam Workshop:** [Stats Forked](https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439)
-- **Source Repository:** [KyleMHB/Stats-Forked](https://github.com/KyleMHB/Stats-Forked)
-- **Issue Tracker:** [GitHub Issues](https://github.com/KyleMHB/Stats-Forked/issues)
+- **Source Repository:** [KyleMHB/StatsForked](https://github.com/KyleMHB/StatsForked)
+- **Issue Tracker:** [GitHub Issues](https://github.com/KyleMHB/StatsForked/issues)
 - **Original Project:** [AzzkiyOne/Stats](https://github.com/AzzkiyOne/Stats)
 - **Harmony:** [Harmony for RimWorld](https://github.com/pardeike/HarmonyRimWorld/releases/latest)
 

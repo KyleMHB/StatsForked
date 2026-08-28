@@ -12,10 +12,11 @@ public interface IDefSetCell : ICell
     public string? Text { get; }
 }
 
-public readonly struct DefSetCell : IDefSetCell
+public readonly struct DefSetCell : IDefSetCell, IExpandableCell
 {
     public float Width { get; }
     public bool IsRefreshable => false;
+    public int ExpandedLineCount { get; }
     public IReadOnlyCollection<Verse.Def>? Value { get; }
     public string? Text { get; }
 
@@ -26,6 +27,7 @@ public readonly struct DefSetCell : IDefSetCell
     {
         Value = value;
         Width = 0f;
+        ExpandedLineCount = 1;
         Text = null;
         _tooltip = default;
         _expandedText = null;
@@ -53,6 +55,7 @@ public readonly struct DefSetCell : IDefSetCell
                 expandedLines.Add($"+{orderedDefs.Count - expandedLines.Count} {Localization.Get(Localization.More)}");
             }
             _expandedText = string.Join("\n", expandedLines);
+            ExpandedLineCount = expandedLines.Count;
             Width = expandedLines.Max(line => Verse.Text.CalcSize(line).x);
         }
     }

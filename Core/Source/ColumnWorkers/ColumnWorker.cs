@@ -19,6 +19,8 @@ public abstract class ColumnWorker<TObject>
 
     public abstract float GetWidth(List<int> rows);
 
+    public virtual int GetExpandedLineCount(int row) => 1;
+
     public abstract void NotifyRowAdded(List<TObject> rows);
 
     public abstract void NotifyRowAdded(TObject row);
@@ -64,6 +66,13 @@ public abstract class ColumnWorker<TObject, TCell> : ColumnWorker<TObject> where
         }
 
         return width;
+    }
+
+    public override int GetExpandedLineCount(int row)
+    {
+        return _cells[row] is IExpandableCell expandableCell
+            ? expandableCell.ExpandedLineCount
+            : 1;
     }
 
     public override void NotifyRowAdded(List<TObject> rows)

@@ -1,56 +1,70 @@
-[h1]Description of Mod[/h1]
-[i]A maintained fork of Stats for RimWorld 1.6, with inventory-aware filters, saved presets, bionics support, distance-based ranged DPS, and better handling for stuffable item variants.[/i]
+[h1]Description[/h1]
+[i]A maintained fork of Stats for RimWorld 1.6, with stronger filters, saved presets, modern expansion support, and more ways to compare equipment and content.[/i]
 
-Stats Forked keeps the original sortable stats-table framework while updating it for modern RimWorld content and larger modlists.
+Stats Forked keeps the original sortable stats-table framework while updating it for current RimWorld content and larger mod lists.
 
 [h1]Features[/h1]
 [list]
-[*][b]Sortable stats tables[/b] for weapons, apparel, animals, plants, beds, buildings, turrets, mechs, bionics, and general stats.
+[*][b]Sortable tables[/b] for weapons, apparel, animals, plants, beds, buildings, turrets, mechs, bionics, and general stats.
 [*][b]Inventory-aware filters[/b] for colony-owned and map-visible items.
-[*][b]Equipment recipe filters[/b] for apparel and weapons, including recipe presence, ingredients, benches, and material/stuff.
-[*][b]Saved presets[/b] for filters, visible columns, and variant display mode.
-[*][b]Default presets[/b] that apply automatically when a table is opened.
+[*][b]Recipe filters[/b] for recipe availability, ingredients, benches, and material or stuff.
+[*][b]Saved and default presets[/b] for filters, visible columns, variant display, and expanded view.
 [*][b]Session restoration[/b] for open tables, their order, and the active table.
-[*][b]Hidden-column filters[/b] that continue filtering without displaying the source column.
-[*][b]Stuffable item variants[/b] so material-specific versions can be compared.
-[*][b]Expanded multi-value cells[/b] with a fixed three-line row mode, while retaining compact display.
-[*][b]Translation-ready interface text[/b] for the table toolbar, menus, and filters.
-[*][b]Bionics comparison[/b] with body part, capacity, efficiency, special effect, and capacity change columns.
-[*][b]Distance-based ranged DPS[/b] for close, short, medium, and long range weapon comparison.
-[*][b]Compatibility modules[/b] for Biotech, Anomaly, Odyssey, and Combat Extended, including Odyssey gameplay tables for books, fish, gravship systems, orbital infrastructure, and unique weapons.
+[*][b]Hidden-column filters[/b] that remain active without showing the source column.
+[*][b]Searchable filter setup[/b] grouped by table, visible-column, and hidden-column filters.
+[*][b]Stuffable variants[/b] for material-specific comparisons.
+[*][b]Expanded View[/b] for multi-value rows that grow to displayed content up to ten lines, with complete values retained in tooltips.
+[*][b]Bionics comparison[/b] with body part, capacity, efficiency, special effect, and capacity-change columns.
+[*][b]Distance-based ranged DPS[/b] for close, short, medium, and long-range comparisons.
+[*][b]Compatibility modules[/b] for Biotech, Anomaly, Odyssey, and Combat Extended.
 [/list]
 
 [h1]How to Use[/h1]
-Open the Stats table from RimWorld's in-game main tab, choose a table, sort the columns you care about, and use filters to narrow the displayed defs. Use the Values button to switch between compact and expanded multi-value cells.
+Open Stats from RimWorld's main tabs. Choose a table, sort the columns you care about, and use Filters to narrow the displayed definitions. Use Expanded View when you want multi-value cells to show more entries directly in each row.
 
-[h1]Compatibilities[/h1]
+Save a preset for a reusable table layout or choose a default preset to apply automatically when that table opens.
+
+[h1]Settings and Configuration[/h1]
+Global mod settings store presets, default presets, open-table restoration, the active table, and Expanded View preferences. Filters remain active when their source columns are hidden and are identified as hidden in the Filters window.
+
+[h1]Requirements and Dependencies[/h1]
 [list]
-[*][b]Supported RimWorld versions:[/b] 1.6.
-[*][b]Required mod:[/b] Harmony.
-[*][b]Original Stats mod:[/b] Not required. Do not enable it alongside Stats Forked unless deliberately testing compatibility.
-[*][b]Optional content:[/b] Biotech, Anomaly, Odyssey, and Combat Extended modules load when present. Odyssey support includes books, fish, gravship systems, orbital infrastructure, and unique weapons.
-[*][b]Load order:[/b] Load Harmony before Stats Forked.
-[*][b]Compatibility assemblies:[/b] Restart RimWorld completely after updating because optional assembly filenames are now unique.
-[*][b]Settings:[/b] Default presets, open-table restoration, and the expanded display preference are stored in global mod settings.
+[*]RimWorld 1.6.
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077]Harmony[/url].
 [/list]
 
-[h1]Settings / Setup Instructions[/h1]
-Presets are stored in RimWorld's mod settings data. Use the mod settings and the table UI to control filters, visible columns, variant display mode, and the expanded multi-value display. A filter remains active when its source column is hidden, and its label is marked as hidden in the Filters window.
-
-[hr][/hr]
-
-[h1]Credits / Fork History[/h1]
-This is a maintained fork of Stats by AzzkiyOne. The fork exists to keep the sortable stats-table framework usable with current RimWorld content and larger modlists.
-
-[h1]License & Forking Policy[/h1]
-This project inherits the original mod's license.
-
-[b]Forking Policy:[/b] If your fork primarily consists of bug fixes or feature additions that align with the core vision of this mod, I reserve the right to request that your changes be submitted as a Pull Request to this existing codebase rather than being published as a completely separate standalone release, package, listing, or distribution.
-
-[h1]Reference links to other mods[/h1]
+[h1]Compatibility, Load Order, Multiplayer, and Save Safety[/h1]
 [list]
-[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439]Original Stats mod on Steam Workshop[/url]
-[*][url=https://github.com/KyleMHB/StatsFork]Stats Forked source repository[/url]
-[*][url=https://github.com/AzzkiyOne/Stats]Original Stats[/url]
-[*][url=https://github.com/pardeike/HarmonyRimWorld/releases/latest]Harmony[/url]
+[*][b]Original Stats:[/b] Not required. Do not enable it alongside Stats Forked unless deliberately testing compatibility.
+[*][b]Optional content:[/b] Biotech, Anomaly, Odyssey, and Combat Extended modules load only when their content is present.
+[*][b]Odyssey:[/b] Includes tables and columns for books, fish, gravship systems, orbital infrastructure, and unique weapons.
+[*][b]Load order:[/b] Load Harmony before Stats Forked.
+[*][b]After updating:[/b] Restart RimWorld completely so renamed compatibility assemblies are loaded cleanly.
+[/list]
+
+[h1]Fork History[/h1]
+Stats was created by AzkiyOne. This fork keeps the sortable table framework usable with RimWorld 1.6 and larger modern mod lists.
+
+Compared with the original, Stats Forked adds inventory and recipe filters, saved and default presets, table-session restoration, hidden-column filtering, searchable filter setup, bionics comparisons, distance-based DPS, stuffable variants, Expanded View, and current expansion and Combat Extended modules.
+
+[h1]Credits[/h1]
+Original Stats project by AzkiyOne. Stats Forked is maintained by KyleMHB. Harmony is maintained by the Harmony and RimWorld modding community.
+
+[h1]License and Forking Policy[/h1]
+This project inherits the original Stats licensing terms. The repository includes GNU GPLv3 and LGPLv3 license files; consult those files for the applicable terms.
+
+If your fork primarily consists of bug fixes or feature additions that align with the core vision of this mod, I reserve the right to request that your changes be submitted as a Pull Request to my existing codebase rather than being published as a completely separate standalone release.
+
+This is a project request, not an additional license restriction.
+
+[h1]Links[/h1]
+Support me on Ko-fi. This does not imply endorsement by the original authors.
+
+[url=https://ko-fi.com/I7L525WMJ6][img]https://img.shields.io/badge/Support_me_on_Ko--fi-72a4f2?style=for-the-badge&logo=kofi&logoColor=white[/img][/url]
+[url=https://github.com/KyleMHB/StatsForked][img]https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white[/img][/url]
+[list]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3712317437]Stats Forked on Steam Workshop[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439]Original Stats Workshop item[/url]
+[*][url=https://github.com/AzzkiyOne/Stats]Original Stats source repository[/url]
+[*][url=https://github.com/pardeike/HarmonyRimWorld/releases/latest]Harmony releases[/url]
 [/list]

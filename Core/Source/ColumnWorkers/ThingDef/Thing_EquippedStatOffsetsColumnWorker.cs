@@ -40,10 +40,11 @@ public sealed class EquippedStatOffsetsColumnWorker(ColumnDef columnDef)
         return [textField];
     }
 
-    public readonly struct OffsetsCell : ICell
+    public readonly struct OffsetsCell : ICell, IExpandableCell
     {
         public float Width { get; }
         public bool IsRefreshable => false;
+        public int ExpandedLineCount { get; }
         public readonly string? Text;
 
         private readonly TipSignal _tooltip;
@@ -53,6 +54,7 @@ public sealed class EquippedStatOffsetsColumnWorker(ColumnDef columnDef)
         {
             Text = null;
             Width = 0f;
+            ExpandedLineCount = 1;
             _tooltip = default;
             _expandedText = null;
 
@@ -80,6 +82,7 @@ public sealed class EquippedStatOffsetsColumnWorker(ColumnDef columnDef)
                 expandedLines.Add($"+{statOffsets.Count - expandedLines.Count} {Localization.Get(Localization.More)}");
             }
             _expandedText = string.Join("\n", expandedLines);
+            ExpandedLineCount = expandedLines.Count;
             Width = expandedLines.Max(line => line.CalcSize(GUIStyles.TableCell.StringNoPad).x);
         }
 

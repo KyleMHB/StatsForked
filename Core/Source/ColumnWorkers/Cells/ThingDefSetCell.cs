@@ -14,10 +14,11 @@ public interface IThingDefSetCell : ICell
     public IReadOnlyCollection<Verse.ThingDef?>? Value { get; }
 }
 
-public readonly struct ThingDefSetCell : IThingDefSetCell
+public readonly struct ThingDefSetCell : IThingDefSetCell, IExpandableCell
 {
     public float Width { get; }
     public bool IsRefreshable => false;
+    public int ExpandedLineCount { get; }
     public IReadOnlyCollection<Verse.ThingDef?>? Value { get; }
 
     private readonly Verse.ThingDef? _firstThingDef;
@@ -31,6 +32,7 @@ public readonly struct ThingDefSetCell : IThingDefSetCell
     {
         Value = value;
         Width = 0f;
+        ExpandedLineCount = 1;
         _firstThingDef = null;
         _previewText = null;
         _icon = null;
@@ -64,6 +66,7 @@ public readonly struct ThingDefSetCell : IThingDefSetCell
                 expandedLines.Add($"+{orderedDefs.Count - expandedLines.Count} {Localization.Get(Localization.More)}");
             }
             _expandedText = string.Join("\n", expandedLines);
+            ExpandedLineCount = expandedLines.Count;
             _icon = new ThingDefIcon(_firstThingDef);
             _iconWidth = _icon.Size.x;
             Width = _iconWidth + ContentSpacing + expandedLines.Max(line => line.CalcSize(StringNoPad).x);

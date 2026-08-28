@@ -96,28 +96,16 @@ internal sealed partial class ObjectTable<TObject>
     private void DrawVisibleContent(Rect rect)
     {
         Event @event = Event.current;
-        // O(1) scroll content culling.
-        // Since all rows have constant height, we can calculate:
-        // - From what row/y to start drawing rows.
-        // - How many rows to draw.
         Vector2 scrollPosition = _scrollPosition;
-        float firstVisibleBottomRowY = -scrollPosition.y % RowHeight;
-        int scrolledBottomRowsCount = Mathf.FloorToInt(scrollPosition.y / RowHeight);
-        int bottomRowsLeftToScroll = BottomRowsCount - scrolledBottomRowsCount;
         float bottomRowsRectHeight = rect.height - HeadersRowHeight - _topRowsHeight;
-        int bottomRowsRectRowCapacity = Mathf.CeilToInt(bottomRowsRectHeight / RowHeight);
-        int visibleBottomRowsCount = Math.Min(bottomRowsLeftToScroll, bottomRowsRectRowCapacity);
-        // There was a bug where this value was evaluating to negative int which caused CTD when
-        // int[] was being allocated on a stack below.
-        // Although i couldn't reproduce it in recent testing, i'll leave this check just in case.
-        // The math for this value is not very precise (lots of divisions, rounding and float values are involved).
-        if (visibleBottomRowsCount < 0)
-        {
-            visibleBottomRowsCount = 0;
-        }
+        GetVisibleBottomRows(
+            scrollPosition.y,
+            bottomRowsRectHeight,
+            out int visibleBottomRowsStart,
+            out int visibleBottomRowsCount,
+            out float firstVisibleBottomRowY);
         int topRowsCount = _topRowsCount;
 
-        int visibleBottomRowsStart = topRowsCount + scrolledBottomRowsCount;
         Span<int> visibleBottomRows = stackalloc int[visibleBottomRowsCount];
         _rows.CopyTo(visibleBottomRows, visibleBottomRowsStart);
 
@@ -137,7 +125,7 @@ internal sealed partial class ObjectTable<TObject>
         // Pinned columns
         if (_leftColumnsCount > 0)
         {
-            DrawColumns(leftColumnsRect, Vector2.zero, LeftColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
+            DrawColumns(leftColumnsRect, Vector2.zero, LeftColumns, topRows, visibleBottomRows, visibleBottomRowsStart, firstVisibleBottomRowY);
             // Separator line
             if (@event.type == EventType.Repaint)
             {
@@ -150,14 +138,45 @@ internal sealed partial class ObjectTable<TObject>
         {
             using (new GUIClipScope(rightColumnsRect, new Vector2(-scrollPosition.x, 0f)))
             {
-                DrawColumns(rightColumnsRect with { x = 0f, y = 0f }, scrollPosition, RightColumns, topRows, visibleBottomRows, firstVisibleBottomRowY);
+                DrawColumns(rightColumnsRect with { x = 0f, y = 0f }, scrollPosition, RightColumns, topRows, visibleBottomRows, visibleBottomRowsStart, firstVisibleBottomRowY);
             }
         }
 
         DoHorScrollControl(mouseDragScrollAreaRect);
     }
 
-    private void DrawColumns(Rect rect, Vector2 scrollPosition, ReadOnlyListSegment<Column> columns, Span<int> topRows, Span<int> bottomRows, float bottomRowsY)
+    private void GetVisibleBottomRows(
+        float scrollY,
+        float viewportHeight,
+        out int start,
+        out int count,
+        out float firstRowY)
+    {
+        start = _topRowsCount;
+        float heightBeforeStart = 0f;
+        while (start < _rows.Count)
+        {
+            float rowHeight = GetRowHeight(start);
+            if (heightBeforeStart + rowHeight > scrollY)
+            {
+                break;
+            }
+
+            heightBeforeStart += rowHeight;
+            start++;
+        }
+
+        firstRowY = heightBeforeStart - scrollY;
+        count = 0;
+        float visibleHeight = firstRowY;
+        while (start + count < _rows.Count && visibleHeight < viewportHeight)
+        {
+            visibleHeight += GetRowHeight(start + count);
+            count++;
+        }
+    }
+
+    private void DrawColumns(Rect rect, Vector2 scrollPosition, ReadOnlyListSegment<Column> columns, Span<int> topRows, Span<int> bottomRows, int bottomRowsStart, float bottomRowsY)
     {
         Event @event = Event.current;
         float scrollX = scrollPosition.x;
@@ -175,7 +194,7 @@ internal sealed partial class ObjectTable<TObject>
 
             if (xMin < columnRectXmax && columnRect.xMin < xMax)
             {
-                column.Draw(columnRect, topRows, bottomRows, bottomRowsY, mouseXIsInVisibleArea);
+                column.Draw(columnRect, topRows, bottomRows, bottomRowsStart, bottomRowsY, mouseXIsInVisibleArea);
             }
             else if (column.IsResized)
             {
@@ -214,9 +233,10 @@ internal sealed partial class ObjectTable<TObject>
             }
 
             // Rows
-            Rect rowRect = topRowsRect with { height = RowHeight };
+            Rect rowRect = topRowsRect;
             for (int i = 0; i < topRowsCount; i++)
             {
+                rowRect.height = GetRowHeight(i);
                 DrawRow(rowRect, i);
                 rowRect.y = rowRect.yMax;
             }
@@ -230,7 +250,7 @@ internal sealed partial class ObjectTable<TObject>
         if (bottomRowsCount > 0)
         {
             float rectYmax = rect.yMax;
-            float firstRowHeight = RowHeight + bottomRowsY;
+            float firstRowHeight = GetRowHeight(bottomRowsStart) + bottomRowsY;
             int bottomRowsEnd = bottomRowsCount + bottomRowsStart;// Exclusive
             Rect rowRect = bottomRowsRect with { height = firstRowHeight };
             for (int i = bottomRowsStart; i < bottomRowsEnd; i++)
@@ -238,7 +258,10 @@ internal sealed partial class ObjectTable<TObject>
                 DrawRow(rowRect, i);
 
                 rowRect.y = rowRect.yMax;
-                rowRect.height = RowHeight;
+                if (i + 1 < bottomRowsEnd)
+                {
+                    rowRect.height = GetRowHeight(i + 1);
+                }
 
                 if (rowRect.yMax > rectYmax)
                 {

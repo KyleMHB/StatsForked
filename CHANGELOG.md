@@ -17,7 +17,7 @@
 - Presets now persist the expanded multi-value display mode and stable filter identifiers.
 - The Filters window now shows active filters and the filter being configured, with a searchable picker grouped into table, visible-column, and hidden-column filters.
 - Renamed the Values toolbar option to Expanded View.
-- Expanded multi-value cells now show up to ten lines, with the full value list retained in tooltips.
+- Expanded multi-value rows now grow to the content they display, up to ten lines, with the full value list retained in tooltips.
 - Expanded rows now vertically center text and icons.
 - Runtime-only deployment now packages the English keyed language files beneath the always-loaded Core folder.
 
