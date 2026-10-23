@@ -703,6 +703,7 @@ internal sealed class TableSession<TObject> : IDisposable
     private TableConfiguration? _stagedConfiguration;
     private TableConfigurationTransaction? _stagedTransaction;
     private bool _disposed;
+    private IReadOnlyList<string>? _configurationStageFailure;
 
     internal TableSession()
         : this(new TableConfiguration())
@@ -732,6 +733,7 @@ internal sealed class TableSession<TObject> : IDisposable
             });
     }
 
+    internal bool HasRejectedConfiguration => _configurationStageFailure != null;
     internal TableFrame<TObject> Frame => _frame;
     internal TableConfiguration Current => _current;
     internal IReadOnlyList<string> VisibleColumnDefNames =>
@@ -867,6 +869,7 @@ internal sealed class TableSession<TObject> : IDisposable
                 new ReadOnlyCollection<string>(new[] { "Table session has been disposed." }));
         }
 
+        _configurationStageFailure = null;
         if (_pendingIntents.Any(intent => intent.IsConfigurationIntent) == false)
         {
             return new TableConfigurationTransitionResult(
@@ -901,11 +904,8 @@ internal sealed class TableSession<TObject> : IDisposable
         }
         catch (Exception exception)
         {
-            diagnostics.Add($"The staged column registry was rejected: {exception.Message}");
-            return new TableConfigurationTransitionResult(
-                _current,
-                false,
-                new ReadOnlyCollection<string>(diagnostics));
+            diagnostics.Add($"The staged column registry was rejected: {exception}");
+            return RejectConfigurationStage(diagnostics);
         }
 
         TableConfigurationTransaction? tableTransaction;
@@ -917,11 +917,8 @@ internal sealed class TableSession<TObject> : IDisposable
         {
             columnTransition?.Rollback();
             _stagedColumnTransition = null;
-            diagnostics.Add($"The staged table configuration was rejected: {exception.Message}");
-            return new TableConfigurationTransitionResult(
-                _current,
-                false,
-                new ReadOnlyCollection<string>(diagnostics));
+            diagnostics.Add($"The staged table configuration was rejected: {exception}");
+            return RejectConfigurationStage(diagnostics);
         }
 
         if (tableTransaction == null)
@@ -929,10 +926,7 @@ internal sealed class TableSession<TObject> : IDisposable
             columnTransition?.Rollback();
             _stagedColumnTransition = null;
             diagnostics.Add("The table rejected the staged configuration.");
-            return new TableConfigurationTransitionResult(
-                _current,
-                false,
-                new ReadOnlyCollection<string>(diagnostics));
+            return RejectConfigurationStage(diagnostics);
         }
 
         diagnostics.AddRange(tableTransaction.Diagnostics);
@@ -957,6 +951,12 @@ internal sealed class TableSession<TObject> : IDisposable
             _stagedConfiguration,
             true,
             new ReadOnlyCollection<string>(diagnostics));
+    }
+
+    private TableConfigurationTransitionResult RejectConfigurationStage(List<string> diagnostics)
+    {
+        _configurationStageFailure = diagnostics.ToArray();
+        return new TableConfigurationTransitionResult(_current, false, _configurationStageFailure);
     }
 
     // Kept for callers that need to apply a configuration outside a frame
@@ -1003,6 +1003,13 @@ internal sealed class TableSession<TObject> : IDisposable
         if (_disposed)
         {
             return Result(false, new[] { "Table session has been disposed." });
+        }
+
+        // A rejected application must not be published from metrics describing the old state.
+        // Keep the intents until the next staging attempt can apply them successfully.
+        if (_configurationStageFailure != null)
+        {
+            return Result(false, _configurationStageFailure);
         }
 
         if (metrics.Rows.Count != metrics.RowHeights.Count
@@ -1123,7 +1130,7 @@ internal sealed class TableSession<TObject> : IDisposable
 
         return RejectFrame(new[]
         {
-            $"Rejected staged table configuration after layout preparation failed: {exception.Message}"
+            $"Rejected staged table configuration after layout preparation failed: {exception}"
         });
     }
 

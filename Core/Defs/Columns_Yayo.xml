@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+    <Stats.ColumnDef MayRequire="Mlie.YayosCombat3">
+        <defName>Weapon_YayoAmmos</defName>
+        <labelKey>StatsForked_YayoAmmos</labelKey>
+        <descriptionKey>StatsForked_YayoAmmosDescription</descriptionKey>
+        <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.YayoAmmosColumnWorker</workerClass>
+        <tags><li>Thing_IsRangedWeapon</li></tags>
+    </Stats.ColumnDef>
+    <Stats.ColumnDef MayRequire="Mlie.YayosCombat3">
+        <defName>Weapon_YayoReloadCost</defName>
+        <labelKey>StatsForked_YayoReloadCost</labelKey>
+        <descriptionKey>StatsForked_YayoReloadCostDescription</descriptionKey>
+        <workerClass>Stats.ColumnWorkers.ThingDef.RangedWeapon.YayoReloadCostColumnWorker</workerClass>
+        <tags><li>Thing_IsRangedWeapon</li></tags>
+    </Stats.ColumnDef>
+</Defs>

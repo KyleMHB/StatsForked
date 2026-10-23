@@ -23,6 +23,8 @@
             <li>Weapon_ProjectileStoppingPower</li>
             <li>Weapon_ProjectileArmorPenetration</li>
             <li>Weapon_RPM</li>
+            <li MayRequire="Mlie.YayosCombat3">Weapon_YayoAmmos</li>
+            <li MayRequire="Mlie.YayosCombat3">Weapon_YayoReloadCost</li>
             <li>Weapon_BurstShotCount</li>
             <li>Weapon_RangedCooldown</li>
             <li>Weapon_RangedAimingTime</li>

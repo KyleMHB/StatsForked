@@ -4,6 +4,8 @@ namespace Stats;
 
 internal static class Localization
 {
+    internal const string Rename = "StatsForked_Rename";
+    internal const string ClearTabNameTip = "StatsForked_ClearTabNameTip";
     internal const string OpenTable = "StatsForked_OpenTable";
     internal const string Remove = "StatsForked_Remove";
     internal const string Filters = "StatsForked_Filters";

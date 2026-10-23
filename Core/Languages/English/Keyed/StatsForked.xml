@@ -71,4 +71,10 @@
     <StatsForked_ManualPinnedRowsUnaffected>Pinned rows are unaffected by filters.</StatsForked_ManualPinnedRowsUnaffected>
     <StatsForked_ManualResize>Pull top part of the window to change height.</StatsForked_ManualResize>
     <StatsForked_ManualResetResize>Double click to reset window height.</StatsForked_ManualResetResize>
+    <StatsForked_Rename>Rename tab</StatsForked_Rename>
+    <StatsForked_ClearTabNameTip>Leave blank to use the original table name.</StatsForked_ClearTabNameTip>
+    <StatsForked_YayoAmmos>Ammos</StatsForked_YayoAmmos>
+    <StatsForked_YayoAmmosDescription>Maximum ammunition capacity of this weapon.</StatsForked_YayoAmmosDescription>
+    <StatsForked_YayoReloadCost>Reload cost per ammo</StatsForked_YayoReloadCost>
+    <StatsForked_YayoReloadCostDescription>Ammo items needed to replenish one shot, with the required ammo type.</StatsForked_YayoReloadCostDescription>
 </LanguageData>

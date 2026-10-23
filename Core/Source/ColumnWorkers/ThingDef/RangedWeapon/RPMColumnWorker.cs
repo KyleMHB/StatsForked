@@ -14,7 +14,7 @@ public sealed class RPMColumnWorker(ColumnDef columnDef) : NumberColumnWorker<De
         {
             VerbProperties? verbProps = thingDef.TurretGunDefOrSelf().Verbs.Primary();
 
-            if (verbProps is { Ranged: true, showBurstShotStats: true, burstShotCount: > 1 })
+            if (verbProps is { Ranged: true, showBurstShotStats: true, burstShotCount: > 1, ticksBetweenBurstShots: > 0 })
             {
                 // Reminder: This is not IRL RPM.
                 decimal cellValue = (60f / verbProps.ticksBetweenBurstShots.TicksToSeconds()).ToDecimal(0);

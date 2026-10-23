@@ -1,5 +1,5 @@
 [h1]Description[/h1]
-[i]A maintained fork of Stats for RimWorld 1.6, with stronger filters, saved presets, modern expansion support, and more ways to compare equipment and content.[/i]
+[i]A maintained fork of Stats for RimWorld 1.6 and 1.7, with stronger filters, saved presets, modern expansion support, and more ways to compare equipment and content.[/i]
 
 Stats Forked keeps the original sortable stats-table framework while updating it for current RimWorld content and larger mod lists.
 
@@ -9,7 +9,8 @@ Stats Forked keeps the original sortable stats-table framework while updating it
 [*][b]Inventory-aware filters[/b] for colony-owned and map-visible items.
 [*][b]Recipe filters[/b] for recipe availability, ingredients, benches, and material or stuff.
 [*][b]Saved and default presets[/b] for filters, visible columns, variant display, and expanded view.
-[*][b]Session restoration[/b] for open tables, their order, and the active table.
+[*][b]Session restoration[/b] for open tables, their names, order, and the active table.
+[*][b]Yayo's Combat 3 (Continued) columns[/b] for ammo capacity and reload cost, with ammo-type and cost filters.
 [*][b]Hidden-column filters[/b] that remain active without showing the source column.
 [*][b]Searchable filter setup[/b] grouped by table, visible-column, and hidden-column filters.
 [*][b]Stuffable variants[/b] for material-specific comparisons.
@@ -22,6 +23,8 @@ Stats Forked keeps the original sortable stats-table framework while updating it
 [h1]How to Use[/h1]
 Open Stats from RimWorld's main tabs. Choose a table, sort the columns you care about, and use Filters to narrow the displayed definitions. Use Expanded View when you want multi-value cells to show more entries directly in each row.
 
+Right-click a table icon and choose Rename tab to give it a custom name. Clear the name to use its original label.
+
 Save a preset for a reusable table layout or choose a default preset to apply automatically when that table opens.
 
 [h1]Settings and Configuration[/h1]
@@ -29,21 +32,21 @@ Global mod settings store presets, default presets, open-table restoration, the 
 
 [h1]Requirements and Dependencies[/h1]
 [list]
-[*]RimWorld 1.6.
+[*]RimWorld 1.6 and 1.7.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077]Harmony[/url].
 [/list]
 
 [h1]Compatibility, Load Order, Multiplayer, and Save Safety[/h1]
 [list]
 [*][b]Original Stats:[/b] Not required. Do not enable it alongside Stats Forked unless deliberately testing compatibility.
-[*][b]Optional content:[/b] Biotech, Anomaly, Odyssey, and Combat Extended modules load only when their content is present.
+[*][b]Optional content:[/b] Biotech, Anomaly, Odyssey, and Combat Extended modules load only when their content is present. Yayo's Combat 3 ammo columns appear when that mod is enabled.
 [*][b]Odyssey:[/b] Includes tables and columns for books, fish, gravship systems, orbital infrastructure, and unique weapons.
 [*][b]Load order:[/b] Load Harmony before Stats Forked.
 [*][b]After updating:[/b] Restart RimWorld completely so renamed compatibility assemblies are loaded cleanly.
 [/list]
 
 [h1]Fork History[/h1]
-Stats was created by AzkiyOne. This fork keeps the sortable table framework usable with RimWorld 1.6 and larger modern mod lists.
+Stats was created by AzkiyOne. This fork keeps the sortable table framework usable with RimWorld 1.6 and 1.7 and larger modern mod lists.
 
 Compared with the original, Stats Forked adds inventory and recipe filters, saved and default presets, table-session restoration, hidden-column filtering, searchable filter setup, bionics comparisons, distance-based DPS, stuffable variants, Expanded View, and current expansion and Combat Extended modules.
 
@@ -64,4 +67,9 @@ Support me on Ko-fi. This does not imply endorsement by the original authors.
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439]Original Stats Workshop item[/url]
 [*][url=https://github.com/AzzkiyOne/Stats]Original Stats source repository[/url]
 [*][url=https://github.com/pardeike/HarmonyRimWorld/releases/latest]Harmony releases[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3724294345]Better Pawn Control Forked[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3714050938]Cargo Containers Expanded[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3710884766]Everything Has Quality Reforked[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3724312502]Gear Up and Go Reforked[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3724311713]Outfit Stands Plus Forked[/url]
 [/list]

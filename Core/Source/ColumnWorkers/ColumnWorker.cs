@@ -25,6 +25,13 @@ public abstract class ColumnWorker<TObject>
 
     public abstract void NotifyRowAdded(TObject row);
 
+    // A retained worker may still contain cells from the previous quality or variants.
+    internal void RebuildRows(List<TObject> rows)
+    {
+        ResetRows();
+        NotifyRowAdded(rows);
+    }
+
     public abstract void NotifyRowRemoved(int row);
 
     /// <summary>

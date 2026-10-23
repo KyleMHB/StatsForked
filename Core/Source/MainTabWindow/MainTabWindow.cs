@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using RimWorld;
 using Stats.Utils;
 using Stats.Utils.Extensions;
@@ -73,7 +73,9 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
         toolbarRect
             .CutTop(out Rect openTableButtonRect, ToolbarWidth)
             .TakeRest(out Rect tableListRect);
-        tableRect.CutTop(out Rect expandButtonRect, GUIStyles.TableToolbar.Height);
+        tableRect = tableRect.CutTop(out Rect expandButtonRect, GUIStyles.TableToolbar.Height);
+        Widgets.Label(expandButtonRect.ContractedBy(4f, 0f), _activeTable?.Label ?? "");
+        expandButtonRect.Tip(_activeTable?.Label ?? "");
 
         // Border
         if (@event.type == EventType.Repaint)
@@ -209,13 +211,15 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
             TableDef? tableDef = DefDatabase<TableDef>.GetNamedSilentFail(settings.openTableDefNames[i]);
             if (tableDef != null)
             {
-                _tables.Add(new TableRecord(tableDef, this));
+                _tables.Add(new TableRecord(tableDef, this,
+                    i < settings.openTableNames.Count ? settings.openTableNames[i] : null));
             }
         }
 
         if (_tables.Count == 0)
         {
             settings.openTableDefNames.Clear();
+            settings.openTableNames.Clear();
             settings.activeTableIndex = -1;
             StatsMod.Instance.WriteSettings();
             return;
@@ -233,9 +237,11 @@ public sealed partial class MainTabWindow : RimWorld.MainTabWindow
     {
         StatsSettings settings = StatsMod.Instance.Settings;
         settings.openTableDefNames.Clear();
+        settings.openTableNames.Clear();
         for (int i = 0; i < _tables.Count; i++)
         {
             settings.openTableDefNames.Add(_tables[i].DefName);
+            settings.openTableNames.Add(_tables[i].CustomName);
         }
         settings.activeTableIndex = _activeTable == null ? -1 : _tables.IndexOf(_activeTable);
         StatsMod.Instance.WriteSettings();

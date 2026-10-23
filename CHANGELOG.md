@@ -1,5 +1,40 @@
 # Changelog
 
+## 2026-10-23
+
+### Fixed
+
+- Fixed clipped Save and Cancel buttons in the Save preset dialog.
+## 2026-10-21
+
+### Fixed
+
+- Fixed quality changes leaving displayed stats and hidden-column filters at their previous values.
+- Cleared old column values when rebuilding tables after variant or column changes.
+## 2026-10-20
+
+### Fixed
+
+- Fixed quality validation blocking sorting, filters, column selection, variants, expanded view, and quality changes on RimWorld 1.6 and 1.7.
+- Rejected invalid saved quality values without converting them into a different quality.
+## 2026-10-19
+
+### Fixed
+
+- Kept rejected table changes pending for retry and reported their failure details in the log.
+- Left RPM cells blank for weapons with zero or negative burst intervals instead of attempting an invalid calculation.
+
+## 2026-10-14
+
+### Changed
+
+- Added RimWorld 1.7 compatibility while retaining 1.6 support.
+
+### Added
+
+- Added per-tab names. Right-click a table icon to rename it; names appear in the table heading and icon tooltip and persist between sessions. Clear the name to restore the original label.
+- Added Ammos and Reload cost per ammo columns for Yayo's Combat 3 (Continued), including ammo-type and cost filters.
+
 ## 2026-09-05
 
 ### Added

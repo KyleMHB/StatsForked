@@ -14,6 +14,14 @@ namespace Stats;
 
 internal abstract class ObjectTable
 {
+    internal static bool IsSupportedQuality(int quality)
+    {
+        // Reject values before casting so invalid saved integers cannot wrap to a valid byte enum.
+        return quality >= byte.MinValue
+            && quality <= byte.MaxValue
+            && Enum.IsDefined(typeof(QualityCategory), (QualityCategory)quality);
+    }
+
     internal abstract void Draw(Rect rect);
 
     internal abstract void ApplyDefaultPreset();
@@ -367,7 +375,7 @@ internal sealed partial class ObjectTable<TObject> : ObjectTable
         TableStateSnapshot snapshot = TableStateSnapshot.Capture(this);
         bool supportsVariants = SupportsVariants;
         bool supportsQuality = SupportsQuality;
-        bool requestedQualityIsSupported = Enum.IsDefined(typeof(QualityCategory), configuration.Quality);
+        bool requestedQualityIsSupported = IsSupportedQuality(configuration.Quality);
         QualityCategory effectiveQuality = supportsQuality && requestedQualityIsSupported
             ? (QualityCategory)configuration.Quality
             : _quality;

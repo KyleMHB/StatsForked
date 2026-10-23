@@ -111,7 +111,7 @@ internal sealed partial class ObjectTable<TObject>
         }
         Column column = new(columnWorker, _tableWorker, this, cellFields);
         _columns.Add(column);
-        columnWorker.NotifyRowAdded(_objects);
+        columnWorker.RebuildRows(_objects);
         RegisterColumnFilters(column, cellFields);
         if (_sortColumn == null)
         {
@@ -156,7 +156,7 @@ internal sealed partial class ObjectTable<TObject>
             return null;
         }
         Column column = new(columnWorker, _tableWorker, this, cellFields);
-        columnWorker.NotifyRowAdded(_objects);
+        columnWorker.RebuildRows(_objects);
         _filterColumns.Add(columnDef, column);
         RegisterColumnFilters(column, cellFields);
         return column;

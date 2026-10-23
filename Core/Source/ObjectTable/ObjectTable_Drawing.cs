@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Stats.Utils;
@@ -29,22 +30,25 @@ internal sealed partial class ObjectTable<TObject>
             {
                 try
                 {
-                    _tableSession.StagePendingConfiguration(ApplyTableConfiguration);
-                    RefreshLiveCells();
-                    RecalcLayout();
-                    layoutPreparationSucceeded = true;
+                    TableConfigurationTransitionResult staged = _tableSession.StagePendingConfiguration(ApplyTableConfiguration);
+                    LogTransitionDiagnostics(staged.Diagnostics);
+                    if (_tableSession.HasRejectedConfiguration == false)
+                    {
+                        RefreshLiveCells();
+                        RecalcLayout();
+                        layoutPreparationSucceeded = true;
+                    }
                 }
                 catch (Exception exception)
                 {
-                    _tableSession.RejectStagedConfiguration(exception);
-                    LogLayoutPreparationFailure(exception);
+                    LogTransitionDiagnostics(_tableSession.RejectStagedConfiguration(exception).Diagnostics);
                 }
             }
 
             TableFrame<TObject> frame = _tableSession.Frame;
             if (Event.current.type == EventType.Layout && layoutPreparationSucceeded)
             {
-                frame = _tableSession.PrepareFrame(
+                TableTransitionResult<TObject> prepared = _tableSession.PrepareFrame(
                     new TableLayoutMetrics(
                         _rows,
                         _rowHeights,
@@ -56,7 +60,9 @@ internal sealed partial class ObjectTable<TObject>
                         _leftColumnsWidth,
                         _columns.Select(column => column.Def.defName).ToList(),
                         _columns.Select(column => column.Width).ToList(),
-                        _leftColumnsCount)).Frame;
+                        _leftColumnsCount));
+                LogTransitionDiagnostics(prepared.Diagnostics);
+                frame = prepared.Frame;
             }
 
             // Layout
@@ -99,12 +105,14 @@ internal sealed partial class ObjectTable<TObject>
         }
     }
 
-    private void LogLayoutPreparationFailure(Exception exception)
+    private void LogTransitionDiagnostics(IReadOnlyList<string> diagnostics)
     {
-        string key = $"{exception.GetType().FullName}:{exception.Message}";
-        if (_layoutFailureWarnings.Add(key))
+        foreach (string diagnostic in diagnostics)
         {
-            Log.Warning($"Stats deferred a table configuration after layout preparation failed: {exception.Message}");
+            if (_layoutFailureWarnings.Add(diagnostic))
+            {
+                Log.Warning($"Stats table \"{_tableWorker.Def.defName}\": {diagnostic}");
+            }
         }
     }
 

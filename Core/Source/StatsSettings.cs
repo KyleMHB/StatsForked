@@ -8,6 +8,7 @@ public sealed class StatsSettings : ModSettings
 {
     public List<TablePreset> presets = [];
     public List<string> openTableDefNames = [];
+    public List<string> openTableNames = [];
     public int activeTableIndex = -1;
     public bool expandedMultiValueCells;
 
@@ -15,43 +16,74 @@ public sealed class StatsSettings : ModSettings
     {
         Scribe_Collections.Look(ref presets, nameof(presets), LookMode.Deep);
         Scribe_Collections.Look(ref openTableDefNames, nameof(openTableDefNames), LookMode.Value);
+        Scribe_Collections.Look(ref openTableNames, nameof(openTableNames), LookMode.Value);
         Scribe_Values.Look(ref activeTableIndex, nameof(activeTableIndex), -1);
         Scribe_Values.Look(ref expandedMultiValueCells, nameof(expandedMultiValueCells));
 
         if (Scribe.mode == LoadSaveMode.PostLoadInit)
         {
-            presets = presets?
-                .Where(preset => preset != null)
-                .ToList() ?? [];
+            Normalize();
+        }
+    }
 
-            openTableDefNames = openTableDefNames?
-                .Where(defName => defName != null)
-                .ToList() ?? [];
-            if (openTableDefNames.Count == 0)
-            {
-                activeTableIndex = -1;
-            }
-            else
-            {
-                activeTableIndex = activeTableIndex < 0
-                    ? 0
-                    : activeTableIndex >= openTableDefNames.Count
-                        ? openTableDefNames.Count - 1
-                        : activeTableIndex;
-            }
+    internal void Normalize()
+    {
+        presets = presets?
+            .Where(preset => preset != null)
+            .ToList() ?? [];
 
-            foreach (TablePreset preset in presets)
+        openTableDefNames ??= [];
+        openTableNames ??= [];
+        // Keep names aligned with duplicate tabs and discard invalid entries together.
+        for (int i = openTableDefNames.Count - 1; i >= 0; i--)
+        {
+            if (openTableDefNames[i] == null)
             {
-                preset.Normalize();
-            }
-
-            HashSet<string> defaultTables = [];
-            foreach (TablePreset preset in presets)
-            {
-                if (preset.isDefault && defaultTables.Add(preset.tableDefName) == false)
+                openTableDefNames.RemoveAt(i);
+                if (i < activeTableIndex) activeTableIndex--;
+                if (i < openTableNames.Count)
                 {
-                    preset.isDefault = false;
+                    openTableNames.RemoveAt(i);
                 }
+            }
+        }
+        while (openTableNames.Count < openTableDefNames.Count)
+        {
+            openTableNames.Add("");
+        }
+        if (openTableNames.Count > openTableDefNames.Count)
+        {
+            openTableNames.RemoveRange(openTableDefNames.Count, openTableNames.Count - openTableDefNames.Count);
+        }
+        for (int i = 0; i < openTableNames.Count; i++)
+        {
+            openTableNames[i] = TableName.Normalize(openTableNames[i]);
+        }
+
+        if (openTableDefNames.Count == 0)
+        {
+            activeTableIndex = -1;
+        }
+        else
+        {
+            activeTableIndex = activeTableIndex < 0
+                ? 0
+                : activeTableIndex >= openTableDefNames.Count
+                    ? openTableDefNames.Count - 1
+                    : activeTableIndex;
+        }
+
+        foreach (TablePreset preset in presets)
+        {
+            preset.Normalize();
+        }
+
+        HashSet<string> defaultTables = [];
+        foreach (TablePreset preset in presets)
+        {
+            if (preset.isDefault && defaultTables.Add(preset.tableDefName) == false)
+            {
+                preset.isDefault = false;
             }
         }
     }

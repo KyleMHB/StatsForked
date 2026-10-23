@@ -158,7 +158,8 @@ internal sealed partial class ObjectTable<TObject>
             _name = Widgets.TextField(textFieldRect, _name);
 
             rect.yMin = textFieldRect.yMax + GUIStyles.Global.Pad;
-            rect.CutLeft(out Rect saveRect, 110f).CutLeft(GUIStyles.Global.PadSm);
+            rect.height = 30f;
+            rect.CutLeft(out Rect saveRect, 110f);
             Rect cancelRect = new(saveRect.xMax + GUIStyles.Global.PadSm, saveRect.y, 110f, saveRect.height);
 
             if (Widgets.ButtonText(saveRect, Localization.Get(Localization.Save)))
@@ -175,7 +176,7 @@ internal sealed partial class ObjectTable<TObject>
 
         protected override void SetInitialSizeAndPosition()
         {
-            Vector2 size = new(260f, 100f);
+            Vector2 size = new(260f, 140f);
             Vector2 position = UI.MousePositionOnUIInverted;
             if (position.x + size.x > UI.screenWidth)
             {

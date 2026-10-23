@@ -1,6 +1,6 @@
 # Stats Forked
 
-Stats Forked is a maintained fork of [Stats](https://github.com/AzzkiyOne/Stats) for RimWorld 1.6. It keeps the original sortable stats-table framework while adding modern compatibility modules, inventory-aware filtering, saved presets, bionics comparison, distance-based ranged DPS, and better handling for stuffable item variants.
+Stats Forked is a maintained fork of [Stats](https://github.com/AzzkiyOne/Stats) for RimWorld 1.6 and 1.7. It keeps the original sortable stats-table framework while adding modern compatibility modules, inventory-aware filtering, saved presets, bionics comparison, distance-based ranged DPS, and better handling for stuffable item variants.
 
 The fork exists to keep the Stats table framework usable with current RimWorld content and larger modlists while preserving the original mod's data-driven approach.
 
@@ -44,6 +44,8 @@ Useful workflows include:
 - Filter thing-based tables to colony-owned or currently visible items.
 - Filter apparel and weapons by whether they have recipes, which ingredients they use, which benches make them, and which material variants apply.
 - Save table presets for repeated comparisons.
+- Right-click a table icon and choose Rename tab to name it, for example "Researched Ranged Weapons". The name appears in the heading and icon tooltip and persists between sessions. Leave it blank to restore the original table name.
+- With Yayo's Combat 3 (Continued) enabled, compare weapon capacity using Ammos and the required ammo count and type using Reload cost per ammo.
 - Toggle variants for stuffable items when you need material-specific stat values.
 - Compare bionics by affected body part, capacity impact, efficiency, and special effects.
 - Review Odyssey books, fish, gravship systems, orbital infrastructure, unique weapons, and fishing outcomes when Odyssey is active.
@@ -58,7 +60,7 @@ Stats Forked stores table presets in the mod settings data managed by RimWorld. 
 
 Supported RimWorld versions:
 
-- RimWorld 1.6
+- RimWorld 1.6 and 1.7
 
 Optional compatibility content loads when these expansions or mods are active:
 
@@ -66,6 +68,7 @@ Optional compatibility content loads when these expansions or mods are active:
 - Anomaly
 - Odyssey, including books, fish, gravship systems, orbital infrastructure, unique weapons, and fishing outcomes
 - Combat Extended
+- Yayo's Combat 3 (Continued), for weapon ammo capacity and reload cost
 
 ## Building from Source
 
@@ -112,11 +115,18 @@ Support me on Ko-fi. This does not imply endorsement by the original authors.
 
 [![Support me on Ko-fi](https://img.shields.io/badge/Support_me_on_Ko--fi-72a4f2?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/I7L525WMJ6)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KyleMHB/StatsForked)
-- **Steam Workshop:** [Stats Forked](https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439)
+- [Original Stats Workshop item](https://steamcommunity.com/sharedfiles/filedetails/?id=3479566439)
 - **Source Repository:** [KyleMHB/StatsForked](https://github.com/KyleMHB/StatsForked)
 - **Issue Tracker:** [GitHub Issues](https://github.com/KyleMHB/StatsForked/issues)
 - **Original Project:** [AzzkiyOne/Stats](https://github.com/AzzkiyOne/Stats)
 - **Harmony:** [Harmony for RimWorld](https://github.com/pardeike/HarmonyRimWorld/releases/latest)
+
+- [Better Pawn Control Forked](https://steamcommunity.com/sharedfiles/filedetails/?id=3724294345)
+- [Cargo Containers Expanded](https://steamcommunity.com/sharedfiles/filedetails/?id=3714050938)
+- [Everything Has Quality Reforked](https://steamcommunity.com/sharedfiles/filedetails/?id=3710884766)
+- [Gear Up and Go Reforked](https://steamcommunity.com/sharedfiles/filedetails/?id=3724312502)
+- [Outfit Stands Plus Forked](https://steamcommunity.com/sharedfiles/filedetails/?id=3724311713)
+- [Stats Forked on Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3712317437)
 
 ## License
 
