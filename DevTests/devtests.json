@@ -1,0 +1,23 @@
+{
+  "name": "Stats Forked",
+  "argPrefix": "stats",
+  "modDir": "E:/Steam/steamapps/common/RimWorld/Mods/Stats Forked",
+  "productionDll": "Core/Assemblies/Core.dll",
+  "devBuild": "work/devtests/StatsForked.DevTests.dll",
+  "devProject": "DevTests/StatsForked.DevTests.csproj",
+  "evidenceFolder": "StatsForkedTests",
+  "runtimeFolders": [
+    "About",
+    "Core/Assemblies", "Core/Defs", "Core/Languages", "Core/Patches", "Core/Textures",
+    "Biotech/Assemblies", "Biotech/Defs", "Biotech/Patches", "Biotech/Textures",
+    "Anomaly/Assemblies", "Anomaly/Defs", "Anomaly/Patches", "Anomaly/Textures",
+    "Odyssey/Assemblies", "Odyssey/Defs", "Odyssey/Patches", "Odyssey/Textures",
+    "CE/Assemblies", "CE/Defs", "CE/Patches", "CE/Textures"
+  ],
+  "runtimeFiles": ["LoadFolders.xml"],
+  "modSets": {
+    "default": ["brrainz.harmony", "ludeon.rimworld", "kylemhb.statsforked"],
+    "dlc": ["brrainz.harmony", "ludeon.rimworld", "ludeon.rimworld.royalty", "ludeon.rimworld.ideology", "ludeon.rimworld.biotech",
+            "ludeon.rimworld.anomaly", "ludeon.rimworld.odyssey", "kylemhb.statsforked"]
+  }
+}

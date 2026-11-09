@@ -11,3 +11,6 @@ Runtime Only/
 *.cache
 *.tmp
 *.bak
+
+# Developer test output
+work/

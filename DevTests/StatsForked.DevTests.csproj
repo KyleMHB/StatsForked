@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>StatsForked.DevTests</AssemblyName>
+    <RootNamespace>StatsForked.DevTests</RootNamespace>
+    <OutputPath>..\work\devtests\</OutputPath>
+    <RimWorldDevTestsProps Condition="'$(RimWorldDevTestsProps)' == ''">..\..\RimWorldDevTests\RimWorldDevTests.props</RimWorldDevTestsProps>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DevTestsProductionDll>..\Core\Assemblies\Core.dll</DevTestsProductionDll>
+  </PropertyGroup>
+  <Import Project="$(RimWorldDevTestsProps)" />
+</Project>

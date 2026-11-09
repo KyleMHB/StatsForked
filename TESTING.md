@@ -64,3 +64,41 @@ In RimWorld, compare Normal and Legendary values for a quality-sensitive weapon 
 The Save preset window is 140 logical pixels tall and assigns Save and Cancel an explicit 30-pixel height. A read-only probe compiles the production dialog and rectangle helpers against captured widget calls, with RimWorld 1.6's title and margin deductions. Before the fix, the 100-pixel window left buttons only 8 pixels high with a 22-pixel text line. After the fix, both buttons are 30 pixels high and fit within the content area.
 
 In game, open Presets > Save current and confirm the button labels are fully visible, Save persists a named preset, and Cancel closes without saving. Repeat windowed and fullscreen. Native Unity rendering remains a manual check.
+## In-game developer tests
+
+`DevTests/` uses the shared runner in the sibling `RimWorldDevTests` checkout. The game runs in an isolated save-data folder, so the player's mod list, settings and saves are not touched. `DevTests/devtests.json` defines two mod sets:
+
+- `default`: Harmony, Core and Stats Forked.
+- `dlc`: the same plus all five DLCs. Use it with `--mods dlc` to load the Biotech, Anomaly and Odyssey compatibility assemblies.
+
+The DevTests project shadows the root `Directory.Build.props`, so it stays out of `Stats.sln` and the `Runtime Only` packaging. Its runtime folders list only the packaged subfolders (for example `Core/Assemblies`, not `Core`), so `Core/Source` is not compared with the installed mod.
+
+Batch `stats-tables`:
+
+- **`stats.loaded`:** the `StatsTab` main button opens `Stats.MainTabWindow`, and every `TableDef` worker can be created.
+- **`stats.open-window`:** the tab opens its window.
+- **`stats.draw-tables`:** each Open-table menu option opens its table, which then draws for 15 frames. Each table's `TableSession` frame revision must be above 0, which proves it was drawn, and its row count is recorded.
+- **`stats.session-restore`:** closing the tab saves every open table to the settings, and a new window restores them.
+- **`stats.reload-draw`:** after a save and reload, every open table is made active and drawn again.
+
+Any error the game logs while a case is open, including "Exception filling window", is reported against that case. The cases call the menu actions and window methods directly; they do not click. Filters, presets, sorting and column edits are not exercised. The table-frame regression above stays covered by `Stats.Tests`.
+
+```powershell
+dotnet build DevTests/StatsForked.DevTests.csproj -c Release
+python tools/stats_test.py run stats-tables --seed 1
+python tools/stats_test.py run stats-tables --mods dlc --seed 1
+python tools/stats_test.py close-session
+python tools/stats_test.py release-check
+```
+
+The installed mod must match the working tree's packaged files, so run `deploy.ps1` first.
+
+### 2026-11-09 run
+
+- **Environment:** RimWorld 1.7.5000 rev1275, seed 1. The working tree was `main` (`0aa47ed`) plus the harness files.
+- **Deployment:** the previous 2026-10-21 installation was backed up to `.scratch/devtests-harness/previous-runtime-20261109.zip`, then `deploy.ps1` installed the build. `Stats.sln` has 0 errors and 9 existing warnings: CS0067 unused `OnObjectAdded`/`OnObjectRemoved` events in four table workers, and CS0649 for `ColumnTitleXmlNode.IconElement.Def`.
+- **Run `20261109-184656-stats-tables-s1` (`default`, 3 mods):** 5 of 5 passed. All 13 tables were drawn; rows shown included Animals 61, Plants 49 and Apparel 35. 13 tables were saved and restored, and 13 were redrawn after reload.
+- **Run `20261109-184718-stats-tables-s1` (`dlc`, 8 mods):** 5 of 5 passed. All 21 tables were drawn, including Genes 232, Animals 115, Apparel 112 and the five Odyssey tables. 21 tables were saved, restored and redrawn.
+- **Earlier runs:** `20261109-184512-stats-tables-s1` and `20261109-184542-stats-tables-s1` also passed. They ran before the frame-revision observation was added, so they show only that each table opened.
+- `release-check` passed.
+- **Not covered:** filters, presets, sorting, column edits, custom table names, the resize control, Combat Extended and Yayo's Combat columns, and the full mod list.
