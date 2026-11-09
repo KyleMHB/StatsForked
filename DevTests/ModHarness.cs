@@ -24,6 +24,6 @@ public sealed class ModHarness : HarnessSettings
     };
 
     public override string[] RuntimeFiles => new[] { "LoadFolders.xml" };
-    public override IEnumerable<Batch> CreateBatches() => new Batch[] { new TablesBatch() };
-    public override IEnumerable<string> RunAll => new[] { "stats-tables" };
+    public override IEnumerable<Batch> CreateBatches() => new Batch[] { new TablesBatch(), new PresetsBatch() };
+    public override IEnumerable<string> RunAll => new[] { "stats-tables", "stats-presets" };
 }

@@ -87,6 +87,7 @@ Any error the game logs while a case is open, including "Exception filling windo
 dotnet build DevTests/StatsForked.DevTests.csproj -c Release
 python tools/stats_test.py run stats-tables --seed 1
 python tools/stats_test.py run stats-tables --mods dlc --seed 1
+python tools/stats_test.py run stats-presets --seed 1
 python tools/stats_test.py close-session
 python tools/stats_test.py release-check
 ```
@@ -101,4 +102,20 @@ The installed mod must match the working tree's packaged files, so run `deploy.p
 - **Run `20261109-184718-stats-tables-s1` (`dlc`, 8 mods):** 5 of 5 passed. All 21 tables were drawn, including Genes 232, Animals 115, Apparel 112 and the five Odyssey tables. 21 tables were saved, restored and redrawn.
 - **Earlier runs:** `20261109-184512-stats-tables-s1` and `20261109-184542-stats-tables-s1` also passed. They ran before the frame-revision observation was added, so they show only that each table opened.
 - `release-check` passed.
-- **Not covered:** filters, presets, sorting, column edits, custom table names, the resize control, Combat Extended and Yayo's Combat columns, and the full mod list.
+- **Not covered at that point:** filters and presets (see `stats-presets` below), sorting, column edits, custom table names, the resize control, Combat Extended and Yayo's Combat columns, and the full mod list.
+
+### Batch `stats-presets`
+
+Mod set `default`. It covers filters and table presets on the Apparel table:
+
+- **`stats.filter`:** the Label column's text filter "contains duster" narrows the table to fewer rows.
+- **`stats.preset-save`:** saving a preset records that one filter (`~=|duster`) and every visible column, and writes it to the mod settings file.
+- **`stats.preset-apply`:** after the filter is reset and a column hidden, applying the preset restores both.
+- **`stats.preset-default`:** a preset marked default is applied to the table when a new Stats window restores it.
+- **`stats.preset-delete`:** deleting the preset removes it from the settings and the settings file.
+
+The cases are mechanical. The filter is set through its preset state, and the toolbar's private preset actions are invoked by reflection; the filter window, toolbar and menus are not clicked. Changes are queued intents, so each step draws the table before it is measured. Presets are written to the runner's isolated settings, not the player's.
+
+- **2026-11-09, run `20261109-193842-stats-presets-s1`:** 5 of 5 passed. The filter cut Apparel from 35 rows to 1, matching the one apparel def with "duster" in its label. The preset held 19 visible columns and was written to `Mod_Stats Forked_StatsMod.xml`. Apply and the default preset both restored 1 row and 19 columns.
+- **Earlier run `20261109-193810-stats-presets-s1`:** 3 passed, then the batch stopped. It added a new `MainTabWindow` to the window stack without its `def`, and `MainTabWindow.PostOpen` threw. That was a test setup error; the batch now sets the def.
+- **Not covered:** number, boolean and recipe filters, the Available filter, sorting, column reordering and pinning, variant display, presets across a game restart, and the DLC tables.
