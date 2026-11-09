@@ -119,3 +119,7 @@ The cases are mechanical. The filter is set through its preset state, and the to
 - **2026-11-09, run `20261109-193842-stats-presets-s1`:** 5 of 5 passed. The filter cut Apparel from 35 rows to 1, matching the one apparel def with "duster" in its label. The preset held 19 visible columns and was written to `Mod_Stats Forked_StatsMod.xml`. Apply and the default preset both restored 1 row and 19 columns.
 - **Earlier run `20261109-193810-stats-presets-s1`:** 3 passed, then the batch stopped. It added a new `MainTabWindow` to the window stack without its `def`, and `MainTabWindow.PostOpen` threw. That was a test setup error; the batch now sets the def.
 - **Not covered:** number, boolean and recipe filters, the Available filter, sorting, column reordering and pinning, variant display, presets across a game restart, and the DLC tables.
+
+### 2026-11-09 full mod list
+
+- **`--mods full`, run `20261109-195427-run-all-s1`:** 10 of 10 gameplay cases passed (`stats-tables` and `stats-presets`), plus 13 of 13 runner self-checks. The player's active list (1,534 mods, 386 settings files) was loaded in the isolated save-data folder; the player's own ModsConfig and settings were not written. Another mod generated a 126x384 map instead of 75x75, and the batches adapted. Command: `python tools/<prefix>_test.py run run-all --mods full --seed 1 --timeout 2400`.
